@@ -1,0 +1,27 @@
+version: 2
+
+registries:
+  ansys-github:
+    type: git
+    url: https://github.com
+    username: x-access-token
+    password: ${{secrets.PYANSYS_CI_BOT_TOKEN}}
+
+updates:
+  - package-ecosystem: "pip"
+    insecure-external-code-execution: allow
+    registries: "*"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "maintenance"
+      - "dependencies"
+
+  - package-ecosystem: "github-actions"
+    registries: "*"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "maintenance"
