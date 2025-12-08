@@ -9,7 +9,7 @@ on:
 
 env:
   MAIN_PYTHON_VERSION: '3.10'
-  # DOCUMENTATION_CNAME: 'symmetrical-disco-9jow5zm.pages.github.io'
+  DOCUMENTATION_CNAME: 'fuzzy-adventure-gzkzk5l.pages.github.io'
   LIBRARY_NAME: 'ansys-result-explorer-core'
 
 concurrency:
