@@ -18,6 +18,15 @@ updates:
       - "maintenance"
       - "dependencies"
 
+    groups:
+      pytest-dependencies:
+        patterns:
+          - "pytest*"
+
+      sphinx-dependencies:
+        patterns:
+          - "*sphinx*"
+
   - package-ecosystem: "github-actions"
     registries: "*"
     directory: "/"
@@ -25,3 +34,7 @@ updates:
       interval: "weekly"
     labels:
       - "maintenance"
+    groups:
+      actions-deps:
+        patterns:
+          - "*"
