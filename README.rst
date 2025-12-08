@@ -1,5 +1,5 @@
 PyResultExplorer
-=====
+================
 
 Python interface to Ansys Result Explorer.
 
