@@ -22,6 +22,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
+    "ansys-api-result-explorer",
     "ansys-tools-path>=0.7.3",
     "grpcio>=1.63.0",
     "protobuf",
@@ -46,6 +47,9 @@ name = "ansys.result_explorer.core"
 [tool.uv]
 default-groups = ["dev"]
 cache-dir = "./.uv_cache"
+
+[tool.uv.sources]
+ansys-api-result-explorer = { git = "https://github.com/ansys-internal/remote-post.git", subdirectory = "api/python", branch = "feat/proto-api" }
 
 [project.urls]
 Source = "https://github.com/ansys-internal/pyresultexplorer"
