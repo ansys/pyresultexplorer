@@ -20,7 +20,8 @@ Then, you can simply execute:
 
 For developers
 ^^^^^^^^^^^^^^
-Installing pyresultexplorer in developer mode allows
+
+Installing PyResultExplorer in developer mode allows
 you to modify the source and enhance it.
 
 Before contributing to the project, please refer to the `PyAnsys Developer's guide`_ and then follow these steps:
@@ -36,7 +37,7 @@ Before contributing to the project, please refer to the `PyAnsys Developer's gui
    .. code:: bash
 
       # Create a virtual environment
-      python -m venv .venv
+      uv venv
 
       # Activate it in a POSIX system
       source .venv/bin/activate
@@ -47,28 +48,11 @@ Before contributing to the project, please refer to the `PyAnsys Developer's gui
       # Activate it in Windows Powershell
       .venv\Scripts\Activate.ps1
 
-#. Make sure you have the latest required build system and doc, testing, and CI tools:
-
-   .. code:: bash
-
-      python -m pip install -U pip flit tox
-      python -m pip install -r requirements/requirements_build.txt
-      python -m pip install -r requirements/requirements_doc.txt
-      python -m pip install -r requirements/requirements_tests.txt
-
-
-#. Install the project in editable mode:
+#. Install the project:
 
     .. code:: bash
 
-      python -m pip install --editable ansys-result-explorer-core
-
-    #. Finally, verify your development installation by running:
-
-   .. code:: bash
-
-      tox
-
+      uv sync --all-groups
 
 How to test
 -----------

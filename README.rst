@@ -13,7 +13,7 @@ At least two installation modes are provided: user and developer.
 For users
 ^^^^^^^^^
 
-In order to install pyresultexplorer, make sure you
+In order to install PyResultExplorer, make sure you
 have the latest version of `pip`. To do so, run:
 
 .. code:: bash
@@ -29,7 +29,7 @@ Then, you can simply execute:
 For developers
 ^^^^^^^^^^^^^^
 
-Installing pyresultexplorer in developer mode allows
+Installing PyResultExplorer in developer mode allows
 you to modify the source and enhance it.
 
 #. Start by cloning this repository:
@@ -43,7 +43,7 @@ you to modify the source and enhance it.
    .. code:: bash
 
       # Create a virtual environment
-      python -m venv .venv
+      uv venv
 
       # Activate it in a POSIX system
       source .venv/bin/activate
@@ -55,8 +55,7 @@ you to modify the source and enhance it.
 
    .. code:: bash
 
-      python -m pip install -U pip flit
-      python -m pip install -e .[tests,doc]
+      uv sync --all-groups
 
 A note on pre-commit
 ^^^^^^^^^^^^^^^^^^^^
