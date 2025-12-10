@@ -1,6 +1,6 @@
 from ansys.result_explorer.core.client import Client
 
-rx = Client(port=50000)
+rx = Client(grpc_port=50000, http_port=8000, session_id=None)
 
 sol = rx.create_solution(
     result_provider_name="Local",
