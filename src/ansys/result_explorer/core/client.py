@@ -3,12 +3,22 @@ import requests
 
 from ansys.api.result_explorer.v0 import solution_pb2_grpc, workspace_pb2_grpc
 
-from .models import AppSolution, Empty, SolutionCreate, Workspace, WorkspaceCreate
+from .models import (
+    AppSolution,
+    Empty,
+    SolutionCreate,
+    Workspace,
+    WorkspaceCreate,
+)
 
 
 class Client:
     def __init__(
-        self, host="localhost", grpc_port=50000, http_port=8000, session_id: str | None = None
+        self,
+        host="localhost",
+        grpc_port=50000,
+        http_port=8000,
+        session_id: str | None = None,
     ):
         self._host = host
         self._grpc_port = grpc_port
