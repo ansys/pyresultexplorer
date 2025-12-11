@@ -4,6 +4,8 @@ from ansys.api.result_explorer.v0.solution_pb2 import (
     AppSolution,
     AppSolutionList,
     ViewList,
+    ViewType,
+    View,
 )  # noqa
 from ansys.api.result_explorer.v0.workspace_pb2 import (
     WorkspaceCreate,
