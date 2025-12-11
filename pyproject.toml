@@ -84,6 +84,7 @@ ignore = []
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
+"src/**/models.py" = ["F401"]
 # ignore docstring requirements for tests, examples
 "tests/**/*.py" = ["D", "PLC0415"]
 "examples/**/*.py" = ["D", "PLC0415"]

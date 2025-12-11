@@ -26,7 +26,7 @@ wheels = [
 [[package]]
 name = "ansys-api-result-explorer"
 version = "0.1.0"
-source = { git = "https://github.com/ansys-internal/remote-post.git?subdirectory=api%2Fpython&branch=feat%2Fproto-api#5f9a24252cbebc1ab99b0af1620e2d67f4c9eeb6" }
+source = { git = "https://github.com/ansys-internal/remote-post.git?subdirectory=api%2Fpython&branch=feat%2Fproto-api#24909b72714d34189d23676c40de5839e7ebb155" }
 dependencies = [
     { name = "grpcio" },
     { name = "protobuf" },
@@ -96,7 +96,7 @@ wheels = [
 
 [[package]]
 name = "ansys-tools-common"
-version = "0.3.1"
+version = "0.4.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "appdirs" },
@@ -106,9 +106,9 @@ dependencies = [
     { name = "scooby" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/56/c0/4550153a7b95838a2032b51b3a45e49e8076b091bef41c4e6d6e0945d9f6/ansys_tools_common-0.3.1.tar.gz", hash = "sha256:36ea267ac137b269aab0af241577c1fa657f7c2f4f2f68ef5d014a23d569e637", size = 220586, upload-time = "2025-11-27T15:05:40.701Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/83/02/80ac7cc23c5bfd297460f30fe87300173172b42d90eedc2376b836f8d0dd/ansys_tools_common-0.4.0.tar.gz", hash = "sha256:68e4c2949d05748bba8e6c66dea3f70dd507b7db7c434388f2beff0e30beeb40", size = 236147, upload-time = "2025-12-10T14:18:03.619Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/bc/fd/af848b804ba150d9415c305eb80854fecc38ab8089a08923e9702a29ccca/ansys_tools_common-0.3.1-py3-none-any.whl", hash = "sha256:8d03f8c85991465874fc463a6f32ffe8b0df9a1ad6092b53ec2132cd12346004", size = 67502, upload-time = "2025-11-27T15:05:39.171Z" },
+    { url = "https://files.pythonhosted.org/packages/c6/ed/01536522455ae5e387324a1dd2bf9bf13a009afe2030f6617628ff02904c/ansys_tools_common-0.4.0-py3-none-any.whl", hash = "sha256:acb36e8f7434bf6c617279ab2357d0b1a1bb2d90cb47b69f2db678b6e0bc173c", size = 70224, upload-time = "2025-12-10T14:18:01.964Z" },
 ]
 
 [[package]]
@@ -823,21 +823,20 @@ wheels = [
 
 [[package]]
 name = "pydata-sphinx-theme"
-version = "0.15.4"
+version = "0.16.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "accessible-pygments" },
     { name = "babel" },
     { name = "beautifulsoup4" },
     { name = "docutils" },
-    { name = "packaging" },
     { name = "pygments" },
     { name = "sphinx" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/67/ea/3ab478cccacc2e8ef69892c42c44ae547bae089f356c4b47caf61730958d/pydata_sphinx_theme-0.15.4.tar.gz", hash = "sha256:7762ec0ac59df3acecf49fd2f889e1b4565dbce8b88b2e29ee06fdd90645a06d", size = 2400673, upload-time = "2024-06-25T19:28:45.041Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/00/20/bb50f9de3a6de69e6abd6b087b52fa2418a0418b19597601605f855ad044/pydata_sphinx_theme-0.16.1.tar.gz", hash = "sha256:a08b7f0b7f70387219dc659bff0893a7554d5eb39b59d3b8ef37b8401b7642d7", size = 2412693, upload-time = "2024-12-17T10:53:39.537Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e7/d3/c622950d87a2ffd1654208733b5bd1c5645930014abed8f4c0d74863988b/pydata_sphinx_theme-0.15.4-py3-none-any.whl", hash = "sha256:2136ad0e9500d0949f96167e63f3e298620040aea8f9c74621959eda5d4cf8e6", size = 4640157, upload-time = "2024-06-25T19:28:42.383Z" },
+    { url = "https://files.pythonhosted.org/packages/e2/0d/8ba33fa83a7dcde13eb3c1c2a0c1cc29950a048bfed6d9b0d8b6bd710b4c/pydata_sphinx_theme-0.16.1-py3-none-any.whl", hash = "sha256:225331e8ac4b32682c18fcac5a57a6f717c4e632cea5dd0e247b55155faeccde", size = 6723264, upload-time = "2024-12-17T10:53:35.645Z" },
 ]
 
 [[package]]
@@ -1141,11 +1140,11 @@ wheels = [
 
 [[package]]
 name = "urllib3"
-version = "2.6.0"
+version = "2.6.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/1c/43/554c2569b62f49350597348fc3ac70f786e3c32e7f19d266e19817812dd3/urllib3-2.6.0.tar.gz", hash = "sha256:cb9bcef5a4b345d5da5d145dc3e30834f58e8018828cbc724d30b4cb7d4d49f1", size = 432585, upload-time = "2025-12-05T15:08:47.885Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5e/1d/0f3a93cca1ac5e8287842ed4eebbd0f7a991315089b1a0b01c7788aa7b63/urllib3-2.6.1.tar.gz", hash = "sha256:5379eb6e1aba4088bae84f8242960017ec8d8e3decf30480b3a1abdaa9671a3f", size = 432678, upload-time = "2025-12-08T15:25:26.773Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/56/1a/9ffe814d317c5224166b23e7c47f606d6e473712a2fad0f704ea9b99f246/urllib3-2.6.0-py3-none-any.whl", hash = "sha256:c90f7a39f716c572c4e3e58509581ebd83f9b59cced005b7db7ad2d22b0db99f", size = 131083, upload-time = "2025-12-05T15:08:45.983Z" },
+    { url = "https://files.pythonhosted.org/packages/bc/56/190ceb8cb10511b730b564fb1e0293fa468363dbad26145c34928a60cb0c/urllib3-2.6.1-py3-none-any.whl", hash = "sha256:e67d06fe947c36a7ca39f4994b08d73922d40e6cca949907be05efa6fd75110b", size = 131138, upload-time = "2025-12-08T15:25:25.51Z" },
 ]
 
 [[package]]
