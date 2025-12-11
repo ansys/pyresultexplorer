@@ -27,7 +27,7 @@ sol = rx.create_solution(
 views = rx.get_views(solution_id=sol.id)
 print(views)
 
-view = next((v for v in views.views if "Min/Max" in v.name), None)
+view = next((v for v in views.views if "Displacement" in v.name), None)
 assert view is not None
 
 print(f"Opening view: {view.name} in the workspace.")
@@ -44,7 +44,7 @@ file_name = slugify(sol_name + " - " + view.name) + ".png"
 with open(file_name, "wb") as image_file:
     image_file.write(snapshot_data)
 
-print(f"Snapshot saved to: {os.path.absfile_name}")
+print(f"Snapshot saved to: {os.path.abspath(file_name)}")
 
 print("Displaying snapshot...")
 im = img.imread(file_name)
