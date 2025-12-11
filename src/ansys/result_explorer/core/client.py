@@ -1,12 +1,16 @@
 import grpc
 import requests
 
-from ansys.api.result_explorer.v0 import solution_pb2_grpc, workspace_pb2_grpc
+from ansys.api.result_explorer.v0 import snapshot_pb2_grpc, solution_pb2_grpc, workspace_pb2_grpc
+from ansys.result_explorer.core import models
 
 from .models import (
     AppSolution,
+    AssignViewRequest,
     Empty,
+    ResourceId,
     SolutionCreate,
+    ViewList,
     Workspace,
     WorkspaceCreate,
 )
@@ -39,7 +43,9 @@ class Client:
 
         self._solution_stub = solution_pb2_grpc.SolutionServiceStub(self._channel)
         self._workspace_stub = workspace_pb2_grpc.WorkspaceServiceStub(self._channel)
+        self._snapshot_stub = snapshot_pb2_grpc.SnapshotServiceStub(self._channel)
 
+    ## Solution methods
     def create_solution(self, result_provider_name: str, name: str, file_path: str) -> AppSolution:
         sol = SolutionCreate(
             result_provider_name=result_provider_name,
@@ -51,8 +57,38 @@ class Client:
     def list_solutions(self) -> list[AppSolution]:
         return self._solution_stub.List(Empty(), metadata=self._grpc_metadata)
 
+    def get_views(self, solution_id: str) -> ViewList:
+        return self._solution_stub.GetViews(
+            ResourceId(id=solution_id), metadata=self._grpc_metadata
+        )
+
+    ## Workspace methods
+
     def create_workspace(self, name: str) -> Workspace:
         return self._workspace_stub.Create(WorkspaceCreate(name=name), metadata=self._grpc_metadata)
 
     def list_workspaces(self) -> list[Workspace]:
         return self._workspace_stub.List(Empty(), metadata=self._grpc_metadata)
+
+    def assign_view(self, workspace_id: str, view_id: str) -> str:
+        """Assign a view to a workspace. Returns a portal ID."""
+
+        r = self._workspace_stub.AssignView(
+            AssignViewRequest(
+                workspace_id=workspace_id,
+                view_id=view_id,
+            ),
+            metadata=self._grpc_metadata,
+        )
+        return r.id
+
+    # Snapshot methods
+    def take_snapshot(
+        self, portal_id: str, settings: models.SnapshotSettings | None = None
+    ) -> bytes:
+        request = models.SnapshotRequest(
+            portal_id=portal_id,
+            settings=settings,
+        )
+        r = self._snapshot_stub.Create(request, metadata=self._grpc_metadata)
+        return r.data
