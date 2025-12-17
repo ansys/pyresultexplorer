@@ -75,7 +75,7 @@ jobs:
           optional-dependencies-name: ""
 
       - name: Upload coverage results
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: env.MAIN_PYTHON_VERSION == matrix.python-version
         with:
           name: coverage-tests-${{ matrix.os }}
@@ -83,7 +83,7 @@ jobs:
           retention-days: 7
 
       - name: Upload coverage results (as .coverage)
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: env.MAIN_PYTHON_VERSION == matrix.python-version
         with:
           name: coverage-file-tests-${{ matrix.os }}
