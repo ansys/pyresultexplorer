@@ -54,7 +54,7 @@ default-groups = ["dev"]
 cache-dir = "./.uv_cache"
 
 [tool.uv.sources]
-ansys-api-result-explorer = { git = "https://github.com/ansys-internal/remote-post.git", subdirectory = "api/python", branch = "feat/proto-api" }
+ansys-api-result-explorer = { git = "https://github.com/ansys-internal/result-explorer.git", subdirectory = "api/python", branch = "main" }
 
 [project.urls]
 Source = "https://github.com/ansys-internal/pyresultexplorer"

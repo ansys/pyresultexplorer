@@ -30,7 +30,7 @@ wheels = [
 [[package]]
 name = "ansys-api-result-explorer"
 version = "0.1.0"
-source = { git = "https://github.com/ansys-internal/remote-post.git?subdirectory=api%2Fpython&branch=feat%2Fproto-api#24909b72714d34189d23676c40de5839e7ebb155" }
+source = { git = "https://github.com/ansys-internal/result-explorer.git?subdirectory=api%2Fpython&branch=main#f099fe9fc82c57b5e17120d3ebf4356a6a4d7adc" }
 dependencies = [
     { name = "grpcio" },
     { name = "protobuf" },
@@ -68,7 +68,7 @@ examples = [
 
 [package.metadata]
 requires-dist = [
-    { name = "ansys-api-result-explorer", git = "https://github.com/ansys-internal/remote-post.git?subdirectory=api%2Fpython&branch=feat%2Fproto-api" },
+    { name = "ansys-api-result-explorer", git = "https://github.com/ansys-internal/result-explorer.git?subdirectory=api%2Fpython&branch=main" },
     { name = "ansys-tools-path", specifier = ">=0.7.3" },
     { name = "grpcio", specifier = ">=1.63.0" },
     { name = "protobuf" },
@@ -82,7 +82,7 @@ dev = [
     { name = "pytest-cov", specifier = "==7.0.0" },
 ]
 doc = [
-    { name = "ansys-sphinx-theme", specifier = "==1.6.3" },
+    { name = "ansys-sphinx-theme", specifier = "==1.6.4" },
     { name = "numpydoc", specifier = "==1.10.0" },
     { name = "sphinx", specifier = "==8.1.3" },
     { name = "sphinx-copybutton", specifier = "==0.5.2" },
@@ -94,7 +94,7 @@ examples = [
 
 [[package]]
 name = "ansys-sphinx-theme"
-version = "1.6.3"
+version = "1.6.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "importlib-metadata" },
@@ -104,9 +104,9 @@ dependencies = [
     { name = "pyyaml" },
     { name = "sphinx" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/40/1b/d9db90e02cef9690ef16e9f698689cf8a2e5bfc122317df78f2426273e97/ansys_sphinx_theme-1.6.3.tar.gz", hash = "sha256:167f3d1111be45f5fd9303f257ffb1bfa6ba0afa87e22c2fa83791e41b405314", size = 1002802, upload-time = "2025-10-08T17:06:43.306Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/74/77/06c49e20f34bb9aee2f4ea9d8ec1fb80ad50972a74d7cdf9aec5c0982b27/ansys_sphinx_theme-1.6.4.tar.gz", hash = "sha256:beb49095bc0bc2dd9a3a1f79e9ee4ddd727d0ade62080ca5a8ac5e87a2f9e267", size = 1003016, upload-time = "2025-12-09T15:50:29.783Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ed/e5/6919a8cc4178bc7fa2fe4a5c3c335e6af0880876279bf5c7c2d5ba534749/ansys_sphinx_theme-1.6.3-py3-none-any.whl", hash = "sha256:5bc501e160d824fce37ea176eb8120be460419846276ec507c36dca1a984097b", size = 1600677, upload-time = "2025-10-08T17:06:41.405Z" },
+    { url = "https://files.pythonhosted.org/packages/c0/82/07bb09842b150662bb542f2810eb537e2e4dddba70fd382ee1930699a2a1/ansys_sphinx_theme-1.6.4-py3-none-any.whl", hash = "sha256:f7f28df5e69d7093febdd561118c88ea574bafdce691a049153e372b7aabd794", size = 1601846, upload-time = "2025-12-09T15:50:26.655Z" },
 ]
 
 [[package]]
