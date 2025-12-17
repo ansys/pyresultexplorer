@@ -1,16 +1,14 @@
 import grpc
 import requests
 
-from ansys.api.result_explorer.v0 import snapshot_pb2_grpc, solution_pb2_grpc, workspace_pb2_grpc
+from ansys.api.result_explorer.v0 import solution_pb2_grpc, workspace_pb2_grpc
 from ansys.result_explorer.core import models
 
 from .models import (
-    AppSolution,
-    AssignViewRequest,
     Empty,
-    ResourceId,
+    Solution,
     SolutionCreate,
-    ViewList,
+    UpdateViewportRequest,
     Workspace,
     WorkspaceCreate,
 )
@@ -43,10 +41,9 @@ class Client:
 
         self._solution_stub = solution_pb2_grpc.SolutionServiceStub(self._channel)
         self._workspace_stub = workspace_pb2_grpc.WorkspaceServiceStub(self._channel)
-        self._snapshot_stub = snapshot_pb2_grpc.SnapshotServiceStub(self._channel)
 
     ## Solution methods
-    def create_solution(self, result_provider_name: str, name: str, file_path: str) -> AppSolution:
+    def create_solution(self, result_provider_name: str, name: str, file_path: str) -> Solution:
         sol = SolutionCreate(
             result_provider_name=result_provider_name,
             name=name,
@@ -54,13 +51,13 @@ class Client:
         )
         return self._solution_stub.Create(sol, metadata=self._grpc_metadata)
 
-    def list_solutions(self) -> list[AppSolution]:
+    def list_solutions(self) -> list[Solution]:
         return self._solution_stub.List(Empty(), metadata=self._grpc_metadata)
 
-    def get_views(self, solution_id: str) -> ViewList:
-        return self._solution_stub.GetViews(
-            ResourceId(id=solution_id), metadata=self._grpc_metadata
-        )
+    # def get_views(self, solution_id: str) -> ViewList:
+    #     return self._solution_stub.GetViews(
+    #         ResourceId(id=solution_id), metadata=self._grpc_metadata
+    #     )
 
     ## Workspace methods
 
@@ -73,8 +70,8 @@ class Client:
     def assign_view(self, workspace_id: str, view_id: str) -> str:
         """Assign a view to a workspace. Returns a portal ID."""
 
-        r = self._workspace_stub.AssignView(
-            AssignViewRequest(
+        r = self._workspace_stub.UpdateViewport(
+            UpdateViewportRequest(
                 workspace_id=workspace_id,
                 view_id=view_id,
             ),
