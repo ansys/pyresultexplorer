@@ -43,11 +43,19 @@ class Client:
         self._workspace_stub = workspace_pb2_grpc.WorkspaceServiceStub(self._channel)
 
     ## Solution methods
-    def create_solution(self, result_provider_name: str, name: str, file_path: str) -> Solution:
+    def create_solution(
+        self,
+        result_provider_name: str,
+        name: str,
+        file_path: str,
+        split_mesh_options: models.SplitMeshOptions | None = None,
+    ) -> Solution:
+        file = models.File(path=file_path)
         sol = SolutionCreate(
             result_provider_name=result_provider_name,
             name=name,
-            file_path=file_path,
+            files=[file],
+            split_mesh_options=split_mesh_options,
         )
         return self._solution_stub.Create(sol, metadata=self._grpc_metadata)
 
