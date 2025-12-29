@@ -49,7 +49,7 @@ class Client:
         self._snapshot_stub = snapshot_pb2_grpc.SnapshotServiceStub(self._channel)
 
     @classmethod
-    def connect_with_token(self, token: str):
+    def connect_with_token(cls, token: str):
         ## Connect with a base64 encoded json object that contains the connection info
         decoded_bytes = base64.b64decode(token)
         json_string = decoded_bytes.decode("utf-8")
@@ -68,11 +68,7 @@ class Client:
         if session_id is None:
             raise ValueError("Token is missing 'sessionId' information.")
 
-        return self(host=host,
-            grpc_port=grpc_port,
-            http_port=http_port,
-            session_id=session_id)
-
+        return cls(host=host, grpc_port=grpc_port, http_port=http_port, session_id=session_id)
 
     ## Solution methods
     def create_solution(self, result_provider_name: str, name: str, file_path: str) -> AppSolution:
