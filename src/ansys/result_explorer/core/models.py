@@ -15,6 +15,7 @@ from ansys.api.result_explorer.v0.solution_pb2 import (
 )
 from ansys.api.result_explorer.v0.workspace_pb2 import (
     CreateSnapshotRequest,
+    CreateViewportRequest,
     Snapshot,
     SnapshotSettings,
     SyncOptions,

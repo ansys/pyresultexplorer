@@ -12,6 +12,7 @@ from .models import (
     Solution,
     SolutionCreate,
     UpdateViewportRequest,
+    ViewportDirection,
     Workspace,
     WorkspaceCreate,
 )
@@ -92,6 +93,10 @@ class Client:
     #         ResourceId(id=solution_id), metadata=self._grpc_metadata
     #     )
 
+    def delete_solution(self, solution_id: str) -> None:
+        self._solution_stub.Delete(models.ResourceId(id=solution_id), metadata=self._grpc_metadata)
+        # todo: "Failed to serialize response!"
+
     # ----------- Workspace methods ----------------
 
     def create_workspace(self, name: str) -> Workspace:
@@ -121,3 +126,26 @@ class Client:
         )
         r = self._workspace_stub.CreateSnapshot(request, metadata=self._grpc_metadata)
         return r.data
+
+    def list_viewports(self, workspace_id: str) -> list[models.Viewport]:
+        return self._workspace_stub.ListViewports(
+            models.ResourceId(id=workspace_id), metadata=self._grpc_metadata
+        )
+
+    def create_viewport(
+        self, workspace_id: str, viewport_id: str, direction: ViewportDirection
+    ) -> models.Viewport:
+        return self._workspace_stub.CreateViewport(
+            models.CreateViewportRequest(
+                workspace_id=workspace_id,
+                viewport_id=viewport_id,
+                direction=direction,
+            ),
+            metadata=self._grpc_metadata,
+        )
+
+    def delete_viewport(self, viewport_id: str) -> None:
+        self._workspace_stub.DeleteViewport(
+            models.ResourceId(id=viewport_id), metadata=self._grpc_metadata
+        )
+        # todo: "Failed to serialize response!"

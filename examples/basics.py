@@ -1,14 +1,10 @@
-import os
 import time
 
-import matplotlib.image as img
-import matplotlib.pyplot as plt
-from slugify import slugify
-
 from ansys.result_explorer.core.client import Client
+from ansys.result_explorer.core.models import ViewportDirection
 
 ## rx = Client.connect_with_token("<insert_your_token_here>")
-rx = Client(grpc_port=50000, http_port=8000, session_id="4914f80b-bc99-4c1c-bfcb-b924b286c73a")
+rx = Client(grpc_port=50000, http_port=8000, session_id="53fb87df-8fdf-4c2c-85b5-a0b8924f1051")
 
 workspaces = rx.list_workspaces()
 print(workspaces)
@@ -39,21 +35,54 @@ print(f"Opening view: {view.name} in the workspace.")
 viewport = rx.assign_view(
     viewport_id=workspace.viewport_ids[0], solution_id=sol.id, view_id=view.id
 )
+print(viewport)
 
 print("Waiting for the view to load...")
 time.sleep(1)  # review in the web repo
 
-print("Taking snapshot...")
-snapshot_data = rx.take_snapshot(viewport_id=viewport.id)
+viewports = rx.list_viewports(workspace_id=workspace.id)
+print(viewports)
 
-print("Saving snapshot to file...")
-file_name = slugify(sol_name + " - " + view.name) + ".png"
-with open(file_name, "wb") as image_file:
-    image_file.write(snapshot_data)
+# print("Taking snapshot...")
+# snapshot_data = rx.take_snapshot(viewport_id=viewport.id)
 
-print(f"Snapshot saved to: {os.path.abspath(file_name)}")
+# print("Saving snapshot to file...")
+# file_name = slugify(sol_name + " - " + view.name) + ".png"
+# with open(file_name, "wb") as image_file:
+#     image_file.write(snapshot_data)
 
-print("Displaying snapshot...")
-im = img.imread(file_name)
-plt.imshow(im)
-plt.show()
+# print(f"Snapshot saved to: {os.path.abspath(file_name)}")
+
+# print("Displaying snapshot...")
+# im = img.imread(file_name)
+# plt.imshow(im)
+# plt.show()
+
+# Turn the layout into a 2x2 grid by adding more viewports
+print("Creating 2 x 2 grid layout...")
+top_left_viewport = viewport
+bottom_left_viewport = rx.create_viewport(
+    workspace_id=workspace.id,
+    viewport_id=top_left_viewport.id,
+    direction=ViewportDirection.VIEWPORT_DIRECTION_BOTTOM,
+)
+
+top_right_viewport = rx.create_viewport(
+    workspace_id=workspace.id,
+    viewport_id=top_left_viewport.id,
+    direction=ViewportDirection.VIEWPORT_DIRECTION_RIGHT,
+)
+
+bottom_right_viewport = rx.create_viewport(
+    workspace_id=workspace.id,
+    viewport_id=bottom_left_viewport.id,
+    direction=ViewportDirection.VIEWPORT_DIRECTION_RIGHT,
+)
+
+# delete the bottom right viewport
+# print("Deleting bottom right viewport...")
+# rx.delete_viewport(viewport_id=bottom_right_viewport.id)
+
+# delete the solution
+print("Deleting the solution...")
+rx.delete_solution(solution_id=sol.id)
