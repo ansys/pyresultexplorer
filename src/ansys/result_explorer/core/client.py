@@ -47,7 +47,7 @@ class Client:
 
     @classmethod
     def connect_with_token(cls, token: str):
-        ## Connect with a base64 encoded json object that contains the connection info
+        """Connect with a base64 encoded json object that contains the connection info."""
         decoded_bytes = base64.b64decode(token)
         json_string = decoded_bytes.decode("utf-8")
         data = json.loads(json_string)
@@ -67,7 +67,7 @@ class Client:
 
         return cls(host=host, grpc_port=grpc_port, http_port=http_port, session_id=session_id)
 
-    ## Solution methods
+    # ----------- Solution methods ----------------
     def create_solution(
         self,
         result_provider_name: str,
@@ -92,7 +92,7 @@ class Client:
     #         ResourceId(id=solution_id), metadata=self._grpc_metadata
     #     )
 
-    ## Workspace methods
+    # ----------- Workspace methods ----------------
 
     def create_workspace(self, name: str) -> Workspace:
         return self._workspace_stub.Create(WorkspaceCreate(name=name), metadata=self._grpc_metadata)
@@ -100,19 +100,18 @@ class Client:
     def list_workspaces(self) -> list[Workspace]:
         return self._workspace_stub.List(Empty(), metadata=self._grpc_metadata)
 
-    def assign_view(self, workspace_id: str, view_id: str) -> str:
-        """Assign a view to a workspace. Returns a portal ID."""
+    def assign_view(self, viewport_id: str, solution_id: str, view_id: str) -> models.Viewport:
+        """Assign a view to a viewport."""
 
-        r = self._workspace_stub.UpdateViewport(
+        return self._workspace_stub.UpdateViewport(
             UpdateViewportRequest(
-                workspace_id=workspace_id,
+                viewport_id=viewport_id,
+                solution_id=solution_id,
                 view_id=view_id,
             ),
             metadata=self._grpc_metadata,
         )
-        return r.id
 
-    # Snapshot methods
     def take_snapshot(
         self, portal_id: str, settings: models.SnapshotSettings | None = None
     ) -> bytes:
