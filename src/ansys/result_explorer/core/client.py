@@ -1,3 +1,6 @@
+import base64
+import json
+
 import grpc
 import requests
 
@@ -41,6 +44,28 @@ class Client:
 
         self._solution_stub = solution_pb2_grpc.SolutionServiceStub(self._channel)
         self._workspace_stub = workspace_pb2_grpc.WorkspaceServiceStub(self._channel)
+
+    @classmethod
+    def connect_with_token(cls, token: str):
+        ## Connect with a base64 encoded json object that contains the connection info
+        decoded_bytes = base64.b64decode(token)
+        json_string = decoded_bytes.decode("utf-8")
+        data = json.loads(json_string)
+        host = data.get("host")
+        http_port = data.get("httpPort")
+        grpc_port = data.get("grpcPort")
+        session_id = data.get("sessionId")
+
+        if host is None:
+            raise ValueError("Token is missing 'host' information.")
+        if http_port is None:
+            raise ValueError("Token is missing 'httpPort' information.")
+        if grpc_port is None:
+            raise ValueError("Token is missing 'grpcPort' information.")
+        if session_id is None:
+            raise ValueError("Token is missing 'sessionId' information.")
+
+        return cls(host=host, grpc_port=grpc_port, http_port=http_port, session_id=session_id)
 
     ## Solution methods
     def create_solution(
