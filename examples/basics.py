@@ -1,9 +1,14 @@
+import os
 import time
+
+import matplotlib.image as img
+import matplotlib.pyplot as plt
+from slugify import slugify
 
 from ansys.result_explorer.core.client import Client
 
 ## rx = Client.connect_with_token("<insert_your_token_here>")
-rx = Client(grpc_port=50000, http_port=8000, session_id="9bc43206-43d8-423f-9616-4f1ebbf203d8")
+rx = Client(grpc_port=50000, http_port=8000, session_id="4914f80b-bc99-4c1c-bfcb-b924b286c73a")
 
 workspaces = rx.list_workspaces()
 print(workspaces)
@@ -38,17 +43,17 @@ viewport = rx.assign_view(
 print("Waiting for the view to load...")
 time.sleep(1)  # review in the web repo
 
-# print("Taking snapshot...")
-# snapshot_data = rx.take_snapshot(portal_id=portal_id)
+print("Taking snapshot...")
+snapshot_data = rx.take_snapshot(viewport_id=viewport.id)
 
-# print("Saving snapshot to file...")
-# file_name = slugify(sol_name + " - " + view.name) + ".png"
-# with open(file_name, "wb") as image_file:
-#     image_file.write(snapshot_data)
+print("Saving snapshot to file...")
+file_name = slugify(sol_name + " - " + view.name) + ".png"
+with open(file_name, "wb") as image_file:
+    image_file.write(snapshot_data)
 
-# print(f"Snapshot saved to: {os.path.abspath(file_name)}")
+print(f"Snapshot saved to: {os.path.abspath(file_name)}")
 
-# print("Displaying snapshot...")
-# im = img.imread(file_name)
-# plt.imshow(im)
-# plt.show()
+print("Displaying snapshot...")
+im = img.imread(file_name)
+plt.imshow(im)
+plt.show()

@@ -113,11 +113,11 @@ class Client:
         )
 
     def take_snapshot(
-        self, portal_id: str, settings: models.SnapshotSettings | None = None
+        self, viewport_id: str, settings: models.SnapshotSettings | None = None
     ) -> bytes:
-        request = models.SnapshotRequest(
-            portal_id=portal_id,
+        request = models.CreateSnapshotRequest(
+            viewport_id=viewport_id,
             settings=settings,
         )
-        r = self._snapshot_stub.Create(request, metadata=self._grpc_metadata)
+        r = self._workspace_stub.CreateSnapshot(request, metadata=self._grpc_metadata)
         return r.data
