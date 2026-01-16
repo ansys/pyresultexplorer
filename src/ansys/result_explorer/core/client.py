@@ -105,7 +105,9 @@ class Client:
     def list_workspaces(self) -> list[Workspace]:
         return self._workspace_stub.List(Empty(), metadata=self._grpc_metadata)
 
-    def assign_view(self, viewport_id: str, solution_id: str, view_id: str) -> models.Viewport:
+    def assign_view(
+        self, viewport_id: str, solution_id: str, view_id: str, wait: bool = True
+    ) -> models.Viewport:
         """Assign a view to a viewport."""
 
         return self._workspace_stub.UpdateViewport(
@@ -113,6 +115,7 @@ class Client:
                 viewport_id=viewport_id,
                 solution_id=solution_id,
                 view_id=view_id,
+                wait=wait,
             ),
             metadata=self._grpc_metadata,
         )

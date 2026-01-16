@@ -1,10 +1,8 @@
-import time
-
 from ansys.result_explorer.core.client import Client
 from ansys.result_explorer.core.models import ViewportDirection
 
 ## rx = Client.connect_with_token("<insert_your_token_here>")
-rx = Client(grpc_port=50000, http_port=8000, session_id="53fb87df-8fdf-4c2c-85b5-a0b8924f1051")
+rx = Client(grpc_port=50000, http_port=8000, session_id="5b96c174-ecb6-4970-9938-48d06fcfd39f")
 
 workspaces = rx.list_workspaces()
 print(workspaces)
@@ -33,12 +31,10 @@ assert view is not None
 
 print(f"Opening view: {view.name} in the workspace.")
 viewport = rx.assign_view(
-    viewport_id=workspace.viewport_ids[0], solution_id=sol.id, view_id=view.id
+    viewport_id=workspace.viewport_ids[0], solution_id=sol.id, view_id=view.id, wait=True
 )
+assert viewport.ready is True
 print(viewport)
-
-print("Waiting for the view to load...")
-time.sleep(1)  # review in the web repo
 
 viewports = rx.list_viewports(workspace_id=workspace.id)
 print(viewports)
