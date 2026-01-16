@@ -1,8 +1,14 @@
+import os
+
+import matplotlib.image as img
+import matplotlib.pyplot as plt
+from slugify import slugify
+
 from ansys.result_explorer.core.client import Client
 from ansys.result_explorer.core.models import ViewportDirection
 
 ## rx = Client.connect_with_token("<insert_your_token_here>")
-rx = Client(grpc_port=50000, http_port=8000, session_id="5b96c174-ecb6-4970-9938-48d06fcfd39f")
+rx = Client(grpc_port=50000, http_port=8000, session_id="52756b62-24e5-49c5-9bba-a1a056c69ba2")
 
 workspaces = rx.list_workspaces()
 print(workspaces)
@@ -33,26 +39,25 @@ print(f"Opening view: {view.name} in the workspace.")
 viewport = rx.assign_view(
     viewport_id=workspace.viewport_ids[0], solution_id=sol.id, view_id=view.id, wait=True
 )
-assert viewport.ready is True
 print(viewport)
 
 viewports = rx.list_viewports(workspace_id=workspace.id)
 print(viewports)
 
 # print("Taking snapshot...")
-# snapshot_data = rx.take_snapshot(viewport_id=viewport.id)
+snapshot_data = rx.take_snapshot(viewport_id=viewport.id)
 
-# print("Saving snapshot to file...")
-# file_name = slugify(sol_name + " - " + view.name) + ".png"
-# with open(file_name, "wb") as image_file:
-#     image_file.write(snapshot_data)
+print("Saving snapshot to file...")
+file_name = slugify(sol_name + " - " + view.name) + ".png"
+with open(file_name, "wb") as image_file:
+    image_file.write(snapshot_data)
 
-# print(f"Snapshot saved to: {os.path.abspath(file_name)}")
+print(f"Snapshot saved to: {os.path.abspath(file_name)}")
 
-# print("Displaying snapshot...")
-# im = img.imread(file_name)
-# plt.imshow(im)
-# plt.show()
+print("Displaying snapshot...")
+im = img.imread(file_name)
+plt.imshow(im)
+plt.show()
 
 # Turn the layout into a 2x2 grid by adding more viewports
 print("Creating 2 x 2 grid layout...")
