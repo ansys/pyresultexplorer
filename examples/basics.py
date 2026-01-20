@@ -8,7 +8,12 @@ from slugify import slugify
 from ansys.result_explorer.core.client import Client
 
 ## rx = Client.connect_with_token("<insert_your_token_here>")
-rx = Client(grpc_port=50000, http_port=8000, session_id=None)
+rx = Client(
+    grpc_port=50000,
+    http_port=8000,
+    session_id="31129c6b-b688-470d-9f78-303b0f4386ac",
+    ca_cert=r"D:\ANSYSDev\remote-post\mbu-web-gateway\examples\rx\ca_cert.pem",
+)
 
 workspaces = rx.list_workspaces()
 print(workspaces)
@@ -35,7 +40,7 @@ print(f"Opening view: {view.name} in the workspace.")
 portal_id = rx.assign_view(workspace_id=workspace.id, view_id=view.id)
 
 print("Waiting for the view to load...")
-time.sleep(1)  # review in the web repo
+time.sleep(2)  # review in the web repo
 
 print("Taking snapshot...")
 snapshot_data = rx.take_snapshot(portal_id=portal_id)

@@ -26,6 +26,7 @@ class Client:
         grpc_port=50000,
         http_port=8000,
         session_id: str | None = None,
+        ca_cert: str | None = None,
     ):
         self._host = host
         self._grpc_port = grpc_port
@@ -42,7 +43,13 @@ class Client:
 
         self._grpc_metadata = [("x-session-id", self._session_id)]
 
-        self._channel = grpc.insecure_channel(f"{self._host}:{self._grpc_port}")
+        if ca_cert is not None:
+            with open(ca_cert, "rb") as f:
+                trusted_certs = f.read()
+            credentials = grpc.ssl_channel_credentials(root_certificates=trusted_certs)
+            self._channel = grpc.secure_channel(f"{self._host}:{self._grpc_port}", credentials)
+        else:
+            self._channel = grpc.insecure_channel(f"{self._host}:{self._grpc_port}")
 
         self._solution_stub = solution_pb2_grpc.SolutionServiceStub(self._channel)
         self._workspace_stub = workspace_pb2_grpc.WorkspaceServiceStub(self._channel)
