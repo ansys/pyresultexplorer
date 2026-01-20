@@ -61,6 +61,9 @@ jobs:
 
     steps:
 
+      - name: Checkout
+        uses: actions/checkout@v6
+
       - name: Start Result Explorer
         id: rx-compose
         uses: ansys-internal/pyresultexplorer/.github/actions/result_explorer@test/testing-setup
@@ -79,6 +82,7 @@ jobs:
       - name: Run tests
         uses: ansys/actions/tests-pytest@v10
         with:
+          checkout: false
           pytest-extra-args: "--cov=ansys --cov-report=term --cov-report=html:.cov/html"
           python-version: ${{ matrix.python-version }}
           group-dependencies-name: "dev"
