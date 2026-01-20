@@ -89,7 +89,7 @@ runs:
       shell: bash
       run: |
         # retry max 20 times
-        wget --retry-connrefused --retry-on-http-error=503,404,502 --no-check-certificate -t 20 -O- http://localhost:5100/api/v1
+        wget --retry-connrefused --retry-on-http-error=503,404,502 -t 20 -O- http://localhost:5100/api/v1/
 
 
     - name: Publish build info to summary
