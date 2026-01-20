@@ -70,7 +70,6 @@ runs:
         password: ${{ inputs.ghcr-token }}
 
     - name: Start containers
-      if: ${{ inputs.version == 'latest-dev' }}
       shell: bash
       run: |
         docker-compose -f docker-compose.yaml --env-file .env pull
