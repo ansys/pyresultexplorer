@@ -41,6 +41,10 @@ outputs:
     description: 'Result Explorer Web URL'
     value: ${{ steps.set-outputs.outputs.web-url }}
 
+  server-url:
+    description: 'Result Explorer Server URL'
+    value: ${{ steps.set-outputs.outputs.server-url }}
+
   path:
     description: 'Path of the docker compose artifact'
     value: ${{ steps.set-outputs.outputs.path }}
@@ -115,5 +119,6 @@ runs:
       shell: bash
       run: |
         echo "web-url=https://localhost:8000" >> $GITHUB_OUTPUT
+        echo "server-url=http://localhost:5100" >> $GITHUB_OUTPUT
         echo "path=$(pwd)" >> $GITHUB_OUTPUT
       working-directory: ./result-explorer/docker-compose
