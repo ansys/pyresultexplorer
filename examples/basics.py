@@ -8,7 +8,7 @@ from ansys.result_explorer.core.client import Client
 from ansys.result_explorer.core.models import ViewportDirection
 
 ## rx = Client.connect_with_token("<insert_your_token_here>")
-rx = Client(grpc_port=50000, http_port=8000, session_id="52756b62-24e5-49c5-9bba-a1a056c69ba2")
+rx = Client(grpc_port=50000, http_port=8000, session_id="a1a3f7e1-4f85-4f50-9859-24de986fe79d")
 
 workspaces = rx.list_workspaces()
 print(workspaces)
@@ -80,9 +80,45 @@ bottom_right_viewport = rx.create_viewport(
     direction=ViewportDirection.VIEWPORT_DIRECTION_RIGHT,
 )
 
+# set sync options for the workspace
+print("Setting workspace sync options...")
+rx.set_workspace_sync(workspace_id=workspace.id, camera=True, time_freq=True, legend=True)
+
+# set viewport to fullscreen
+print("Setting viewport to fullscreen...")
+rx.set_fullscreen_viewport(workspace_id=workspace.id, viewport_id=top_left_viewport.id)
+
+# exit fullscreen
+print("Exiting fullscreen...")
+rx.exit_fullscreen(workspace_id=workspace.id)
+
+# modify view metadata
+print("Modifying view metadata...")
+meta = viewport.metadata
+meta["showMeshEdges"] = not meta["showMeshEdges"]
+rx.modify_view_metadata(
+    viewport_id=top_left_viewport.id,
+    metadata=meta,
+)
+
+# take new snapshot
+snapshot_data = rx.take_snapshot(viewport_id=top_left_viewport.id)
+
+print("Saving snapshot to file...")
+file_name = slugify(sol_name + " - " + view.name) + "-modified.png"
+with open(file_name, "wb") as image_file:
+    image_file.write(snapshot_data)
+
+print(f"Snapshot saved to: {os.path.abspath(file_name)}")
+
+print("Displaying snapshot...")
+im = img.imread(file_name)
+plt.imshow(im)
+plt.show()
+
 # delete the bottom right viewport
-# print("Deleting bottom right viewport...")
-# rx.delete_viewport(viewport_id=bottom_right_viewport.id)
+print("Deleting bottom right viewport...")
+rx.delete_viewport(viewport_id=bottom_right_viewport.id)
 
 # delete the solution
 print("Deleting the solution...")

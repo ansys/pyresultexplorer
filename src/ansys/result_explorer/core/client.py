@@ -97,7 +97,7 @@ class Client:
         self._solution_stub.Delete(models.ResourceId(id=solution_id), metadata=self._grpc_metadata)
         # todo: "Failed to serialize response!"
 
-    # ----------- Workspace methods ----------------
+    # ----------- Workspace management ----------------
 
     def create_workspace(self, name: str) -> Workspace:
         return self._workspace_stub.Create(WorkspaceCreate(name=name), metadata=self._grpc_metadata)
@@ -105,6 +105,39 @@ class Client:
     def list_workspaces(self) -> list[Workspace]:
         return self._workspace_stub.List(Empty(), metadata=self._grpc_metadata)
 
+    def set_fullscreen_viewport(self, workspace_id: str, viewport_id: str) -> Workspace:
+        request = models.WorkspaceUpdateRequest(
+            workspace_id=workspace_id,
+            fullscreen_viewport_id=viewport_id,
+        )
+        return self._workspace_stub.Update(request, metadata=self._grpc_metadata)
+
+    def exit_fullscreen(self, workspace_id: str) -> Workspace:
+        request = models.WorkspaceUpdateRequest(
+            workspace_id=workspace_id,
+            fullscreen_viewport_id="",
+        )
+        return self._workspace_stub.Update(request, metadata=self._grpc_metadata)
+
+    def set_workspace_sync(
+        self,
+        workspace_id: str,
+        camera: bool | None = None,
+        time_freq: bool | None = None,
+        legend: bool | None = None,
+    ) -> Workspace:
+        sync = models.SyncOptions(
+            camera=camera,
+            time_freq=time_freq,
+            legend=legend,
+        )
+        request = models.WorkspaceUpdateRequest(
+            workspace_id=workspace_id,
+            sync_options=sync,
+        )
+        return self._workspace_stub.Update(request, metadata=self._grpc_metadata)
+
+    # ----------- Viewport management ----------------
     def assign_view(
         self, viewport_id: str, solution_id: str, view_id: str, wait: bool = True
     ) -> models.Viewport:
@@ -115,6 +148,20 @@ class Client:
                 viewport_id=viewport_id,
                 solution_id=solution_id,
                 view_id=view_id,
+                wait=wait,
+            ),
+            metadata=self._grpc_metadata,
+        )
+
+    def modify_view_metadata(
+        self, viewport_id: str, metadata: dict, wait: bool = True
+    ) -> models.Viewport:
+        """Assign a view to a viewport."""
+
+        return self._workspace_stub.UpdateViewport(
+            UpdateViewportRequest(
+                viewport_id=viewport_id,
+                metadata=metadata,
                 wait=wait,
             ),
             metadata=self._grpc_metadata,
