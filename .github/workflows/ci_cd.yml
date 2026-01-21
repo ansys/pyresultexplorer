@@ -83,7 +83,7 @@ jobs:
         uses: ansys/actions/tests-pytest@v10
         with:
           checkout: false
-          pytest-extra-args: "--cov=ansys --cov-report=term --cov-report=html:.cov/html"
+          pytest-extra-args: "--cov=ansys --cov-report=term --cov-report=html:.cov/html --server-url=${{ steps.rx-compose.outputs.server-url }} --web-url=${{ steps.rx-compose.outputs.web-url }}"
           python-version: ${{ matrix.python-version }}
           group-dependencies-name: "dev"
           optional-dependencies-name: ""

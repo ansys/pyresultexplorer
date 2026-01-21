@@ -1,4 +1,6 @@
 import logging
+import subprocess
+import sys
 
 import pytest
 from playwright.sync_api import BrowserContext, expect
@@ -19,6 +21,20 @@ def pytest_addoption(parser):
         default="http://localhost:8000",
         help="Web url.",
     )
+
+
+@pytest.fixture(scope="session", autouse=True)
+def install_browser():
+    """Ensure Playwright browsers are installed for the test session."""
+    log.info("Installing Playwright browsers...")
+    r = subprocess.run(
+        [sys.executable, "-m", "playwright", "install", "chromium"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    log.info(r.stdout)
+    log.info(r.stderr)
 
 
 @pytest.fixture(scope="session")
