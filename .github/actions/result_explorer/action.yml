@@ -35,6 +35,11 @@ inputs:
     type: string
     default: 'v2026.1.pre1'
 
+  results-folder:
+    description: 'Path to the folder containing data to mount in Result Explorer'
+    type: string
+    default: 'data'
+
 
 outputs:
   web-url:
@@ -82,7 +87,7 @@ runs:
       working-directory: ./result-explorer/docker-compose
       env:
           LICENSE_SERVER: 1055@${{ inputs.license-server }}
-          RESULTS_FOLDER: ../../tests/data
+          RESULTS_FOLDER: ${{ inputs.results-folder }}
           WEB_TAG: ${{ inputs.web-tag }}
           SERVER_TAG: ${{ inputs.server-tag }}
           DPF_SERVER_TAG: ${{ inputs.dpf-server-tag }}
@@ -94,7 +99,6 @@ runs:
       run: |
         # retry max 20 times
         wget --retry-connrefused --retry-on-http-error=503,404,502 -t 20 -O- http://localhost:5100/api/v1/
-
 
     - name: Publish build info to summary
       shell: bash
@@ -111,6 +115,11 @@ runs:
         echo "### Result Explorer server version" >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
         docker exec result-explorer-server cat viz-server/build_info.txt >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+        echo "### Result Explorer web version" >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+        docker exec result-explorer-web cat /usr/share/nginx/html/app-build-info.json >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 

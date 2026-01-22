@@ -56,7 +56,7 @@ jobs:
     strategy:
       matrix:
        os: [ubuntu-latest] # can't run docker-compose on windows
-       python-version: ['3.10', '3.13']
+       python-version: ['3.12'] # closer to release we can add other python versions
       fail-fast: false
 
     steps:
@@ -74,6 +74,7 @@ jobs:
           license-server: ${{ secrets.LICENSE_SERVER }}
           web-tag: 'dev'
           server-tag: 'dev'
+          results-folder: '${{ github.workspace }}/tests/data'
 
       - uses: extractions/netrc@v2
         with:
@@ -94,8 +95,9 @@ jobs:
 
       - name: Run tests
         run: |
-            uv run pytest tests -vv --junitxml test_results.xml \
-              --cov=ansys --cov-report=term --cov-report=html:.cov/html \
+            uv run pytest tests -vv \
+              --junitxml test_results.xml \
+              --cov=ansys --cov-report=term --cov-report=html:.cov/html --cov-report=markdown:cov.md \
               --server-url=${{ steps.rx-compose.outputs.server-url }} \
               --web-url=${{ steps.rx-compose.outputs.web-url }}
 
@@ -107,6 +109,12 @@ jobs:
           check_name: Test Report ${{ matrix.os }}:${{ matrix.python-version }}
           detailed_summary: true
           include_passed: true
+
+      - name: Show coverage report
+        if: always()
+        run: |
+          echo "## Code Coverage" >> $GITHUB_STEP_SUMMARY
+          cat cov.md >> $GITHUB_STEP_SUMMARY
 
       - name: Upload coverage results
         uses: actions/upload-artifact@v6
@@ -123,6 +131,16 @@ jobs:
           name: coverage-file-tests-${{ matrix.os }}
           path: .coverage
           retention-days: 7
+
+      - name: Dump server logs
+        if: failure()
+        run: |
+          docker logs result-explorer-server
+
+      - name: Dump DPF server logs
+        if: failure()
+        run: |
+          docker logs result-explorer-dpf-server
 
   doc-build:
     name: "Build documentation"

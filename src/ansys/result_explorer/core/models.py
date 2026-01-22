@@ -1,16 +1,29 @@
-from ansys.api.result_explorer.v0.base_pb2 import Empty, ResourceId  # noqa
+"""gRPC models for Result Explorer client."""
+
+from ansys.api.result_explorer.v0.base_pb2 import Empty, ResourceId
+from ansys.api.result_explorer.v0.server_models_pb2 import (
+    File,
+    HpsFile,
+    Solution,
+    SplitMeshOptions,
+    View,
+    ViewType,
+)
 from ansys.api.result_explorer.v0.solution_pb2 import (
     SolutionCreate,
-    AppSolution,
-    AppSolutionList,
-    ViewList,
-    ViewType,
-    View,
-)  # noqa
+    SolutionList,
+)
 from ansys.api.result_explorer.v0.workspace_pb2 import (
-    WorkspaceCreate,
+    CreateSnapshotRequest,
+    CreateViewportRequest,
+    Snapshot,
+    SnapshotSettings,
+    SyncOptions,
+    UpdateViewportRequest,
+    Viewport,
+    ViewportDirection,
     Workspace,
+    WorkspaceCreate,
     WorkspaceList,
-    AssignViewRequest,
-)  # noqa
-from ansys.api.result_explorer.v0.snapshot_pb2 import SnapshotRequest, SnapshotSettings, Snapshot  # noqa
+    WorkspaceUpdateRequest,
+)
