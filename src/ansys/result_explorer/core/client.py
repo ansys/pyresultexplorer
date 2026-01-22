@@ -99,6 +99,11 @@ class Client:
     def list_workspaces(self) -> list[Workspace]:
         return list(self._workspace_stub.List(Empty(), metadata=self._grpc_metadata).workspaces)
 
+    def delete_workspace(self, workspace_id: str) -> None:
+        self._workspace_stub.Delete(
+            models.ResourceId(id=workspace_id), metadata=self._grpc_metadata
+        )
+
     def set_fullscreen_viewport(self, workspace_id: str, viewport_id: str) -> Workspace:
         request = models.WorkspaceUpdateRequest(
             workspace_id=workspace_id,
