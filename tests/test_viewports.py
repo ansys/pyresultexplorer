@@ -1,6 +1,6 @@
 import pytest
 
-from ansys.result_explorer.core.models import ViewportDirection
+from ansys.result_explorer.core.models import SnapshotSettings, ViewportDirection
 
 
 @pytest.fixture
@@ -84,3 +84,54 @@ def test_viewports(rx, multiple_connections_solution):
     # get workspace and verify deletion
     workspace = rx.get_workspace(workspace_id=workspace.id)
     assert len(workspace.viewport_ids) == 1
+
+
+def test_snapshot_comparison(rx, multiple_connections_solution):
+    sol = multiple_connections_solution
+
+    # find displacement view
+    views = sol.views
+
+    view = next((v for v in views if "Displacement" in v.name), None)
+    assert view is not None
+
+    # assign view to viewport
+    workspace = rx.list_workspaces()[0]
+    viewport = rx.assign_view(
+        viewport_id=workspace.viewport_ids[0], solution_id=sol.id, view_id=view.id, wait=True
+    )
+
+    # take snapshot
+    settings = SnapshotSettings(
+        show_time_stamp=False,
+    )
+    snapshot_data_1 = rx.take_snapshot(viewport_id=viewport.id, settings=settings)
+    assert len(snapshot_data_1) > 0
+
+    # save snapshot to file
+    with open("snapshot_1.png", "wb") as image_file:
+        image_file.write(snapshot_data_1)
+
+    # take another and verify they are the same
+    snapshot_data_2 = rx.take_snapshot(viewport_id=viewport.id, settings=settings)
+    with open("snapshot_2.png", "wb") as image_file:
+        image_file.write(snapshot_data_2)
+    assert snapshot_data_2 == snapshot_data_1
+
+    # change metadata
+    meta = viewport.metadata
+    meta["showMeshEdges"] = not meta["showMeshEdges"]
+    rx.modify_view_metadata(
+        viewport_id=viewport.id,
+        metadata=meta,
+    )
+
+    # take new snapshot with modified metadata
+    snapshot_data_3 = rx.take_snapshot(viewport_id=viewport.id, settings=settings)
+    assert len(snapshot_data_3) > 0
+
+    # save new snapshot to file
+    with open("snapshot_3.png", "wb") as image_file:
+        image_file.write(snapshot_data_3)
+
+    assert snapshot_data_3 != snapshot_data_1
