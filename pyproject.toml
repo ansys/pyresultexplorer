@@ -101,7 +101,8 @@ ignore = []
 convention = "numpy"
 
 [tool.coverage.run]
-source = ["ansys.result_explorer.core"]
+source = ["ansys.result_explorer"]
+omit = [".venv/*"]
 
 [tool.coverage.report]
 show_missing = true
