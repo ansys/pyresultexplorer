@@ -124,10 +124,15 @@ jobs:
           path: .coverage
           retention-days: 7
 
-      - name: Dump logs
+      - name: Dump server logs
         if: failure()
         run: |
           docker logs result-explorer-server
+
+      - name: Dump DPF server logs
+        if: failure()
+        run: |
+          docker logs result-explorer-dpf-server
 
   doc-build:
     name: "Build documentation"
