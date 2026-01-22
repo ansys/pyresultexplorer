@@ -93,7 +93,7 @@ class Client:
         return self._workspace_stub.Create(WorkspaceCreate(name=name), metadata=self._grpc_metadata)
 
     def list_workspaces(self) -> list[Workspace]:
-        return self._workspace_stub.List(Empty(), metadata=self._grpc_metadata)
+        return list(self._workspace_stub.List(Empty(), metadata=self._grpc_metadata).workspaces)
 
     def assign_view(self, workspace_id: str, view_id: str) -> str:
         """Assign a view to a workspace. Returns a portal ID."""

@@ -34,6 +34,7 @@ dev = [
     "pre-commit==4.5.1",
     "pytest==9.0.2",
     "pytest-cov==7.0.0",
+    "pytest-playwright>=0.7.2",
 ]
 doc = [
     "ansys-sphinx-theme==1.6.4",
@@ -54,7 +55,7 @@ default-groups = ["dev"]
 cache-dir = "./.uv_cache"
 
 [tool.uv.sources]
-ansys-api-result-explorer = { git = "https://github.com/ansys-internal/result-explorer.git", subdirectory = "api/python", branch = "main" }
+ansys-api-result-explorer = { git = "https://github.com/ansys-internal/result-explorer.git", subdirectory = "api/python", rev = "f099fe9fc82c57b5e17120d3ebf4356a6a4d7adc" }
 
 [project.urls]
 Source = "https://github.com/ansys-internal/pyresultexplorer"
@@ -153,3 +154,13 @@ showcontent = true
 directory = "test"
 name = "Test"
 showcontent = true
+
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "INFO"
+log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
+addopts = "-ra -vv"
+filterwarnings = [
+    "ignore::urllib3.exceptions.InsecureRequestWarning",
+]
