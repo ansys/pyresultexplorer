@@ -1,4 +1,6 @@
-def test_solution_crud(rx, rst_multiple_connections):
+def test_solution(rx, rst_multiple_connections):
+    """CRUD operations for solutions."""
+
     # create a new solution
     sol = rx.create_solution(
         name="Test Solution",

@@ -189,7 +189,7 @@ class Client:
     def list_viewports(self, workspace_id: str) -> list[models.Viewport]:
         return self._workspace_stub.ListViewports(
             models.ResourceId(id=workspace_id), metadata=self._grpc_metadata
-        )
+        ).viewports
 
     def create_viewport(
         self, workspace_id: str, viewport_id: str, direction: ViewportDirection

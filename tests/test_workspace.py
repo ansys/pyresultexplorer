@@ -3,7 +3,9 @@ import logging
 log = logging.getLogger(__name__)
 
 
-def test_workspace_crud(rx):
+def test_workspace(rx):
+    """CRUD operations for workspaces."""
+
     # list workspaces
     workspaces = rx.list_workspaces()
     assert workspaces[0].name == "Workspace 1"
