@@ -1,13 +1,21 @@
+import pytest
+
 from ansys.result_explorer.core.models import ViewportDirection
 
 
-def test_viewports(rx, rst_multiple_connections):
-    # create a new solution
+@pytest.fixture
+def multiple_connections_solution(rx, rst_multiple_connections):
     sol = rx.create_solution(
         name="Test Solution",
         result_provider_name="Local",
         file_path=rst_multiple_connections,
     )
+    yield sol
+    rx.delete_solution(solution_id=sol.id)
+
+
+def test_viewports(rx, multiple_connections_solution):
+    sol = multiple_connections_solution
 
     # find displacement view
     views = sol.views
@@ -29,6 +37,20 @@ def test_viewports(rx, rst_multiple_connections):
     viewports = rx.list_viewports(workspace_id=workspace.id)
     assert len(viewports) == 1
     assert viewports[0].id == viewport.id
+
+    # modify metadata
+    meta = viewport.metadata
+    meta["showMeshEdges"] = not meta["showMeshEdges"]
+    meta["showMinMaxLabels"] = not meta["showMinMaxLabels"]
+
+    rx.modify_view_metadata(
+        viewport_id=viewport.id,
+        metadata=meta,
+    )
+
+    # get viewport and verify metadata changes
+    viewport = rx.get_viewport(workspace_id=workspace.id, viewport_id=viewport.id)
+    assert viewport.metadata["showMeshEdges"] == meta["showMeshEdges"]
 
     # take snapshot
     snapshot_data = rx.take_snapshot(viewport_id=viewport.id)

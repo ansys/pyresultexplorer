@@ -191,6 +191,11 @@ class Client:
             models.ResourceId(id=workspace_id), metadata=self._grpc_metadata
         ).viewports
 
+    def get_viewport(self, workspace_id: str, viewport_id: str) -> models.Viewport:
+        # todo: implement a GetViewport method in the grpc service
+        viewports = self.list_viewports(workspace_id=workspace_id)
+        return next((v for v in viewports if v.id == viewport_id), None)
+
     def create_viewport(
         self, workspace_id: str, viewport_id: str, direction: ViewportDirection
     ) -> models.Viewport:

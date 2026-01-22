@@ -95,6 +95,7 @@ jobs:
 
       - name: Run tests
         run: |
+            mkdir .cov
             uv run pytest tests -vv --junitxml test_results.xml \
               --cov=ansys --cov-report=term \ 
               --cov-report=html:.cov/html \
