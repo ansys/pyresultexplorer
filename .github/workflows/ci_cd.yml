@@ -74,7 +74,7 @@ jobs:
           license-server: ${{ secrets.LICENSE_SERVER }}
           web-tag: 'dev'
           server-tag: 'dev'
-          results-folder: '${GITHUB_WORKSPACE}/tests/data'
+          results-folder: '${{ github.workspace }}/tests/data'
 
       - uses: extractions/netrc@v2
         with:
