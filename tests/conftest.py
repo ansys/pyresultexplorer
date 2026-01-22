@@ -109,4 +109,4 @@ def _get_result_path(data_directory, filename, docker: bool):
 
 @pytest.fixture(scope="session")
 def rst_multiple_connections(data_directory, is_docker):
-    return _get_result_path(data_directory, "multiple_connections.rst", is_docker)
+    return _get_result_path(data_directory, "solid186_brick.rst", is_docker)
