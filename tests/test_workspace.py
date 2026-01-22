@@ -25,6 +25,10 @@ def test_workspace_crud(rx):
     )
     assert workspace.fullscreen_viewport_id == workspace.viewport_ids[0]
 
+    # get workspace and verify updates
+    workspace = rx.get_workspace(workspace_id=workspace.id)
+    assert workspace.sync_options.camera is True
+
     # delete the created workspace
     rx.delete_workspace(workspace_id=workspace.id)
 

@@ -101,6 +101,11 @@ class Client:
     def create_workspace(self, name: str) -> Workspace:
         return self._workspace_stub.Create(WorkspaceCreate(name=name), metadata=self._grpc_metadata)
 
+    def get_workspace(self, workspace_id: str) -> Workspace:
+        return self._workspace_stub.Get(
+            models.ResourceId(id=workspace_id), metadata=self._grpc_metadata
+        )
+
     def list_workspaces(self) -> list[Workspace]:
         return list(self._workspace_stub.List(Empty(), metadata=self._grpc_metadata).workspaces)
 
