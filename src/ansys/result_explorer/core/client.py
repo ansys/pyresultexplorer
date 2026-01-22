@@ -97,7 +97,7 @@ class Client:
         return self._workspace_stub.Create(WorkspaceCreate(name=name), metadata=self._grpc_metadata)
 
     def list_workspaces(self) -> list[Workspace]:
-        return self._workspace_stub.List(Empty(), metadata=self._grpc_metadata)
+        return list(self._workspace_stub.List(Empty(), metadata=self._grpc_metadata).workspaces)
 
     def set_fullscreen_viewport(self, workspace_id: str, viewport_id: str) -> Workspace:
         request = models.WorkspaceUpdateRequest(
