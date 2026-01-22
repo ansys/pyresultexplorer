@@ -74,6 +74,7 @@ jobs:
           license-server: ${{ secrets.LICENSE_SERVER }}
           web-tag: 'dev'
           server-tag: 'dev'
+          results-folder: 'tests/data'
 
       - uses: extractions/netrc@v2
         with:

@@ -35,6 +35,11 @@ inputs:
     type: string
     default: 'v2026.1.pre1'
 
+  results-folder:
+    description: 'Path to the folder containing data to mount in Result Explorer'
+    type: string
+    default: 'data'
+
 
 outputs:
   web-url:
@@ -76,13 +81,14 @@ runs:
     - name: Start containers
       shell: bash
       run: |
+        echo "pwd: $(pwd)"
         docker-compose -f docker-compose.yaml --env-file .env pull
         docker-compose -f docker-compose.yaml --env-file .env up -d
         sleep 10
       working-directory: ./result-explorer/docker-compose
       env:
           LICENSE_SERVER: 1055@${{ inputs.license-server }}
-          RESULTS_FOLDER: ../../tests/data
+          RESULTS_FOLDER: ${{ inputs.data-folder }}
           WEB_TAG: ${{ inputs.web-tag }}
           SERVER_TAG: ${{ inputs.server-tag }}
           DPF_SERVER_TAG: ${{ inputs.dpf-server-tag }}
