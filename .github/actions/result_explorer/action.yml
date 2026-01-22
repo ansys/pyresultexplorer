@@ -104,6 +104,14 @@ runs:
         # retry max 20 times
         wget --retry-connrefused --retry-on-http-error=503,404,502 -t 20 -O- http://localhost:5100/api/v1/
 
+    - name: Debug folders
+      shell: bash
+      run: |
+        echo "### Mounted results folder content on DPF server:"
+        docker exec result-explorer-dpf-server ls -ltr /data
+
+        echo "### Mounted results folder content on Result Explorer server:"
+        docker exec result-explorer-server ls -ltr /data
 
     - name: Publish build info to summary
       shell: bash
