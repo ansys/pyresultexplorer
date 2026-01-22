@@ -101,7 +101,7 @@ ignore = []
 convention = "numpy"
 
 [tool.coverage.run]
-source = ["ansys.result_explorer"]
+source = ["ansys.result_explorer.core"]
 
 [tool.coverage.report]
 show_missing = true
