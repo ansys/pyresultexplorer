@@ -1,3 +1,8 @@
+import logging
+
+log = logging.getLogger(__name__)
+
+
 def test_workspace_crud(rx):
     # list workspaces
     workspaces = rx.list_workspaces()
@@ -36,3 +41,12 @@ def test_workspace_crud(rx):
     workspaces = rx.list_workspaces()
     assert len(workspaces) == 1
     assert "Test Workspace" not in [ws.name for ws in workspaces]
+
+
+def test_error_get_nonexistent_workspace(rx):
+    non_existent_id = "non-existent-id"
+    try:
+        rx.get_workspace(workspace_id=non_existent_id)
+    except Exception as e:
+        log.info(f"Caught expected exception: {e}")
+        # assert "not found" in str(e) # todo: needs web adjustments

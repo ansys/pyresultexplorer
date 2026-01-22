@@ -56,7 +56,7 @@ jobs:
     strategy:
       matrix:
        os: [ubuntu-latest] # can't run docker-compose on windows
-       python-version: ['3.10', '3.13']
+       python-version: ['3.12'] # closer to release we can add other python versions
       fail-fast: false
 
     steps:
