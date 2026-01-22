@@ -88,14 +88,8 @@ class Client:
     def list_solutions(self) -> list[Solution]:
         return self._solution_stub.List(Empty(), metadata=self._grpc_metadata)
 
-    # def get_views(self, solution_id: str) -> ViewList:
-    #     return self._solution_stub.GetViews(
-    #         ResourceId(id=solution_id), metadata=self._grpc_metadata
-    #     )
-
     def delete_solution(self, solution_id: str) -> None:
         self._solution_stub.Delete(models.ResourceId(id=solution_id), metadata=self._grpc_metadata)
-        # todo: "Failed to serialize response!"
 
     # ----------- Workspace management ----------------
 
@@ -198,4 +192,3 @@ class Client:
         self._workspace_stub.DeleteViewport(
             models.ResourceId(id=viewport_id), metadata=self._grpc_metadata
         )
-        # todo: "Failed to serialize response!"

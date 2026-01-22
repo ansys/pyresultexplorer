@@ -8,7 +8,7 @@ from ansys.result_explorer.core.client import Client
 from ansys.result_explorer.core.models import ViewportDirection
 
 ## rx = Client.connect_with_token("<insert_your_token_here>")
-rx = Client(grpc_port=50000, http_port=8000, session_id="a1a3f7e1-4f85-4f50-9859-24de986fe79d")
+rx = Client(grpc_port=50000, http_port=8000, session_id=None)
 
 workspaces = rx.list_workspaces()
 print(workspaces)
@@ -96,6 +96,7 @@ rx.exit_fullscreen(workspace_id=workspace.id)
 print("Modifying view metadata...")
 meta = viewport.metadata
 meta["showMeshEdges"] = not meta["showMeshEdges"]
+meta["showMinMaxLabels"] = True
 rx.modify_view_metadata(
     viewport_id=top_left_viewport.id,
     metadata=meta,
