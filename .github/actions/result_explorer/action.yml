@@ -113,6 +113,11 @@ runs:
         docker exec result-explorer-server cat viz-server/build_info.txt >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+        echo "### Result Explorer web version" >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+        docker exec result-explorer-web cat /usr/share/nginx/html/app-build-info.json >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
     - name: Set outputs
       id: set-outputs
