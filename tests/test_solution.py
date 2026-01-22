@@ -27,6 +27,7 @@ def test_solution_crud(rx, rst_multiple_connections):
     assert fetched_sol.id == sol.id
     assert fetched_sol.name == sol.name
     assert fetched_sol.n_elements == sol.n_elements
+    assert len(fetched_sol.views) > 0
 
     # delete solution
     rx.delete_solution(solution_id=sol.id)
