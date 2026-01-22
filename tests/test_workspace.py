@@ -1,4 +1,4 @@
-def test_workspaces_crud(rx):
+def test_workspace_crud(rx):
     # list workspaces
     workspaces = rx.list_workspaces()
     assert workspaces[0].name == "Workspace 1"

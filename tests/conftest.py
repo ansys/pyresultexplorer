@@ -1,6 +1,8 @@
 import logging
+import os
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 from playwright.sync_api import BrowserContext, expect
@@ -20,6 +22,11 @@ def pytest_addoption(parser):
         "--web-url",
         default="http://localhost:8000",
         help="Web url.",
+    )
+    parser.addoption(
+        "--is-docker",
+        default=True,
+        help="Indicates if the app is running inside a Docker container.",
     )
 
 
@@ -48,6 +55,11 @@ def web_url(request, server_url) -> str:
 
     url = f"{web}?result_provider_name=Local&result_provider_url={server_url}"
     return url
+
+
+@pytest.fixture(scope="session")
+def is_docker(request):
+    return request.config.getoption("--is-docker")
 
 
 INIT_SCRIPT = """
@@ -79,3 +91,22 @@ def web_session(web_url: str, context: BrowserContext):
 @pytest.fixture
 def rx(web_session):
     return Client.connect_with_token(web_session)
+
+
+@pytest.fixture(scope="session")
+def data_directory(is_docker):
+    if is_docker:
+        return "/data"
+    return os.path.abspath(os.path.join("tests", "data"))
+
+
+def _get_result_path(data_directory, filename, docker: bool):
+    path = Path(data_directory) / filename
+    if docker:
+        return path.as_posix()
+    return path
+
+
+@pytest.fixture(scope="session")
+def rst_multiple_connections(data_directory, is_docker):
+    return _get_result_path(data_directory, "multiple_connections.rst", is_docker)

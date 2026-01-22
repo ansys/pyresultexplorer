@@ -81,15 +81,20 @@ class Client:
             result_provider_name=result_provider_name,
             name=name,
             files=[file],
-            split_mesh_options=split_mesh_options,
+            # split_mesh_options=split_mesh_options,
         )
         return self._solution_stub.Create(sol, metadata=self._grpc_metadata)
 
     def list_solutions(self) -> list[Solution]:
-        return self._solution_stub.List(Empty(), metadata=self._grpc_metadata)
+        return self._solution_stub.List(Empty(), metadata=self._grpc_metadata).solutions
 
     def delete_solution(self, solution_id: str) -> None:
         self._solution_stub.Delete(models.ResourceId(id=solution_id), metadata=self._grpc_metadata)
+
+    def get_solution(self, solution_id: str) -> Solution:
+        return self._solution_stub.Get(
+            models.ResourceId(id=solution_id), metadata=self._grpc_metadata
+        )
 
     # ----------- Workspace management ----------------
 
