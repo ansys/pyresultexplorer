@@ -99,7 +99,8 @@ jobs:
               --junitxml test_results.xml \
               --cov=ansys --cov-report=term --cov-report=html:.cov/html --cov-report=markdown:cov.md \
               --server-url=${{ steps.rx-compose.outputs.server-url }} \
-              --web-url=${{ steps.rx-compose.outputs.web-url }}
+              --web-url=${{ steps.rx-compose.outputs.web-url }} \
+              --is-docker
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v6

@@ -25,7 +25,8 @@ def pytest_addoption(parser):
     )
     parser.addoption(
         "--is-docker",
-        default=True,
+        action="store_true",
+        default=False,
         help="Indicates if the app is running inside a Docker container.",
     )
 
@@ -59,7 +60,9 @@ def web_url(request, server_url) -> str:
 
 @pytest.fixture(scope="session")
 def is_docker(request):
-    return request.config.getoption("--is-docker")
+    value = request.config.getoption("--is-docker")
+    log.info(f"Is Docker: {value}")
+    return value
 
 
 INIT_SCRIPT = """
@@ -68,10 +71,18 @@ window.localStorage.setItem('config', JSON.stringify(config));
 """
 
 
+@pytest.fixture(scope="session")
+def browser_context_args(browser_context_args):
+    return {
+        **browser_context_args,
+        "permissions": ["clipboard-read", "clipboard-write"],
+        "ignore_https_errors": True,
+    }
+
+
 @pytest.fixture
 def web_session(web_url: str, context: BrowserContext):
     log.debug("Starting context for web session fixture")
-    context.grant_permissions(["clipboard-read", "clipboard-write"])
 
     page = context.new_page()
     page.add_init_script(INIT_SCRIPT)
@@ -104,9 +115,9 @@ def _get_result_path(data_directory, filename, docker: bool):
     path = Path(data_directory) / filename
     if docker:
         return path.as_posix()
-    return path
+    return str(path)
 
 
 @pytest.fixture(scope="session")
-def rst_multiple_connections(data_directory, is_docker):
+def rst_multiple_connections(data_directory, is_docker) -> str:
     return _get_result_path(data_directory, "multiple_connections.rst", is_docker)
