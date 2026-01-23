@@ -3,6 +3,14 @@ PyResultExplorer
 
 Python interface to Ansys Result Explorer.
 
+https://github.com/user-attachments/assets/ca332819-89d5-4c64-8101-1df0b007e05d
+
+**Warning** - **Early Development Stage**
+   
+PyResultExplorer is currently in the very early stages of development. The interface
+is rough and subject to significant changes. Expect rapid and potentially breaking
+changes in the coming months as the API evolves and stabilizes.
+
 .. contribute_start
 
 How to install
@@ -13,14 +21,7 @@ At least two installation modes are provided: user and developer.
 For users
 ^^^^^^^^^
 
-In order to install PyResultExplorer, make sure you
-have the latest version of `pip`. To do so, run:
-
-.. code:: bash
-
-    python -m pip install -U pip
-
-Then, you can simply execute:
+To install PyResultExplorer:
 
 .. code:: bash
 
@@ -76,6 +77,6 @@ This code shows how to import pyresultexplorer and use some basic capabilities:
 
 .. code:: python
 
-    print("Put sample code here")
+    ... coming soon ...
 
 For more comprehensive usage information, see the Examples.
