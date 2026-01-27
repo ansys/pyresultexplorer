@@ -8,7 +8,7 @@ from ansys.result_explorer.core.client import Client
 from ansys.result_explorer.core.models import ViewportDirection
 
 ## rx = Client.connect_with_token("<insert_your_token_here>")
-rx = Client(grpc_port=50000, http_port=8000, session_id=None)
+rx = Client(grpc_port=50000, session_id=None)
 
 workspaces = rx.list_workspaces()
 print(workspaces)

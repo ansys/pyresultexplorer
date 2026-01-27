@@ -1,5 +1,9 @@
 import logging
 
+import pytest
+
+from ansys.result_explorer.core import ResultExplorerError
+
 log = logging.getLogger(__name__)
 
 
@@ -47,8 +51,10 @@ def test_workspace(rx):
 
 def test_error_get_nonexistent_workspace(rx):
     non_existent_id = "non-existent-id"
-    try:
+    with pytest.raises(ResultExplorerError) as exc_info:
         rx.get_workspace(workspace_id=non_existent_id)
-    except Exception as e:
-        log.info(f"Caught expected exception: {e}")
-        # assert "not found" in str(e) # todo: needs web adjustments
+
+    log.info(f"Caught expected exception: {exc_info.value}")
+
+    assert "not found" in str(exc_info.value)
+    assert non_existent_id in str(exc_info.value)

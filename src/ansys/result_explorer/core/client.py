@@ -1,12 +1,13 @@
 import base64
 import json
+from functools import wraps
 
 import grpc
-import requests
 
 from ansys.api.result_explorer.v0 import solution_pb2_grpc, workspace_pb2_grpc
 from ansys.result_explorer.core import models
 
+from .exceptions import ResultExplorerError
 from .models import (
     Empty,
     Solution,
@@ -18,40 +19,63 @@ from .models import (
 )
 
 
+class GrpcStubWrapper:
+    """Wrapper that automatically handles gRPC errors for all stub method calls."""
+
+    def __init__(self, stub):
+        self._stub = stub
+
+    def __getattr__(self, name):
+        attr = getattr(self._stub, name)
+
+        # Only wrap callable methods (the actual gRPC service methods)
+        if not callable(attr):
+            return attr
+
+        @wraps(attr)
+        def wrapper(*args, **kwargs):
+            try:
+                return attr(*args, **kwargs)
+            except grpc.RpcError as e:
+                raise ResultExplorerError.from_grpc_error(e) from None
+
+        return wrapper
+
+
 class Client:
     def __init__(
         self,
-        host="localhost",
-        grpc_port=50000,
-        http_port=8000,
-        session_id: str | None = None,
+        session_id: str,
+        host: str = "localhost",
+        grpc_port: int = 50000,
+        http_port: int | None = None,
     ):
         self._host = host
         self._grpc_port = grpc_port
         self._http_port = http_port
         self._session_id = session_id
 
-        if self._session_id is None:
-            data = requests.get(f"http://{self._host}:{self._http_port}/info").json()
-            if len(data["sessions"]) == 0:
-                raise Exception("No active sessions found. Please create a session first.")
-
-            session_id = data["sessions"][0]["id"]  # hardcoded first session
-            self._session_id = session_id
-
         self._grpc_metadata = [("x-session-id", self._session_id)]
 
         self._channel = grpc.insecure_channel(f"{self._host}:{self._grpc_port}")
 
-        self._solution_stub = solution_pb2_grpc.SolutionServiceStub(self._channel)
-        self._workspace_stub = workspace_pb2_grpc.WorkspaceServiceStub(self._channel)
+        # Wrap stubs to handle errors in a centralized way
+        # To enable autocompletion on the stubs, we use a 'wrong' type annotation.
+        self._solution_stub: solution_pb2_grpc.SolutionServiceStub = GrpcStubWrapper(
+            solution_pb2_grpc.SolutionServiceStub(self._channel)
+        )  # type: ignore
+        self._workspace_stub: workspace_pb2_grpc.WorkspaceServiceStub = GrpcStubWrapper(
+            workspace_pb2_grpc.WorkspaceServiceStub(self._channel)
+        )  # type: ignore
 
     @classmethod
-    def connect_with_token(cls, token: str):
+    def connect_with_token(cls, token: str) -> "Client":
         """Connect with a base64 encoded json object that contains the connection info."""
+
         decoded_bytes = base64.b64decode(token)
         json_string = decoded_bytes.decode("utf-8")
         data = json.loads(json_string)
+
         host = data.get("host")
         http_port = data.get("httpPort")
         grpc_port = data.get("grpcPort")
@@ -59,8 +83,6 @@ class Client:
 
         if host is None:
             raise ValueError("Token is missing 'host' information.")
-        if http_port is None:
-            raise ValueError("Token is missing 'httpPort' information.")
         if grpc_port is None:
             raise ValueError("Token is missing 'grpcPort' information.")
         if session_id is None:
