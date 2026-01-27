@@ -33,8 +33,8 @@ def test_session_id(web_url: str, context: BrowserContext):
 
 
 def test_invalid_session_id(web_url: str, context: BrowserContext):
-    # test that we can connect with a client provided session id
-    # without the need to enable scripting in the web UI settings
+    # test that connecting with an invalid session id falls back to a
+    # new session id set by the gateway
 
     session_id = "invalid-session-id"
 
