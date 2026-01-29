@@ -14,6 +14,12 @@ def test_solution(rx, rst_multiple_connections):
     assert sol.n_elements == 246
     assert sol.n_nodes == 844
     assert sol.n_sets == 1
+    assert sol.analysis_type == "static"
+    assert sol.physics_type == "mechanical"
+    assert sol.solver_version == "24.1"
+    assert len(sol.files) == 1
+    assert sol.files[0].path == rst_multiple_connections
+    assert "MKS" in sol.unit_system
 
     assert (
         len(sol.bodies) == 4

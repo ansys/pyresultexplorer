@@ -139,11 +139,6 @@ class Client:
             models.ResourceId(id=workspace_id), metadata=self._grpc_metadata
         )
 
-    # def get_viewport(self, workspace_id: str, viewport_id: str) -> Viewport:
-    #     # todo: implement a GetViewport method in the grpc service
-    #     viewports = self.list_viewports(workspace_id=workspace_id)
-    #     return next((v for v in viewports if v.id == viewport_id), None)
-
     def delete_viewport(self, viewport: str | Viewport) -> None:
         viewport_id = viewport.id if isinstance(viewport, Viewport) else viewport
         self._workspace_stub.DeleteViewport(

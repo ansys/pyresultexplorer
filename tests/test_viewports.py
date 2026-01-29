@@ -24,7 +24,7 @@ def test_viewports(rx, multiple_connections_solution):
     assert view is not None
 
     # assign view to viewport
-    workspace = rx.list_workspaces()[0]
+    workspace = rx.create_workspace("Test Workspace")
     viewport = workspace.assign_view(sol, view, wait=True)
 
     assert viewport.id in workspace.viewport_ids
