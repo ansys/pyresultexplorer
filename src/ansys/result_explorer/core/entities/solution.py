@@ -3,11 +3,19 @@
 from __future__ import annotations
 
 from .. import models
-from .base import BaseEntity
-from .view import View
+from .base import NamedBaseEntity
 
 
-class Solution(BaseEntity[models.Solution]):
+class View(NamedBaseEntity[models.View]):
+    """Represents a result view in a solution."""
+
+    @property
+    def type(self):
+        """View type (e.g., stress, displacement)."""
+        return self._pb.type
+
+
+class Solution(NamedBaseEntity[models.Solution]):
     """Represents a solution loaded in the server."""
 
     @property

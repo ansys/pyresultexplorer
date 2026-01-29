@@ -19,6 +19,23 @@ class BaseEntity(Generic[PBType]):
 
     def __repr__(self) -> str:
         """Return developer-friendly representation."""
+        return f"{self.__class__.__name__}(id={self.id!r})"
+
+    def __str__(self) -> str:
+        """Return user-friendly string representation."""
+        return f"{self.__class__.__name__}({self.id})"
+
+    @property
+    def id(self) -> str:
+        """Unique identifier."""
+        return self._pb.id
+
+
+class NamedBaseEntity(BaseEntity[PBType]):
+    """Base class for entities that include a name field."""
+
+    def __repr__(self) -> str:
+        """Return developer-friendly representation."""
         name_str = f'"{self.name}"' if self.name else "<unnamed>"
         return f"{self.__class__.__name__}(id={self.id!r}, name={name_str})"
 
@@ -27,11 +44,6 @@ class BaseEntity(Generic[PBType]):
         if self.name:
             return f"{self.__class__.__name__}: {self.name}"
         return f"{self.__class__.__name__}({self.id})"
-
-    @property
-    def id(self) -> str:
-        """Unique identifier."""
-        return self._pb.id
 
     @property
     def name(self) -> str:

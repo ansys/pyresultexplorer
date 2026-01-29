@@ -9,8 +9,7 @@ from .base import BaseEntity
 
 if TYPE_CHECKING:
     from ..client import Client
-    from .solution import Solution
-    from .view import View
+    from .solution import Solution, View
 
 
 class ViewMetadata:

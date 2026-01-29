@@ -5,15 +5,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from .. import models
-from .base import BaseEntity
+from .base import NamedBaseEntity
 from .viewport import Viewport
 
 if TYPE_CHECKING:
-    from .solution import Solution
-    from .view import View
+    from .solution import Solution, View
 
 
-class Workspace(BaseEntity[models.Workspace]):
+class Workspace(NamedBaseEntity[models.Workspace]):
     """Represents a workspace with viewports and solutions."""
 
     @property
