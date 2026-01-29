@@ -25,14 +25,14 @@ def test_solution(rx, rst_multiple_connections):
     assert any(s.id == sol.id for s in solutions)
 
     # get solution
-    fetched_sol = rx.get_solution(solution_id=sol.id)
+    fetched_sol = rx.get_solution(sol.id)
     assert fetched_sol.id == sol.id
     assert fetched_sol.name == sol.name
     assert fetched_sol.n_elements == sol.n_elements
     assert len(fetched_sol.views) > 0
 
     # delete solution
-    rx.delete_solution(solution_id=sol.id)
+    rx.delete_solution(sol)
 
     # verify deletion
     solutions = rx.list_solutions()

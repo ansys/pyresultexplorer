@@ -101,3 +101,7 @@ class Workspace(BaseEntity[models.Workspace]):
         self._client._workspace_stub.DeleteViewport(
             models.ResourceId(id=viewport.id), metadata=self._client._grpc_metadata
         )
+        # Refresh workspace data
+        self._pb = self._client._workspace_stub.Get(
+            models.ResourceId(id=self.id), metadata=self._client._grpc_metadata
+        )

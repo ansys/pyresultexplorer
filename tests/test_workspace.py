@@ -1,4 +1,5 @@
 import logging
+import uuid
 
 import pytest
 
@@ -12,11 +13,14 @@ def test_workspace(rx):
 
     # list workspaces
     workspaces = rx.list_workspaces()
-    assert workspaces[0].name == "Workspace 1"
+    for ws in workspaces:
+        assert ws.id is not None
+        assert ws.name is not None
 
     # create a new workspace
-    workspace = rx.create_workspace(name="Test Workspace")
-    assert workspace.name == "Test Workspace"
+    name = f"Test Workspace {str(uuid.uuid4())}"
+    workspace = rx.create_workspace(name=name)
+    assert workspace.name == name
     assert workspace.fullscreen_viewport_id == ""
     assert workspace.sync_options.camera is False
     assert workspace.sync_options.time_freq is False
@@ -24,29 +28,26 @@ def test_workspace(rx):
     assert len(workspace.viewport_ids) == 1
 
     # update workspace to turn on sync options and set fullscreen viewport
-    workspace = rx.set_workspace_sync(
-        workspace_id=workspace.id, camera=True, time_freq=True, legend=True
-    )
+    workspace.set_sync(camera=True, time_freq=True, legend=True)
+    workspace = rx.get_workspace(workspace.id)
     assert workspace.sync_options.camera is True
     assert workspace.sync_options.time_freq is True
     assert workspace.sync_options.legend is True
 
-    workspace = rx.set_fullscreen_viewport(
-        workspace_id=workspace.id, viewport_id=workspace.viewport_ids[0]
-    )
+    workspace.set_fullscreen_viewport(workspace.viewports[0])
+    workspace = rx.get_workspace(workspace.id)
     assert workspace.fullscreen_viewport_id == workspace.viewport_ids[0]
 
     # get workspace and verify updates
-    workspace = rx.get_workspace(workspace_id=workspace.id)
+    workspace = rx.get_workspace(workspace.id)
     assert workspace.sync_options.camera is True
 
     # delete the created workspace
-    rx.delete_workspace(workspace_id=workspace.id)
+    rx.delete_workspace(workspace)
 
     # verify deletion
     workspaces = rx.list_workspaces()
-    assert len(workspaces) == 1
-    assert "Test Workspace" not in [ws.name for ws in workspaces]
+    assert all(ws.name != workspace.name for ws in workspaces)
 
 
 def test_error_get_nonexistent_workspace(rx):

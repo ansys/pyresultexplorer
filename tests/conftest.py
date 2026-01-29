@@ -29,6 +29,11 @@ def pytest_addoption(parser):
         default=False,
         help="Indicates if the app is running inside a Docker container.",
     )
+    parser.addoption(
+        "--connection-token",
+        default=None,
+        help="Connection token to an existing session.",
+    )
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -48,6 +53,11 @@ def install_browser():
 @pytest.fixture(scope="session")
 def server_url(request):
     return request.config.getoption("--server-url")
+
+
+@pytest.fixture(scope="session")
+def connection_token(request):
+    return request.config.getoption("--connection-token")
 
 
 @pytest.fixture(scope="session")
@@ -81,7 +91,11 @@ def browser_context_args(browser_context_args):
 
 
 @pytest.fixture
-def web_session(web_url: str, context: BrowserContext):
+def web_session(web_url: str, context: BrowserContext, connection_token):
+    if connection_token is not None:
+        log.debug("Using provided connection token")
+        return connection_token
+
     log.debug("Starting context for web session fixture")
 
     page = context.new_page()
