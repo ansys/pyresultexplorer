@@ -7,15 +7,8 @@ import grpc
 from ansys.api.result_explorer.v0 import solution_pb2_grpc, workspace_pb2_grpc
 from ansys.result_explorer.core import models
 
-from .entities import Solution, Workspace
+from .entities import Solution, Viewport, Workspace
 from .exceptions import ResultExplorerError
-from .models import (
-    Empty,
-    SolutionCreate,
-    UpdateViewportRequest,
-    ViewportDirection,
-    WorkspaceCreate,
-)
 
 
 class GrpcStubWrapper:
@@ -98,7 +91,7 @@ class Client:
         split_mesh_options: models.SplitMeshOptions | None = None,
     ) -> Solution:
         file = models.File(path=file_path)
-        sol = SolutionCreate(
+        sol = models.SolutionCreate(
             result_provider_name=result_provider_name,
             name=name,
             files=[file],
@@ -108,7 +101,7 @@ class Client:
         return Solution(pb_sol, self)
 
     def list_solutions(self) -> list[Solution]:
-        pb_list = self._solution_stub.List(Empty(), metadata=self._grpc_metadata)
+        pb_list = self._solution_stub.List(models.Empty(), metadata=self._grpc_metadata)
         return [Solution(s, self) for s in pb_list.solutions]
 
     def delete_solution(self, solution: Solution | str) -> None:
@@ -126,7 +119,7 @@ class Client:
 
     def create_workspace(self, name: str) -> Workspace:
         pb_ws = self._workspace_stub.Create(
-            WorkspaceCreate(name=name), metadata=self._grpc_metadata
+            models.WorkspaceCreate(name=name), metadata=self._grpc_metadata
         )
         return Workspace(pb_ws, self)
 
@@ -137,109 +130,22 @@ class Client:
         return Workspace(pb_ws, self)
 
     def list_workspaces(self) -> list[Workspace]:
-        pb_list = self._workspace_stub.List(Empty(), metadata=self._grpc_metadata)
+        pb_list = self._workspace_stub.List(models.Empty(), metadata=self._grpc_metadata)
         return [Workspace(w, self) for w in pb_list.workspaces]
 
-    def delete_workspace(self, workspace_id: str) -> None:
+    def delete_workspace(self, workspace: str | Workspace) -> None:
+        workspace_id = workspace.id if isinstance(workspace, Workspace) else workspace
         self._workspace_stub.Delete(
             models.ResourceId(id=workspace_id), metadata=self._grpc_metadata
         )
 
-    def set_fullscreen_viewport(self, workspace_id: str, viewport_id: str) -> Workspace:
-        request = models.WorkspaceUpdateRequest(
-            workspace_id=workspace_id,
-            fullscreen_viewport_id=viewport_id,
-        )
-        return self._workspace_stub.Update(request, metadata=self._grpc_metadata)
+    # def get_viewport(self, workspace_id: str, viewport_id: str) -> Viewport:
+    #     # todo: implement a GetViewport method in the grpc service
+    #     viewports = self.list_viewports(workspace_id=workspace_id)
+    #     return next((v for v in viewports if v.id == viewport_id), None)
 
-    def exit_fullscreen(self, workspace_id: str) -> Workspace:
-        request = models.WorkspaceUpdateRequest(
-            workspace_id=workspace_id,
-            fullscreen_viewport_id="",
-        )
-        return self._workspace_stub.Update(request, metadata=self._grpc_metadata)
-
-    def set_workspace_sync(
-        self,
-        workspace_id: str,
-        camera: bool | None = None,
-        time_freq: bool | None = None,
-        legend: bool | None = None,
-    ) -> Workspace:
-        sync = models.SyncOptions(
-            camera=camera,
-            time_freq=time_freq,
-            legend=legend,
-        )
-        request = models.WorkspaceUpdateRequest(
-            workspace_id=workspace_id,
-            sync_options=sync,
-        )
-        return self._workspace_stub.Update(request, metadata=self._grpc_metadata)
-
-    # ----------- Viewport management ----------------
-    def assign_view(
-        self, viewport_id: str, solution_id: str, view_id: str, wait: bool = True
-    ) -> models.Viewport:
-        """Assign a view to a viewport."""
-
-        return self._workspace_stub.UpdateViewport(
-            UpdateViewportRequest(
-                viewport_id=viewport_id,
-                solution_id=solution_id,
-                view_id=view_id,
-                wait=wait,
-            ),
-            metadata=self._grpc_metadata,
-        )
-
-    def modify_view_metadata(
-        self, viewport_id: str, metadata: dict, wait: bool = True
-    ) -> models.Viewport:
-        """Assign a view to a viewport."""
-
-        return self._workspace_stub.UpdateViewport(
-            UpdateViewportRequest(
-                viewport_id=viewport_id,
-                metadata=metadata,
-                wait=wait,
-            ),
-            metadata=self._grpc_metadata,
-        )
-
-    def take_snapshot(
-        self, viewport_id: str, settings: models.SnapshotSettings | None = None
-    ) -> bytes:
-        request = models.CreateSnapshotRequest(
-            viewport_id=viewport_id,
-            settings=settings,
-        )
-        r = self._workspace_stub.CreateSnapshot(request, metadata=self._grpc_metadata)
-        return r.data
-
-    def list_viewports(self, workspace_id: str) -> list[models.Viewport]:
-        return self._workspace_stub.ListViewports(
-            models.ResourceId(id=workspace_id), metadata=self._grpc_metadata
-        ).viewports
-
-    def get_viewport(self, workspace_id: str, viewport_id: str) -> models.Viewport:
-        # todo: implement a GetViewport method in the grpc service
-        viewports = self.list_viewports(workspace_id=workspace_id)
-        return next((v for v in viewports if v.id == viewport_id), None)
-
-    def create_viewport(
-        self, workspace_id: str, viewport_id: str, direction: ViewportDirection
-    ) -> models.Viewport:
-        return self._workspace_stub.CreateViewport(
-            models.CreateViewportRequest(
-                workspace_id=workspace_id,
-                viewport_id=viewport_id,
-                direction=direction,
-            ),
-            metadata=self._grpc_metadata,
-        )
-
-    def delete_viewport(self, viewport_id: str) -> None:
+    def delete_viewport(self, viewport: str | Viewport) -> None:
+        viewport_id = viewport.id if isinstance(viewport, Viewport) else viewport
         self._workspace_stub.DeleteViewport(
             models.ResourceId(id=viewport_id), metadata=self._grpc_metadata
         )
