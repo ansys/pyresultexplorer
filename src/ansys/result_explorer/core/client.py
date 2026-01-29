@@ -7,14 +7,13 @@ import grpc
 from ansys.api.result_explorer.v0 import solution_pb2_grpc, workspace_pb2_grpc
 from ansys.result_explorer.core import models
 
+from .entities import Solution, Workspace
 from .exceptions import ResultExplorerError
 from .models import (
     Empty,
-    Solution,
     SolutionCreate,
     UpdateViewportRequest,
     ViewportDirection,
-    Workspace,
     WorkspaceCreate,
 )
 
@@ -105,31 +104,41 @@ class Client:
             files=[file],
             # split_mesh_options=split_mesh_options,
         )
-        return self._solution_stub.Create(sol, metadata=self._grpc_metadata)
+        pb_sol = self._solution_stub.Create(sol, metadata=self._grpc_metadata)
+        return Solution(pb_sol, self)
 
     def list_solutions(self) -> list[Solution]:
-        return self._solution_stub.List(Empty(), metadata=self._grpc_metadata).solutions
+        pb_list = self._solution_stub.List(Empty(), metadata=self._grpc_metadata)
+        return [Solution(s, self) for s in pb_list.solutions]
 
-    def delete_solution(self, solution_id: str) -> None:
+    def delete_solution(self, solution: Solution | str) -> None:
+        """Delete a solution. Can pass Solution object or ID string."""
+        solution_id = solution.id if isinstance(solution, Solution) else solution
         self._solution_stub.Delete(models.ResourceId(id=solution_id), metadata=self._grpc_metadata)
 
     def get_solution(self, solution_id: str) -> Solution:
-        return self._solution_stub.Get(
+        pb_sol = self._solution_stub.Get(
             models.ResourceId(id=solution_id), metadata=self._grpc_metadata
         )
+        return Solution(pb_sol, self)
 
     # ----------- Workspace management ----------------
 
     def create_workspace(self, name: str) -> Workspace:
-        return self._workspace_stub.Create(WorkspaceCreate(name=name), metadata=self._grpc_metadata)
+        pb_ws = self._workspace_stub.Create(
+            WorkspaceCreate(name=name), metadata=self._grpc_metadata
+        )
+        return Workspace(pb_ws, self)
 
     def get_workspace(self, workspace_id: str) -> Workspace:
-        return self._workspace_stub.Get(
+        pb_ws = self._workspace_stub.Get(
             models.ResourceId(id=workspace_id), metadata=self._grpc_metadata
         )
+        return Workspace(pb_ws, self)
 
     def list_workspaces(self) -> list[Workspace]:
-        return list(self._workspace_stub.List(Empty(), metadata=self._grpc_metadata).workspaces)
+        pb_list = self._workspace_stub.List(Empty(), metadata=self._grpc_metadata)
+        return [Workspace(w, self) for w in pb_list.workspaces]
 
     def delete_workspace(self, workspace_id: str) -> None:
         self._workspace_stub.Delete(
