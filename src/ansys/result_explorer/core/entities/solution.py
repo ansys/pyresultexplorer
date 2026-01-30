@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 from .. import models
-from .base import NamedBaseEntity, SubEntity
+from .base import NamedBaseEntity, SubEntity, _pb_to_dataclass
+from .solution_dataclasses import AvailableMeshProperty, AvailableResult, TimeFrequency
 
 
 class View(SubEntity[models.View, "Solution"]):
@@ -55,12 +56,12 @@ class Solution(NamedBaseEntity[models.Solution]):
 
     @property
     def live(self) -> bool:
-        """Whether solution is live/updating."""
+        """Whether the simulation is currently running."""
         return self._pb.live
 
     @property
     def outdated(self) -> bool:
-        """Whether solution data is outdated."""
+        """Whether solution data is outdated wrt to the result files."""
         return self._pb.outdated
 
     @property
@@ -124,9 +125,9 @@ class Solution(NamedBaseEntity[models.Solution]):
         return self._pb.solver_version
 
     @property
-    def available_results(self) -> list:
+    def available_results(self) -> list[AvailableResult]:
         """Available result types."""
-        return list(self._pb.available_results)
+        return _pb_to_dataclass(self._pb.available_results, AvailableResult)
 
     @property
     def available_trackers(self) -> list:
@@ -134,9 +135,9 @@ class Solution(NamedBaseEntity[models.Solution]):
         return list(self._pb.available_trackers)
 
     @property
-    def available_mesh_properties(self) -> list:
+    def available_mesh_properties(self) -> list[AvailableMeshProperty]:
         """Available mesh properties."""
-        return list(self._pb.available_mesh_properties)
+        return _pb_to_dataclass(self._pb.available_mesh_properties, AvailableMeshProperty)
 
     @property
     def n_sets(self) -> int:
@@ -144,9 +145,9 @@ class Solution(NamedBaseEntity[models.Solution]):
         return self._pb.n_sets
 
     @property
-    def time_frequencies(self) -> list:
+    def time_frequencies(self) -> list[TimeFrequency]:
         """Time/frequency data."""
-        return list(self._pb.time_frequencies)
+        return _pb_to_dataclass(self._pb.time_frequencies, TimeFrequency)
 
     @property
     def time_frequencies_unit(self) -> str:
@@ -159,7 +160,7 @@ class Solution(NamedBaseEntity[models.Solution]):
         return list(self._pb.mesh_scopings)
 
     @property
-    def configurable_plots(self) -> list:
+    def configurable_plots(self) -> list[models.ConfigurablePlot]:
         """Configurable plot definitions."""
         return list(self._pb.configurable_plots)
 

@@ -2,8 +2,10 @@
 
 from ansys.api.result_explorer.v0.base_pb2 import Empty, ResourceId
 from ansys.api.result_explorer.v0.server_models_pb2 import (
+    ConfigurablePlot,
     File,
     HpsFile,
+    ResultType,
     Solution,
     SplitMeshOptions,
     View,

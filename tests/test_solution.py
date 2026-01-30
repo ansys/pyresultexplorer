@@ -1,6 +1,11 @@
+import logging
+
 import pytest
 
 from ansys.result_explorer.core import models
+from ansys.result_explorer.core.entities import Solution
+
+log = logging.getLogger(__name__)
 
 
 def test_solution(rx, rst_multiple_connections):
@@ -38,7 +43,7 @@ def test_solution(rx, rst_multiple_connections):
 
 
 @pytest.fixture
-def rst_solution(rx, rst_multiple_connections):
+def rst_solution(rx, rst_multiple_connections) -> Solution:
     sol = rx.create_solution(
         name="Test Solution",
         result_provider_name="Local",
@@ -63,12 +68,32 @@ def test_solution_properties(rst_solution):
     assert len(sol.files) == 1
     assert "MKS" in sol.unit_system
 
+    assert len(sol.available_mesh_properties) > 0
+    assert "mat" in [prop.id for prop in sol.available_mesh_properties]
+
     assert len(sol.views) > 1
 
     assert (
         len(sol.bodies) == 4
     )  # temporarily because splitMeshBy is defaulted to false in the web api
     assert sol.unsupported_element_types[0] == "SURF154"
+
+    assert len(sol.time_frequencies) == 1
+    assert sol.time_frequencies[0].value == 1.0
+    assert sol.time_frequencies[0].set_id == 1
+    assert sol.time_frequencies[0].step == 1
+    assert sol.time_frequencies[0].substep == 1
+
+    # find configurable stress plot
+    stress_plot = next(
+        (
+            v
+            for v in sol.configurable_plots
+            if v.result_type == models.ResultType.RESULT_TYPE_STRESS
+        ),
+        None,
+    )
+    assert stress_plot is not None
 
 
 @pytest.mark.xfail(reason="View types not properly returned")
