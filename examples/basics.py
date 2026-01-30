@@ -9,7 +9,7 @@ from ansys.result_explorer.core.models import ViewportDirection
 
 # rx = Client(grpc_port=50000, session_id=None)
 rx = Client.connect_with_token(
-    "eyJob3N0IjoibG9jYWxob3N0IiwiaHR0cFBvcnQiOjgwMDAsImdycGNQb3J0Ijo1MDAwMCwic2Vzc2lvbklkIjoiMGE0YWI2YzMtODk5MS00MjBjLTkwOTYtNGJmNjJlZmE1YjU4In0="
+    "eyJob3N0IjoibG9jYWxob3N0IiwiaHR0cFBvcnQiOjU3MjE2LCJncnBjUG9ydCI6NTcyMjMsInNlc3Npb25JZCI6IjFhZjA5ZjAzLWQxZTAtNDBlYy1iNmU5LTQxNzhhNWY2N2JlNyJ9"
 )
 
 workspaces = rx.list_workspaces()
