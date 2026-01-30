@@ -55,11 +55,37 @@ class Viewport(BaseEntity[models.Viewport]):
     """Represents a viewport in a workspace."""
 
     @property
+    def solution_id(self) -> str | None:
+        """ID of the solution assigned to this viewport."""
+        return self._pb.solution_id
+
+    @property
+    def view_id(self) -> str | None:
+        """ID of the view assigned to this viewport."""
+        return self._pb.view_id
+
+    @property
+    def ready(self) -> bool:
+        """Whether the viewport is ready."""
+        return self._pb.ready
+
+    @property
     def metadata(self) -> ViewportMetadata:
         """Access viewport metadata."""
         return ViewportMetadata(self._pb.metadata, self._client)
 
-    def assign_view(self, view: View, wait: bool = True) -> Viewport:
+    @property
+    def view(self) -> View | None:
+        """Get the assigned view, if any."""
+        # todo: we could cache this
+
+        if self.view_id and self.solution_id:
+            solution = self._client.get_solution(self.solution_id)
+            view = next((v for v in solution.views if v.id == self.view_id), None)
+            return view
+        return None
+
+    def set_view(self, view: View, wait: bool = True) -> Viewport:
         """Assign a view to this viewport.
 
         TODO: in the future view will be of type View | Plot | Chart

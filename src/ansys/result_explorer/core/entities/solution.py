@@ -10,8 +10,8 @@ class View(SubEntity[models.View, "Solution"]):
     """Represents a result view in a solution."""
 
     @property
-    def type(self):
-        """View type (e.g., stress, displacement)."""
+    def type(self) -> models.ViewType:
+        """View type."""
         return self._pb.type
 
     @property

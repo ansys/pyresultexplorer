@@ -79,7 +79,7 @@ class Workspace(NamedBaseEntity[models.Workspace]):
     def assign_view(self, view: View, wait: bool = True) -> Viewport:
         """Assign a view to the first viewport in this workspace."""
         first_viewport = self.viewports[0]
-        return first_viewport.assign_view(view, wait=wait)
+        return first_viewport.set_view(view, wait=wait)
 
     def set_sync(
         self,

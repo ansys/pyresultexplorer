@@ -91,11 +91,13 @@ def browser_context_args(browser_context_args):
 
 
 @pytest.fixture
-def web_session(web_url: str, context: BrowserContext, connection_token):
+def web_session(web_url: str, request):
+    connection_token = request.config.getoption("--connection-token")
     if connection_token is not None:
-        log.debug("Using provided connection token")
+        log.info("Using provided connection token")
         return connection_token
 
+    context: BrowserContext = request.getfixturevalue("context")
     log.debug("Starting context for web session fixture")
 
     page = context.new_page()
