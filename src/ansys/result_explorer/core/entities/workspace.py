@@ -9,16 +9,42 @@ from .base import NamedBaseEntity
 from .viewport import Viewport
 
 if TYPE_CHECKING:
-    from .solution import Solution, View
+    from .solution import View
 
 
 class Workspace(NamedBaseEntity[models.Workspace]):
     """Represents a workspace with viewports and solutions."""
 
     @property
-    def sync_options(self):
-        """Synchronization options for this workspace."""
+    def _sync_options(self):
         return self._pb.sync_options
+
+    @property
+    def sync_camera(self) -> bool:
+        """Whether camera synchronization is enabled."""
+        return self._sync_options.camera
+
+    @sync_camera.setter
+    def sync_camera(self, value: bool):
+        self.set_sync(camera=value)
+
+    @property
+    def sync_time_freq(self) -> bool:
+        """Whether time/frequency synchronization is enabled."""
+        return self._sync_options.time_freq
+
+    @sync_time_freq.setter
+    def sync_time_freq(self, value: bool):
+        self.set_sync(time_freq=value)
+
+    @property
+    def sync_legend(self) -> bool:
+        """Whether legend synchronization is enabled."""
+        return self._sync_options.legend
+
+    @sync_legend.setter
+    def sync_legend(self, value: bool):
+        self.set_sync(legend=value)
 
     @property
     def viewport_ids(self) -> list[str]:
@@ -50,10 +76,10 @@ class Workspace(NamedBaseEntity[models.Workspace]):
         )
         return Viewport(pb_vp, self._client)
 
-    def assign_view(self, solution: Solution, view: View, wait: bool = True) -> Viewport:
+    def assign_view(self, view: View, wait: bool = True) -> Viewport:
         """Assign a view to the first viewport in this workspace."""
         first_viewport = self.viewports[0]
-        return first_viewport.assign_view(solution, view, wait=wait)
+        return first_viewport.assign_view(view, wait=wait)
 
     def set_sync(
         self,

@@ -2,14 +2,14 @@
 
 from .base import BaseEntity, NamedBaseEntity
 from .solution import Solution, View
-from .viewport import ViewMetadata, Viewport
+from .viewport import Viewport, ViewportMetadata
 from .workspace import Workspace
 
 __all__ = [
     "BaseEntity",
     "NamedBaseEntity",
     "View",
-    "ViewMetadata",
+    "ViewportMetadata",
     "Viewport",
     "Solution",
     "Workspace",

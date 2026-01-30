@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from typing import TYPE_CHECKING
 
 from .. import models
@@ -9,11 +10,14 @@ from .base import BaseEntity
 
 if TYPE_CHECKING:
     from ..client import Client
-    from .solution import Solution, View
+    from .solution import View
 
 
-class ViewMetadata:
-    """Pythonic wrapper for viewport metadata."""
+class ViewportMetadata:
+    """Wrapper for viewport metadata.
+
+    Will need to be expanded and specialized to the different view types.
+    """
 
     def __init__(self, metadata_dict: dict, client: Client, viewport_id: str):
         self._metadata = dict(metadata_dict) if metadata_dict else {}
@@ -40,21 +44,29 @@ class ViewMetadata:
         """Convert back to dictionary for gRPC calls."""
         return self._metadata
 
+    def __str__(self):
+        # print as json-like string
+        json_str = json.dumps(self._metadata, indent=2)
+        return json_str
+
 
 class Viewport(BaseEntity[models.Viewport]):
     """Represents a viewport in a workspace."""
 
     @property
-    def metadata(self) -> ViewMetadata:
-        """Access viewport metadata as a pythonic object."""
+    def metadata(self) -> ViewportMetadata:
+        """Access viewport metadata."""
         metadata_dict = dict(self._pb.metadata) if self._pb.metadata else {}
-        return ViewMetadata(metadata_dict, self._client, self.id)
+        return ViewportMetadata(metadata_dict, self._client, self.id)
 
-    def assign_view(self, solution: Solution, view: View, wait: bool = True) -> Viewport:
-        """Assign a view to this viewport."""
+    def assign_view(self, view: View, wait: bool = True) -> Viewport:
+        """Assign a view to this viewport.
+
+        TODO: in the future view will be of type View | Plot | Chart
+        """
         req = models.UpdateViewportRequest(
             viewport_id=self.id,
-            solution_id=solution.id,
+            solution_id=view.solution.id,
             view_id=view.id,
             wait=wait,
         )
@@ -72,7 +84,7 @@ class Viewport(BaseEntity[models.Viewport]):
         )
         return snapshot.data
 
-    def modify_view_metadata(self, metadata: ViewMetadata) -> None:
+    def modify_view_metadata(self, metadata: ViewportMetadata) -> None:
         """Update metadata for this viewport."""
         req = models.UpdateViewportRequest(
             viewport_id=self.id,

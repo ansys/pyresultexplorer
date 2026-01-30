@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import weakref
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 if TYPE_CHECKING:
     from ..client import Client
 
 PBType = TypeVar("PBType")
+ParentType = TypeVar("ParentType", bound="BaseEntity")
 
 
 class BaseEntity(Generic[PBType]):
@@ -49,3 +51,19 @@ class NamedBaseEntity(BaseEntity[PBType]):
     def name(self) -> str:
         """Human-readable name."""
         return self._pb.name if hasattr(self._pb, "name") else ""
+
+
+class SubEntity(NamedBaseEntity[PBType], Generic[PBType, ParentType]):
+    """Base class for entities that are sub-entities of a parent entity."""
+
+    def __init__(self, pb_obj: PBType, client: Client, parent: ParentType):
+        super().__init__(pb_obj, client)
+        self._parent_ref = weakref.ref(parent)
+
+    @property
+    def parent(self) -> ParentType:
+        """Parent entity."""
+        parent = self._parent_ref()
+        if parent is None:
+            raise RuntimeError(f"Parent of {self} has been garbage collected.")
+        return parent

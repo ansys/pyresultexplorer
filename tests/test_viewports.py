@@ -25,7 +25,7 @@ def test_viewports(rx, multiple_connections_solution):
 
     # assign view to viewport
     workspace = rx.create_workspace("Test Workspace")
-    viewport = workspace.assign_view(sol, view, wait=True)
+    viewport = workspace.assign_view(view=view, wait=True)
 
     assert viewport.id in workspace.viewport_ids
     assert view.id == view.id
@@ -42,8 +42,6 @@ def test_viewports(rx, multiple_connections_solution):
     viewport.modify_view_metadata(meta)
 
     # get workspace to refresh viewport
-    workspace = rx.get_workspace(workspace.id)
-    viewport = workspace.viewports[0]
     assert viewport.metadata.show_mesh_edges == meta.show_mesh_edges
 
     # take snapshot

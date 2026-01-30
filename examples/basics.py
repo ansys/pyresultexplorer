@@ -9,20 +9,26 @@ from ansys.result_explorer.core.models import ViewportDirection
 
 # rx = Client(grpc_port=50000, session_id=None)
 rx = Client.connect_with_token(
-    "eyJob3N0IjoibG9jYWxob3N0IiwiaHR0cFBvcnQiOjgwMDAsImdycGNQb3J0Ijo1MDAwMCwic2Vzc2lvbklkIjoiMjc1ZDdhZTctOTgwOS00MTExLWI0YzktNDBlM2QxNzIwYTUxIn0="
+    "eyJob3N0IjoibG9jYWxob3N0IiwiaHR0cFBvcnQiOjgwMDAsImdycGNQb3J0Ijo1MDAwMCwic2Vzc2lvbklkIjoiMGE0YWI2YzMtODk5MS00MjBjLTkwOTYtNGJmNjJlZmE1YjU4In0="
 )
 
 workspaces = rx.list_workspaces()
-print(workspaces)
+print("Existing workspaces:")
+for ws in workspaces:
+    print(f" - {ws}")
 
 workspace = rx.create_workspace(name="PyRX Workspace")
 
 workspaces = rx.list_workspaces()
-print(workspaces)
+print("Existing workspaces after creation:")
+for ws in workspaces:
+    print(f" - {ws}")
 
 # list viewports in the workspace
 viewports = workspace.viewports
-print(viewports)
+print("Viewports in workspace:")
+for vp in viewports:
+    print(f" - {vp}")
 
 sol_name = "PyRX Solution"
 sol = rx.create_solution(
@@ -33,17 +39,21 @@ sol = rx.create_solution(
 print(f"Created solution '{sol.name}' with ID: {sol.id}")
 
 solutions = rx.list_solutions()
-# print(solutions)
+print("Existing solutions:")
+for sol in solutions:
+    print(f" - {sol.name}")
 
 views = sol.views
-print(views)
+print("Views in solution:")
+for v in views:
+    print(f" - {v}")
 
 view = next((v for v in views if "Displacement" in v.name), None)
 assert view is not None
 
 print(f"Opening view: {view.name} in the workspace.")
-viewport = workspace.assign_view(solution=sol, view=view, wait=True)
-print(viewport)
+viewport = workspace.assign_view(view=view, wait=True)
+print(f"Assigned viewport: {viewport}")
 
 # print("Taking snapshot...")
 snapshot_data = viewport.take_snapshot()

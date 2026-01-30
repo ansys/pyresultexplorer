@@ -3,16 +3,21 @@
 from __future__ import annotations
 
 from .. import models
-from .base import NamedBaseEntity
+from .base import NamedBaseEntity, SubEntity
 
 
-class View(NamedBaseEntity[models.View]):
+class View(SubEntity[models.View, "Solution"]):
     """Represents a result view in a solution."""
 
     @property
     def type(self):
         """View type (e.g., stress, displacement)."""
         return self._pb.type
+
+    @property
+    def solution(self) -> Solution:
+        """Parent solution of this view."""
+        return self.parent
 
 
 class Solution(NamedBaseEntity[models.Solution]):
@@ -186,4 +191,4 @@ class Solution(NamedBaseEntity[models.Solution]):
     @property
     def views(self) -> list[View]:
         """List of views available in this solution."""
-        return [View(v, self._client) for v in self._pb.views]
+        return [View(v, self._client, parent=self) for v in self._pb.views]
