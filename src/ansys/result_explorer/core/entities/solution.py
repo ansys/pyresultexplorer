@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 from .. import models
-from .base import NamedBaseEntity, SubEntity, _pb_to_dataclass
-from .solution_dataclasses import AvailableMeshProperty, AvailableResult, TimeFrequency
+from .base import NamedBaseEntity, SubEntity
+
+# from .solution_dataclasses import AvailableMeshProperty, AvailableResult, TimeFrequency
 
 
 class View(SubEntity[models.View, "Solution"]):
@@ -125,9 +126,9 @@ class Solution(NamedBaseEntity[models.Solution]):
         return self._pb.solver_version
 
     @property
-    def available_results(self) -> list[AvailableResult]:
+    def available_results(self) -> list[models.AvailableResult]:
         """Available result types."""
-        return _pb_to_dataclass(self._pb.available_results, AvailableResult)
+        return list(self._pb.available_results)
 
     @property
     def available_trackers(self) -> list:
@@ -135,9 +136,9 @@ class Solution(NamedBaseEntity[models.Solution]):
         return list(self._pb.available_trackers)
 
     @property
-    def available_mesh_properties(self) -> list[AvailableMeshProperty]:
+    def available_mesh_properties(self) -> list[models.AvailableMeshProperty]:
         """Available mesh properties."""
-        return _pb_to_dataclass(self._pb.available_mesh_properties, AvailableMeshProperty)
+        return list(self._pb.available_mesh_properties)
 
     @property
     def n_sets(self) -> int:
@@ -145,9 +146,9 @@ class Solution(NamedBaseEntity[models.Solution]):
         return self._pb.n_sets
 
     @property
-    def time_frequencies(self) -> list[TimeFrequency]:
+    def time_frequencies(self) -> list[models.TimeFrequency]:
         """Time/frequency data."""
-        return _pb_to_dataclass(self._pb.time_frequencies, TimeFrequency)
+        return list(self._pb.time_frequencies)
 
     @property
     def time_frequencies_unit(self) -> str:
@@ -165,27 +166,27 @@ class Solution(NamedBaseEntity[models.Solution]):
         return list(self._pb.configurable_plots)
 
     @property
-    def plots(self) -> list:
+    def plots(self) -> list[models.PlotDefinition]:
         """Plot definitions."""
         return list(self._pb.plots)
 
     @property
-    def configurable_charts(self) -> list:
+    def configurable_charts(self) -> list[models.ConfigurableChart]:
         """Configurable chart definitions."""
         return list(self._pb.configurable_charts)
 
     @property
-    def charts(self) -> list:
+    def charts(self) -> list[models.ChartDefinition]:
         """Chart definitions."""
         return list(self._pb.charts)
 
     @property
-    def bodies(self) -> list:
+    def bodies(self) -> list[models.Body]:
         """Bodies in the model."""
         return list(self._pb.bodies)
 
     @property
-    def solver_text_outputs(self) -> list:
+    def solver_text_outputs(self) -> list[models.SolverTextOutputFile]:
         """Solver text output files."""
         return list(self._pb.solver_text_outputs)
 
