@@ -28,12 +28,7 @@ inputs:
   server-tag:
     description: 'Tag of the server docker image to use'
     type: string
-    default: 'dev'
-
-  dpf-server-tag:
-    description: 'Tag of the DPF server docker image to use'
-    type: string
-    default: 'v2026.1.pre1'
+    default: 'dev-dpf-v2026.1.pre1'
 
   results-folder:
     description: 'Path to the folder containing data to mount in Result Explorer'
