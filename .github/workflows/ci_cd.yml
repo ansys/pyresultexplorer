@@ -75,8 +75,7 @@ jobs:
           ghcr-username: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
           ghcr-token: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
           license-server: ${{ secrets.LICENSE_SERVER }}
-          web-tag: 'dev'
-          server-tag: 'dev'
+          server-tag: 'dev-dpf-v2026.1.pre1'
           results-folder: '${{ github.workspace }}/tests/data'
 
       - uses: extractions/netrc@v2
@@ -183,7 +182,7 @@ jobs:
   doc-deploy-dev:
     name: "Deploy development documentation"
     runs-on: ubuntu-latest
-    needs: [doc-build, build-library]
+    needs: [doc-build, build-library, tests]
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: ansys/actions/doc-deploy-dev@v10
@@ -196,7 +195,7 @@ jobs:
   doc-deploy-stable:
     name: "Deploy stable documentation"
     runs-on: ubuntu-latest
-    needs: [doc-build, build-library]
+    needs: [doc-build, build-library, tests]
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     steps:
       - uses: ansys/actions/doc-deploy-stable@v10

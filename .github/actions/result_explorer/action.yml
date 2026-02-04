@@ -28,12 +28,7 @@ inputs:
   server-tag:
     description: 'Tag of the server docker image to use'
     type: string
-    default: 'dev'
-
-  dpf-server-tag:
-    description: 'Tag of the DPF server docker image to use'
-    type: string
-    default: 'v2026.1.pre1'
+    default: 'dev-dpf-v2026.1.pre1'
 
   results-folder:
     description: 'Path to the folder containing data to mount in Result Explorer'
@@ -83,7 +78,6 @@ runs:
       run: |
         docker-compose -f docker-compose.yaml --env-file .env pull
         docker-compose -f docker-compose.yaml --env-file .env up -d
-        sleep 10
       working-directory: ./result-explorer/docker-compose
       env:
           LICENSE_SERVER: 1055@${{ inputs.license-server }}
@@ -92,25 +86,17 @@ runs:
           SERVER_TAG: ${{ inputs.server-tag }}
           DPF_SERVER_TAG: ${{ inputs.dpf-server-tag }}
 
-    - name: Wait for services
-      env:
-        PROFILE: ${{ inputs.profile }}
-      shell: bash
-      run: |
-        # retry max 20 times
-        wget --retry-connrefused --retry-on-http-error=503,404,502 -t 20 -O- http://localhost:5100/api/v1/
-
     - name: Publish build info to summary
       shell: bash
       run: |
         echo "## Build info" >> $GITHUB_STEP_SUMMARY
         echo "### DPFBuildDate.txt" >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-        docker exec result-explorer-dpf-server cat ../../../DPFBuildDate.txt >> $GITHUB_STEP_SUMMARY
+        docker exec result-explorer-server sh -c 'cat ${ANSYS_DPF_PATH}/DPFBuildDate.txt' >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
         echo "### DPF _version.py" >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-        docker exec result-explorer-dpf-server cat ../../../_version.py >> $GITHUB_STEP_SUMMARY
+        docker exec result-explorer-server sh -c 'cat ${ANSYS_DPF_PATH}/_version.py' >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
         echo "### Result Explorer server version" >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
