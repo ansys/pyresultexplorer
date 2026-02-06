@@ -75,7 +75,7 @@ jobs:
           ghcr-username: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
           ghcr-token: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
           license-server: ${{ secrets.LICENSE_SERVER }}
-          web-tag: 'dev'
+          web-tag: 'proto-enum-mapping'
           server-tag: 'dev'
           results-folder: '${{ github.workspace }}/tests/data'
 

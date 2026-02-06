@@ -93,8 +93,7 @@ def test_solution_properties(rst_solution):
         ),
         None,
     )
-    # todo: enums are broken
-    # assert stress_plot is not None
+    assert stress_plot is not None
 
     # find stress plot
     # todo: use result type when enums are fixed
@@ -107,7 +106,6 @@ def test_solution_properties(rst_solution):
     assert stress_plot_def.fields[0].name is not None
 
 
-@pytest.mark.xfail(reason="View types not properly returned")
 def test_view_types(rst_solution):
     sol = rst_solution
 
