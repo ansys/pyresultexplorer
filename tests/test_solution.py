@@ -98,7 +98,7 @@ def test_solution_properties(rst_solution):
     # find stress plot
     # todo: use result type when enums are fixed
     stress_plot_def = next(
-        (p for p in sol.plots if "stress" in p.name.lower()),
+        (p for p in sol.plots if p.result_type == models.ResultType.RESULT_TYPE_STRESS),
         None,
     )
     assert stress_plot_def is not None
