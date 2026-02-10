@@ -43,7 +43,7 @@ def test_solution(rx, rst_multiple_connections):
 
 
 @pytest.fixture
-def rst_solution(rx, rst_multiple_connections) -> Solution:
+def rst_solution(rx, rst_multiple_connections):
     sol = rx.create_solution(
         name="Test Solution",
         result_provider_name="Local",
@@ -53,7 +53,7 @@ def rst_solution(rx, rst_multiple_connections) -> Solution:
     rx.delete_solution(sol)
 
 
-def test_solution_properties(rst_solution):
+def test_solution_properties(rst_solution: Solution):
     sol = rst_solution
 
     assert sol.name == "Test Solution"
@@ -66,7 +66,7 @@ def test_solution_properties(rst_solution):
     assert sol.physics_type == "mechanical"
     assert sol.solver_version == "24.1"
     assert len(sol.files) == 1
-    assert "MKS" in sol.unit_system
+    assert sol.files[0].key == "rst"
 
     assert len(sol.available_mesh_properties) > 0
     assert "mat" in [prop.id for prop in sol.available_mesh_properties]
@@ -84,6 +84,14 @@ def test_solution_properties(rst_solution):
     assert sol.time_frequencies[0].step == 1
     assert sol.time_frequencies[0].substep == 1
 
+    assert len(sol.element_groups) == 5
+    assert models.ElementGroup.ELEMENT_GROUP_SOLID in sol.element_groups
+    assert models.ElementGroup.ELEMENT_GROUP_MPC in sol.element_groups
+
+    assert "MKS" in sol.unit_system
+    assert sol.distance_unit == "m"
+    assert sol.solver_version == "24.1"
+
     # find configurable stress plot
     stress_plot = next(  # noqa
         (
@@ -96,7 +104,6 @@ def test_solution_properties(rst_solution):
     assert stress_plot is not None
 
     # find stress plot
-    # todo: use result type when enums are fixed
     stress_plot_def = next(
         (p for p in sol.plots if p.result_type == models.ResultType.RESULT_TYPE_STRESS),
         None,
@@ -105,8 +112,21 @@ def test_solution_properties(rst_solution):
     assert stress_plot_def.last_set is True
     assert stress_plot_def.fields[0].name is not None
 
+    # find configurable displacement chart
+    disp_chart = next(
+        (
+            v
+            for v in sol.configurable_charts
+            if v.results[0].result_type == models.ResultType.RESULT_TYPE_DISPLACEMENT
+        ),
+        None,
+    )
+    assert disp_chart is not None
+    assert models.Filter.FILTER_MIN in disp_chart.results[0].filters
+    assert models.Filter.FILTER_MAX in disp_chart.results[0].filters
 
-def test_view_types(rst_solution):
+
+def test_view_types(rst_solution: Solution):
     sol = rst_solution
 
     view_types = {v.type for v in sol.views}

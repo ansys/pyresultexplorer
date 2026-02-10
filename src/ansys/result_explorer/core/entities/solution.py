@@ -36,7 +36,7 @@ class Solution(NamedBaseEntity[models.Solution]):
         return self._pb.cache_plot_data
 
     @property
-    def files(self) -> list:
+    def files(self) -> list[models.File]:
         """List of result files."""
         return list(self._pb.files)
 
@@ -91,7 +91,7 @@ class Solution(NamedBaseEntity[models.Solution]):
         return self._pb.distance_unit
 
     @property
-    def element_groups(self) -> list:
+    def element_groups(self) -> list[models.ElementGroup]:
         """Element groups in the mesh."""
         return list(self._pb.element_groups)
 
