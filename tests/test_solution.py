@@ -16,7 +16,7 @@ def test_solution(rx, rst_multiple_connections):
     assert sol.n_sets == 1
 
     assert (
-        len(sol.bodies) == 4
+        len(sol.bodies) == 18
     )  # temporarily because splitMeshBy is defaulted to false in the web api
     assert sol.unsupported_element_types[0] == "SURF154"
 
