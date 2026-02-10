@@ -91,11 +91,12 @@ class Client:
         split_mesh_options: models.SplitMeshOptions | None = None,
     ) -> Solution:
         file = models.File(path=file_path)
+        split_mesh_options = split_mesh_options or models.SplitMeshOptions(auto_split_mesh=True)
         sol = models.SolutionCreate(
             result_provider_name=result_provider_name,
             name=name,
             files=[file],
-            # split_mesh_options=split_mesh_options,
+            split_mesh_options=split_mesh_options,
         )
         pb_sol = self._solution_stub.Create(sol, metadata=self._grpc_metadata)
         return Solution(pb_sol, self)

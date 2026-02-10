@@ -73,9 +73,12 @@ def test_solution_properties(rst_solution: Solution):
 
     assert len(sol.views) > 1
 
-    assert (
-        len(sol.bodies) == 4
-    )  # temporarily because splitMeshBy is defaulted to false in the web api
+    assert len(sol.bodies) == 18
+    body10 = next((b for b in sol.bodies if b.id == "10"), None)
+    assert body10 is not None
+    assert body10.labels["mat"] == "9"
+    assert body10.labels["apdl_element_type"] == "175"
+
     assert sol.unsupported_element_types[0] == "SURF154"
 
     assert len(sol.time_frequencies) == 1
