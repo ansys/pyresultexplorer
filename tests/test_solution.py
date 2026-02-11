@@ -14,6 +14,7 @@ def test_solution(rx, rst_multiple_connections):
     assert sol.n_elements == 246
     assert sol.n_nodes == 844
     assert sol.n_sets == 1
+    assert len(sol.solver_named_selections) > 0
 
     assert (
         len(sol.bodies) == 18
