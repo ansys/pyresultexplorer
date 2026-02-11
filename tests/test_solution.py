@@ -80,6 +80,8 @@ def test_solution_properties(rst_solution: Solution):
     assert body10.labels["apdl_element_type"] == "175"
 
     assert sol.unsupported_element_types[0] == "SURF154"
+    
+    assert len(sol.solver_named_selections) > 0
 
     assert len(sol.time_frequencies) == 1
     assert sol.time_frequencies[0].value == 1.0
