@@ -12,6 +12,8 @@ from ansys.api.result_explorer.v0.server_models_pb2 import (
     File,
     Filter,
     HpsFile,
+    NamedSelection,
+    NamedSelectionType,
     PlotDefinition,
     ResultType,
     Solution,

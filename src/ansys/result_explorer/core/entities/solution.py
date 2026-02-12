@@ -66,9 +66,14 @@ class Solution(NamedBaseEntity[models.Solution]):
         return self._pb.outdated
 
     @property
-    def available_named_selections(self) -> list:
-        """Available named selections."""
-        return list(self._pb.available_named_selections)
+    def solver_named_selections(self) -> list[str]:
+        """Solver named selections."""
+        return list(self._pb.solver_named_selections)
+
+    @property
+    def named_selections(self) -> list[models.NamedSelection]:
+        """Named selections."""
+        return list(self._pb.named_selections)
 
     @property
     def available_custom_selections(self) -> list:

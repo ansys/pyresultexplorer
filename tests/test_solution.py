@@ -80,7 +80,7 @@ def test_solution_properties(rst_solution: Solution):
     assert body10.labels["apdl_element_type"] == "175"
 
     assert sol.unsupported_element_types[0] == "SURF154"
-    
+
     assert len(sol.solver_named_selections) > 0
 
     assert len(sol.time_frequencies) == 1
@@ -129,6 +129,14 @@ def test_solution_properties(rst_solution: Solution):
     assert disp_chart is not None
     assert models.Filter.FILTER_MIN in disp_chart.results[0].filters
     assert models.Filter.FILTER_MAX in disp_chart.results[0].filters
+
+    # test named selections
+    assert len(sol.named_selections) == len(sol.solver_named_selections)
+    ns = next((ns for ns in sol.named_selections if ns.name == "_FIXEDSU"), None)
+    assert ns is not None
+    assert ns.type == models.NamedSelectionType.NAMED_SELECTION_TYPE_SOLVER_NAMED_SELECTION
+    assert ns.size == 80
+    assert ns.location == "Nodal"
 
 
 def test_view_types(rst_solution: Solution):
