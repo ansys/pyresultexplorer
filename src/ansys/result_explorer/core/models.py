@@ -2,10 +2,25 @@
 
 from ansys.api.result_explorer.v0.base_pb2 import Empty, ResourceId
 from ansys.api.result_explorer.v0.server_models_pb2 import (
+    AvailableMeshProperty,
+    AvailableResult,
+    Body,
+    ChartDefinition,
+    ConfigurableChart,
+    ConfigurablePlot,
+    ElementGroup,
     File,
+    Filter,
     HpsFile,
+    NamedSelection,
+    NamedSelectionType,
+    PlotDefinition,
+    ResultType,
     Solution,
+    SolverTextOutputFile,
+    SolverTextOutputType,
     SplitMeshOptions,
+    TimeFrequency,
     View,
     ViewType,
 )

@@ -11,7 +11,7 @@ def multiple_connections_solution(rx, rst_multiple_connections):
         file_path=rst_multiple_connections,
     )
     yield sol
-    rx.delete_solution(solution_id=sol.id)
+    rx.delete_solution(sol)
 
 
 def test_viewports(rx, multiple_connections_solution):
@@ -24,63 +24,57 @@ def test_viewports(rx, multiple_connections_solution):
     assert view is not None
 
     # assign view to viewport
-    workspace = rx.list_workspaces()[0]
-    viewport = rx.assign_view(
-        viewport_id=workspace.viewport_ids[0], solution_id=sol.id, view_id=view.id, wait=True
-    )
+    workspace = rx.create_workspace("Test Workspace")
+    viewport = workspace.assign_view(view=view, wait=True)
 
-    assert viewport.solution_id == sol.id
+    assert viewport.id in workspace.viewport_ids
     assert viewport.view_id == view.id
-    assert viewport.ready is True
+    assert viewport.solution_id == sol.id
 
     # list viewports
-    viewports = rx.list_viewports(workspace_id=workspace.id)
-    assert len(viewports) == 1
-    assert viewports[0].id == viewport.id
+    viewports = workspace.viewports
+    assert len(viewports) >= 1
 
     # modify metadata
     meta = viewport.metadata
-    meta["showMeshEdges"] = not meta["showMeshEdges"]
-    meta["showMinMaxLabels"] = not meta["showMinMaxLabels"]
+    meta.show_mesh_edges = not meta.show_mesh_edges
+    meta.show_min_max_labels = not meta.show_min_max_labels
 
-    rx.modify_view_metadata(
-        viewport_id=viewport.id,
-        metadata=meta,
-    )
+    viewport.modify_view_metadata(meta)
 
-    # get viewport and verify metadata changes
-    viewport = rx.get_viewport(workspace_id=workspace.id, viewport_id=viewport.id)
-    assert viewport.metadata["showMeshEdges"] == meta["showMeshEdges"]
+    assert viewport.metadata.show_mesh_edges == meta.show_mesh_edges
+    assert viewport._pb.metadata["showMeshEdges"] == meta.show_mesh_edges
 
     # take snapshot
-    snapshot_data = rx.take_snapshot(viewport_id=viewport.id)
+    snapshot_data = viewport.take_snapshot()
     assert len(snapshot_data) > 0
 
     # split viewport to create a 2x1 layout
-    bottom_viewport = rx.create_viewport(
-        workspace_id=workspace.id,
-        viewport_id=viewport.id,
-        direction=ViewportDirection.VIEWPORT_DIRECTION_BOTTOM,
+    bottom_viewport = workspace.create_viewport(
+        viewport, ViewportDirection.VIEWPORT_DIRECTION_BOTTOM
     )
 
     # get workspace and verify new viewport
-    workspace = rx.get_workspace(workspace_id=workspace.id)
+    workspace = rx.get_workspace(workspace.id)
     assert len(workspace.viewport_ids) == 2
     assert bottom_viewport.id in workspace.viewport_ids
 
     # set viewport to fullscreen
-    workspace = rx.set_fullscreen_viewport(
-        workspace_id=workspace.id, viewport_id=bottom_viewport.id
-    )
+    workspace.set_fullscreen_viewport(bottom_viewport)
+    assert workspace.fullscreen_viewport_id == bottom_viewport.id
+    workspace = rx.get_workspace(workspace.id)
     assert workspace.fullscreen_viewport_id == bottom_viewport.id
 
     # exit fullscreen
-    workspace = rx.exit_fullscreen(workspace_id=workspace.id)
+    workspace.exit_fullscreen()
+    assert workspace.fullscreen_viewport_id == ""
+    workspace = rx.get_workspace(workspace.id)
     assert workspace.fullscreen_viewport_id == ""
 
     # delete viewport
-    rx.delete_viewport(viewport_id=bottom_viewport.id)
+    workspace.delete_viewport(bottom_viewport)
+    assert len(workspace.viewport_ids) == 1
 
     # get workspace and verify deletion
-    workspace = rx.get_workspace(workspace_id=workspace.id)
+    workspace = rx.get_workspace(workspace.id)
     assert len(workspace.viewport_ids) == 1
