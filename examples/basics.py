@@ -7,10 +7,8 @@ from slugify import slugify
 from ansys.result_explorer.core.client import Client
 from ansys.result_explorer.core.models import ViewportDirection
 
-# rx = Client(grpc_port=50000, session_id=None)
-rx = Client.connect_with_token(
-    "eyJob3N0IjoibG9jYWxob3N0IiwiaHR0cFBvcnQiOjU3MjE2LCJncnBjUG9ydCI6NTcyMjMsInNlc3Npb25JZCI6IjFhZjA5ZjAzLWQxZTAtNDBlYy1iNmU5LTQxNzhhNWY2N2JlNyJ9"
-)
+## rx = Client.connect_with_token("<insert_your_token_here>")
+rx = Client(grpc_port=50000, session_id=None)
 
 workspaces = rx.list_workspaces()
 print("Existing workspaces:")
@@ -36,7 +34,7 @@ sol = rx.create_solution(
     name=sol_name,
     file_path=r"D:\Models\mech-post\cylinder_plate\d3plot",
 )
-print(f"Created solution '{sol.name}' with ID: {sol.id}")
+print(f"Created solution:\n{sol}")
 
 solutions = rx.list_solutions()
 print("Existing solutions:")

@@ -26,6 +26,11 @@ class Solution(NamedBaseEntity[models.Solution]):
     """Represents a solution loaded in the server."""
 
     @property
+    def name(self) -> str:
+        """Solution name."""
+        return self._pb.name
+
+    @property
     def description(self) -> str:
         """Solution description."""
         return self._pb.description
@@ -199,3 +204,60 @@ class Solution(NamedBaseEntity[models.Solution]):
     def views(self) -> list[View]:
         """List of views available in this solution."""
         return [View(v, self._client, parent=self) for v in self._pb.views]
+
+    def __str__(self) -> str:
+        """Return a formatted string representation of the solution."""
+        lines = [
+            "=" * 70,
+            f"Solution: {self.name}",
+            "=" * 70,
+            f"{'ID:':<20}{self.id}",
+            f"{'Description:':<20}{self.description or 'N/A'}",
+            "",
+            "Analysis Information:",
+            f"  {'Physics Type:':<20}{self.physics_type or 'N/A'}",
+            f"  {'Analysis Type:':<20}{self.analysis_type or 'N/A'}",
+            f"  {'Solver Version:':<20}{self.solver_version or 'N/A'}",
+            f"  {'Unit System:':<20}{self.unit_system or 'N/A'}",
+            "",
+            "Mesh Information:",
+            f"  {'Num Elements:':<20}{self.n_elements}",
+            f"  {'Num Nodes:':<20}{self.n_nodes}",
+            f"  {'Num Named Selections:':<20}{len(self.named_selections)}",
+            f"  {'Num Bodies:':<20}{len(self.bodies)}",
+            f"  {'Distance Unit:':<20}{self.distance_unit or 'N/A'}",
+            "",
+            "Results Information:",
+            f"  {'Num Sets:':<20}{self.n_sets}",
+            f"  {'Available Results:':<20}{self.n_results}",
+            f"  {'Time/Freq Unit:':<20}{self.time_frequencies_unit or 'N/A'}",
+            "",
+            "Status:",
+            f"  {'Ready:':<20}{'Yes' if self.ready else 'No'}",
+            f"  {'Live:':<20}{'Yes' if self.live else 'No'}",
+        ]
+
+        if self.errors:
+            lines.extend(
+                [
+                    "",
+                    "Errors:",
+                ]
+            )
+            for error in self.errors:
+                lines.append(f"  - {error}")
+
+        if self.files:
+            lines.extend(
+                [
+                    "",
+                    "Result Files:",
+                ]
+            )
+            for file in self.files[:5]:  # Show first 5 files
+                lines.append(f"  - {file.path} (key: {file.key})")
+            if len(self.files) > 5:
+                lines.append(f"  ... and {len(self.files) - 5} more")
+
+        lines.append("=" * 70)
+        return "\n".join(lines)
