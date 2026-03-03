@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from google.protobuf.json_format import MessageToDict, ParseDict
+
 from .. import models
 from .base import NamedBaseEntity, SubEntity
 
@@ -36,6 +38,24 @@ class Solution(NamedBaseEntity[models.Solution]):
         """Create a plot based on a plot definition."""
         pb_plot = self._client._solution_stub.CreatePlotDefinition(
             models.CreatePlotDefinitionRequest(solution_id=self.id, plot_definition=definition),
+            metadata=self._client._grpc_metadata,
+        )
+        self._get()
+        return pb_plot
+
+    def update_plot(
+        self, definition: models.PlotDefinitionCreate | models.PlotDefinition
+    ) -> models.PlotDefinition:
+        """Update a plot based on a plot definition."""
+
+        plot_def = definition
+        if isinstance(definition, models.PlotDefinition):
+            plot_def = _plot_def_to_plot_def_create(definition)
+
+        pb_plot = self._client._solution_stub.UpdatePlotDefinition(
+            models.UpdatePlotDefinitionRequest(
+                solution_id=self.id, plot_definition_id=definition.id, plot_definition=plot_def
+            ),
             metadata=self._client._grpc_metadata,
         )
         self._get()
@@ -285,3 +305,17 @@ class Solution(NamedBaseEntity[models.Solution]):
 
         lines.append("=" * 70)
         return "\n".join(lines)
+
+
+def _plot_def_to_plot_def_create(plot_def):
+    data = MessageToDict(
+        plot_def,
+        preserving_proto_field_name=True,
+        use_integers_for_enums=True,
+        always_print_fields_with_no_presence=True,
+    )
+    return ParseDict(
+        data,
+        models.PlotDefinitionCreate(),
+        ignore_unknown_fields=True,
+    )
