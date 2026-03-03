@@ -50,7 +50,7 @@ class Solution(NamedBaseEntity[models.Solution]):
 
         plot_def = definition
         if isinstance(definition, models.PlotDefinition):
-            plot_def = _plot_def_to_plot_def_create(definition)
+            plot_def = _clone_msg_to_compatible_type(definition, models.PlotDefinitionCreate)
 
         pb_plot = self._client._solution_stub.UpdatePlotDefinition(
             models.UpdatePlotDefinitionRequest(
@@ -65,6 +65,41 @@ class Solution(NamedBaseEntity[models.Solution]):
         """Delete a plot by ID."""
         self._client._solution_stub.DeletePlotDefinition(
             models.DeletePlotDefinitionRequest(solution_id=self.id, plot_definition_id=id),
+            metadata=self._client._grpc_metadata,
+        )
+        self._get()
+
+    def create_chart(self, definition: models.ChartDefinitionCreate) -> models.ChartDefinition:
+        """Create a chart based on a chart definition."""
+        pb_chart = self._client._solution_stub.CreateChartDefinition(
+            models.CreateChartDefinitionRequest(solution_id=self.id, chart_definition=definition),
+            metadata=self._client._grpc_metadata,
+        )
+        self._get()
+        return pb_chart
+
+    def update_chart(
+        self, definition: models.ChartDefinitionCreate | models.ChartDefinition
+    ) -> models.ChartDefinition:
+        """Update a chart based on a chart definition."""
+
+        chart_def = definition
+        if isinstance(definition, models.ChartDefinition):
+            chart_def = _clone_msg_to_compatible_type(definition, models.ChartDefinitionCreate)
+
+        pb_chart = self._client._solution_stub.UpdateChartDefinition(
+            models.UpdateChartDefinitionRequest(
+                solution_id=self.id, chart_definition_id=definition.id, chart_definition=chart_def
+            ),
+            metadata=self._client._grpc_metadata,
+        )
+        self._get()
+        return pb_chart
+
+    def delete_chart(self, id: str) -> None:
+        """Delete a chart by ID."""
+        self._client._solution_stub.DeleteChartDefinition(
+            models.DeleteChartDefinitionRequest(solution_id=self.id, chart_definition_id=id),
             metadata=self._client._grpc_metadata,
         )
         self._get()
@@ -307,15 +342,15 @@ class Solution(NamedBaseEntity[models.Solution]):
         return "\n".join(lines)
 
 
-def _plot_def_to_plot_def_create(plot_def):
+def _clone_msg_to_compatible_type(msg, target_msg_type: type):
     data = MessageToDict(
-        plot_def,
+        msg,
         preserving_proto_field_name=True,
         use_integers_for_enums=True,
         always_print_fields_with_no_presence=True,
     )
     return ParseDict(
         data,
-        models.PlotDefinitionCreate(),
+        target_msg_type(),
         ignore_unknown_fields=True,
     )
