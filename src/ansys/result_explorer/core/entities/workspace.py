@@ -47,6 +47,24 @@ class Workspace(NamedBaseEntity[models.Workspace]):
         self.set_sync(legend=value)
 
     @property
+    def sync_probe_entity(self) -> bool:
+        """Whether probe entity synchronization is enabled."""
+        return self._sync_options.probe_entity
+
+    @sync_probe_entity.setter
+    def sync_probe_entity(self, value: bool):
+        self.set_sync(probe_entity=value)
+
+    @property
+    def sync_probe_location(self) -> bool:
+        """Whether probe location synchronization is enabled."""
+        return self._sync_options.probe_location
+
+    @sync_probe_location.setter
+    def sync_probe_location(self, value: bool):
+        self.set_sync(probe_location=value)
+
+    @property
     def viewport_ids(self) -> list[str]:
         """List of viewport IDs in this workspace."""
         return list(self._pb.viewport_ids)
@@ -86,18 +104,24 @@ class Workspace(NamedBaseEntity[models.Workspace]):
         camera: bool | None = None,
         time_freq: bool | None = None,
         legend: bool | None = None,
+        probe_entity: bool | None = None,
+        probe_location: bool | None = None,
     ) -> None:
         """Update synchronization options for this workspace."""
         # Only update fields that are specified (partial update)
         sync_opts = models.SyncOptions()
+        sync_opts.CopyFrom(self._pb.sync_options)
+
         if camera is not None:
             sync_opts.camera = camera
-        else:
-            sync_opts.CopyFrom(self._pb.sync_options)
         if time_freq is not None:
             sync_opts.time_freq = time_freq
         if legend is not None:
             sync_opts.legend = legend
+        if probe_entity is not None:
+            sync_opts.probe_entity = probe_entity
+        if probe_location is not None:
+            sync_opts.probe_location = probe_location
 
         req = models.WorkspaceUpdateRequest(
             workspace_id=self.id,

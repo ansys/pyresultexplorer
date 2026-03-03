@@ -25,6 +25,8 @@ def test_workspace(rx):
     assert workspace.sync_camera is False
     assert workspace.sync_time_freq is False
     assert workspace.sync_legend is False
+    assert workspace.sync_probe_entity is False
+    assert workspace.sync_probe_location is False
     assert len(workspace.viewport_ids) == 1
 
     # update workspace to turn on sync options and set fullscreen viewport
@@ -33,6 +35,8 @@ def test_workspace(rx):
     assert workspace.sync_camera is True
     assert workspace.sync_time_freq is True
     assert workspace.sync_legend is True
+    assert workspace.sync_probe_entity is False
+    assert workspace.sync_probe_location is False
 
     workspace.set_fullscreen_viewport(workspace.viewports[0])
     workspace = rx.get_workspace(workspace.id)
