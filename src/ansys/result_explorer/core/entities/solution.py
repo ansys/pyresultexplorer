@@ -25,6 +25,30 @@ class View(SubEntity[models.View, "Solution"]):
 class Solution(NamedBaseEntity[models.Solution]):
     """Represents a solution loaded in the server."""
 
+    def _get(self):
+        """Get the latest solution data from the server."""
+        self._pb = self._client._solution_stub.Get(
+            models.ResourceId(id=self.id),
+            metadata=self._client._grpc_metadata,
+        )
+
+    def create_plot(self, definition: models.PlotDefinitionCreate) -> models.PlotDefinition:
+        """Create a plot based on a plot definition."""
+        pb_plot = self._client._solution_stub.CreatePlotDefinition(
+            models.CreatePlotDefinitionRequest(solution_id=self.id, plot_definition=definition),
+            metadata=self._client._grpc_metadata,
+        )
+        self._get()
+        return pb_plot
+
+    def delete_plot(self, id: str) -> None:
+        """Delete a plot by ID."""
+        self._client._solution_stub.DeletePlotDefinition(
+            models.DeletePlotDefinitionRequest(solution_id=self.id, plot_definition_id=id),
+            metadata=self._client._grpc_metadata,
+        )
+        self._get()
+
     @property
     def name(self) -> str:
         """Solution name."""

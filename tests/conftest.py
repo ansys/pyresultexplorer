@@ -2,12 +2,13 @@ import logging
 import os
 import subprocess
 import sys
+from collections.abc import Generator
 from pathlib import Path
 
 import pytest
 from playwright.sync_api import BrowserContext, expect
 
-from ansys.result_explorer.core.client import Client
+from ansys.result_explorer.core import Client, Solution
 
 log = logging.getLogger(__name__)
 
@@ -137,3 +138,18 @@ def _get_result_path(data_directory, filename, docker: bool):
 @pytest.fixture(scope="session")
 def rst_multiple_connections(data_directory, is_docker) -> str:
     return _get_result_path(data_directory, "multiple_connections.rst", is_docker)
+
+
+@pytest.fixture
+def multiple_connections_solution(rx, rst_multiple_connections) -> Generator[Solution, None, None]:
+    sol = rx.create_solution(
+        name="Test Solution",
+        result_provider_name="Local",
+        file_path=rst_multiple_connections,
+    )
+    assert sol.n_elements == 246
+    assert sol.n_nodes == 844
+
+    yield sol
+
+    rx.delete_solution(sol)
