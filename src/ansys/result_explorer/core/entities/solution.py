@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from google.protobuf.json_format import MessageToDict, ParseDict
+
 from .. import models
 from .base import NamedBaseEntity, SubEntity
 
@@ -24,6 +26,83 @@ class View(SubEntity[models.View, "Solution"]):
 
 class Solution(NamedBaseEntity[models.Solution]):
     """Represents a solution loaded in the server."""
+
+    def _get(self):
+        """Get the latest solution data from the server."""
+        self._pb = self._client._solution_stub.Get(
+            models.ResourceId(id=self.id),
+            metadata=self._client._grpc_metadata,
+        )
+
+    def create_plot(self, definition: models.PlotDefinitionCreate) -> models.PlotDefinition:
+        """Create a plot based on a plot definition."""
+        pb_plot = self._client._solution_stub.CreatePlotDefinition(
+            models.CreatePlotDefinitionRequest(solution_id=self.id, plot_definition=definition),
+            metadata=self._client._grpc_metadata,
+        )
+        self._get()
+        return pb_plot
+
+    def update_plot(
+        self, definition: models.PlotDefinitionCreate | models.PlotDefinition
+    ) -> models.PlotDefinition:
+        """Update a plot based on a plot definition."""
+
+        plot_def = definition
+        if isinstance(definition, models.PlotDefinition):
+            plot_def = _clone_msg_to_compatible_type(definition, models.PlotDefinitionCreate)
+
+        pb_plot = self._client._solution_stub.UpdatePlotDefinition(
+            models.UpdatePlotDefinitionRequest(
+                solution_id=self.id, plot_definition_id=definition.id, plot_definition=plot_def
+            ),
+            metadata=self._client._grpc_metadata,
+        )
+        self._get()
+        return pb_plot
+
+    def delete_plot(self, id: str) -> None:
+        """Delete a plot by ID."""
+        self._client._solution_stub.DeletePlotDefinition(
+            models.DeletePlotDefinitionRequest(solution_id=self.id, plot_definition_id=id),
+            metadata=self._client._grpc_metadata,
+        )
+        self._get()
+
+    def create_chart(self, definition: models.ChartDefinitionCreate) -> models.ChartDefinition:
+        """Create a chart based on a chart definition."""
+        pb_chart = self._client._solution_stub.CreateChartDefinition(
+            models.CreateChartDefinitionRequest(solution_id=self.id, chart_definition=definition),
+            metadata=self._client._grpc_metadata,
+        )
+        self._get()
+        return pb_chart
+
+    def update_chart(
+        self, definition: models.ChartDefinitionCreate | models.ChartDefinition
+    ) -> models.ChartDefinition:
+        """Update a chart based on a chart definition."""
+
+        chart_def = definition
+        if isinstance(definition, models.ChartDefinition):
+            chart_def = _clone_msg_to_compatible_type(definition, models.ChartDefinitionCreate)
+
+        pb_chart = self._client._solution_stub.UpdateChartDefinition(
+            models.UpdateChartDefinitionRequest(
+                solution_id=self.id, chart_definition_id=definition.id, chart_definition=chart_def
+            ),
+            metadata=self._client._grpc_metadata,
+        )
+        self._get()
+        return pb_chart
+
+    def delete_chart(self, id: str) -> None:
+        """Delete a chart by ID."""
+        self._client._solution_stub.DeleteChartDefinition(
+            models.DeleteChartDefinitionRequest(solution_id=self.id, chart_definition_id=id),
+            metadata=self._client._grpc_metadata,
+        )
+        self._get()
 
     @property
     def name(self) -> str:
@@ -261,3 +340,17 @@ class Solution(NamedBaseEntity[models.Solution]):
 
         lines.append("=" * 70)
         return "\n".join(lines)
+
+
+def _clone_msg_to_compatible_type(msg, target_msg_type: type):
+    data = MessageToDict(
+        msg,
+        preserving_proto_field_name=True,
+        use_integers_for_enums=True,
+        always_print_fields_with_no_presence=True,
+    )
+    return ParseDict(
+        data,
+        target_msg_type(),
+        ignore_unknown_fields=True,
+    )

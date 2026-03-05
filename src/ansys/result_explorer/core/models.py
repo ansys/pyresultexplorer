@@ -6,16 +6,20 @@ from ansys.api.result_explorer.v0.server_models_pb2 import (
     AvailableResult,
     Body,
     ChartDefinition,
+    ChartDefinitionCreate,
     ConfigurableChart,
     ConfigurablePlot,
     ElementGroup,
+    Field,
     File,
     Filter,
     HpsFile,
     NamedSelection,
     NamedSelectionType,
     PlotDefinition,
+    PlotDefinitionCreate,
     ResultType,
+    ShellPosition,
     Solution,
     SolverTextOutputFile,
     SolverTextOutputType,
@@ -24,9 +28,18 @@ from ansys.api.result_explorer.v0.server_models_pb2 import (
     View,
     ViewType,
 )
+from ansys.api.result_explorer.v0.server_models_pb2 import (
+    ChartResultInput as ChartResult,
+)
 from ansys.api.result_explorer.v0.solution_pb2 import (
+    CreateChartDefinitionRequest,
+    CreatePlotDefinitionRequest,
+    DeleteChartDefinitionRequest,
+    DeletePlotDefinitionRequest,
     SolutionCreate,
     SolutionList,
+    UpdateChartDefinitionRequest,
+    UpdatePlotDefinitionRequest,
 )
 from ansys.api.result_explorer.v0.workspace_pb2 import (
     CreateSnapshotRequest,

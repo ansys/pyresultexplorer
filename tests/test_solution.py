@@ -144,8 +144,7 @@ def test_view_types(rst_solution: Solution):
 
     view_types = {v.type for v in sol.views}
 
-    assert models.ViewType.VIEW_TYPE_SURFACE_MESH in view_types
-    assert models.ViewType.VIEW_TYPE_SURFACE_MESH_WITH_INTERFACES in view_types
+    assert models.ViewType.VIEW_TYPE_MESH in view_types
     assert models.ViewType.VIEW_TYPE_PLOT in view_types
     assert models.ViewType.VIEW_TYPE_CHART in view_types
 
