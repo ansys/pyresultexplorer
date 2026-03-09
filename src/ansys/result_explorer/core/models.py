@@ -14,10 +14,13 @@ from ansys.api.result_explorer.v0.server_models_pb2 import (
     File,
     Filter,
     HpsFile,
+    IdsScoping,
     NamedSelection,
+    NamedSelectionCreate,
     NamedSelectionType,
     PlotDefinition,
     PlotDefinitionCreate,
+    Range,
     ResultType,
     ShellPosition,
     Solution,
@@ -33,12 +36,15 @@ from ansys.api.result_explorer.v0.server_models_pb2 import (
 )
 from ansys.api.result_explorer.v0.solution_pb2 import (
     CreateChartDefinitionRequest,
+    CreateNamedSelectionRequest,
     CreatePlotDefinitionRequest,
     DeleteChartDefinitionRequest,
+    DeleteNamedSelectionRequest,
     DeletePlotDefinitionRequest,
     SolutionCreate,
     SolutionList,
     UpdateChartDefinitionRequest,
+    UpdateNamedSelectionRequest,
     UpdatePlotDefinitionRequest,
 )
 from ansys.api.result_explorer.v0.workspace_pb2 import (
