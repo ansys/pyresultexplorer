@@ -169,6 +169,11 @@ class Client:
             models.DeleteResultProviderRequest(name=rp_name), metadata=self._grpc_metadata
         )
 
-    def get_app_info(self) -> models.AppInfo:
-        pb_info = self._app_stub.GetAppInfo(models.Empty(), metadata=self._grpc_metadata)
-        return pb_info
+    def app_info(self) -> models.AppInfo:
+        return self._app_stub.GetAppInfo(models.Empty(), metadata=self._grpc_metadata)
+
+    def app_settings(self) -> models.AppSettings:
+        return self._app_stub.GetAppSettings(models.Empty(), metadata=self._grpc_metadata)
+
+    def update_app_settings(self, settings: models.AppSettings) -> models.AppSettings:
+        return self._app_stub.UpdateAppSettings(settings, metadata=self._grpc_metadata)

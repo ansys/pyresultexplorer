@@ -3,10 +3,15 @@
 from ansys.api.result_explorer.v0.app_pb2 import (
     AppInfo,
     AppSettings,
+    AppTheme,
     CreateResultProviderRequest,
     DeleteResultProviderRequest,
     ResultProvider,
     ResultProviderList,
+    ThreeDCameraProjection,
+    ThreeDColorMap,
+    ThreeDInteractionMode,
+    ThreeDSettings,
 )
 from ansys.api.result_explorer.v0.base_pb2 import Empty, ResourceId
 from ansys.api.result_explorer.v0.server_models_pb2 import (
@@ -15,6 +20,7 @@ from ansys.api.result_explorer.v0.server_models_pb2 import (
     Body,
     ChartDefinition,
     ChartDefinitionCreate,
+    ChunkingStrategy,
     ConfigurableChart,
     ConfigurablePlot,
     ElementGroup,
