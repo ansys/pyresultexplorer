@@ -1,5 +1,7 @@
 import logging
 
+from google.protobuf.json_format import MessageToDict
+
 from ansys.result_explorer.core import models
 from ansys.result_explorer.core.entities import Solution
 
@@ -62,3 +64,35 @@ def test_plot(multiple_connections_solution: Solution):
     sol.delete_plot(plot_def.id)
     plot_def_in_sol = next((p for p in sol.plots if p.id == plot_def.id), None)
     assert plot_def_in_sol is None
+
+
+def test_plot_with_default_result_type(multiple_connections_solution: Solution):
+    """Make sure that a plot using the default result type (displacement)
+    can be created without error.
+
+    This is a regression test for a bug where the server would return an error
+    if the result type was not explicitly set, which is the case when setting
+    the result type to displacement since it's the default and protobuf does not
+    serialize default values.
+    """
+
+    sol = multiple_connections_solution
+
+    plot_def = models.PlotDefinitionCreate(
+        name="test plot",
+        result_type=models.ResultType.RESULT_TYPE_DISPLACEMENT,
+        location="Nodal",
+        last_set=True,
+        all_sets=False,
+        on_skin=True,
+        shell_position=models.ShellPosition.SHELL_POSITION_MIDDLE,
+        fields=[models.Field(name="displacement")],
+    )
+
+    serialized_plot_def = MessageToDict(plot_def, preserving_proto_field_name=True)
+    assert "result_type" not in serialized_plot_def
+
+    plot_def = sol.create_plot(plot_def)
+
+    assert plot_def.id is not None
+    assert plot_def.result_type == models.ResultType.RESULT_TYPE_DISPLACEMENT
