@@ -156,8 +156,7 @@ class Client:
 
     def create_result_provider(self, name: str, url: str) -> models.ResultProvider:
         req = models.CreateResultProviderRequest(name=name, url=url)
-        rp = self._app_stub.CreateResultProvider(req, metadata=self._grpc_metadata)
-        return rp
+        return self._app_stub.CreateResultProvider(req, metadata=self._grpc_metadata)
 
     def delete_result_provider(self, result_provider: str | models.ResultProvider) -> None:
         rp_name = (

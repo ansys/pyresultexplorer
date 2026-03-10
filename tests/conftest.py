@@ -1,3 +1,12 @@
+"""Fixtures for testing Ansys Result Explorer.
+
+To run the tests using a headed browser, append the `--headed` flag
+to the pytest command, e.g.:
+
+    pytest -vv --headed tests
+
+"""
+
 import logging
 import os
 import subprocess

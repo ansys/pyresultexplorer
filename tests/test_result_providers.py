@@ -19,15 +19,14 @@ def test_result_providers(rx):
         assert rp.build_info.dpf_client_version != ""
     original_count = len(rps)
 
-    # create a new result provider
+    # create a new (non-existent) result provider
     name = "Test RP"
-    url = "http://localhost:5100"
-    if rps:
-        url = rps[0].url
+    url = "http://mytest:1234"
+
     new_rp = rx.create_result_provider(name=name, url=url)
     assert new_rp.name == name
     assert new_rp.url == url
-    assert new_rp.build_info.build_date != ""
+    assert not new_rp.build_info.build_date
 
     rps = rx.list_result_providers()
     assert len(rps) == original_count + 1
