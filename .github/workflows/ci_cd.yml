@@ -75,8 +75,8 @@ jobs:
           ghcr-username: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
           ghcr-token: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
           license-server: ${{ secrets.LICENSE_SERVER }}
-          server-tag: 'dev-dpf-v2026.1.pre1'
-          web-tag: 'dev'
+          server-tag: 'ns-apis-dpf-v2026.1.pre1'
+          web-tag: 'app-ns-rp-apis'
           results-folder: '${{ github.workspace }}/tests/data'
 
       - uses: extractions/netrc@v2
