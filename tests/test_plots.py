@@ -1,5 +1,6 @@
 import logging
 
+import pytest
 from google.protobuf.json_format import MessageToDict
 
 from ansys.result_explorer.core import models
@@ -96,3 +97,32 @@ def test_plot_with_default_result_type(multiple_connections_solution: Solution):
 
     assert plot_def.id is not None
     assert plot_def.result_type == models.ResultType.RESULT_TYPE_DISPLACEMENT
+
+
+@pytest.mark.xfail(reason="Needs to be fixed in the web app.")
+def test_new_plot_added_to_views(multiple_connections_solution: Solution):
+    """Ensure that a new plot is added to the solution's views."""
+
+    sol = multiple_connections_solution
+
+    plot_def = models.PlotDefinitionCreate(
+        name="New plot",
+        result_type=models.ResultType.RESULT_TYPE_DISPLACEMENT,
+        location="Nodal",
+        last_set=True,
+        all_sets=False,
+        on_skin=True,
+        shell_position=models.ShellPosition.SHELL_POSITION_MIDDLE,
+        fields=[models.Field(name="displacement")],
+    )
+
+    existing_view_ids = {v.id for v in sol.views}
+    plot_def = sol.create_plot(plot_def)
+
+    new_plot_views = [
+        v
+        for v in sol.views
+        if v.id not in existing_view_ids and v.type == models.ViewType.VIEW_TYPE_PLOT
+    ]
+    view = next((v for v in new_plot_views if v.name == plot_def.name), None)
+    assert view is not None
