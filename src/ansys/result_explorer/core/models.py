@@ -1,5 +1,18 @@
 """gRPC models for Result Explorer client."""
 
+from ansys.api.result_explorer.v0.app_pb2 import (
+    AppInfo,
+    AppSettings,
+    AppTheme,
+    CreateResultProviderRequest,
+    DeleteResultProviderRequest,
+    ResultProvider,
+    ResultProviderList,
+    ThreeDCameraProjection,
+    ThreeDColorMap,
+    ThreeDInteractionMode,
+    ThreeDSettings,
+)
 from ansys.api.result_explorer.v0.base_pb2 import Empty, ResourceId
 from ansys.api.result_explorer.v0.server_models_pb2 import (
     AvailableMeshProperty,
@@ -7,6 +20,7 @@ from ansys.api.result_explorer.v0.server_models_pb2 import (
     Body,
     ChartDefinition,
     ChartDefinitionCreate,
+    ChunkingStrategy,
     ConfigurableChart,
     ConfigurablePlot,
     ElementGroup,
@@ -14,10 +28,13 @@ from ansys.api.result_explorer.v0.server_models_pb2 import (
     File,
     Filter,
     HpsFile,
+    IdsScoping,
     NamedSelection,
+    NamedSelectionCreate,
     NamedSelectionType,
     PlotDefinition,
     PlotDefinitionCreate,
+    Range,
     ResultType,
     ShellPosition,
     Solution,
@@ -33,12 +50,15 @@ from ansys.api.result_explorer.v0.server_models_pb2 import (
 )
 from ansys.api.result_explorer.v0.solution_pb2 import (
     CreateChartDefinitionRequest,
+    CreateNamedSelectionRequest,
     CreatePlotDefinitionRequest,
     DeleteChartDefinitionRequest,
+    DeleteNamedSelectionRequest,
     DeletePlotDefinitionRequest,
     SolutionCreate,
     SolutionList,
     UpdateChartDefinitionRequest,
+    UpdateNamedSelectionRequest,
     UpdatePlotDefinitionRequest,
 )
 from ansys.api.result_explorer.v0.workspace_pb2 import (

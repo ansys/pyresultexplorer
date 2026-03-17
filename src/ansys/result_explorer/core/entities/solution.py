@@ -104,6 +104,43 @@ class Solution(NamedBaseEntity[models.Solution]):
         )
         self._get()
 
+    def create_named_selection(
+        self, definition: models.NamedSelectionCreate
+    ) -> models.NamedSelection:
+        """Create a named selection."""
+        pb_ns = self._client._solution_stub.CreateNamedSelection(
+            models.CreateNamedSelectionRequest(solution_id=self.id, named_selection=definition),
+            metadata=self._client._grpc_metadata,
+        )
+        self._get()
+        return pb_ns
+
+    def delete_named_selection(self, id: str) -> None:
+        """Delete a named selection by ID."""
+        self._client._solution_stub.DeleteNamedSelection(
+            models.DeleteNamedSelectionRequest(solution_id=self.id, named_selection_id=id),
+            metadata=self._client._grpc_metadata,
+        )
+        self._get()
+
+    def update_named_selection(
+        self, definition: models.NamedSelectionCreate | models.NamedSelection
+    ) -> models.NamedSelection:
+        """Update a named selection."""
+
+        ns_def = definition
+        if isinstance(definition, models.NamedSelection):
+            ns_def = _clone_msg_to_compatible_type(definition, models.NamedSelectionCreate)
+
+        pb_ns = self._client._solution_stub.UpdateNamedSelection(
+            models.UpdateNamedSelectionRequest(
+                solution_id=self.id, named_selection_id=definition.id, named_selection=ns_def
+            ),
+            metadata=self._client._grpc_metadata,
+        )
+        self._get()
+        return pb_ns
+
     @property
     def name(self) -> str:
         """Solution name."""
