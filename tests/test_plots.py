@@ -118,6 +118,7 @@ def test_new_plot_added_to_views(multiple_connections_solution: Solution):
 
     existing_view_ids = {v.id for v in sol.views}
     plot_def = sol.create_plot(plot_def)
+    log.warning(sol.views)
 
     new_plot_views = [
         v
