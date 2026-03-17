@@ -1,6 +1,5 @@
 import logging
 
-import pytest
 from google.protobuf.json_format import MessageToDict
 
 from ansys.result_explorer.core import models
@@ -66,6 +65,12 @@ def test_plot(multiple_connections_solution: Solution):
     plot_def_in_sol = next((p for p in sol.plots if p.id == plot_def.id), None)
     assert plot_def_in_sol is None
 
+    plot_def_in_views = next(
+        (v for v in sol.views if v.type == models.ViewType.VIEW_TYPE_PLOT and v.id == plot_def.id),
+        None,
+    )
+    assert plot_def_in_views is None
+
 
 def test_plot_with_default_result_type(multiple_connections_solution: Solution):
     """Make sure that a plot using the default result type (displacement)
@@ -99,7 +104,6 @@ def test_plot_with_default_result_type(multiple_connections_solution: Solution):
     assert plot_def.result_type == models.ResultType.RESULT_TYPE_DISPLACEMENT
 
 
-@pytest.mark.xfail(reason="Needs to be fixed in the web app.")
 def test_new_plot_added_to_views(multiple_connections_solution: Solution):
     """Ensure that a new plot is added to the solution's views."""
 
@@ -113,12 +117,10 @@ def test_new_plot_added_to_views(multiple_connections_solution: Solution):
         all_sets=False,
         on_skin=True,
         shell_position=models.ShellPosition.SHELL_POSITION_MIDDLE,
-        fields=[models.Field(name="displacement")],
+        fields=[models.Field(name="displacement", components=["X", "Y", "Z"])],
     )
-
     existing_view_ids = {v.id for v in sol.views}
     plot_def = sol.create_plot(plot_def)
-    log.warning(sol.views)
 
     new_plot_views = [
         v
@@ -127,3 +129,11 @@ def test_new_plot_added_to_views(multiple_connections_solution: Solution):
     ]
     view = next((v for v in new_plot_views if v.name == plot_def.name), None)
     assert view is not None
+
+    # modify the plot definition and make sure the view name is updated
+    plot_def.name = "Renamed plot"
+    plot_def = sol.update_plot(plot_def)
+
+    view = next((v for v in sol.views if v.id == view.id), None)
+    assert view is not None
+    assert view.name == "Renamed plot"

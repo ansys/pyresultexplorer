@@ -63,3 +63,54 @@ def test_chart(multiple_connections_solution: Solution):
     sol.delete_chart(chart_def.id)
     chart_def_in_sol = next((c for c in sol.charts if c.id == chart_def.id), None)
     assert chart_def_in_sol is None
+
+    chart_def_in_views = next(
+        (
+            v
+            for v in sol.views
+            if v.type == models.ViewType.VIEW_TYPE_CHART and v.id == chart_def.id
+        ),
+        None,
+    )
+    assert chart_def_in_views is None
+
+
+def test_new_chart_added_to_views(multiple_connections_solution: Solution):
+    """Ensure that a new chart is added to the solution's views."""
+
+    sol = multiple_connections_solution
+
+    chart_def = models.ChartDefinitionCreate(
+        name="My chart",
+        user_defined=False,
+        all_sets=True,
+        results=[
+            models.ChartResult(
+                name="Stress",
+                result_type=models.ResultType.RESULT_TYPE_STRESS,
+                location="Nodal",
+                fields=[
+                    models.Field(name="equivalent_von_mises_stress"),
+                ],
+                filters=[models.Filter.FILTER_MAX],
+            )
+        ],
+    )
+    existing_view_ids = {v.id for v in sol.views}
+    chart_def = sol.create_chart(chart_def)
+
+    new_chart_views = [
+        v
+        for v in sol.views
+        if v.id not in existing_view_ids and v.type == models.ViewType.VIEW_TYPE_CHART
+    ]
+    view = next((v for v in new_chart_views if v.name == chart_def.name), None)
+    assert view is not None
+
+    # modify the chart definition and make sure the view name is updated
+    chart_def.name = "Renamed chart"
+    chart_def = sol.update_chart(chart_def)
+
+    view = next((v for v in sol.views if v.id == view.id), None)
+    assert view is not None
+    assert view.name == "Renamed chart"
