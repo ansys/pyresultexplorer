@@ -24,6 +24,37 @@ class View(SubEntity[models.View, "Solution"]):
         return self.parent
 
 
+class PlotView(View):
+    """Represents a plot view in a solution."""
+
+    @property
+    def definition(self) -> models.PlotDefinition:
+        """Plot definition associated with this view."""
+        plot_def_id = self._pb.id
+        plot_def = next((p for p in self.solution.plots if p.id == plot_def_id), None)
+        if plot_def is None:
+            raise RuntimeError(
+                f"Plot definition with ID {plot_def_id} not found in solution {self.solution.name}"
+            )
+        return plot_def
+
+
+class ChartView(View):
+    """Represents a chart view in a solution."""
+
+    @property
+    def definition(self) -> models.ChartDefinition:
+        """Chart definition associated with this view."""
+        chart_def_id = self._pb.id
+        chart_def = next((c for c in self.solution.charts if c.id == chart_def_id), None)
+        if chart_def is None:
+            raise RuntimeError(
+                f"Chart definition with ID {chart_def_id} "
+                f"not found in solution {self.solution.name}"
+            )
+        return chart_def
+
+
 class Solution(NamedBaseEntity[models.Solution]):
     """Represents a solution loaded in the server."""
 
@@ -34,72 +65,106 @@ class Solution(NamedBaseEntity[models.Solution]):
             metadata=self._client._grpc_metadata,
         )
 
-    def create_plot(self, definition: models.PlotDefinitionCreate) -> models.PlotDefinition:
+    def _get_plot_view(self, plot_def_id: str) -> PlotView:
+        """Get the PlotView associated with a given plot definition ID."""
+        for view in self.views:
+            if view.type == models.ViewType.VIEW_TYPE_PLOT and view.id == plot_def_id:
+                return PlotView(view._pb, self._client, parent=self)
+        raise RuntimeError(
+            f"No PlotView found for plot definition ID {plot_def_id} in solution {self.name}"
+        )
+
+    def _get_chart_view(self, chart_def_id: str) -> ChartView:
+        """Get the ChartView associated with a given chart definition ID."""
+        for view in self.views:
+            if view.type == models.ViewType.VIEW_TYPE_CHART and view.id == chart_def_id:
+                return ChartView(view._pb, self._client, parent=self)
+        raise RuntimeError(
+            f"No ChartView found for chart definition ID {chart_def_id} in solution {self.name}"
+        )
+
+    def create_plot(self, definition: models.PlotDefinitionCreate) -> PlotView:
         """Create a plot based on a plot definition."""
         pb_plot = self._client._solution_stub.CreatePlotDefinition(
             models.CreatePlotDefinitionRequest(solution_id=self.id, plot_definition=definition),
             metadata=self._client._grpc_metadata,
         )
         self._get()
-        return pb_plot
+        return self._get_plot_view(pb_plot.id)
 
     def update_plot(
-        self, definition: models.PlotDefinitionCreate | models.PlotDefinition
-    ) -> models.PlotDefinition:
+        self, plot: models.PlotDefinitionCreate | models.PlotDefinition | PlotView
+    ) -> PlotView:
         """Update a plot based on a plot definition."""
 
-        plot_def = definition
-        if isinstance(definition, models.PlotDefinition):
-            plot_def = _clone_msg_to_compatible_type(definition, models.PlotDefinitionCreate)
+        plot_def = plot
+        if isinstance(plot, models.PlotDefinition):
+            plot_def = _clone_msg_to_compatible_type(plot, models.PlotDefinitionCreate)
+        elif isinstance(plot, PlotView):
+            plot_def = plot.definition
 
         pb_plot = self._client._solution_stub.UpdatePlotDefinition(
             models.UpdatePlotDefinitionRequest(
-                solution_id=self.id, plot_definition_id=definition.id, plot_definition=plot_def
+                solution_id=self.id, plot_definition_id=plot_def.id, plot_definition=plot_def
             ),
             metadata=self._client._grpc_metadata,
         )
         self._get()
-        return pb_plot
+        return self._get_plot_view(pb_plot.id)
 
-    def delete_plot(self, id: str) -> None:
+    def delete_plot(self, id: str | PlotView | models.PlotDefinition) -> None:
         """Delete a plot by ID."""
+        plot_id = id
+        if isinstance(id, PlotView):
+            plot_id = id.definition.id
+        elif isinstance(id, models.PlotDefinition):
+            plot_id = id.id
+
         self._client._solution_stub.DeletePlotDefinition(
-            models.DeletePlotDefinitionRequest(solution_id=self.id, plot_definition_id=id),
+            models.DeletePlotDefinitionRequest(solution_id=self.id, plot_definition_id=plot_id),
             metadata=self._client._grpc_metadata,
         )
         self._get()
 
-    def create_chart(self, definition: models.ChartDefinitionCreate) -> models.ChartDefinition:
+    def create_chart(self, definition: models.ChartDefinitionCreate) -> ChartView:
         """Create a chart based on a chart definition."""
         pb_chart = self._client._solution_stub.CreateChartDefinition(
             models.CreateChartDefinitionRequest(solution_id=self.id, chart_definition=definition),
             metadata=self._client._grpc_metadata,
         )
         self._get()
-        return pb_chart
+        return self._get_chart_view(pb_chart.id)
 
     def update_chart(
-        self, definition: models.ChartDefinitionCreate | models.ChartDefinition
-    ) -> models.ChartDefinition:
+        self, chart: models.ChartDefinitionCreate | models.ChartDefinition | ChartView
+    ) -> ChartView:
         """Update a chart based on a chart definition."""
 
-        chart_def = definition
-        if isinstance(definition, models.ChartDefinition):
-            chart_def = _clone_msg_to_compatible_type(definition, models.ChartDefinitionCreate)
+        chart_def = chart
+        if isinstance(chart, models.ChartDefinition):
+            chart_def = _clone_msg_to_compatible_type(chart, models.ChartDefinitionCreate)
+        elif isinstance(chart, ChartView):
+            chart_def = chart.definition
 
         pb_chart = self._client._solution_stub.UpdateChartDefinition(
             models.UpdateChartDefinitionRequest(
-                solution_id=self.id, chart_definition_id=definition.id, chart_definition=chart_def
+                solution_id=self.id, chart_definition_id=chart_def.id, chart_definition=chart_def
             ),
             metadata=self._client._grpc_metadata,
         )
         self._get()
-        return pb_chart
+        return self._get_chart_view(pb_chart.id)
 
-    def delete_chart(self, id: str) -> None:
+    def delete_chart(self, id: str | ChartView | models.ChartDefinition) -> None:
         """Delete a chart by ID."""
+        chart_id = id
+        if isinstance(id, ChartView):
+            chart_id = id.definition.id
+        elif isinstance(id, models.ChartDefinition):
+            chart_id = id.id
+
         self._client._solution_stub.DeleteChartDefinition(
-            models.DeleteChartDefinitionRequest(solution_id=self.id, chart_definition_id=id),
+            models.DeleteChartDefinitionRequest(solution_id=self.id, chart_definition_id=chart_id),
             metadata=self._client._grpc_metadata,
         )
         self._get()
@@ -319,7 +384,15 @@ class Solution(NamedBaseEntity[models.Solution]):
     @property
     def views(self) -> list[View]:
         """List of views available in this solution."""
-        return [View(v, self._client, parent=self) for v in self._pb.views]
+        views = []
+        for v in self._pb.views:
+            if v.type == models.ViewType.VIEW_TYPE_PLOT:
+                views.append(PlotView(v, self._client, parent=self))
+            elif v.type == models.ViewType.VIEW_TYPE_CHART:
+                views.append(ChartView(v, self._client, parent=self))
+            else:
+                views.append(View(v, self._client, parent=self))
+        return views
 
     def __str__(self) -> str:
         """Return a formatted string representation of the solution."""

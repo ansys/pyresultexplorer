@@ -1,3 +1,18 @@
+"""
+This example demonstrates basic usage of the PyResultExplorer API, including:
+- Connecting to the PyResultExplorer service
+- Creating a workspace
+- Creating a solution from a result file
+- Listing existing workspaces and solutions
+- Accessing views in a solution
+- Assigning a view to a viewport in the workspace
+- Taking a snapshot of the viewport and saving it as an image file
+- Creating additional viewports and arranging them in a grid layout
+- Modifying viewport metadata
+
+Make sure to update the TOKEN variable with appropriate value before running the example.
+"""
+
 import os
 
 import matplotlib.image as img
@@ -7,7 +22,12 @@ from slugify import slugify
 from ansys.result_explorer.core.client import Client
 from ansys.result_explorer.core.models import ViewportDirection
 
-rx = Client.connect_with_token("<insert_your_token_here>")
+FILE_PATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "tests", "data", "multiple_connections.rst")
+)
+TOKEN = "eyJob3N0IjoibG9jYWxob3N0IiwiaHR0cFBvcnQiOjYxNjAyLCJncnBjUG9ydCI6NjE2MTIsInNlc3Npb25JZCI6IjE5NDUxMWI4LTUxYTItNDcxMC1iYzYyLTlhMGQwNDc2OGI3MSJ9"  # noqa E501
+
+rx = Client.connect_with_token(TOKEN)
 
 workspaces = rx.list_workspaces()
 print("Existing workspaces:")
@@ -31,7 +51,7 @@ sol_name = "PyRX Solution"
 sol = rx.create_solution(
     result_provider_name="Local",
     name=sol_name,
-    file_path=r"D:\Models\mech-post\cylinder_plate\d3plot",
+    file_path=FILE_PATH,
 )
 print(f"Created solution:\n{sol}")
 
@@ -125,6 +145,6 @@ plt.show()
 print("Deleting bottom right viewport...")
 workspace.delete_viewport(viewport=bottom_right_viewport)
 
-# delete the solution
-print("Deleting the solution...")
-rx.delete_solution(solution=sol)
+# # delete the solution
+# print("Deleting the solution...")
+# rx.delete_solution(solution=sol)

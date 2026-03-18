@@ -41,8 +41,8 @@ class ViewportMetadata:
     def show_min_max_labels(self, value: bool):
         self._pb_obj["showMinMaxLabels"] = value
 
-    def to_pb(self) -> dict:
-        """Convert back to dictionary for gRPC calls."""
+    def to_pb(self) -> models.Viewport:
+        """Convert back for gRPC calls."""
         return self._pb_obj
 
     def __str__(self):
@@ -86,10 +86,7 @@ class Viewport(BaseEntity[models.Viewport]):
         return None
 
     def set_view(self, view: View, wait: bool = True) -> Viewport:
-        """Assign a view to this viewport.
-
-        TODO: in the future view will be of type View | Plot | Chart
-        """
+        """Assign a view to this viewport."""
         req = models.UpdateViewportRequest(
             viewport_id=self.id,
             solution_id=view.solution.id,

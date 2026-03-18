@@ -28,7 +28,8 @@ def test_plot(multiple_connections_solution: Solution):
         ],
     )
 
-    plot_def = sol.create_plot(plot_def)
+    plot_view = sol.create_plot(plot_def)
+    plot_def = plot_view.definition
 
     assert plot_def.id is not None
     assert plot_def.name == "My stress plot"
@@ -98,7 +99,7 @@ def test_plot_with_default_result_type(multiple_connections_solution: Solution):
     serialized_plot_def = MessageToDict(plot_def, preserving_proto_field_name=True)
     assert "result_type" not in serialized_plot_def
 
-    plot_def = sol.create_plot(plot_def)
+    plot_def = sol.create_plot(plot_def).definition
 
     assert plot_def.id is not None
     assert plot_def.result_type == models.ResultType.RESULT_TYPE_DISPLACEMENT
@@ -120,7 +121,7 @@ def test_new_plot_added_to_views(multiple_connections_solution: Solution):
         fields=[models.Field(name="displacement", components=["X", "Y", "Z"])],
     )
     existing_view_ids = {v.id for v in sol.views}
-    plot_def = sol.create_plot(plot_def)
+    plot_def = sol.create_plot(plot_def).definition
 
     new_plot_views = [
         v
@@ -132,7 +133,7 @@ def test_new_plot_added_to_views(multiple_connections_solution: Solution):
 
     # modify the plot definition and make sure the view name is updated
     plot_def.name = "Renamed plot"
-    plot_def = sol.update_plot(plot_def)
+    plot_def = sol.update_plot(plot_def).definition
 
     view = next((v for v in sol.views if v.id == view.id), None)
     assert view is not None
