@@ -109,6 +109,7 @@ def test_viewport_size(rx):
     new_size = 75.0
     first_viewport.set_size(new_size)
     assert first_viewport.size == new_size
+    assert workspace_2x2.viewports[1].size == 100 - new_size
 
     # Refresh the viewport from the server
     updated_viewports = workspace_2x2.viewports
