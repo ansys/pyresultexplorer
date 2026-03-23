@@ -216,3 +216,48 @@ def test_solution_out_files(data_directory, cp_transient_solution: Solution):
     )
     assert "<SOLUTION>" in gst_content
     assert "<LOADSTEPDATA>" in gst_content
+
+
+def test_mesh_options_with_processing_mode(rx, rst_multiple_connections):
+    original_settings = rx.app_settings()
+    original_mode = original_settings.data_processing.processing_mode
+    if original_mode == models.ProcessingMode.PROCESSING_MODE_FULL:
+        new_mode = models.ProcessingMode.PROCESSING_MODE_SKIN
+        expected_on_skin = True
+    else:
+        new_mode = models.ProcessingMode.PROCESSING_MODE_FULL
+        expected_on_skin = False
+
+    try:
+        settings = models.AppSettings()
+        settings.CopyFrom(original_settings)
+        settings.data_processing.processing_mode = new_mode
+        rx.update_app_settings(settings)
+
+        updated_settings = rx.app_settings()
+        assert updated_settings.data_processing.processing_mode == new_mode
+
+        sol = rx.create_solution(
+            name="Test Solution - Data Processing",
+            result_provider_name="Local",
+            file_path=rst_multiple_connections,
+        )
+
+        assert sol.mesh_options.on_skin == expected_on_skin
+        assert sol.mesh_options.as_linear is True
+
+        mesh_view = next((v for v in sol.views if v.type == models.ViewType.VIEW_TYPE_MESH), None)
+        assert mesh_view is not None
+        assert mesh_view.options.on_skin == expected_on_skin
+
+        # Cleanup
+        rx.delete_solution(sol)
+
+    finally:
+        restored_settings = models.AppSettings()
+        restored_settings.CopyFrom(original_settings)
+        restored_settings.data_processing.processing_mode = original_mode
+        rx.update_app_settings(restored_settings)
+
+        final_settings = rx.app_settings()
+        assert final_settings.data_processing.processing_mode == original_mode

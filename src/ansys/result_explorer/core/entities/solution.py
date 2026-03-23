@@ -55,6 +55,15 @@ class ChartView(View):
         return chart_def
 
 
+class MeshView(View):
+    """Represents a mesh view in a solution."""
+
+    @property
+    def options(self) -> models.MeshGraphicsOptions:
+        """Mesh view options."""
+        return self.solution.mesh_options
+
+
 class Solution(NamedBaseEntity[models.Solution]):
     """Represents a solution loaded in the server."""
 
@@ -280,6 +289,11 @@ class Solution(NamedBaseEntity[models.Solution]):
         return list(self._pb.solver_named_selections)
 
     @property
+    def mesh_options(self) -> models.MeshGraphicsOptions:
+        """Mesh graphics options."""
+        return self._pb.mesh_graphics_options
+
+    @property
     def named_selections(self) -> list[models.NamedSelection]:
         """Named selections."""
         return list(self._pb.named_selections)
@@ -432,6 +446,8 @@ class Solution(NamedBaseEntity[models.Solution]):
                 views.append(PlotView(v, self._client, parent=self))
             elif v.type == models.ViewType.VIEW_TYPE_CHART:
                 views.append(ChartView(v, self._client, parent=self))
+            elif v.type == models.ViewType.VIEW_TYPE_MESH:
+                views.append(MeshView(v, self._client, parent=self))
             else:
                 views.append(View(v, self._client, parent=self))
         return views
