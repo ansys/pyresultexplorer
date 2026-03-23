@@ -82,12 +82,13 @@ class Workspace(NamedBaseEntity[models.Workspace]):
         )
         return [Viewport(v, self._client) for v in vp_response.viewports]
 
-    def create_viewport(self, viewport: Viewport, direction) -> Viewport:
+    def create_viewport(self, viewport: Viewport, direction, size: float = None) -> Viewport:
         """Create a new viewport as a child of the given viewport."""
         req = models.CreateViewportRequest(
             workspace_id=self.id,
             viewport_id=viewport.id,
             direction=direction,
+            size=size,
         )
         pb_vp = self._client._workspace_stub.CreateViewport(
             req, metadata=self._client._grpc_metadata

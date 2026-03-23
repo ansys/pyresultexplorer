@@ -58,6 +58,11 @@ class ChartView(View):
 class Solution(NamedBaseEntity[models.Solution]):
     """Represents a solution loaded in the server."""
 
+    def __init__(self, pb_obj: models.Solution, client):
+        super().__init__(pb_obj, client)
+
+        self._result_provider: models.ResultProvider | None = None
+
     def _get(self):
         """Get the latest solution data from the server."""
         self._pb = self._client._solution_stub.Get(
@@ -205,6 +210,24 @@ class Solution(NamedBaseEntity[models.Solution]):
         )
         self._get()
         return pb_ns
+
+    @property
+    def result_provider(self) -> models.ResultProvider:
+        """Result provider for this solution."""
+        if self._result_provider is None:
+            sol_id = self.id
+            rps = self._client.list_result_providers()
+            rp = next((rp for rp in rps if sol_id in rp.solution_ids), None)
+            if rp is None:
+                raise RuntimeError(f"Result provider with solution ID {sol_id} not found")
+
+            self._result_provider = rp
+        return self._result_provider
+
+    @property
+    def id(self) -> str:
+        """Unique identifier."""
+        return self._pb.id
 
     @property
     def name(self) -> str:
@@ -380,6 +403,25 @@ class Solution(NamedBaseEntity[models.Solution]):
     def solver_text_outputs(self) -> list[models.SolverTextOutputFile]:
         """Solver text output files."""
         return list(self._pb.solver_text_outputs)
+
+    def get_solver_out_content(
+        self, file: str | models.SolverTextOutputFile, lines_offset: int = 0
+    ) -> str:
+        """Get content of a solver text output file."""
+        if isinstance(file, models.SolverTextOutputFile):
+            solver_out = file
+        else:
+            solver_out = next((f for f in self.solver_text_outputs if f.name == file), None)
+        if solver_out is None:
+            raise ValueError(
+                f"Solver text output file '{file}' not found in solution '{self.name}'"
+            )
+        content = self._client._get_file_content(
+            path=solver_out.path,
+            result_provider=self.result_provider.name,
+            lines_offset=lines_offset,
+        )
+        return content
 
     @property
     def views(self) -> list[View]:

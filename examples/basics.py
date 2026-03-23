@@ -122,7 +122,7 @@ print("Modifying view metadata...")
 meta = viewport.metadata
 meta.show_mesh_edges = not meta.show_mesh_edges
 meta.show_min_max_labels = True
-viewport.modify_view_metadata(
+viewport.set_metadata(
     metadata=meta,
 )
 

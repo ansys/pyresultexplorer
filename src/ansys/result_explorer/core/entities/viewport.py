@@ -75,6 +75,10 @@ class Viewport(BaseEntity[models.Viewport]):
         return ViewportMetadata(self._pb.metadata, self._client)
 
     @property
+    def size(self) -> float:
+        return self._pb.size
+
+    @property
     def view(self) -> View | None:
         """Get the assigned view, if any."""
         # todo: we could cache this
@@ -107,12 +111,23 @@ class Viewport(BaseEntity[models.Viewport]):
         )
         return snapshot.data
 
-    def modify_view_metadata(self, metadata: ViewportMetadata) -> None:
+    def set_metadata(self, metadata: ViewportMetadata) -> None:
         """Update metadata for this viewport."""
         req = models.UpdateViewportRequest(
             viewport_id=self.id,
             metadata=metadata.to_pb(),
             wait=True,
+        )
+        self._pb = self._client._workspace_stub.UpdateViewport(
+            req, metadata=self._client._grpc_metadata
+        )
+
+    def set_size(self, size: float) -> None:
+        """Set the size of this viewport in the workspace layout."""
+        req = models.UpdateViewportRequest(
+            viewport_id=self.id,
+            size=size,
+            wait=False,
         )
         self._pb = self._client._workspace_stub.UpdateViewport(
             req, metadata=self._client._grpc_metadata
