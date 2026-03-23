@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 
 import pytest
 
@@ -158,3 +159,60 @@ def test_view_types(rst_solution: Solution):
         None,
     )
     assert disp_view is not None
+
+
+def test_solution_out_files(data_directory, cp_transient_solution: Solution):
+    sol = cp_transient_solution
+
+    cp_trans_path = Path(data_directory) / "cp_trans"
+
+    # list cp_trans folder content through filesystem API
+    content = sol._client.ls(path=str(cp_trans_path), result_provider="Local", depth=0)
+    file_names = {item.name for item in content if item.is_file}
+
+    expected_files = {
+        "ds.dat",
+        "file.cnd",
+        "file.err",
+        "file.gst",
+        "file.nr001",
+        "file.nr002",
+        "file.nr003",
+        "file.rst",
+        "solve.out",
+    }
+    assert expected_files.issubset(file_names)
+
+    # validate solver text outputs discovered on the solution
+    solver_out_files = sol.solver_text_outputs
+    assert len(solver_out_files) > 0
+
+    solver_out_names = {f.name for f in solver_out_files}
+    assert "solve.out" in solver_out_names
+
+    # get out file content through solution API
+    solve_out = next((f for f in solver_out_files if f.name == "solve.out"), None)
+    assert solve_out is not None
+
+    content_from_obj = sol.get_solver_out_content(solve_out)
+    assert isinstance(content_from_obj, str)
+    assert len(content_from_obj) > 0
+    assert "MAPDL 2024 R2" in content_from_obj
+
+    content_from_name = sol.get_solver_out_content("solve.out")
+    assert content_from_name == content_from_obj
+
+    # validate content of additional cp_trans files through filesystem API
+    err_content = sol._client._get_file_content(
+        path=str(cp_trans_path / "file.err"),
+        result_provider="Local",
+    )
+    assert "ANSYS RELEASE" in err_content
+    assert "*** WARNING ***" in err_content
+
+    gst_content = sol._client._get_file_content(
+        path=str(cp_trans_path / "file.gst"),
+        result_provider="Local",
+    )
+    assert "<SOLUTION>" in gst_content
+    assert "<LOADSTEPDATA>" in gst_content
