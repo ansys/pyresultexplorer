@@ -30,7 +30,7 @@ wheels = [
 [[package]]
 name = "ansys-api-result-explorer"
 version = "0.1.0"
-source = { git = "https://github.com/ansys-internal/result-explorer.git?subdirectory=api%2Fpython&rev=43bb2a90a4792ce8aa82875186f38b2b516368b8#43bb2a90a4792ce8aa82875186f38b2b516368b8" }
+source = { git = "https://github.com/ansys-internal/result-explorer.git?subdirectory=api%2Fpython&rev=b2f4b0d0dac274d460ba6f31acb8720466efca13#b2f4b0d0dac274d460ba6f31acb8720466efca13" }
 dependencies = [
     { name = "grpcio" },
     { name = "protobuf" },
@@ -69,7 +69,7 @@ examples = [
 
 [package.metadata]
 requires-dist = [
-    { name = "ansys-api-result-explorer", git = "https://github.com/ansys-internal/result-explorer.git?subdirectory=api%2Fpython&rev=43bb2a90a4792ce8aa82875186f38b2b516368b8" },
+    { name = "ansys-api-result-explorer", git = "https://github.com/ansys-internal/result-explorer.git?subdirectory=api%2Fpython&rev=b2f4b0d0dac274d460ba6f31acb8720466efca13" },
     { name = "ansys-tools-path", specifier = ">=0.7.3" },
     { name = "grpcio", specifier = ">=1.63.0" },
     { name = "protobuf" },
