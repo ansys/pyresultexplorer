@@ -92,11 +92,7 @@ runs:
         echo "## Build info" >> $GITHUB_STEP_SUMMARY
         echo "### DPFBuildDate.txt" >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-        docker exec result-explorer-server sh -c 'cat ${ANSYS_DPF_PATH}/DPFBuildDate.txt' >> $GITHUB_STEP_SUMMARY
-        echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-        echo "### DPF _version.py" >> $GITHUB_STEP_SUMMARY
-        echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-        docker exec result-explorer-server sh -c 'cat ${ANSYS_DPF_PATH}/_version.py' >> $GITHUB_STEP_SUMMARY
+        docker exec result-explorer-server sh -c 'cat viz-server/dpf/DPFBuildDate.txt' >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
         echo "### Result Explorer server version" >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
