@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 
 import pytest
 
@@ -158,3 +159,105 @@ def test_view_types(rst_solution: Solution):
         None,
     )
     assert disp_view is not None
+
+
+def test_solution_out_files(data_directory, cp_transient_solution: Solution):
+    sol = cp_transient_solution
+
+    cp_trans_path = Path(data_directory) / "cp_trans"
+
+    # list cp_trans folder content through filesystem API
+    content = sol._client.ls(path=str(cp_trans_path), result_provider="Local", depth=0)
+    file_names = {item.name for item in content if item.is_file}
+
+    expected_files = {
+        "ds.dat",
+        "file.cnd",
+        "file.err",
+        "file.gst",
+        "file.nr001",
+        "file.nr002",
+        "file.nr003",
+        "file.rst",
+        "solve.out",
+    }
+    assert expected_files.issubset(file_names)
+
+    # validate solver text outputs discovered on the solution
+    solver_out_files = sol.solver_text_outputs
+    assert len(solver_out_files) > 0
+
+    solver_out_names = {f.name for f in solver_out_files}
+    assert "solve.out" in solver_out_names
+
+    # get out file content through solution API
+    solve_out = next((f for f in solver_out_files if f.name == "solve.out"), None)
+    assert solve_out is not None
+
+    content_from_obj = sol.get_solver_out_content(solve_out)
+    assert isinstance(content_from_obj, str)
+    assert len(content_from_obj) > 0
+    assert "MAPDL 2024 R2" in content_from_obj
+
+    content_from_name = sol.get_solver_out_content("solve.out")
+    assert content_from_name == content_from_obj
+
+    # validate content of additional cp_trans files through filesystem API
+    err_content = sol._client._get_file_content(
+        path=str(cp_trans_path / "file.err"),
+        result_provider="Local",
+    )
+    assert "ANSYS RELEASE" in err_content
+    assert "*** WARNING ***" in err_content
+
+    gst_content = sol._client._get_file_content(
+        path=str(cp_trans_path / "file.gst"),
+        result_provider="Local",
+    )
+    assert "<SOLUTION>" in gst_content
+    assert "<LOADSTEPDATA>" in gst_content
+
+
+def test_mesh_options_with_processing_mode(rx, rst_multiple_connections):
+    original_settings = rx.app_settings()
+    original_mode = original_settings.data_processing.processing_mode
+    if original_mode == models.ProcessingMode.PROCESSING_MODE_FULL:
+        new_mode = models.ProcessingMode.PROCESSING_MODE_SKIN
+        expected_on_skin = True
+    else:
+        new_mode = models.ProcessingMode.PROCESSING_MODE_FULL
+        expected_on_skin = False
+
+    try:
+        settings = models.AppSettings()
+        settings.CopyFrom(original_settings)
+        settings.data_processing.processing_mode = new_mode
+        rx.update_app_settings(settings)
+
+        updated_settings = rx.app_settings()
+        assert updated_settings.data_processing.processing_mode == new_mode
+
+        sol = rx.create_solution(
+            name="Test Solution - Data Processing",
+            result_provider_name="Local",
+            file_path=rst_multiple_connections,
+        )
+
+        assert sol.mesh_options.on_skin == expected_on_skin
+        assert sol.mesh_options.as_linear is True
+
+        mesh_view = next((v for v in sol.views if v.type == models.ViewType.VIEW_TYPE_MESH), None)
+        assert mesh_view is not None
+        assert mesh_view.options.on_skin == expected_on_skin
+
+        # Cleanup
+        rx.delete_solution(sol)
+
+    finally:
+        restored_settings = models.AppSettings()
+        restored_settings.CopyFrom(original_settings)
+        restored_settings.data_processing.processing_mode = original_mode
+        rx.update_app_settings(restored_settings)
+
+        final_settings = rx.app_settings()
+        assert final_settings.data_processing.processing_mode == original_mode
