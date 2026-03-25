@@ -40,7 +40,7 @@ def test_viewports(rx, multiple_connections_solution):
     meta.show_mesh_edges = not meta.show_mesh_edges
     meta.show_min_max_labels = not meta.show_min_max_labels
 
-    viewport.modify_view_metadata(meta)
+    viewport.set_metadata(meta)
 
     assert viewport.metadata.show_mesh_edges == meta.show_mesh_edges
     assert viewport._pb.metadata["showMeshEdges"] == meta.show_mesh_edges
@@ -78,3 +78,47 @@ def test_viewports(rx, multiple_connections_solution):
     # get workspace and verify deletion
     workspace = rx.get_workspace(workspace.id)
     assert len(workspace.viewport_ids) == 1
+
+
+def test_viewport_size(rx):
+    """Test grid workspace creation and viewport size manipulation."""
+
+    # Test grid workspace creation with different row/column counts
+    workspace_2x2 = rx.create_workspace("Test 2x2 Grid", rows=2, cols=2)
+    assert len(workspace_2x2.viewport_ids) == 4
+
+    workspace_3x2 = rx.create_workspace("Test 3x2 Grid", rows=3, cols=2)
+    assert len(workspace_3x2.viewport_ids) == 6
+
+    workspace_1x3 = rx.create_workspace("Test 1x3 Grid", rows=1, cols=3)
+    assert len(workspace_1x3.viewport_ids) == 3
+
+    # Test viewport.size property
+    viewports_2x2 = workspace_2x2.viewports
+    sizes_2x2 = [vp.size for vp in viewports_2x2]
+
+    # All viewports should have a size property that's a number
+    assert all(isinstance(size, int | float) for size in sizes_2x2)
+
+    # In a 2x2 grid, viewports should have non-zero sizes
+    assert all(size > 0 for size in sizes_2x2)
+
+    # Test updating viewport size using viewport.set_size
+    first_viewport = viewports_2x2[0]
+
+    new_size = 75.0
+    first_viewport.set_size(new_size)
+    assert first_viewport.size == new_size
+    assert workspace_2x2.viewports[1].size == 100 - new_size
+
+    # Refresh the viewport from the server
+    updated_viewports = workspace_2x2.viewports
+    first_vp_updated = next((vp for vp in updated_viewports if vp.id == first_viewport.id), None)
+
+    assert first_vp_updated is not None
+    assert first_vp_updated.size == new_size
+
+    # Cleanup
+    rx.delete_workspace(workspace_2x2)
+    rx.delete_workspace(workspace_3x2)
+    rx.delete_workspace(workspace_1x3)

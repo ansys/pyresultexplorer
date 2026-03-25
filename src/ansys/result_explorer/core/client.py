@@ -4,11 +4,18 @@ from functools import wraps
 
 import grpc
 
-from ansys.api.result_explorer.v0 import app_pb2_grpc, solution_pb2_grpc, workspace_pb2_grpc
+from ansys.api.result_explorer.v0 import (
+    app_pb2_grpc,
+    filesystem_pb2_grpc,
+    solution_pb2_grpc,
+    workspace_pb2_grpc,
+)
 from ansys.result_explorer.core import models
 
 from .entities import Solution, Viewport, Workspace
 from .exceptions import ResultExplorerError
+
+DEFAULT_RESULT_PROVIDER = "Local"
 
 
 class GrpcStubWrapper:
@@ -62,6 +69,9 @@ class Client:
         self._app_stub: app_pb2_grpc.AppServiceStub = GrpcStubWrapper(
             app_pb2_grpc.AppServiceStub(self._channel)
         )  # type: ignore
+        self._filesystem_stub: filesystem_pb2_grpc.FilesystemServiceStub = GrpcStubWrapper(
+            filesystem_pb2_grpc.FilesystemServiceStub(self._channel)
+        )  # type: ignore
 
     @classmethod
     def connect_with_token(cls, token: str) -> "Client":
@@ -84,6 +94,35 @@ class Client:
             raise ValueError("Token is missing 'sessionId' information.")
 
         return cls(host=host, grpc_port=grpc_port, http_port=http_port, session_id=session_id)
+
+    # ----------- FileSystem methods ----------------
+    def ls(
+        self,
+        path: str,
+        result_provider: str | models.ResultProvider = DEFAULT_RESULT_PROVIDER,
+        depth=0,
+    ) -> list[models.FSItem]:
+        rp_name = result_provider
+        if isinstance(result_provider, models.ResultProvider):
+            rp_name = result_provider.name
+
+        req = models.LsRequest(result_provider_name=rp_name, path=path, max_depth=depth)
+        res = self._filesystem_stub.Ls(req, metadata=self._grpc_metadata)
+        return list(res.items)
+
+    def _get_file_content(
+        self,
+        path: str,
+        result_provider: str | models.ResultProvider = DEFAULT_RESULT_PROVIDER,
+        lines_offset: int = 0,
+    ) -> str:
+        rp_name = result_provider
+        if isinstance(result_provider, models.ResultProvider):
+            rp_name = result_provider.name
+
+        req = models.TailRequest(result_provider_name=rp_name, path=path, lines_offset=lines_offset)
+        res = self._filesystem_stub.Tail(req, metadata=self._grpc_metadata)
+        return res.content
 
     # ----------- Solution methods ----------------
     def create_solution(
@@ -121,11 +160,19 @@ class Client:
 
     # ----------- Workspace management ----------------
 
-    def create_workspace(self, name: str) -> Workspace:
+    def _create_workspace(self, name: str) -> Workspace:
         pb_ws = self._workspace_stub.Create(
             models.WorkspaceCreate(name=name), metadata=self._grpc_metadata
         )
         return Workspace(pb_ws, self)
+
+    def create_workspace(self, name: str, rows: int = 1, cols: int = 1) -> Workspace:
+        """Create a new workspace.
+
+        If rows and cols are both 1, creates a single viewport.
+        Otherwise creates a grid layout of viewports.
+        """
+        return _create_grid_workspace(self, name, rows, cols)
 
     def get_workspace(self, workspace_id: str) -> Workspace:
         pb_ws = self._workspace_stub.Get(
@@ -176,3 +223,40 @@ class Client:
 
     def update_app_settings(self, settings: models.AppSettings) -> models.AppSettings:
         return self._app_stub.UpdateAppSettings(settings, metadata=self._grpc_metadata)
+
+
+def _create_grid_workspace(client: Client, name, rows: int, cols: int):
+    if rows < 1 or cols < 1:
+        raise ValueError("rows and cols must be >= 1")
+
+    workspace = client._create_workspace(name=name or f"{cols}x{rows} Grid Workspace")
+
+    if rows == 1 and cols == 1:
+        return workspace
+
+    column_viewports = [workspace.viewports[0]]
+    for _ in range(cols - 1):
+        source_column = column_viewports[-1]
+        remaining_columns = cols - len(column_viewports)
+        split_size = 100.0 * remaining_columns / (remaining_columns + 1)
+        next_column = workspace.create_viewport(
+            viewport=source_column,
+            direction=models.ViewportDirection.VIEWPORT_DIRECTION_RIGHT,
+            size=split_size,
+        )
+        column_viewports.append(next_column)
+
+    for column in column_viewports:
+        parent = column
+        for current_rows in range(1, rows):
+            remaining_rows = rows - current_rows
+            split_size = 100.0 * remaining_rows / (remaining_rows + 1)
+            parent = workspace.create_viewport(
+                viewport=parent,
+                direction=models.ViewportDirection.VIEWPORT_DIRECTION_BOTTOM,
+                size=split_size,
+            )
+
+    workspace = client.get_workspace(workspace.id)  # refresh workspace to get all viewports
+
+    return workspace

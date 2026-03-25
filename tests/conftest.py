@@ -162,3 +162,23 @@ def multiple_connections_solution(rx, rst_multiple_connections) -> Generator[Sol
     yield sol
 
     rx.delete_solution(sol)
+
+
+@pytest.fixture(scope="session")
+def rst_cp_transient(data_directory, is_docker) -> str:
+    return _get_result_path(data_directory, os.path.join("cp_trans", "file.rst"), is_docker)
+
+
+@pytest.fixture
+def cp_transient_solution(rx, rst_cp_transient) -> Generator[Solution, None, None]:
+    sol = rx.create_solution(
+        name="Test Solution - CP Transient",
+        result_provider_name="Local",
+        file_path=rst_cp_transient,
+    )
+    assert sol.n_elements == 122
+    assert sol.n_nodes == 406
+
+    yield sol
+
+    rx.delete_solution(sol)

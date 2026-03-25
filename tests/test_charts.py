@@ -30,7 +30,7 @@ def test_chart(multiple_connections_solution: Solution):
         ],
     )
 
-    chart_def = sol.create_chart(chart_def)
+    chart_def = sol.create_chart(chart_def).definition
 
     assert chart_def.id is not None
     assert chart_def.name == "My chart"
@@ -50,7 +50,7 @@ def test_chart(multiple_connections_solution: Solution):
     # update the chart
     chart_def.name = "Updated chart"
     chart_def.results[0].name = "Updated Stress"
-    chart_def = sol.update_chart(chart_def)
+    chart_def = sol.update_chart(chart_def).definition
 
     assert chart_def.name == "Updated chart"
 
@@ -60,7 +60,7 @@ def test_chart(multiple_connections_solution: Solution):
     assert chart_def_in_sol.results[0].name == "Updated Stress"
 
     # delete the chart
-    sol.delete_chart(chart_def.id)
+    sol.delete_chart(chart_def)
     chart_def_in_sol = next((c for c in sol.charts if c.id == chart_def.id), None)
     assert chart_def_in_sol is None
 
@@ -97,7 +97,7 @@ def test_new_chart_added_to_views(multiple_connections_solution: Solution):
         ],
     )
     existing_view_ids = {v.id for v in sol.views}
-    chart_def = sol.create_chart(chart_def)
+    chart_def = sol.create_chart(chart_def).definition
 
     new_chart_views = [
         v
@@ -109,7 +109,7 @@ def test_new_chart_added_to_views(multiple_connections_solution: Solution):
 
     # modify the chart definition and make sure the view name is updated
     chart_def.name = "Renamed chart"
-    chart_def = sol.update_chart(chart_def)
+    chart_def = sol.update_chart(chart_def).definition
 
     view = next((v for v in sol.views if v.id == view.id), None)
     assert view is not None
