@@ -79,6 +79,8 @@ def test_solution_properties(rst_solution: Solution):
     assert body10 is not None
     assert body10.labels["mat"] == "9"
     assert body10.labels["apdl_element_type"] == "175"
+    assert body10.labels["apdl_element_type"] == "175"
+    assert body10.element_types == ["CONTA175"]
 
     assert sol.unsupported_element_types[0] == "SURF154"
 
