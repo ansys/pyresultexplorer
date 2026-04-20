@@ -15,7 +15,7 @@ from ansys.api.result_explorer.v0.app_pb2 import (
     ThreeDInteractionMode,
     ThreeDSettings,
 )
-from ansys.api.result_explorer.v0.base_pb2 import Empty, ResourceId
+from ansys.api.result_explorer.v0.base_pb2 import Empty, ResourceId, Snapshot
 from ansys.api.result_explorer.v0.filesystem_pb2 import (
     FileContent,
     FilesystemRequest,
@@ -75,7 +75,6 @@ from ansys.api.result_explorer.v0.solution_pb2 import (
 from ansys.api.result_explorer.v0.workspace_pb2 import (
     CreateSnapshotRequest,
     CreateViewportRequest,
-    Snapshot,
     SnapshotSettings,
     SyncOptions,
     UpdateViewportRequest,

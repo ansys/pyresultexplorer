@@ -155,3 +155,10 @@ class Workspace(NamedBaseEntity[models.Workspace]):
         self._pb = self._client._workspace_stub.Get(
             models.ResourceId(id=self.id), metadata=self._client._grpc_metadata
         )
+
+    def screenshot(self) -> bytes:
+        """Take a screenshot of the workspace."""
+        res: models.Snapshot = self._client._workspace_stub.Screenshot(
+            models.ResourceId(id=self.id), metadata=self._client._grpc_metadata
+        )
+        return res.data

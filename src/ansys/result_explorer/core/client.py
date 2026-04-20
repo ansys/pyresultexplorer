@@ -224,6 +224,13 @@ class Client:
     def update_app_settings(self, settings: models.AppSettings) -> models.AppSettings:
         return self._app_stub.UpdateAppSettings(settings, metadata=self._grpc_metadata)
 
+    def screenshot(self) -> bytes:
+        """Take a screenshot of the current application state."""
+        res: models.Snapshot = self._app_stub.Screenshot(
+            models.Empty(), metadata=self._grpc_metadata
+        )
+        return res.data
+
 
 def _create_grid_workspace(client: Client, name, rows: int, cols: int):
     if rows < 1 or cols < 1:

@@ -25,7 +25,7 @@ from ansys.result_explorer.core.models import ViewportDirection
 FILE_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..", "tests", "data", "multiple_connections.rst")
 )
-TOKEN = "eyJob3N0IjoibG9jYWxob3N0IiwiaHR0cFBvcnQiOjYxNjAyLCJncnBjUG9ydCI6NjE2MTIsInNlc3Npb25JZCI6IjE5NDUxMWI4LTUxYTItNDcxMC1iYzYyLTlhMGQwNDc2OGI3MSJ9"  # noqa E501
+TOKEN = "eyJob3N0IjoibG9jYWxob3N0IiwiaHR0cFBvcnQiOjgwMDAsImdycGNQb3J0Ijo1MDAwMCwic2Vzc2lvbklkIjoiZTQzODQ5OWYtMDVmNS00YTgyLWIwYjgtMWNhOTU2OGI3ZjI3In0="  # noqa E501
 
 rx = Client.connect_with_token(TOKEN)
 
@@ -108,6 +108,20 @@ bottom_right_viewport = workspace.create_viewport(
 # set sync options for the workspace
 print("Setting workspace sync options...")
 workspace.set_sync(camera=True, time_freq=True, legend=True)
+
+# take a screenshot of the app
+print("Taking screenshot of the app...")
+screenshot_data = rx.screenshot()
+screenshot_file = "app_screenshot.png"
+with open(screenshot_file, "wb") as f:
+    f.write(screenshot_data)
+
+# take a screenshot of the workspace
+print("Taking screenshot of the workspace...")
+workspace_screenshot_data = workspace.screenshot()
+workspace_screenshot_file = "workspace_screenshot.png"
+with open(workspace_screenshot_file, "wb") as f:
+    f.write(workspace_screenshot_data)
 
 # set viewport to fullscreen
 print("Setting viewport to fullscreen...")
