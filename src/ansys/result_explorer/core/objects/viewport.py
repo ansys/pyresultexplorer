@@ -16,14 +16,24 @@ if TYPE_CHECKING:
 
 
 class ViewportMetadata:
-    """Wrapper for viewport metadata.
-
-    Will need to be expanded and specialized to the different view types.
-    """
+    """Wrapper for viewport metadata."""
 
     def __init__(self, pb_obj: models.Viewport, client: Client):
         self._pb_obj = pb_obj
         self._client = client
+
+    def to_pb(self) -> models.Viewport:
+        """Convert back for gRPC calls."""
+        return self._pb_obj
+
+    def __str__(self):
+        # print as json-like string
+        json_str = json.dumps(MessageToDict(self._pb_obj), indent=2)
+        return json_str
+
+
+class PlotViewportMetadata(ViewportMetadata):
+    """Metadata specific to plot viewports."""
 
     @property
     def show_mesh_edges(self) -> bool:
@@ -41,14 +51,23 @@ class ViewportMetadata:
     def show_min_max_labels(self, value: bool):
         self._pb_obj["showMinMaxLabels"] = value
 
-    def to_pb(self) -> models.Viewport:
-        """Convert back for gRPC calls."""
-        return self._pb_obj
 
-    def __str__(self):
-        # print as json-like string
-        json_str = json.dumps(MessageToDict(self._pb_obj), indent=2)
-        return json_str
+class MeshViewportMetadata(ViewportMetadata):
+    """Metadata specific to mesh viewports."""
+
+    @property
+    def show_mesh_edges(self) -> bool:
+        return self._pb_obj["showMeshEdges"]
+
+    @show_mesh_edges.setter
+    def show_mesh_edges(self, value: bool):
+        self._pb_obj["showMeshEdges"] = value
+
+
+class ChartViewportMetadata(ViewportMetadata):
+    """Metadata specific to chart viewports."""
+
+    pass
 
 
 class Viewport(BaseEntity[models.Viewport]):
@@ -72,7 +91,20 @@ class Viewport(BaseEntity[models.Viewport]):
     @property
     def metadata(self) -> ViewportMetadata:
         """Access viewport metadata."""
-        return ViewportMetadata(self._pb.metadata, self._client)
+        view = self.view
+        metadata = self._pb.metadata
+
+        if view is None:
+            return ViewportMetadata(metadata, self._client)
+
+        if view.type == models.ViewType.VIEW_TYPE_PLOT:
+            return PlotViewportMetadata(metadata, self._client)
+        elif view.type == models.ViewType.VIEW_TYPE_CHART:
+            return ChartViewportMetadata(metadata, self._client)
+        elif view.type == models.ViewType.VIEW_TYPE_MESH:
+            return MeshViewportMetadata(metadata, self._client)
+
+        return ViewportMetadata(metadata, self._client)
 
     @property
     def size(self) -> float:
