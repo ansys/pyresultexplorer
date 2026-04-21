@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from google.protobuf.json_format import MessageToDict
 
@@ -32,7 +32,65 @@ class ViewportMetadata:
         return json_str
 
 
-class PlotViewportMetadata(ViewportMetadata):
+class ThreeDViewportMetadata(ViewportMetadata):
+    """Metadata specific to 3D viewports."""
+
+    @property
+    def show_mesh_edges(self) -> bool:
+        return self._pb_obj["showMeshEdges"]
+
+    @show_mesh_edges.setter
+    def show_mesh_edges(self, value: bool):
+        self._pb_obj["showMeshEdges"] = value
+
+    @property
+    def explode(self) -> bool:
+        return self._pb_obj["explodeSettings"]["active"]
+
+    @explode.setter
+    def explode(self, value: bool):
+        self._pb_obj["explodeSettings"]["active"] = value
+
+    @property
+    def explode_scale_factor(self) -> float:
+        return self._pb_obj["explodeSettings"]["scaleFactor"]
+
+    @explode_scale_factor.setter
+    def explode_scale_factor(self, value: float):
+        self._pb_obj["explodeSettings"]["scaleFactor"] = value
+
+    @property
+    def explode_direction(self) -> Literal["Radial", "X", "Y", "Z"]:
+        return self._pb_obj["explodeSettings"]["direction"]
+
+    @explode_direction.setter
+    def explode_direction(self, value: Literal["Radial", "X", "Y", "Z"]):
+        self._pb_obj["explodeSettings"]["direction"] = value
+
+    @property
+    def expanded_groups(self) -> list[str]:
+        return self._pb_obj["expandedGroups"]
+
+    @expanded_groups.setter
+    def expanded_groups(self, value: list[str]):
+        self._pb_obj["expandedGroups"] = value
+
+    @property
+    def visible_bodies(self) -> list[str]:
+        return self._pb_obj["shownBodies"]
+
+    @visible_bodies.setter
+    def visible_bodies(self, value: list[str]):
+        self._pb_obj["shownBodies"] = value
+
+
+class MeshViewportMetadata(ThreeDViewportMetadata):
+    """Metadata specific to mesh viewports."""
+
+    pass
+
+
+class PlotViewportMetadata(ThreeDViewportMetadata):
     """Metadata specific to plot viewports."""
 
     @property
@@ -51,17 +109,13 @@ class PlotViewportMetadata(ViewportMetadata):
     def show_min_max_labels(self, value: bool):
         self._pb_obj["showMinMaxLabels"] = value
 
-
-class MeshViewportMetadata(ViewportMetadata):
-    """Metadata specific to mesh viewports."""
-
     @property
-    def show_mesh_edges(self) -> bool:
-        return self._pb_obj["showMeshEdges"]
+    def deformation_scale(self) -> float:
+        return self._pb_obj["deformationScale"]
 
-    @show_mesh_edges.setter
-    def show_mesh_edges(self, value: bool):
-        self._pb_obj["showMeshEdges"] = value
+    @deformation_scale.setter
+    def deformation_scale(self, value: float):
+        self._pb_obj["deformationScale"] = value
 
 
 class ChartViewportMetadata(ViewportMetadata):
