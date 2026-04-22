@@ -80,7 +80,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
-          
+
       - name: Start Result Explorer
         id: rx-compose
         uses: ./.github/actions/result_explorer
@@ -165,6 +165,7 @@ jobs:
           default_author: github_actions
           message: 'update snapshots'
           pull: '--ff-only'
+          github_token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
 
   doc-build:
     name: "Build documentation"
