@@ -25,7 +25,7 @@ from ansys.result_explorer.core.models import ViewportDirection
 FILE_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..", "tests", "data", "multiple_connections.rst")
 )
-TOKEN = "eyJob3N0IjoibG9jYWxob3N0IiwiaHR0cFBvcnQiOjYxNjAyLCJncnBjUG9ydCI6NjE2MTIsInNlc3Npb25JZCI6IjE5NDUxMWI4LTUxYTItNDcxMC1iYzYyLTlhMGQwNDc2OGI3MSJ9"  # noqa E501
+TOKEN = "eyJob3N0IjoibG9jYWxob3N0IiwiaHR0cFBvcnQiOjY0Mzg2LCJncnBjUG9ydCI6NjQzOTUsInNlc3Npb25JZCI6ImE2YTYyZWVlLTUxNWUtNDViZi1iMmIxLTRiN2MyZTNhMWNmYiJ9"  # noqa E501
 
 rx = Client.connect_with_token(TOKEN)
 
