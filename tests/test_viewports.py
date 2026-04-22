@@ -1,8 +1,11 @@
+import hashlib
 import logging
+from pathlib import Path
 
 import pytest
 
-from ansys.result_explorer.core.models import ViewportDirection, ViewType
+from ansys.result_explorer.core.models import SnapshotSettings, ViewportDirection, ViewType
+from ansys.result_explorer.core.objects.viewport import CameraPosition
 
 log = logging.getLogger(__name__)
 
@@ -232,6 +235,79 @@ def test_chart_viewport_metadata(rx):
     # Verify it's the base ViewportMetadata or ChartViewportMetadata
     meta_str = str(meta)
     assert isinstance(meta_str, str)
+
+    # Cleanup
+    rx.delete_workspace(workspace)
+
+
+def test_camera_position_snapshots(rx, multiple_connections_solution, snapshot):
+    sol = multiple_connections_solution
+
+    # Find a displacement view
+    views = sol.views
+    view = next((v for v in views if "Displacement" in v.name), None)
+    assert view is not None
+
+    # Create workspace and assign view
+    workspace = rx.create_workspace("Test Camera Snapshot")
+    viewport = workspace.assign_view(view=view, wait=True)
+
+    # Get initial camera zoom/translation to preserve them
+    initial_cam = viewport.metadata.camera_position
+    initial_zoom = initial_cam.zoom if initial_cam is not None else 1.0
+    initial_translation = initial_cam.translation if initial_cam is not None else (0.0, 0.0, 0.0)
+
+    # Create snapshots directory for PNGs
+    snapshots_dir = Path(__file__).parent / "__snapshots__" / "camera_snapshots"
+    snapshots_dir.mkdir(parents=True, exist_ok=True)
+    log.info(f"Saving camera snapshots to: {snapshots_dir.absolute()}")
+
+    # Test a few camera presets
+    camera_tests = {
+        "top": CameraPosition.top(),
+        "bottom": CameraPosition.bottom(),
+        "front": CameraPosition.front(),
+        "isometric": CameraPosition.isometric(),
+        "isometric+30x-10z": CameraPosition.isometric().rotate_x(30).rotate_z(-10),
+    }
+
+    snapshots_dict = {}
+    for name, cam in camera_tests.items():
+        # Apply camera with preserved zoom/translation
+        meta = viewport.metadata
+        meta.camera_position = cam.with_zoom(initial_zoom).with_translation(*initial_translation)
+        viewport.set_metadata(meta)
+
+        # Take snapshot with clean settings (no timestamp, logo, etc.)
+        settings = SnapshotSettings(
+            show_time_stamp=False,
+            show_logo=False,
+            show_legend=False,
+            show_solution_name=False,
+            show_result_picker=False,
+            transparent_background=False,
+            background_color="#FFFFFF",
+            height=300,
+            width=300,
+        )
+        snapshot_data = viewport.take_snapshot(settings=settings)
+        assert len(snapshot_data) > 0
+
+        # Save as PNG file
+        png_file = snapshots_dir / f"camera_{name}.png"
+        with open(png_file, "wb") as f:
+            f.write(snapshot_data)
+        log.info(f"Saved snapshot: {png_file.absolute()}")
+
+        # Store hash in syrupy snapshot for change detection
+        file_hash = hashlib.md5(snapshot_data).hexdigest()
+        snapshots_dict[name] = {
+            "file": str(png_file.relative_to(Path(__file__).parent)),
+            "hash": file_hash,
+        }
+
+    # Compare hashes using syrupy
+    assert snapshots_dict == snapshot
 
     # Cleanup
     rx.delete_workspace(workspace)

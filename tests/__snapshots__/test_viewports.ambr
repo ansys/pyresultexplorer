@@ -1,0 +1,25 @@
+# serializer version: 1
+# name: test_camera_position_snapshots
+  dict({
+    'bottom': dict({
+      'file': '__snapshots__\\camera_snapshots\\camera_bottom.png',
+      'hash': 'dbf37e0da15a3e41ef3ef43dfe495fa2',
+    }),
+    'front': dict({
+      'file': '__snapshots__\\camera_snapshots\\camera_front.png',
+      'hash': '6f1c2582db2ec1405f48b00e6188062c',
+    }),
+    'isometric': dict({
+      'file': '__snapshots__\\camera_snapshots\\camera_isometric.png',
+      'hash': '057762e4d2e42a531642d6c45c67617b',
+    }),
+    'isometric+30x-10z': dict({
+      'file': '__snapshots__\\camera_snapshots\\camera_isometric+30x-10z.png',
+      'hash': '4accaef6835e4879acb37310bf1ebada',
+    }),
+    'top': dict({
+      'file': '__snapshots__\\camera_snapshots\\camera_top.png',
+      'hash': 'f63e11001e56eb0d75911ad9f7502046',
+    }),
+  })
+# ---

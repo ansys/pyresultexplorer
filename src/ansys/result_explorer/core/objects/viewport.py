@@ -389,9 +389,23 @@ class Viewport(BaseEntity[models.Viewport]):
         self._pb = updated_pb
         return self
 
-    def take_snapshot(self) -> bytes:
-        """Take a snapshot of this viewport."""
+    def take_snapshot(self, settings: models.SnapshotSettings | None = None) -> bytes:
+        """Take a snapshot of this viewport.
+
+        Parameters
+        ----------
+        settings : SnapshotSettings, optional
+            Snapshot settings to control what elements appear in the image
+            (timestamp, logo, legend, solution name, etc.). If None, uses server defaults.
+
+        Returns
+        -------
+        bytes
+            PNG image data.
+        """
         req = models.CreateSnapshotRequest(viewport_id=self.id)
+        if settings is not None:
+            req.settings.CopyFrom(settings)
         snapshot = self._client._workspace_stub.CreateSnapshot(
             req, metadata=self._client._grpc_metadata
         )
