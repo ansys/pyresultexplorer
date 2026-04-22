@@ -240,6 +240,7 @@ def test_chart_viewport_metadata(rx):
     rx.delete_workspace(workspace)
 
 
+@pytest.mark.images
 def test_camera_position_snapshots(rx, multiple_connections_solution, snapshot):
     sol = multiple_connections_solution
 
