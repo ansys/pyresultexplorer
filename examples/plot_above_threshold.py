@@ -1,17 +1,19 @@
 """
 This example demonstrates how to create a user-defined plot that displays only
-the nodes whose total displacement magnitude exceeds a configurable threshold.
+the nodes whose total displacement magnitude exceeds a percentage of the
+maximum displacement in the model.
 
 It creates a user-defined plot that uses a DPF ``high_pass`` operator to
 filter out nodes whose displacement magnitude falls below the threshold,
-showing only the regions that meet or exceed the specified value.
+showing only the regions that meet or exceed the specified percentage of the
+maximum displacement.
 
 It covers the following steps:
 
 - Connecting to the PyResultExplorer service
 - Creating a workspace and loading a solution
 - Defining a server-side script using DPF operators to filter by threshold
-- Creating a user-defined plot with a configurable threshold option
+- Creating a user-defined plot with a configurable percent threshold option
 - Assigning the plot to a viewport
 
 Make sure to update the FILE_PATH and TOKEN variables
@@ -33,8 +35,9 @@ TOKEN = "eyJob3N0IjoibG9jYWxob3N0IiwiaHR0cFBvcnQiOjgwMDAsImdycGNQb3J0Ijo1MDAwMCw
 # ---------------------------------------------------------------------------
 # This script is executed server-side by Result Explorer to compute the plot
 # data. It extracts displacement, computes the per-node displacement magnitude
-# (L2 norm of X/Y/Z components), then applies a DPF ``high_pass`` operator to
-# retain only the nodes where the magnitude exceeds the threshold value.
+# (L2 norm of X/Y/Z components), determines the maximum magnitude across all
+# nodes, then applies a DPF ``high_pass`` operator to retain only the nodes
+# where the magnitude exceeds ``percent_threshold`` percent of that maximum.
 
 ABOVE_THRESHOLD_SCRIPT = """\
 from ansys.dpf import core as dpf
@@ -54,8 +57,7 @@ def get_custom_plot_data(
     server = simulation.server
     mesh = model.metadata.meshed_region
 
-    threshold = 1e-5
-    log.info(f"Above-threshold plot '{definition.name}': threshold={threshold}")
+    percent_threshold = 50.0  # retain nodes above this % of the per-set maximum
 
     # Time scoping
     tf = model.metadata.time_freq_support
@@ -95,6 +97,16 @@ def get_custom_plot_data(
         # Compute per-node displacement magnitude (L2 norm of X, Y, Z)
         norm_op = dpf.operators.math.norm(field=disp_field, server=server)
         norm_field = norm_op.outputs.field()
+
+        # Derive the absolute threshold from the percent of the set's maximum magnitude
+        min_max_op = dpf.operators.min_max.min_max(field=norm_field, server=server)
+        max_val = min_max_op.outputs.field_max().data[0]
+        threshold = float(max_val * percent_threshold / 100.0)
+        log.info(
+            f"Above-threshold plot '{definition.name}': "
+            f"set={set_id}, max={max_val:.4e}, "
+            f"percent={percent_threshold}%, threshold={threshold:.4e}"
+        )
 
         # Keep only nodes where displacement magnitude >= threshold
         hp_op = dpf.operators.filter.field_high_pass(
