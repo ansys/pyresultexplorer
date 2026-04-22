@@ -5,7 +5,8 @@ from collections.abc import Generator
 
 import pytest
 
-from ansys.result_explorer.core import Client, Solution, models
+from ansys.api.result_explorer.v0.server_models_pb2 import CustomOptionsValue
+from ansys.result_explorer.core import Client, ResultExplorerError, Solution, models
 
 log = logging.getLogger(__name__)
 
@@ -184,7 +185,7 @@ def get_custom_plot_data(
 """
 
 
-@pytest.mark.xfail(reason="custom_options passthrough to user-defined script not yet implemented")
+@pytest.mark.xfail(reason="custom_options has issues with gRPC serialization/deserialization")
 def test_above_threshold_plot_custom_option_in_viewport(rx: Client, solution: Solution):
     """The percent_threshold custom option is passed through to the script and used."""
     plot_view = solution.create_plot(
@@ -196,7 +197,7 @@ def test_above_threshold_plot_custom_option_in_viewport(rx: Client, solution: So
             all_sets=False,
             last_set=True,
             script=ABOVE_THRESHOLD_CUSTOM_OPTION_SCRIPT,
-            custom_options={"percent_threshold": 75.0},
+            custom_options={"percent_threshold": CustomOptionsValue(float=75.0)},
         )
     )
 
@@ -206,3 +207,42 @@ def test_above_threshold_plot_custom_option_in_viewport(rx: Client, solution: So
     assert viewport.id in workspace.viewport_ids
     assert viewport.view_id == plot_view.definition.id
     assert viewport.solution_id == solution.id
+
+
+# Script that raises a deliberate RuntimeError to verify error surfacing.
+FAILING_SCRIPT = """\
+from ansys.result_explorer.server.simulation import SimulationInterface
+from ansys.result_explorer.server.plots import PlotDefinition
+from ansys.result_explorer.server.utils import AnnotatedField, UserDefinedContext
+
+
+def get_custom_plot_data(
+    simulation: SimulationInterface,
+    definition: PlotDefinition,
+    context: UserDefinedContext,
+) -> list[AnnotatedField]:
+    raise RuntimeError("intentional script error")
+"""
+
+
+def test_user_defined_plot_script_error_is_surfaced(rx: Client, solution: Solution):
+    """When the user-defined script raises, the error should propagate to the caller."""
+    plot_view = solution.create_plot(
+        models.PlotDefinitionCreate(
+            name="Failing User Defined Plot",
+            result_type=models.ResultType.RESULT_TYPE_USER_DEFINED,
+            location="unused",
+            on_skin=False,
+            all_sets=False,
+            last_set=True,
+            script=FAILING_SCRIPT,
+        )
+    )
+
+    workspace = rx.create_workspace("Failing Plot Workspace")
+    with pytest.raises(ResultExplorerError, match="intentional script error") as exc_info:
+        workspace.assign_view(view=plot_view, wait=True)
+
+    assert "line 11, in get_custom_plot_data" in str(exc_info.value)
+
+    log.info(f"Caught expected error from user-defined plot script:\n{exc_info.value}")
