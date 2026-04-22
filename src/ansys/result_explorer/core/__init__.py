@@ -5,6 +5,6 @@ import importlib.metadata as importlib_metadata
 __version__ = importlib_metadata.version(__name__.replace(".", "-"))
 
 from .client import Client
-from .entities import Solution, View, Viewport, ViewportMetadata, Workspace
 from .exceptions import ResultExplorerError
 from .logger import log
+from .objects import Solution, View, Viewport, ViewportMetadata, Workspace
