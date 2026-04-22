@@ -76,7 +76,7 @@ jobs:
           ghcr-token: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
           license-server: ${{ secrets.LICENSE_SERVER }}
           server-tag: 'dev-dpf-v2026.1.pre1'
-          web-tag: 'dev'
+          web-tag: 'api-snapshot-settings'
           results-folder: '${{ github.workspace }}/tests/data'
 
       - uses: extractions/netrc@v3
@@ -140,11 +140,6 @@ jobs:
         if: failure()
         run: |
           docker logs result-explorer-server
-
-      - name: Dump DPF server logs
-        if: failure()
-        run: |
-          docker logs result-explorer-dpf-server
 
   doc-build:
     name: "Build documentation"
