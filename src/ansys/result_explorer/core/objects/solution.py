@@ -455,6 +455,7 @@ class Solution(NamedBaseEntity[models.Solution]):
     def __str__(self) -> str:
         """Return a formatted string representation of the solution."""
         lines = [
+            "\n",
             "=" * 70,
             f"Solution: {self.name}",
             "=" * 70,

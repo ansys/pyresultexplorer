@@ -183,6 +183,7 @@ def test_mesh_viewport_metadata(rx, multiple_connections_solution):
 
     # Get mesh metadata
     meta = viewport.metadata
+    log.info("mesh metadata: %s", viewport.metadata)
 
     # Test explode property
     original_explode = meta.explode
