@@ -73,7 +73,7 @@ jobs:
     steps:
 
       - uses: actions/checkout@v6
-        if: ${{ !env.UPDATE_SNAPSHOTS == 'true' }}
+        if: ${{ env.UPDATE_SNAPSHOTS != 'true' }}
 
       - uses: actions/checkout@v6
         if: ${{ env.UPDATE_SNAPSHOTS == 'true' }}
