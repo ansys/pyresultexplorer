@@ -1,6 +1,12 @@
 name: CI
 on:
   workflow_dispatch:
+    inputs:
+      update-snapshots:
+        description: 'Update snapshots'
+        required: false
+        default: false
+        type: boolean
   pull_request:
   push:
     tags:
@@ -101,6 +107,7 @@ jobs:
             uv run pytest tests -vv \
               --junitxml test_results.xml \
               --cov=ansys --cov-report=term --cov-report=html:.cov/html --cov-report=markdown:cov.md \
+              ${{ github.event.inputs.update-snapshots == 'true' && '--snapshot-update' || '' }} \
               --server-url=${{ steps.rx-compose.outputs.server-url }} \
               --web-url=${{ steps.rx-compose.outputs.web-url }} \
               --is-docker
