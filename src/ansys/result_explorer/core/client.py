@@ -12,8 +12,8 @@ from ansys.api.result_explorer.v0 import (
 )
 from ansys.result_explorer.core import models
 
-from .entities import Solution, Viewport, Workspace
 from .exceptions import ResultExplorerError
+from .objects import Solution, Viewport, Workspace
 
 DEFAULT_RESULT_PROVIDER = "Local"
 

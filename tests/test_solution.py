@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from ansys.result_explorer.core import models
-from ansys.result_explorer.core.entities import Solution
+from ansys.result_explorer.core.objects import Solution
 
 log = logging.getLogger(__name__)
 

@@ -3,7 +3,7 @@ import logging
 from google.protobuf.json_format import MessageToDict
 
 from ansys.result_explorer.core import models
-from ansys.result_explorer.core.entities import Solution
+from ansys.result_explorer.core.objects import Solution
 
 log = logging.getLogger(__name__)
 
