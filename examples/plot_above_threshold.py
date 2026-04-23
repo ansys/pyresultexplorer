@@ -28,7 +28,7 @@ from ansys.result_explorer.core.client import Client
 FILE_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..", "tests", "data", "multiple_connections.rst")
 )
-TOKEN = "eyJob3N0IjoibG9jYWxob3N0IiwiaHR0cFBvcnQiOjgwMDAsImdycGNQb3J0Ijo1MDAwMCwic2Vzc2lvbklkIjoiZWQ3ZjI1NTMtMGUzOC00OTU4LWJjMjAtYThmMmRjYWRmODQ2In0="  # noqa E501
+TOKEN = "<insert_your_token_here>"  # noqa E501
 
 # ---------------------------------------------------------------------------
 # Plot above threshold script
@@ -46,6 +46,22 @@ from ansys.result_explorer.server.simulation import SimulationInterface
 from ansys.result_explorer.server.plots import PlotDefinition
 from ansys.result_explorer.server.simulation.plot_helper import scoping_definition_to_dpf_scoping
 from ansys.result_explorer.server.utils import AnnotatedField, UserDefinedContext
+from ansys.result_explorer.server.schemas import CustomOptionDefinition
+
+def get_custom_options(
+    simulation: SimulationInterface,
+    context: UserDefinedContext,
+) -> list[CustomOptionDefinition]:
+    return [
+        CustomOptionDefinition(
+            label="Percent Threshold",
+            type="float",
+            required=False,
+            min=0.0,
+            max=100.0,
+            default_value=85.0,
+        )
+    ]
 
 
 def get_custom_plot_data(
@@ -57,7 +73,7 @@ def get_custom_plot_data(
     server = simulation.server
     mesh = model.metadata.meshed_region
 
-    percent_threshold = 50.0  # retain nodes above this % of the per-set maximum
+    percent_threshold = float(definition.custom_options.get("Percent Threshold", 50.0))
 
     # Time scoping
     tf = model.metadata.time_freq_support
@@ -181,6 +197,7 @@ ud_plot = sol.create_plot(
         last_set=True,
         shell_position=models.ShellPosition.SHELL_POSITION_TOP,
         script=ABOVE_THRESHOLD_SCRIPT,
+        custom_options={"percent_threshold": models.CustomOptionsValue(float=50.5)},
     )
 )
 

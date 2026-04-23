@@ -5,7 +5,6 @@ from collections.abc import Generator
 
 import pytest
 
-from ansys.api.result_explorer.v0.server_models_pb2 import CustomOptionsValue
 from ansys.result_explorer.core import Client, ResultExplorerError, Solution, models
 
 log = logging.getLogger(__name__)
@@ -185,7 +184,6 @@ def get_custom_plot_data(
 """
 
 
-@pytest.mark.xfail(reason="custom_options has issues with gRPC serialization/deserialization")
 def test_above_threshold_plot_custom_option_in_viewport(rx: Client, solution: Solution):
     """The percent_threshold custom option is passed through to the script and used."""
     plot_view = solution.create_plot(
@@ -197,7 +195,7 @@ def test_above_threshold_plot_custom_option_in_viewport(rx: Client, solution: So
             all_sets=False,
             last_set=True,
             script=ABOVE_THRESHOLD_CUSTOM_OPTION_SCRIPT,
-            custom_options={"percent_threshold": CustomOptionsValue(float=75.0)},
+            custom_options={"percent_threshold": models.CustomOptionsValue(float=75.0)},
         )
     )
 

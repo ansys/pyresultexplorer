@@ -32,6 +32,7 @@ from ansys.api.result_explorer.v0.server_models_pb2 import (
     ChunkingStrategy,
     ConfigurableChart,
     ConfigurablePlot,
+    CustomOptionsValue,
     ElementGroup,
     Field,
     File,
