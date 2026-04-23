@@ -197,7 +197,7 @@ ud_plot = sol.create_plot(
         last_set=True,
         shell_position=models.ShellPosition.SHELL_POSITION_TOP,
         script=ABOVE_THRESHOLD_SCRIPT,
-        custom_options={"percent_threshold": models.CustomOptionsValue(float=50.5)},
+        custom_options={"Percent Threshold": models.CustomOptionsValue(float=50.5)},
     )
 )
 
