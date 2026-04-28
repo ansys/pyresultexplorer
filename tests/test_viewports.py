@@ -4,8 +4,13 @@ from pathlib import Path
 
 import pytest
 
+from ansys.result_explorer.core import (
+    CameraPosition,
+    ChartViewportMetadata,
+    ContactTrackersViewportMetadata,
+    ConvergenceTrackersViewportMetadata,
+)
 from ansys.result_explorer.core.models import SnapshotSettings, ViewportDirection, ViewType
-from ansys.result_explorer.core.objects.viewport import CameraPosition
 
 log = logging.getLogger(__name__)
 
@@ -217,8 +222,8 @@ def test_mesh_viewport_metadata(rx, multiple_connections_solution):
     rx.delete_workspace(workspace)
 
 
-def test_chart_viewport_metadata(rx):
-    """Test ChartViewportMetadata (empty metadata)."""
+def test_chart_viewport_metadata(rx, cp_transient_solution):
+    """Test ChartViewportMetadata."""
     # Create workspace
     workspace = rx.create_workspace("Test Chart Metadata")
 
@@ -226,15 +231,235 @@ def test_chart_viewport_metadata(rx):
     viewports = workspace.viewports
     assert len(viewports) > 0
 
-    viewport = viewports[0]
+    # find a chart view from the solution
+    views = cp_transient_solution.views
+    chart_view = next((v for v in views if v.type == ViewType.VIEW_TYPE_CHART), None)
+    assert chart_view is not None
+
+    viewport = workspace.assign_view(view=chart_view, wait=True)
+
     meta = viewport.metadata
 
-    # ChartViewportMetadata should be instantiable without errors
-    assert meta is not None
+    log.info("chart metadata: %s", meta)
 
-    # Verify it's the base ViewportMetadata or ChartViewportMetadata
-    meta_str = str(meta)
-    assert isinstance(meta_str, str)
+    assert meta is not None
+    assert isinstance(meta, ChartViewportMetadata)
+
+    # Test chart_names property
+    chart_names = meta.chart_names
+    assert isinstance(chart_names, list)
+    assert len(chart_names) >= 1
+    assert "Min/Max Displacement Over Time" in chart_names
+    log.info("Available charts: %s", chart_names)
+
+    # Test active_charts property
+    active_charts = meta.active_charts
+    assert isinstance(active_charts, list)
+    assert len(active_charts) > 0
+    assert all(c in chart_names for c in active_charts)
+    assert "Min/Max Displacement Over Time" in active_charts
+    log.info("Active charts: %s", active_charts)
+
+    # Test series_names property
+    series_names = meta.series_names
+    assert isinstance(series_names, list)
+    assert len(series_names) >= 4
+    expected_series = [
+        "Time/Frequency",
+        "Displacement: Min Total Displacement",
+        "Displacement: Max Total Displacement",
+        "Displacement: Avg Total Displacement",
+    ]
+    for expected in expected_series:
+        assert expected in series_names, f"Expected series '{expected}' not found"
+    log.info("Available series: %s", series_names)
+
+    # Test active_series property
+    active_series = meta.active_series
+    assert isinstance(active_series, list)
+    assert len(active_series) == 3  # Should have 3 active series
+    # Verify active series match expected (indices 1, 2, 3)
+    expected_active = [
+        "Displacement: Min Total Displacement",
+        "Displacement: Max Total Displacement",
+        "Displacement: Avg Total Displacement",
+    ]
+    assert active_series == expected_active
+    log.info("Active series: %s", active_series)
+
+    # Test selected_x_axis property
+    selected_x_axis = meta.selected_x_axis
+    assert isinstance(selected_x_axis, str)
+    assert selected_x_axis == "Time/Frequency"
+    log.info("Selected X-axis: %s", selected_x_axis)
+
+    # Test show_legend property
+    assert isinstance(meta.show_legend, bool)
+    assert meta.show_legend is True
+    log.info("Show legend: %s", meta.show_legend)
+
+    # Test show_table property
+    assert isinstance(meta.show_table, bool)
+    assert meta.show_table is False
+    log.info("Show table: %s", meta.show_table)
+
+    # Test split_direction property
+    assert meta.split_direction == "vertical"
+    log.info("Split direction: %s", meta.split_direction)
+
+    # Test modifying active_series
+    if len(series_names) >= 2:
+        new_series = [series_names[0], series_names[1]]
+        meta.active_series = new_series
+        viewport.set_metadata(meta)
+        updated_active = viewport.metadata.active_series
+        assert updated_active == new_series
+
+    # Test modifying active_charts
+    if len(chart_names) >= 1:
+        meta.active_charts = [chart_names[0]]
+        viewport.set_metadata(meta)
+        updated_active = viewport.metadata.active_charts
+        assert updated_active == [chart_names[0]]
+
+    # Test toggling legend visibility
+    meta.show_legend = False
+    viewport.set_metadata(meta)
+    assert viewport.metadata.show_legend is False
+
+    meta.show_legend = True
+    viewport.set_metadata(meta)
+    assert viewport.metadata.show_legend is True
+
+    # Test toggling table visibility
+    meta.show_table = True
+    viewport.set_metadata(meta)
+    assert viewport.metadata.show_table is True
+
+    meta.show_table = False
+    viewport.set_metadata(meta)
+    assert viewport.metadata.show_table is False
+
+    # Test split_direction
+    meta.split_direction = "horizontal"
+    viewport.set_metadata(meta)
+    assert viewport.metadata.split_direction == "horizontal"
+
+    meta.split_direction = "vertical"
+    viewport.set_metadata(meta)
+    assert viewport.metadata.split_direction == "vertical"
+
+    # Cleanup
+    rx.delete_workspace(workspace)
+
+
+def test_convergence_trackers_viewport_metadata(rx, cp_transient_solution):
+    """Test ConvergenceTrackersViewportMetadata."""
+
+    # Create workspace
+    workspace = rx.create_workspace("Test Convergence Trackers Metadata")
+
+    # find a convergence trackers view from the solution
+    views = cp_transient_solution.views
+    conv_view = next((v for v in views if v.type == ViewType.VIEW_TYPE_CONVERGENCE_TRACKERS), None)
+    assert conv_view is not None
+
+    viewport = workspace.assign_view(view=conv_view, wait=True)
+    meta = viewport.metadata
+    log.info("convergence trackers metadata: %s", meta)
+
+    assert meta is not None
+    assert isinstance(meta, ConvergenceTrackersViewportMetadata)
+
+    assert meta.selected_tracker_name == "Force Convergence"
+
+    meta.selected_tracker_name = "Displacement Convergence"
+    viewport.set_metadata(meta)
+    assert viewport.metadata.selected_tracker_name == "Displacement Convergence"
+
+
+def test_contact_trackers_viewport_metadata(rx, cp_transient_solution):
+    """Test ContactTrackersViewportMetadata."""
+
+    # Create workspace
+    workspace = rx.create_workspace("Test Contact Trackers Metadata")
+
+    # find a contact trackers view from the solution
+    views = cp_transient_solution.views
+    contact_view = next((v for v in views if v.type == ViewType.VIEW_TYPE_CONTACT_TRACKERS), None)
+    assert contact_view is not None
+
+    viewport = workspace.assign_view(view=contact_view, wait=True)
+
+    meta = viewport.metadata
+    log.info("contact trackers metadata: %s", meta)
+
+    assert meta is not None
+    assert isinstance(meta, ContactTrackersViewportMetadata)
+
+    # Test inherited chart properties
+    assert isinstance(meta.show_legend, bool)
+    assert isinstance(meta.show_table, bool)
+    assert meta.split_direction in ["horizontal", "vertical"]
+
+    # Test series_names property (read-only)
+    assert isinstance(meta.series_names, list)
+    assert len(meta.series_names) > 0
+
+    # Check specific expected series names from contact tracking
+    expected_series = [
+        "Number of Contact Elements in Contact",
+        "Max. Contact Pressure",
+        "Max. Friction Stress",
+    ]
+    for expected in expected_series:
+        assert expected in meta.series_names, f"Expected series '{expected}' not found"
+
+    log.info("Available series: %s", meta.series_names[:5])  # Log first 5
+
+    # Test active_series property
+    active_series = meta.active_series
+    assert isinstance(active_series, list)
+    assert len(active_series) > 0
+    assert all(s in meta.series_names for s in active_series)
+    log.info("Active series: %s", active_series)
+
+    # Test toggling active series
+    if len(meta.series_names) >= 2:
+        new_series = [meta.series_names[0], meta.series_names[1]]
+        meta.active_series = new_series
+        viewport.set_metadata(meta)
+        updated_active = viewport.metadata.active_series
+        assert updated_active == new_series
+
+    # Test contact tracker names (chart names)
+    contact_trackers = meta.contact_tracker_names
+    assert isinstance(contact_trackers, list)
+    assert len(contact_trackers) >= 2, "Expected at least 2 contact tracker pairs"
+
+    # Verify expected contact tracker pattern
+    for tracker in contact_trackers:
+        assert "Solid" in tracker
+        assert "ID:" in tracker
+
+    log.info("Contact trackers: %s", contact_trackers)
+
+    # Test toggling legend visibility
+    original_legend = meta.show_legend
+    meta.show_legend = not original_legend
+    viewport.set_metadata(meta)
+    assert viewport.metadata.show_legend == (not original_legend)
+
+    # Test toggling table visibility
+    original_table = meta.show_table
+    meta.show_table = not original_table
+    viewport.set_metadata(meta)
+    assert viewport.metadata.show_table == (not original_table)
+
+    # Test split direction
+    meta.split_direction = "horizontal"
+    viewport.set_metadata(meta)
+    assert viewport.metadata.split_direction == "horizontal"
 
     # Cleanup
     rx.delete_workspace(workspace)
@@ -312,3 +537,28 @@ def test_camera_position_snapshots(rx, multiple_connections_solution, snapshot):
 
     # Cleanup
     rx.delete_workspace(workspace)
+
+
+def test_camera_position_invalid_matrix_length():
+    """Test CameraPosition rejects invalid matrix length."""
+    with pytest.raises(ValueError, match="Expected 16 matrix values"):
+        CameraPosition([1, 2, 3])  # Too few
+
+
+def test_camera_position_rotations():
+    """Test all rotation methods."""
+    cam = CameraPosition.top()
+    rotated_x = cam.rotate_x(90)
+    rotated_y = cam.rotate_y(45)
+    rotated_z = cam.rotate_z(180)
+    assert len(rotated_x.matrix) == 16
+    assert len(rotated_y.matrix) == 16
+    assert len(rotated_z.matrix) == 16
+
+
+def test_camera_position_with_zoom():
+    """Test CameraPosition with non-unit zoom."""
+    m = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2.5]
+    cam = CameraPosition(m)
+    assert cam.zoom == 2.5
+    assert cam.with_translation(10, 20, 30).translation == (10, 20, 30)

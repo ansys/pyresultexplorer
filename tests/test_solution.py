@@ -141,6 +141,49 @@ def test_solution_properties(rst_solution: Solution):
     assert ns.size == 80
     assert ns.location == "Nodal"
 
+    # Test uncovered properties
+    assert isinstance(sol.description, str)
+    assert isinstance(sol.cache_plot_data, bool)
+    assert isinstance(sol.creation_time, str)
+    assert isinstance(sol.ready, bool)
+    assert isinstance(sol.errors, list)
+    assert isinstance(sol.live, bool)
+    assert isinstance(sol.outdated, bool)
+
+    # Test collections
+    assert len(sol.available_results) > 0
+    assert isinstance(sol.available_results[0], models.AvailableResult)
+
+    assert isinstance(sol.available_trackers, list)
+
+    # Test available_custom_selections
+    assert isinstance(sol.available_custom_selections, list)
+
+    # Test charts property
+    assert len(sol.charts) > 0
+    assert isinstance(sol.charts[0], models.ChartDefinition)
+
+    # Test result_provider property
+    result_provider = sol.result_provider
+    assert result_provider is not None
+    assert sol.id in result_provider.solution_ids
+
+
+def test_solution_string_representation(rst_solution: Solution):
+    sol = rst_solution
+
+    str_repr = str(sol)
+
+    # Check that the string contains key information
+    assert "Solution:" in str_repr
+    assert sol.name in str_repr
+    assert sol.id in str_repr
+    assert "Analysis Information:" in str_repr
+    assert "Mesh Information:" in str_repr
+    assert "Results Information:" in str_repr
+    assert "Status:" in str_repr
+    assert "Ready" in str_repr
+
 
 def test_view_types(rst_solution: Solution):
     sol = rst_solution
@@ -263,3 +306,11 @@ def test_mesh_options_with_processing_mode(rx, rst_multiple_connections):
 
         final_settings = rx.app_settings()
         assert final_settings.data_processing.processing_mode == original_mode
+
+
+def test_solver_text_output_invalid_file(rst_solution: Solution):
+    """Test get_solver_out_content with invalid file."""
+    sol = rst_solution
+
+    with pytest.raises(ValueError, match="not found"):
+        sol.get_solver_out_content("nonexistent_file.out")
