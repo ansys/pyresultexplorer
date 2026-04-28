@@ -1,9 +1,9 @@
 """Pythonic wrapper objects for gRPC models."""
 
 from .base import BaseEntity, NamedBaseEntity
+from .camera_position import CameraPosition
 from .solution import Solution, View
 from .viewport import (
-    CameraPosition,
     ChartViewportMetadata,
     ContactTrackersViewportMetadata,
     ConvergenceTrackersViewportMetadata,
