@@ -9,10 +9,13 @@ from .exceptions import ResultExplorerError
 from .logger import log
 from .objects import (
     CameraPosition,
+    ChartView,
     ChartViewportMetadata,
     ContactTrackersViewportMetadata,
     ConvergenceTrackersViewportMetadata,
+    MeshView,
     MeshViewportMetadata,
+    PlotView,
     PlotViewportMetadata,
     Solution,
     View,

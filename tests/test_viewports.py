@@ -9,6 +9,7 @@ from ansys.result_explorer.core import (
     ChartViewportMetadata,
     ContactTrackersViewportMetadata,
     ConvergenceTrackersViewportMetadata,
+    PlotViewportMetadata,
 )
 from ansys.result_explorer.core.models import SnapshotSettings, ViewportDirection, ViewType
 
@@ -150,7 +151,9 @@ def test_plot_viewport_metadata(rx, multiple_connections_solution):
     viewport = workspace.assign_view(view=view, wait=True)
 
     # Get plot metadata
-    meta = viewport.metadata
+    meta: PlotViewportMetadata = viewport.metadata
+
+    log.info("plot metadata: %s", viewport.metadata)
 
     # Test show_mesh_edges property
     original_mesh_edges = meta.show_mesh_edges
