@@ -384,11 +384,6 @@ class Solution(NamedBaseEntity[models.Solution]):
         return self._pb.time_frequencies_unit
 
     @property
-    def mesh_scopings(self) -> list:
-        """Mesh scoping definitions."""
-        return list(self._pb.mesh_scopings)
-
-    @property
     def configurable_plots(self) -> list[models.ConfigurablePlot]:
         """Configurable plot definitions."""
         return list(self._pb.configurable_plots)
