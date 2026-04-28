@@ -537,3 +537,28 @@ def test_camera_position_snapshots(rx, multiple_connections_solution, snapshot):
 
     # Cleanup
     rx.delete_workspace(workspace)
+
+
+def test_camera_position_invalid_matrix_length():
+    """Test CameraPosition rejects invalid matrix length."""
+    with pytest.raises(ValueError, match="Expected 16 matrix values"):
+        CameraPosition([1, 2, 3])  # Too few
+
+
+def test_camera_position_rotations():
+    """Test all rotation methods."""
+    cam = CameraPosition.top()
+    rotated_x = cam.rotate_x(90)
+    rotated_y = cam.rotate_y(45)
+    rotated_z = cam.rotate_z(180)
+    assert len(rotated_x.matrix) == 16
+    assert len(rotated_y.matrix) == 16
+    assert len(rotated_z.matrix) == 16
+
+
+def test_camera_position_with_zoom():
+    """Test CameraPosition with non-unit zoom."""
+    m = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2.5]
+    cam = CameraPosition(m)
+    assert cam.zoom == 2.5
+    assert cam.with_translation(10, 20, 30).translation == (10, 20, 30)
