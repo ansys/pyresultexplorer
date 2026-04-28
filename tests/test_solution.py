@@ -169,6 +169,22 @@ def test_solution_properties(rst_solution: Solution):
     assert sol.id in result_provider.solution_ids
 
 
+def test_solution_string_representation(rst_solution: Solution):
+    sol = rst_solution
+
+    str_repr = str(sol)
+
+    # Check that the string contains key information
+    assert "Solution:" in str_repr
+    assert sol.name in str_repr
+    assert sol.id in str_repr
+    assert "Analysis Information:" in str_repr
+    assert "Mesh Information:" in str_repr
+    assert "Results Information:" in str_repr
+    assert "Status:" in str_repr
+    assert "Ready" in str_repr
+
+
 def test_view_types(rst_solution: Solution):
     sol = rst_solution
 
