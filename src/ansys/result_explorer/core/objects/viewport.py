@@ -324,6 +324,24 @@ class ChartViewportMetadata(ViewportMetadata):
     pass
 
 
+class ConvergenceTrackersViewportMetadata(ViewportMetadata):
+    """Metadata specific to convergence trackers viewports."""
+
+    @property
+    def selected_tracker_name(self) -> str:
+        return self._pb_obj["selectedTrackerName"]
+
+    @selected_tracker_name.setter
+    def selected_tracker_name(self, value: str):
+        self._pb_obj["selectedTrackerName"] = value
+
+
+class ContactTrackersViewportMetadata(ViewportMetadata):
+    """Metadata specific to contact trackers viewports."""
+
+    pass
+
+
 class Viewport(BaseEntity[models.Viewport]):
     """Represents a viewport in a workspace."""
 
@@ -357,6 +375,10 @@ class Viewport(BaseEntity[models.Viewport]):
             return ChartViewportMetadata(metadata, self._client)
         elif view.type == models.ViewType.VIEW_TYPE_MESH:
             return MeshViewportMetadata(metadata, self._client)
+        elif view.type == models.ViewType.VIEW_TYPE_CONVERGENCE_TRACKERS:
+            return ConvergenceTrackersViewportMetadata(metadata, self._client)
+        elif view.type == models.ViewType.VIEW_TYPE_CONTACT_TRACKERS:
+            return ContactTrackersViewportMetadata(metadata, self._client)
 
         return ViewportMetadata(metadata, self._client)
 

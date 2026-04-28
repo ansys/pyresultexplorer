@@ -4,8 +4,13 @@ from pathlib import Path
 
 import pytest
 
+from ansys.result_explorer.core import (
+    CameraPosition,
+    ChartViewportMetadata,
+    ContactTrackersViewportMetadata,
+    ConvergenceTrackersViewportMetadata,
+)
 from ansys.result_explorer.core.models import SnapshotSettings, ViewportDirection, ViewType
-from ansys.result_explorer.core.objects.viewport import CameraPosition
 
 log = logging.getLogger(__name__)
 
@@ -217,8 +222,8 @@ def test_mesh_viewport_metadata(rx, multiple_connections_solution):
     rx.delete_workspace(workspace)
 
 
-def test_chart_viewport_metadata(rx):
-    """Test ChartViewportMetadata (empty metadata)."""
+def test_chart_viewport_metadata(rx, cp_transient_solution):
+    """Test ChartViewportMetadata."""
     # Create workspace
     workspace = rx.create_workspace("Test Chart Metadata")
 
@@ -226,18 +231,63 @@ def test_chart_viewport_metadata(rx):
     viewports = workspace.viewports
     assert len(viewports) > 0
 
-    viewport = viewports[0]
+    # find a chart view from the solution
+    views = cp_transient_solution.views
+    chart_view = next((v for v in views if v.type == ViewType.VIEW_TYPE_CHART), None)
+    assert chart_view is not None
+
+    viewport = workspace.assign_view(view=chart_view, wait=True)
+
     meta = viewport.metadata
 
-    # ChartViewportMetadata should be instantiable without errors
-    assert meta is not None
+    log.info("chart metadata: %s", meta)
 
-    # Verify it's the base ViewportMetadata or ChartViewportMetadata
-    meta_str = str(meta)
-    assert isinstance(meta_str, str)
+    assert meta is not None
+    assert isinstance(meta, ChartViewportMetadata)
 
     # Cleanup
     rx.delete_workspace(workspace)
+
+
+def test_convergence_trackers_viewport_metadata(rx, cp_transient_solution):
+    """Test ConvergenceTrackersViewportMetadata."""
+
+    # Create workspace
+    workspace = rx.create_workspace("Test Convergence Trackers Metadata")
+
+    # find a convergence trackers view from the solution
+    views = cp_transient_solution.views
+    conv_view = next((v for v in views if v.type == ViewType.VIEW_TYPE_CONVERGENCE_TRACKERS), None)
+    assert conv_view is not None
+
+    viewport = workspace.assign_view(view=conv_view, wait=True)
+    meta = viewport.metadata
+    log.info("convergence trackers metadata: %s", meta)
+
+    assert meta is not None
+    assert isinstance(meta, ConvergenceTrackersViewportMetadata)
+
+    assert meta.selected_tracker_name == "Force Convergence"
+
+
+def test_contact_trackers_viewport_metadata(rx, cp_transient_solution):
+    """Test ContactTrackersViewportMetadata."""
+
+    # Create workspace
+    workspace = rx.create_workspace("Test Contact Trackers Metadata")
+
+    # find a contact trackers view from the solution
+    views = cp_transient_solution.views
+    contact_view = next((v for v in views if v.type == ViewType.VIEW_TYPE_CONTACT_TRACKERS), None)
+    assert contact_view is not None
+
+    viewport = workspace.assign_view(view=contact_view, wait=True)
+
+    meta = viewport.metadata
+    log.info("contact trackers metadata: %s", meta)
+
+    assert meta is not None
+    assert isinstance(meta, ContactTrackersViewportMetadata)
 
 
 @pytest.mark.images

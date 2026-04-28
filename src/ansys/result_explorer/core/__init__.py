@@ -7,4 +7,16 @@ __version__ = importlib_metadata.version(__name__.replace(".", "-"))
 from .client import Client
 from .exceptions import ResultExplorerError
 from .logger import log
-from .objects import Solution, View, Viewport, ViewportMetadata, Workspace
+from .objects import (
+    CameraPosition,
+    ChartViewportMetadata,
+    ContactTrackersViewportMetadata,
+    ConvergenceTrackersViewportMetadata,
+    MeshViewportMetadata,
+    PlotViewportMetadata,
+    Solution,
+    View,
+    Viewport,
+    ViewportMetadata,
+    Workspace,
+)
