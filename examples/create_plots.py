@@ -18,7 +18,7 @@ from ansys.result_explorer.core import models
 from ansys.result_explorer.core.client import Client
 
 FILE_PATH = r"D:\Models\mech-post\cylinder_plate\d3plot"
-TOKEN = "eyJob3N0IjoibG9jYWxob3N0IiwiaHR0cFBvcnQiOjYxNjAyLCJncnBjUG9ydCI6NjE2MTIsInNlc3Npb25JZCI6IjE5NDUxMWI4LTUxYTItNDcxMC1iYzYyLTlhMGQwNDc2OGI3MSJ9"  # noqa E501
+TOKEN = "<insert here>"  # noqa E501
 
 rx = Client.connect_with_token(TOKEN)
 
@@ -26,7 +26,7 @@ workspace = rx.create_workspace(name="PyRX NS Plot Workspace")
 
 sol_name = "PyRX Cylinder Plate"
 sol = rx.create_solution(
-    result_provider_name="Local",
+    result_provider="Local",
     name=sol_name,
     file_path=FILE_PATH,
 )

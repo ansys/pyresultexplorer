@@ -177,7 +177,7 @@ rx = Client.connect_with_token(TOKEN)
 workspace = rx.create_workspace(name="PyRX Above Threshold Workspace")
 
 sol = rx.create_solution(
-    result_provider_name="Local",
+    result_provider="Local",
     name="PyRX Above Threshold Solution",
     file_path=FILE_PATH,
 )

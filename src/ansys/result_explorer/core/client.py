@@ -72,6 +72,9 @@ class Client:
         self._filesystem_stub: filesystem_pb2_grpc.FilesystemServiceStub = GrpcStubWrapper(
             filesystem_pb2_grpc.FilesystemServiceStub(self._channel)
         )  # type: ignore
+        self._hps_filesystem_stub: filesystem_pb2_grpc.HpsFilesystemServiceStub = GrpcStubWrapper(
+            filesystem_pb2_grpc.HpsFilesystemServiceStub(self._channel)
+        )  # type: ignore
 
     @classmethod
     def connect_with_token(cls, token: str) -> "Client":
@@ -110,6 +113,29 @@ class Client:
         res = self._filesystem_stub.Ls(req, metadata=self._grpc_metadata)
         return list(res.items)
 
+    def hps_ls(
+        self,
+        path: str,
+        result_provider: str | models.ResultProvider = DEFAULT_RESULT_PROVIDER,
+    ) -> list[models.HpsFSItem]:
+        """List entities in the HPS file system of the result provider.
+
+        Parameters
+        ----------
+
+        path : str
+            Path in the HPS file system to list. Use "/" for root.
+            Otherwise, the path should be in the format "/project_id/job_id/task_id/file_id".
+
+        """
+        rp_name = result_provider
+        if isinstance(result_provider, models.ResultProvider):
+            rp_name = result_provider.name
+
+        req = models.LsRequest(result_provider_name=rp_name, path=path)
+        res = self._hps_filesystem_stub.Ls(req, metadata=self._grpc_metadata)
+        return list(res.items)
+
     def _get_file_content(
         self,
         path: str,
@@ -127,17 +153,105 @@ class Client:
     # ----------- Solution methods ----------------
     def create_solution(
         self,
-        result_provider_name: str,
+        result_provider: str | models.ResultProvider,
         name: str,
         file_path: str,
         split_mesh_options: models.SplitMeshOptions | None = None,
     ) -> Solution:
+        """Create a solution based on a file path. The file must be accessible by the server.
+
+        Parameters
+        ----------
+
+        result_provider : str | models.ResultProvider
+            Name of the result provider to use or a ResultProvider object.
+
+        name : str
+            Name of the solution to create.
+
+        file_path : str
+            Path to the result file. Must be accessible by the server.
+
+        """
+
+        rp_name = result_provider
+        if isinstance(result_provider, models.ResultProvider):
+            rp_name = result_provider.name
+
         file = models.File(path=file_path)
         split_mesh_options = split_mesh_options or models.SplitMeshOptions(auto_split_mesh=True)
         sol = models.SolutionCreate(
-            result_provider_name=result_provider_name,
+            result_provider_name=rp_name,
             name=name,
             files=[file],
+            split_mesh_options=split_mesh_options,
+        )
+        pb_sol = self._solution_stub.Create(sol, metadata=self._grpc_metadata)
+        return Solution(pb_sol, self)
+
+    def create_hps_solution(
+        self,
+        result_provider: str | models.ResultProvider,
+        name: str,
+        project_id: str,
+        task_id: str,
+        file_id: str,
+        split_mesh_options: models.SplitMeshOptions | None = None,
+    ) -> Solution:
+        """Create a solution based on a file in the HPS file system of the result provider.
+
+        Parameters
+        ----------
+        result_provider : str | models.ResultProvider
+            Name of the result provider to use or a ResultProvider object.
+            Must have an hps_url defined.
+
+        name : str
+            Name of the solution to create.
+
+        project_id : str
+            HPS project ID where the file is located.
+
+        task_id : str
+            HPS task ID where the file is located.
+
+        file_id : str
+            HPS file ID of the file to load.
+
+        """
+
+        rp = None
+        if isinstance(result_provider, models.ResultProvider):
+            rp = result_provider
+        else:
+            rps = self.list_result_providers()
+            rp = next((rp for rp in rps if rp.name == result_provider), None)
+        if rp is None:
+            raise ValueError(
+                f"Result provider '{result_provider}' not found. "
+                f"Available providers: {[rp.name for rp in rps]}"
+            )
+
+        if not rp.hps_url:
+            raise ValueError(
+                f"Result provider '{result_provider}' does not have an hps_url defined."
+            )
+
+        split_mesh_options = split_mesh_options or models.SplitMeshOptions(auto_split_mesh=True)
+        files = models.HpsFiles(
+            hps_url=rp.hps_url,
+            project_id=project_id,
+            files=[
+                models.HpsFile(
+                    task_id=task_id,
+                    file_id=file_id,
+                )
+            ],
+        )
+        sol = models.SolutionCreate(
+            result_provider_name=rp.name,
+            name=name,
+            hps_files=files,
             split_mesh_options=split_mesh_options,
         )
         pb_sol = self._solution_stub.Create(sol, metadata=self._grpc_metadata)

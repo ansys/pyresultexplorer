@@ -15,7 +15,7 @@ def test_solution(rx, rst_multiple_connections):
     # create a new solution
     sol = rx.create_solution(
         name="Test Solution",
-        result_provider_name="Local",
+        result_provider="Local",
         file_path=rst_multiple_connections,
     )
 
@@ -47,7 +47,7 @@ def test_solution(rx, rst_multiple_connections):
 def rst_solution(rx, rst_multiple_connections):
     sol = rx.create_solution(
         name="Test Solution",
-        result_provider_name="Local",
+        result_provider="Local",
         file_path=rst_multiple_connections,
     )
     yield sol
@@ -284,7 +284,7 @@ def test_mesh_options_with_processing_mode(rx, rst_multiple_connections):
 
         sol = rx.create_solution(
             name="Test Solution - Data Processing",
-            result_provider_name="Local",
+            result_provider="Local",
             file_path=rst_multiple_connections,
         )
 
