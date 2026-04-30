@@ -32,7 +32,7 @@ workspace = rx.create_workspace(name="Camera Example Workspace")
 
 print("Creating solution...")
 sol = rx.create_solution(
-    result_provider_name="Local",
+    result_provider="Local",
     name="Camera Example Solution",
     file_path=FILE_PATH,
 )

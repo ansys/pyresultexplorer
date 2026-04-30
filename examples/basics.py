@@ -49,7 +49,7 @@ for vp in viewports:
 
 sol_name = "PyRX Solution"
 sol = rx.create_solution(
-    result_provider_name="Local",
+    result_provider="Local",
     name=sol_name,
     file_path=FILE_PATH,
 )

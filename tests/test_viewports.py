@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 def multiple_connections_solution(rx, rst_multiple_connections):
     sol = rx.create_solution(
         name="Test Solution",
-        result_provider_name="Local",
+        result_provider="Local",
         file_path=rst_multiple_connections,
     )
     yield sol
