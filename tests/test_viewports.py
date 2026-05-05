@@ -8,6 +8,7 @@ from ansys.result_explorer.core import (
     ContactTrackersViewportMetadata,
     ConvergenceTrackersViewportMetadata,
     LogsViewportMetadata,
+    MeshViewportMetadata,
 )
 from ansys.result_explorer.core.models import ViewportDirection, ViewType
 
@@ -235,7 +236,9 @@ def test_mesh_viewport_metadata(rx, multiple_connections_solution):
     rx.delete_workspace(workspace)
 
 
-def test_mesh_viewport_named_selection_visibility(rx, cp_transient_solution):
+def test_mesh_viewport_named_selection_visibility(
+    rx, cp_transient_solution, snapshot, snapshot_settings
+):
     """Test named selection visibility in MeshViewportMetadata."""
     sol = cp_transient_solution
 
@@ -250,19 +253,18 @@ def test_mesh_viewport_named_selection_visibility(rx, cp_transient_solution):
 
     # Get mesh metadata
     meta = viewport.metadata
+    assert isinstance(meta, MeshViewportMetadata)
     log.info("mesh metadata: %s", viewport.metadata)
-
-    import time
-
-    time.sleep(5)  # Wait a moment for metadata to be fully available
 
     # Test named selection visibility by id
     ns_contact = next((ns for ns in sol.named_selections if "CONTACT" in ns.name), None)
     meta.visible_named_selection = ns_contact.id
+    meta.show_mesh_edges = True
     viewport.set_metadata(meta)
     assert viewport.metadata.visible_named_selection == ns_contact.id
 
-    time.sleep(5)
+    snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
+    assert snapshot_data == snapshot(name="CONTACT")
 
     # Test named selection visibility by object
     ns_eppl = next((ns for ns in sol.named_selections if "ND001_EPPL_ELEMENTS" in ns.name), None)
@@ -270,13 +272,18 @@ def test_mesh_viewport_named_selection_visibility(rx, cp_transient_solution):
     viewport.set_metadata(meta)
     assert viewport.metadata.visible_named_selection == ns_eppl.id
 
+    assert viewport.ready is True
+    snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
+    assert snapshot_data == snapshot(name="ND001_EPPL_ELEMENTS")
+
     # Test named selection visibility by name
     meta.visible_named_selection = "LEFT1"
     viewport.set_metadata(meta)
     ns_left = next((ns for ns in sol.named_selections if "LEFT1" in ns.name), None)
     assert viewport.metadata.visible_named_selection == ns_left.id
 
-    time.sleep(5)
+    snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
+    assert snapshot_data == snapshot(name="LEFT1")
 
     # Cleanup
     rx.delete_workspace(workspace)
