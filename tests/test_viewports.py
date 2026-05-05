@@ -285,6 +285,10 @@ def test_mesh_viewport_named_selection_visibility(
     snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
     assert snapshot_data == snapshot(name="LEFT1")
 
+    # test exception for invalid named selection
+    with pytest.raises(ValueError, match="INVALID_NS"):
+        meta.visible_named_selection = "INVALID_NS"
+
     # Cleanup
     rx.delete_workspace(workspace)
 
