@@ -7,8 +7,6 @@ from google.protobuf.json_format import MessageToDict, ParseDict
 from .. import models
 from .base import NamedBaseEntity, SubEntity
 
-# from .solution_dataclasses import AvailableMeshProperty, AvailableResult, TimeFrequency
-
 
 class View(SubEntity[models.View, "Solution"]):
     """Represents a result view in a solution."""

@@ -208,6 +208,12 @@ class ConvergenceTrackersViewportMetadata(ViewportMetadata):
     selected_tracker_name: str = PbProperty("selectedTrackerName")
 
 
+class LogsViewportMetadata(ViewportMetadata):
+    """Metadata specific to logs viewports."""
+
+    log_path: str = PbProperty("currentLogPath")
+
+
 class Viewport(BaseEntity[models.Viewport]):
     """Represents a viewport in a workspace."""
 
@@ -245,6 +251,8 @@ class Viewport(BaseEntity[models.Viewport]):
             return ConvergenceTrackersViewportMetadata(metadata, self._client)
         elif view.type == models.ViewType.VIEW_TYPE_CONTACT_TRACKERS:
             return ContactTrackersViewportMetadata(metadata, self._client)
+        elif view.type == models.ViewType.VIEW_TYPE_LOGS:
+            return LogsViewportMetadata(metadata, self._client)
 
         return ViewportMetadata(metadata, self._client)
 
