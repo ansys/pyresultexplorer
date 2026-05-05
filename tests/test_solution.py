@@ -174,6 +174,8 @@ def test_solution_string_representation(rst_solution: Solution):
 
     str_repr = str(sol)
 
+    log.info("String representation of solution:\n%s", str_repr)
+
     # Check that the string contains key information
     assert "Solution:" in str_repr
     assert sol.name in str_repr
@@ -183,6 +185,7 @@ def test_solution_string_representation(rst_solution: Solution):
     assert "Results Information:" in str_repr
     assert "Status:" in str_repr
     assert "Ready" in str_repr
+    assert "Available Plot Results" in str_repr
 
 
 def test_view_types(rst_solution: Solution):
