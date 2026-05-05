@@ -16,8 +16,10 @@ from pathlib import Path
 
 import pytest
 from playwright.sync_api import BrowserContext, expect
+from syrupy.extensions.image import PNGImageSnapshotExtension
 
 from ansys.result_explorer.core import Client, Solution
+from ansys.result_explorer.core.models import SnapshotSettings
 
 log = logging.getLogger(__name__)
 
@@ -44,6 +46,11 @@ def pytest_addoption(parser):
         default=None,
         help="Connection token to an existing session.",
     )
+
+
+@pytest.fixture
+def snapshot(snapshot):
+    return snapshot.use_extension(PNGImageSnapshotExtension)
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -147,6 +154,26 @@ def _get_result_path(data_directory, filename, docker: bool):
 @pytest.fixture(scope="session")
 def rst_multiple_connections(data_directory, is_docker) -> str:
     return _get_result_path(data_directory, "multiple_connections.rst", is_docker)
+
+
+@pytest.fixture
+def snapshot_settings() -> SnapshotSettings:
+    """Provide clean snapshot settings suitable for testing.
+
+    Returns settings with no timestamp, logo, legend, or solution name for
+    reproducible, clean snapshot images.
+    """
+    return SnapshotSettings(
+        show_time_stamp=False,
+        show_logo=False,
+        show_legend=False,
+        show_solution_name=False,
+        show_result_picker=False,
+        transparent_background=False,
+        background_color="#FFFFFF",
+        height=300,
+        width=300,
+    )
 
 
 @pytest.fixture
