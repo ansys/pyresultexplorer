@@ -169,8 +169,8 @@ def test_solution_properties(rst_solution: Solution):
     assert sol.id in result_provider.solution_ids
 
 
-def test_solution_string_representation(rst_solution: Solution):
-    sol = rst_solution
+def test_solution_string_representation(cp_transient_solution: Solution):
+    sol = cp_transient_solution
 
     str_repr = str(sol)
 
@@ -186,6 +186,8 @@ def test_solution_string_representation(rst_solution: Solution):
     assert "Status:" in str_repr
     assert "Ready" in str_repr
     assert "Available Plot Results" in str_repr
+    assert "Solver Text Outputs" in str_repr
+    assert "solve.out" in str_repr
 
 
 def test_view_types(rst_solution: Solution):

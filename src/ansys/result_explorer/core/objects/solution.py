@@ -525,6 +525,15 @@ class Solution(NamedBaseEntity[models.Solution]):
         else:
             lines.append("  No configurable plots available")
 
+        solver_logs_header = "Solver Text Outputs (Logs):"
+        lines.append("")
+        if self.solver_text_outputs:
+            lines.append(solver_logs_header)
+            for output in self.solver_text_outputs:
+                lines.append(f"  - {output.name}")
+        else:
+            lines.append(f"{solver_logs_header} None")
+
         if self.errors:
             lines.extend(
                 [
