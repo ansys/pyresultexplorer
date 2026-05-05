@@ -9,6 +9,7 @@ from ansys.result_explorer.core import (
     ChartViewportMetadata,
     ContactTrackersViewportMetadata,
     ConvergenceTrackersViewportMetadata,
+    LogsViewportMetadata,
 )
 from ansys.result_explorer.core.models import SnapshotSettings, ViewportDirection, ViewType
 
@@ -151,6 +152,7 @@ def test_plot_viewport_metadata(rx, multiple_connections_solution):
 
     # Get plot metadata
     meta = viewport.metadata
+    log.info("plot metadata: %s", meta)
 
     # Test show_mesh_edges property
     original_mesh_edges = meta.show_mesh_edges
@@ -172,6 +174,32 @@ def test_plot_viewport_metadata(rx, multiple_connections_solution):
 
     # Cleanup
     rx.delete_workspace(workspace)
+
+
+def test_logs_viewport_metadata(rx, cp_transient_solution):
+    """Test LogsViewportMetadata."""
+
+    # Create workspace
+    workspace = rx.create_workspace("Test Logs Metadata")
+
+    # find a logs view from the solution
+    views = cp_transient_solution.views
+    logs_view = next((v for v in views if v.type == ViewType.VIEW_TYPE_LOGS), None)
+    assert logs_view is not None
+
+    viewport = workspace.assign_view(view=logs_view, wait=True)
+    meta = viewport.metadata
+    log.info("logs metadata: %s", meta)
+
+    assert meta is not None
+    assert isinstance(meta, LogsViewportMetadata)
+
+    assert "cp_trans" in meta.log_path
+    assert meta.log_path.endswith("solve.out")
+
+    meta.log_path = meta.log_path.replace("solve.out", "file.err")
+    viewport.set_metadata(meta)
+    assert viewport.metadata.log_path.endswith("file.err")
 
 
 def test_mesh_viewport_metadata(rx, multiple_connections_solution):

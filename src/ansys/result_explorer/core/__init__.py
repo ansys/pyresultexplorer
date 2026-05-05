@@ -12,6 +12,7 @@ from .objects import (
     ChartViewportMetadata,
     ContactTrackersViewportMetadata,
     ConvergenceTrackersViewportMetadata,
+    LogsViewportMetadata,
     MeshViewportMetadata,
     PlotViewportMetadata,
     Solution,

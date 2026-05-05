@@ -7,8 +7,6 @@ from google.protobuf.json_format import MessageToDict, ParseDict
 from .. import models
 from .base import NamedBaseEntity, SubEntity
 
-# from .solution_dataclasses import AvailableMeshProperty, AvailableResult, TimeFrequency
-
 
 class View(SubEntity[models.View, "Solution"]):
     """Represents a result view in a solution."""
@@ -355,7 +353,11 @@ class Solution(NamedBaseEntity[models.Solution]):
 
     @property
     def available_results(self) -> list[models.AvailableResult]:
-        """Available result types."""
+        """Available DPF result types.
+
+        List of all available DPF results in the solution,
+        including those that may not be supported in Result Explorer yet.
+        """
         return list(self._pb.available_results)
 
     @property
@@ -385,7 +387,11 @@ class Solution(NamedBaseEntity[models.Solution]):
 
     @property
     def configurable_plots(self) -> list[models.ConfigurablePlot]:
-        """Configurable plot definitions."""
+        """Configurable plot definitions.
+
+        Provides a list of results with supported and configurable options
+        that can be used to create plots.
+        """
         return list(self._pb.configurable_plots)
 
     @property
@@ -395,7 +401,11 @@ class Solution(NamedBaseEntity[models.Solution]):
 
     @property
     def configurable_charts(self) -> list[models.ConfigurableChart]:
-        """Configurable chart definitions."""
+        """Configurable chart definitions.
+
+        Provides a list of results with supported and configurable options
+        that can be used to create charts.
+        """
         return list(self._pb.configurable_charts)
 
     @property
@@ -449,46 +459,19 @@ class Solution(NamedBaseEntity[models.Solution]):
 
     def __str__(self) -> str:
         """Return a formatted string representation of the solution."""
+
         lines = [
             "\n",
             "=" * 70,
             f"Solution: {self.name}",
             "=" * 70,
-            f"{'ID:':<20}{self.id}",
-            f"{'Description:':<20}{self.description or 'N/A'}",
-            "",
-            "Analysis Information:",
-            f"  {'Physics Type:':<20}{self.physics_type or 'N/A'}",
-            f"  {'Analysis Type:':<20}{self.analysis_type or 'N/A'}",
-            f"  {'Solver Version:':<20}{self.solver_version or 'N/A'}",
-            f"  {'Unit System:':<20}{self.unit_system or 'N/A'}",
-            "",
-            "Mesh Information:",
-            f"  {'Num Elements:':<20}{self.n_elements}",
-            f"  {'Num Nodes:':<20}{self.n_nodes}",
-            f"  {'Num Named Selections:':<20}{len(self.named_selections)}",
-            f"  {'Num Bodies:':<20}{len(self.bodies)}",
-            f"  {'Distance Unit:':<20}{self.distance_unit or 'N/A'}",
-            "",
-            "Results Information:",
-            f"  {'Num Sets:':<20}{self.n_sets}",
-            f"  {'Available Results:':<20}{self.n_results}",
-            f"  {'Time/Freq Unit:':<20}{self.time_frequencies_unit or 'N/A'}",
+            f"{'ID:':<25}{self.id}",
+            f"{'Description:':<25}{self.description or 'N/A'}",
             "",
             "Status:",
-            f"  {'Ready:':<20}{'Yes' if self.ready else 'No'}",
-            f"  {'Live:':<20}{'Yes' if self.live else 'No'}",
+            f"  {'Ready:':<25}{'Yes' if self.ready else 'No'}",
+            f"  {'Live:':<25}{'Yes' if self.live else 'No'}",
         ]
-
-        if self.errors:
-            lines.extend(
-                [
-                    "",
-                    "Errors:",
-                ]
-            )
-            for error in self.errors:
-                lines.append(f"  - {error}")
 
         if self.files:
             lines.extend(
@@ -501,6 +484,65 @@ class Solution(NamedBaseEntity[models.Solution]):
                 lines.append(f"  - {file.path} (key: {file.key})")
             if len(self.files) > 5:
                 lines.append(f"  ... and {len(self.files) - 5} more")
+
+        lines.extend(
+            [
+                "",
+                "Analysis Information:",
+                f"  {'Physics Type:':<25}{self.physics_type or 'N/A'}",
+                f"  {'Analysis Type:':<25}{self.analysis_type or 'N/A'}",
+                f"  {'Solver Version:':<25}{self.solver_version or 'N/A'}",
+                f"  {'Unit System:':<25}{self.unit_system or 'N/A'}",
+                "",
+                "Mesh Information:",
+                f"  {'Num Elements:':<25}{self.n_elements}",
+                f"  {'Num Nodes:':<25}{self.n_nodes}",
+                f"  {'Num Named Selections:':<25}{len(self.named_selections)}",
+                f"  {'Num Bodies:':<25}{len(self.bodies)}",
+                f"  {'Distance Unit:':<25}{self.distance_unit or 'N/A'}",
+                "",
+                "Results Information:",
+                f"  {'Num Sets:':<25}{self.n_sets}",
+                f"  {'Available Results:':<25}{self.n_results}",
+                f"  {'Time/Freq Unit:':<25}{self.time_frequencies_unit or 'N/A'}",
+                "",
+                "Available Plot Results:",
+            ]
+        )
+
+        # Add configurable plots summary
+        if self.configurable_plots:
+            for plot in self.configurable_plots:
+                # Convert RESULT_TYPE_DISPLACEMENT to Displacement
+                result_type_name = models.ResultType.Name(plot.result_type).replace(
+                    "RESULT_TYPE_", ""
+                )
+                result_type = " ".join(word.capitalize() for word in result_type_name.split("_"))
+                lines.append(f"  {result_type}")
+                for field in plot.fields:
+                    components_str = f" [{', '.join(field.components)}]" if field.components else ""
+                    lines.append(f"    - {field.name}{components_str}")
+        else:
+            lines.append("  No configurable plots available")
+
+        solver_logs_header = "Solver Text Outputs (Logs):"
+        lines.append("")
+        if self.solver_text_outputs:
+            lines.append(solver_logs_header)
+            for output in self.solver_text_outputs:
+                lines.append(f"  - {output.name}")
+        else:
+            lines.append(f"{solver_logs_header} None")
+
+        if self.errors:
+            lines.extend(
+                [
+                    "",
+                    "Errors:",
+                ]
+            )
+            for error in self.errors:
+                lines.append(f"  - {error}")
 
         lines.append("=" * 70)
         return "\n".join(lines)
