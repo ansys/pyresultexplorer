@@ -8,6 +8,7 @@ from ansys.result_explorer.core import (
     ContactTrackersViewportMetadata,
     ConvergenceTrackersViewportMetadata,
     LogsViewportMetadata,
+    MeshViewportMetadata,
 )
 from ansys.result_explorer.core.models import ViewportDirection, ViewType
 
@@ -196,9 +197,7 @@ def test_mesh_viewport_metadata(rx, multiple_connections_solution):
     # Find a mesh view from the solution
     views = sol.views
     mesh_view = next((v for v in views if v.type == ViewType.VIEW_TYPE_MESH), None)
-
-    if mesh_view is None:
-        pytest.skip("No mesh view available in test solution")
+    assert mesh_view is not None
 
     # Create workspace and assign mesh view
     workspace = rx.create_workspace("Test Mesh Metadata")
@@ -232,6 +231,63 @@ def test_mesh_viewport_metadata(rx, multiple_connections_solution):
     meta.expanded_groups = ["group1", "group2"]
     viewport.set_metadata(meta)
     assert viewport.metadata.expanded_groups == ["group1", "group2"]
+
+    # Cleanup
+    rx.delete_workspace(workspace)
+
+
+def test_mesh_viewport_named_selection_visibility(
+    rx, cp_transient_solution, snapshot, snapshot_settings
+):
+    """Test named selection visibility in MeshViewportMetadata."""
+    sol = cp_transient_solution
+
+    # Find a mesh view from the solution
+    views = sol.views
+    mesh_view = next((v for v in views if v.type == ViewType.VIEW_TYPE_MESH), None)
+    assert mesh_view is not None
+
+    # Create workspace and assign mesh view
+    workspace = rx.create_workspace("Test Mesh Metadata Visibility")
+    viewport = workspace.assign_view(view=mesh_view, wait=True)
+
+    # Get mesh metadata
+    meta = viewport.metadata
+    assert isinstance(meta, MeshViewportMetadata)
+    log.info("mesh metadata: %s", viewport.metadata)
+
+    # Test named selection visibility by id
+    ns_contact = next((ns for ns in sol.named_selections if "CONTACT" in ns.name), None)
+    meta.visible_named_selection = ns_contact.id
+    meta.show_mesh_edges = True
+    viewport.set_metadata(meta)
+    assert viewport.metadata.visible_named_selection == ns_contact.id
+
+    snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
+    assert snapshot_data == snapshot(name="CONTACT")
+
+    # Test named selection visibility by object
+    ns_eppl = next((ns for ns in sol.named_selections if "ND001_EPPL_ELEMENTS" in ns.name), None)
+    meta.visible_named_selection = ns_eppl
+    viewport.set_metadata(meta)
+    assert viewport.metadata.visible_named_selection == ns_eppl.id
+
+    assert viewport.ready is True
+    snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
+    assert snapshot_data == snapshot(name="ND001_EPPL_ELEMENTS")
+
+    # Test named selection visibility by name
+    meta.visible_named_selection = "LEFT1"
+    viewport.set_metadata(meta)
+    ns_left = next((ns for ns in sol.named_selections if "LEFT1" in ns.name), None)
+    assert viewport.metadata.visible_named_selection == ns_left.id
+
+    snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
+    assert snapshot_data == snapshot(name="LEFT1")
+
+    # test exception for invalid named selection
+    with pytest.raises(ValueError, match="INVALID_NS"):
+        meta.visible_named_selection = "INVALID_NS"
 
     # Cleanup
     rx.delete_workspace(workspace)

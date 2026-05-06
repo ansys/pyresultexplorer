@@ -73,9 +73,10 @@ class PbPropertyReadOnly:
 class ViewportMetadata:
     """Wrapper for viewport metadata."""
 
-    def __init__(self, pb_obj: models.Viewport, client: Client):
+    def __init__(self, pb_obj: models.Viewport, client: Client, solution_id: str | None = None):
         self._pb_obj = pb_obj
         self._client = client
+        self._solution_id = solution_id
 
     def to_pb(self) -> models.Viewport:
         """Convert back for gRPC calls."""
@@ -113,7 +114,41 @@ class ThreeDViewportMetadata(ViewportMetadata):
 class MeshViewportMetadata(ThreeDViewportMetadata):
     """Metadata specific to mesh viewports."""
 
-    pass
+    @property
+    def visible_named_selection(self) -> str | None:
+        """Currently visible named selection in this viewport."""
+        return self._pb_obj["shownNamedSelection"]
+
+    @visible_named_selection.setter
+    def visible_named_selection(self, value: str | models.NamedSelection = None) -> None:
+        """Set the visible named selection in this viewport.
+
+        Parameters
+        ----------
+        value : str or NamedSelection, optional
+            The named selection to show. Can be specified by id, name or
+            by passing a NamedSelection object. If None, no named selection will be shown.
+        """
+        if value is None:
+            self._pb_obj["shownNamedSelection"] = None
+            return
+
+        solution = self._client.get_solution(self._solution_id)
+
+        ns = None
+        if isinstance(value, models.NamedSelection):
+            ns = value
+
+        if ns is None:
+            ns = next((ns for ns in solution.named_selections if ns.id == value), None)
+
+        if ns is None:
+            ns = next((ns for ns in solution.named_selections if ns.name == value), None)
+
+        if ns is None:
+            raise ValueError(f"No named selection with id or name '{value}' found in solution.")
+
+        self._pb_obj["shownNamedSelection"] = ns.id
 
 
 class PlotViewportMetadata(ThreeDViewportMetadata):
@@ -239,22 +274,22 @@ class Viewport(BaseEntity[models.Viewport]):
         metadata = self._pb.metadata
 
         if view is None:
-            return ViewportMetadata(metadata, self._client)
+            return ViewportMetadata(metadata, self._client, self.solution_id)
 
         if view.type == models.ViewType.VIEW_TYPE_PLOT:
-            return PlotViewportMetadata(metadata, self._client)
+            return PlotViewportMetadata(metadata, self._client, self.solution_id)
         elif view.type == models.ViewType.VIEW_TYPE_CHART:
-            return ChartViewportMetadata(metadata, self._client)
+            return ChartViewportMetadata(metadata, self._client, self.solution_id)
         elif view.type == models.ViewType.VIEW_TYPE_MESH:
-            return MeshViewportMetadata(metadata, self._client)
+            return MeshViewportMetadata(metadata, self._client, self.solution_id)
         elif view.type == models.ViewType.VIEW_TYPE_CONVERGENCE_TRACKERS:
-            return ConvergenceTrackersViewportMetadata(metadata, self._client)
+            return ConvergenceTrackersViewportMetadata(metadata, self._client, self.solution_id)
         elif view.type == models.ViewType.VIEW_TYPE_CONTACT_TRACKERS:
-            return ContactTrackersViewportMetadata(metadata, self._client)
+            return ContactTrackersViewportMetadata(metadata, self._client, self.solution_id)
         elif view.type == models.ViewType.VIEW_TYPE_LOGS:
-            return LogsViewportMetadata(metadata, self._client)
+            return LogsViewportMetadata(metadata, self._client, self.solution_id)
 
-        return ViewportMetadata(metadata, self._client)
+        return ViewportMetadata(metadata, self._client, self.solution_id)
 
     @property
     def size(self) -> float:
