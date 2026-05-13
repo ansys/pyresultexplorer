@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from .. import models
@@ -10,6 +11,8 @@ from .viewport import Viewport
 
 if TYPE_CHECKING:
     from .solution import View
+
+RX_WORKSPACE_TEMPLATE_EXTENSION = ".rxwt"
 
 
 class Workspace(NamedBaseEntity[models.Workspace]):
@@ -155,3 +158,16 @@ class Workspace(NamedBaseEntity[models.Workspace]):
         self._pb = self._client._workspace_stub.Get(
             models.ResourceId(id=self.id), metadata=self._client._grpc_metadata
         )
+
+    def export_as_template(self, path: str | Path) -> None:
+        """Save this workspace as a template file."""
+        path = Path(path)
+        if path.suffix != RX_WORKSPACE_TEMPLATE_EXTENSION:
+            path = path.with_suffix(path.suffix + RX_WORKSPACE_TEMPLATE_EXTENSION)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        req = models.ResourceId(id=self.id)
+        template = self._client._workspace_stub.ExportWorkspace(
+            req, metadata=self._client._grpc_metadata
+        )
+        with open(path, "w") as f:
+            f.write(template.data)

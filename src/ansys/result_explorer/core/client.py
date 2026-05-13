@@ -1,6 +1,7 @@
 import base64
 import json
 from functools import wraps
+from pathlib import Path
 
 import grpc
 
@@ -16,6 +17,7 @@ from .exceptions import ResultExplorerError
 from .objects import Solution, Viewport, Workspace
 
 DEFAULT_RESULT_PROVIDER = "Local"
+RX_SESSION_EXTENSION = ".rxs"
 
 
 class GrpcStubWrapper:
@@ -337,6 +339,37 @@ class Client:
 
     def update_app_settings(self, settings: models.AppSettings) -> models.AppSettings:
         return self._app_stub.UpdateAppSettings(settings, metadata=self._grpc_metadata)
+
+    def save_session(self, path: str | Path) -> None:
+        """Save the current session to file.
+
+        Parameters
+        ----------
+        path : str | Path
+            Path to save the session file. Should end with .rxs extension.
+        """
+        path = Path(path)
+        if path.suffix != RX_SESSION_EXTENSION:
+            path = path.with_suffix(path.suffix + RX_SESSION_EXTENSION)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        session = self._app_stub.SaveSession(models.Empty(), metadata=self._grpc_metadata)
+        with open(path, "w") as f:
+            f.write(session.data)
+
+    def open_session(self, path: str | Path) -> None:
+        """Open a session from file.
+
+        Parameters
+        ----------
+        path : str | Path
+            Path to the session file. Should end with .rxs extension.
+        """
+        path = Path(path)
+        if path.suffix != RX_SESSION_EXTENSION:
+            raise ValueError(f"Session file should have '{RX_SESSION_EXTENSION}' extension.")
+        with open(path) as f:
+            data = f.read()
+        self._app_stub.OpenSession(models.Session(data=data), metadata=self._grpc_metadata)
 
 
 def _create_grid_workspace(client: Client, name, rows: int, cols: int):

@@ -10,6 +10,7 @@ from ansys.api.result_explorer.v0.app_pb2 import (
     ProcessingMode,
     ResultProvider,
     ResultProviderList,
+    Session,
     ThreeDCameraProjection,
     ThreeDColorMap,
     ThreeDInteractionMode,
