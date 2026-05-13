@@ -125,6 +125,37 @@ def test_viewport_size(rx):
     rx.delete_workspace(workspace_1x3)
 
 
+def test_viewport_hidden(rx):
+    """Test viewport hidden, hide, and show."""
+    workspace = rx.create_workspace("Test Viewport Hidden", rows=1, cols=2)
+    viewports = workspace.viewports
+    assert len(viewports) == 2
+
+    vp = viewports[0]
+
+    # newly created viewport should be visible
+    assert vp.hidden is False
+
+    # hide the viewport
+    vp.hide()
+    assert vp.hidden is True
+
+    # verify server state
+    refreshed = next(v for v in rx.get_workspace(workspace.id).viewports if v.id == vp.id)
+    assert refreshed.hidden is True
+
+    # show the viewport again
+    vp.show()
+    assert vp.hidden is False
+
+    # verify server state
+    refreshed = next(v for v in rx.get_workspace(workspace.id).viewports if v.id == vp.id)
+    assert refreshed.hidden is False
+
+    # Cleanup
+    rx.delete_workspace(workspace)
+
+
 def test_plot_viewport_metadata(rx, multiple_connections_solution):
     """Test PlotViewportMetadata properties."""
     sol = multiple_connections_solution

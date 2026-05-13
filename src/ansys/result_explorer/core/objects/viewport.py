@@ -363,3 +363,26 @@ class Viewport(BaseEntity[models.Viewport]):
         self._pb = self._client._workspace_stub.UpdateViewport(
             req, metadata=self._client._grpc_metadata
         )
+
+    @property
+    def hidden(self) -> bool:
+        """Whether this viewport is currently hidden (not visible in the UI)."""
+        return self._pb.hidden
+
+    def _set_hidden(self, hidden: bool) -> None:
+        req = models.UpdateViewportRequest(
+            viewport_id=self.id,
+            hidden=hidden,
+            wait=False,
+        )
+        self._pb = self._client._workspace_stub.UpdateViewport(
+            req, metadata=self._client._grpc_metadata
+        )
+
+    def hide(self) -> None:
+        """Hide this viewport (make it not visible in the UI)."""
+        self._set_hidden(True)
+
+    def show(self) -> None:
+        """Show this viewport if it was previously hidden."""
+        self._set_hidden(False)

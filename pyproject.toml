@@ -56,7 +56,7 @@ default-groups = ["dev"]
 cache-dir = "./.uv_cache"
 
 [tool.uv.sources]
-ansys-api-result-explorer = { git = "https://github.com/ansys-internal/result-explorer.git", subdirectory = "api/python", rev = "e5619056b614fceb736c1f4492402dd8e2513c3f" }
+ansys-api-result-explorer = { git = "https://github.com/ansys-internal/result-explorer.git", subdirectory = "api/python", rev = "928b09bf72abc898e67e76683a59ea50adea5d34" }
 
 [project.urls]
 Source = "https://github.com/ansys-internal/pyresultexplorer"
