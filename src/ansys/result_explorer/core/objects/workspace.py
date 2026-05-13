@@ -171,3 +171,59 @@ class Workspace(NamedBaseEntity[models.Workspace]):
         )
         with open(path, "w") as f:
             f.write(template.data)
+
+    @classmethod
+    def import_from_template(
+        cls,
+        client,
+        path: str | Path,
+        *,
+        workspace_name: str = "",
+        solutions: list[models.WorkspaceImportRequest.SolutionInfo] | None = None,
+        use_camera_position: bool | None = None,
+        use_time_freq: bool | None = None,
+        use_body_visibility: bool | None = None,
+    ) -> Workspace:
+        """Create a workspace by importing a template file.
+
+        Parameters
+        ----------
+        client : Client
+            The connected client.
+        path : str | Path
+            Path to the workspace template file (.rxwt).
+        workspace_name : str, optional
+            Name for the new workspace. Defaults to the name stored in the template.
+        solutions : list[WorkspaceImportRequest.SolutionInfo], optional
+            Solution bindings to use when importing. Each entry maps a slot in the
+            template to a specific result provider and file path.
+        use_camera_position : bool, optional
+            Whether to restore the camera position from the template.
+        use_time_freq : bool, optional
+            Whether to restore the time/frequency setting from the template.
+        use_body_visibility : bool, optional
+            Whether to restore body visibility from the template.
+
+        Returns
+        -------
+        Workspace
+            The newly created workspace.
+        """
+        template_data = Path(path).read_text()
+        kwargs = {
+            "template": template_data,
+            "workspace_name": workspace_name,
+            "solutions": solutions or [],
+        }
+        if use_camera_position is not None:
+            kwargs["use_camera_position"] = use_camera_position
+        if use_time_freq is not None:
+            kwargs["use_time_freq"] = use_time_freq
+        if use_body_visibility is not None:
+            kwargs["use_body_visibility"] = use_body_visibility
+        req = models.WorkspaceImportRequest(**kwargs)
+        resource_id = client._workspace_stub.ImportWorkspace(req, metadata=client._grpc_metadata)
+        pb_ws = client._workspace_stub.Get(
+            models.ResourceId(id=resource_id.id), metadata=client._grpc_metadata
+        )
+        return cls(pb_ws, client)

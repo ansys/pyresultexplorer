@@ -158,3 +158,55 @@ def test_export_workspace_template_with_views(rx, multiple_connections_solution,
     assert views_state[assigned["viewId"]]["name"] in expected_view_names
 
     rx.delete_workspace(workspace)
+
+
+def test_import_workspace_from_template_round_trip(rx, multiple_connections_solution, tmp_path):
+    """Export a workspace template then import it and verify the result."""
+
+    from ansys.result_explorer.core import models
+
+    sol = multiple_connections_solution
+
+    # Build a 1x2 workspace with one view assigned
+    original_ws = rx.create_workspace("Template Round Trip", rows=1, cols=2)
+    views = sol.views
+    displacement_view = next((v for v in views if "Displacement" in v.name), None)
+    assert displacement_view is not None
+    original_ws.assign_view(view=displacement_view, wait=True)
+
+    saved_view_name = displacement_view.name
+
+    # Export template
+    template_path = tmp_path / "round_trip.rxwt"
+    original_ws.export_as_template(template_path)
+    assert template_path.exists()
+
+    # Import template — rebind the same solution slot the template references
+    imported_ws = rx.import_workspace_from_template(
+        template_path,
+        workspace_name="Imported Round Trip",
+        solutions=[
+            models.WorkspaceImportRequest.SolutionInfo(
+                name=sol.name + " (imported)",
+                result_provider_name="Local",
+                file_path=multiple_connections_solution.files[0].path,
+            )
+        ],
+    )
+
+    assert imported_ws.id != original_ws.id
+    assert imported_ws.name == "Imported Round Trip"
+    assert len(imported_ws.viewport_ids) == 2  # 1x2 layout preserved
+
+    # Verify the assigned view name is preserved
+    assigned_vp = next((v for v in imported_ws.viewports if v.view_id), None)
+    assert assigned_vp is not None
+    imported_sol = rx.get_solution(assigned_vp.solution_id)
+    assert imported_sol.name == sol.name + " (imported)"
+    restored_view = next((v for v in imported_sol.views if v.id == assigned_vp.view_id), None)
+    assert restored_view is not None
+    assert restored_view.name == saved_view_name
+
+    # Cleanup
+    rx.delete_workspace(original_ws)
+    rx.delete_workspace(imported_ws)

@@ -312,6 +312,48 @@ class Client:
             models.ResourceId(id=viewport_id), metadata=self._grpc_metadata
         )
 
+    def import_workspace_from_template(
+        self,
+        path: str | Path,
+        *,
+        workspace_name: str = "",
+        solutions: list[models.WorkspaceImportRequest.SolutionInfo] | None = None,
+        use_camera_position: bool | None = None,
+        use_time_freq: bool | None = None,
+        use_body_visibility: bool | None = None,
+    ) -> Workspace:
+        """Create a workspace by importing a template file.
+
+        Parameters
+        ----------
+        path : str | Path
+            Path to the workspace template file (.rxwt).
+        workspace_name : str, optional
+            Name for the new workspace. Defaults to the name stored in the template.
+        solutions : list[WorkspaceImportRequest.SolutionInfo], optional
+            Solution bindings to use when importing.
+        use_camera_position : bool, optional
+            Whether to restore the camera position from the template.
+        use_time_freq : bool, optional
+            Whether to restore the time/frequency setting from the template.
+        use_body_visibility : bool, optional
+            Whether to restore body visibility from the template.
+
+        Returns
+        -------
+        Workspace
+            The newly created workspace.
+        """
+        return Workspace.import_from_template(
+            self,
+            path,
+            workspace_name=workspace_name,
+            solutions=solutions,
+            use_camera_position=use_camera_position,
+            use_time_freq=use_time_freq,
+            use_body_visibility=use_body_visibility,
+        )
+
     # ----------- App management ----------------
     def list_result_providers(self) -> list[models.ResultProvider]:
         r = self._app_stub.ListResultProviders(models.Empty(), metadata=self._grpc_metadata)

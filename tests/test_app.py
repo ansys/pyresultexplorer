@@ -1,5 +1,6 @@
 import json
 import logging
+import time
 from pathlib import Path
 
 from ansys.result_explorer.core import models
@@ -154,8 +155,6 @@ def test_open_session_round_trip(rx, rst_multiple_connections, tmp_path):
 
     # --- restore session ---
     rx.open_session(session_path)
-    import time
-
     time.sleep(1)  # wait for session to load
 
     # --- verify workspaces ---

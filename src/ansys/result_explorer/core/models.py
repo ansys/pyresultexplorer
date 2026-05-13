@@ -87,6 +87,7 @@ from ansys.api.result_explorer.v0.workspace_pb2 import (
     ViewportDirection,
     Workspace,
     WorkspaceCreate,
+    WorkspaceImportRequest,
     WorkspaceList,
     WorkspaceUpdateRequest,
 )
