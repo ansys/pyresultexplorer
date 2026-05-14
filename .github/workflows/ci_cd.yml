@@ -89,7 +89,7 @@ jobs:
           ghcr-username: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
           ghcr-token: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
           license-server: ${{ secrets.LICENSE_SERVER }}
-          server-tag: 'dev-dpf-v2026.1.pre1'
+          server-tag: 'upgrade-gateway-dpf-v2026.1.pre1'
           web-tag: 'expose-import-export'
           results-folder: '${{ github.workspace }}/tests/data'
 
