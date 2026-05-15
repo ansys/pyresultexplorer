@@ -10,6 +10,7 @@ from ansys.api.result_explorer.v0.app_pb2 import (
     ProcessingMode,
     ResultProvider,
     ResultProviderList,
+    Session,
     ThreeDCameraProjection,
     ThreeDColorMap,
     ThreeDInteractionMode,
@@ -86,6 +87,7 @@ from ansys.api.result_explorer.v0.workspace_pb2 import (
     ViewportDirection,
     Workspace,
     WorkspaceCreate,
+    WorkspaceImportRequest,
     WorkspaceList,
     WorkspaceUpdateRequest,
 )

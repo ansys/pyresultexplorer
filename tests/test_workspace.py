@@ -1,5 +1,7 @@
+import json
 import logging
 import uuid
+from pathlib import Path
 
 import pytest
 
@@ -63,3 +65,148 @@ def test_error_get_nonexistent_workspace(rx):
 
     assert "not found" in str(exc_info.value)
     assert non_existent_id in str(exc_info.value)
+
+
+def test_export_workspace_template(rx, tmp_path):
+    """Test export_as_template path handling: makedirs, extension appending, valid JSON output."""
+
+    workspace = rx.create_workspace("Template Export Test")
+
+    # Export to a nested path to verify makedirs
+    template_path = tmp_path / "nested" / "dir" / "ws.rxwt"
+    workspace.export_as_template(template_path)
+
+    assert template_path.exists()
+
+    content = template_path.read_text()
+    data = json.loads(content)
+    assert isinstance(data, dict)
+
+    # Verify top-level structure
+    assert "version" in data
+    assert "app_state" in data
+    app_state = data["app_state"]
+    assert "workspaces" in app_state
+    assert "viewportLayoutNodes" in app_state
+    assert "viewportPortals" in app_state
+    assert len(app_state["workspaces"]) == 1
+    ws_state = next(iter(app_state["workspaces"].values()))
+    assert ws_state["name"] == workspace.name
+
+    # Test with a Path without extension - should auto-append .rxwt
+    template_path_no_ext = tmp_path / "ws_no_ext"
+    workspace.export_as_template(template_path_no_ext)
+    expected_path = Path(str(template_path_no_ext) + ".rxwt")
+    assert expected_path.exists()
+
+    data2 = json.loads(expected_path.read_text())
+    assert isinstance(data2, dict)
+
+    # Test with a string path
+    template_path_str = str(tmp_path / "from_string.rxwt")
+    workspace.export_as_template(template_path_str)
+    assert Path(template_path_str).exists()
+
+    rx.delete_workspace(workspace)
+
+
+def test_export_workspace_template_with_views(rx, multiple_connections_solution, tmp_path):
+    """Test that a workspace template with assigned views is exported correctly."""
+
+    sol = multiple_connections_solution
+
+    # Create a 2x1 workspace and assign views to both viewports
+    workspace = rx.create_workspace("Template With Views", rows=2, cols=1)
+
+    views = sol.views
+    displacement_view = next((v for v in views if "Displacement" in v.name), None)
+    stress_view = next((v for v in views if "Stress" in v.name), None)
+    assert displacement_view is not None
+
+    workspace.assign_view(view=displacement_view, wait=True)
+    if stress_view is not None:
+        workspace.assign_view(view=stress_view, wait=True)
+
+    template_path = tmp_path / "ws_with_views.rxwt"
+    workspace.export_as_template(template_path)
+
+    assert template_path.exists()
+
+    data = json.loads(template_path.read_text())
+    assert isinstance(data, dict)
+
+    # Verify top-level structure
+    assert "version" in data
+    assert "app_state" in data
+    app_state = data["app_state"]
+    assert len(app_state["workspaces"]) == 1
+    ws_state = next(iter(app_state["workspaces"].values()))
+    assert ws_state["name"] == workspace.name
+    assert len(ws_state["viewportLayoutNodeIds"]) == 3  # 2x1 = 3 nodes (root + 2 leaves)
+
+    # Verify at least one portal has a view assigned
+    portals = app_state["viewportPortals"]
+    assigned_portals = [p for p in portals.values() if p.get("viewId")]
+    assert len(assigned_portals) >= 1
+    assigned = assigned_portals[0]
+    assert assigned["solutionId"] == sol.id
+
+    # Verify the assigned view is recorded in the views dict with the right name
+    views_state = app_state["views"]
+    assert assigned["viewId"] in views_state
+    expected_view_names = {v.name for v in views}
+    assert views_state[assigned["viewId"]]["name"] in expected_view_names
+
+    rx.delete_workspace(workspace)
+
+
+def test_import_workspace_from_template_round_trip(rx, multiple_connections_solution, tmp_path):
+    """Export a workspace template then import it and verify the result."""
+
+    from ansys.result_explorer.core import models
+
+    sol = multiple_connections_solution
+
+    # Build a 1x2 workspace with one view assigned
+    original_ws = rx.create_workspace("Template Round Trip", rows=1, cols=2)
+    views = sol.views
+    displacement_view = next((v for v in views if "Displacement" in v.name), None)
+    assert displacement_view is not None
+    original_ws.assign_view(view=displacement_view, wait=True)
+
+    saved_view_name = displacement_view.name
+
+    # Export template
+    template_path = tmp_path / "round_trip.rxwt"
+    original_ws.export_as_template(template_path)
+    assert template_path.exists()
+
+    # Import template — rebind the same solution slot the template references
+    imported_ws = rx.import_workspace_from_template(
+        template_path,
+        workspace_name="Imported Round Trip",
+        solutions=[
+            models.WorkspaceImportRequest.SolutionInfo(
+                name=sol.name + " (imported)",
+                result_provider_name="Local",
+                file_path=multiple_connections_solution.files[0].path,
+            )
+        ],
+    )
+
+    assert imported_ws.id != original_ws.id
+    assert imported_ws.name == "Imported Round Trip"
+    assert len(imported_ws.viewport_ids) == 2  # 1x2 layout preserved
+
+    # Verify the assigned view name is preserved
+    assigned_vp = next((v for v in imported_ws.viewports if v.view_id), None)
+    assert assigned_vp is not None
+    imported_sol = rx.get_solution(assigned_vp.solution_id)
+    assert imported_sol.name == sol.name + " (imported)"
+    restored_view = next((v for v in imported_sol.views if v.id == assigned_vp.view_id), None)
+    assert restored_view is not None
+    assert restored_view.name == saved_view_name
+
+    # Cleanup
+    rx.delete_workspace(original_ws)
+    rx.delete_workspace(imported_ws)
