@@ -316,8 +316,8 @@ class Client:
         self,
         path: str | Path,
         *,
-        workspace_name: str = "",
-        solutions: list[models.WorkspaceImportRequest.SolutionInfo] | None = None,
+        workspace_name: str,
+        solutions: list[models.WorkspaceImportRequest.SolutionInfo],
         use_camera_position: bool | None = None,
         use_time_freq: bool | None = None,
         use_body_visibility: bool | None = None,
@@ -328,9 +328,9 @@ class Client:
         ----------
         path : str | Path
             Path to the workspace template file (.rxwt).
-        workspace_name : str, optional
-            Name for the new workspace. Defaults to the name stored in the template.
-        solutions : list[WorkspaceImportRequest.SolutionInfo], optional
+        workspace_name : str
+            Name for the new workspace.
+        solutions : list[WorkspaceImportRequest.SolutionInfo]
             Solution bindings to use when importing.
         use_camera_position : bool, optional
             Whether to restore the camera position from the template.

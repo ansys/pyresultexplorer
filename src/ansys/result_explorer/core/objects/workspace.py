@@ -178,8 +178,8 @@ class Workspace(NamedBaseEntity[models.Workspace]):
         client,
         path: str | Path,
         *,
-        workspace_name: str = "",
-        solutions: list[models.WorkspaceImportRequest.SolutionInfo] | None = None,
+        workspace_name: str,
+        solutions: list[models.WorkspaceImportRequest.SolutionInfo],
         use_camera_position: bool | None = None,
         use_time_freq: bool | None = None,
         use_body_visibility: bool | None = None,
@@ -192,9 +192,9 @@ class Workspace(NamedBaseEntity[models.Workspace]):
             The connected client.
         path : str | Path
             Path to the workspace template file (.rxwt).
-        workspace_name : str, optional
-            Name for the new workspace. Defaults to the name stored in the template.
-        solutions : list[WorkspaceImportRequest.SolutionInfo], optional
+        workspace_name : str
+            Name for the new workspace.
+        solutions : list[WorkspaceImportRequest.SolutionInfo]
             Solution bindings to use when importing. Each entry maps a slot in the
             template to a specific result provider and file path.
         use_camera_position : bool, optional
@@ -213,7 +213,7 @@ class Workspace(NamedBaseEntity[models.Workspace]):
         kwargs = {
             "template": template_data,
             "workspace_name": workspace_name,
-            "solutions": solutions or [],
+            "solutions": solutions,
         }
         if use_camera_position is not None:
             kwargs["use_camera_position"] = use_camera_position
