@@ -13,3 +13,9 @@ class ResultExplorerError(RuntimeError):
         if grpc_error.code() == grpc.StatusCode.NOT_FOUND:
             return cls(f"Resource not found: {details}")
         return cls(f"{details}")
+
+
+class UnsecureConnectionWarning(Warning):
+    """Warning for unencrypted gRPC connections."""
+
+    pass

@@ -1,5 +1,6 @@
 import base64
 import json
+import warnings
 from functools import wraps
 from pathlib import Path
 
@@ -13,7 +14,7 @@ from ansys.api.result_explorer.v0 import (
 )
 from ansys.result_explorer.core import models
 
-from .exceptions import ResultExplorerError
+from .exceptions import ResultExplorerError, UnsecureConnectionWarning
 from .objects import Solution, Viewport, Workspace
 
 DEFAULT_RESULT_PROVIDER = "Local"
@@ -49,16 +50,31 @@ class Client:
         session_id: str,
         host: str = "localhost",
         grpc_port: int = 50000,
-        http_port: int | None = None,
+        ca_cert_path: str | Path | None = None,
+        insecure: bool | None = None,
     ):
         self._host = host
         self._grpc_port = grpc_port
-        self._http_port = http_port
         self._session_id = session_id
-
         self._grpc_metadata = [("x-session-id", self._session_id)]
 
-        self._channel = grpc.insecure_channel(f"{self._host}:{self._grpc_port}")
+        target = f"{self._host}:{self._grpc_port}"
+
+        if insecure is None and ca_cert_path is None:
+            warnings.warn(
+                f"Using an insecure gRPC channel, unencrypted communication with {target}.",
+                UnsecureConnectionWarning,
+                stacklevel=2,
+            )
+            insecure = True
+
+        if insecure:
+            self._channel = grpc.insecure_channel(target)
+        elif ca_cert_path is not None:
+            with open(ca_cert_path, "rb") as f:
+                trusted_ca = f.read()
+            credentials = grpc.ssl_channel_credentials(root_certificates=trusted_ca)
+            self._channel = grpc.secure_channel(target, credentials)
 
         # Wrap stubs to handle errors in a centralized way
         # To enable autocompletion on the stubs, we use a 'wrong' type annotation.
@@ -87,9 +103,9 @@ class Client:
         data = json.loads(json_string)
 
         host = data.get("host")
-        http_port = data.get("httpPort")
         grpc_port = data.get("grpcPort")
         session_id = data.get("sessionId")
+        ca_cert_path = data.get("caCertPath", None)
 
         if host is None:
             raise ValueError("Token is missing 'host' information.")
@@ -98,7 +114,7 @@ class Client:
         if session_id is None:
             raise ValueError("Token is missing 'sessionId' information.")
 
-        return cls(host=host, grpc_port=grpc_port, http_port=http_port, session_id=session_id)
+        return cls(host=host, grpc_port=grpc_port, session_id=session_id, ca_cert_path=ca_cert_path)
 
     # ----------- FileSystem methods ----------------
     def ls(
