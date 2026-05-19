@@ -52,11 +52,14 @@ class Client:
         grpc_port: int = 50000,
         ca_cert_path: str | Path | None = None,
         insecure: bool | None = None,
+        custom_headers: list[tuple[str, str]] | None = None,
     ):
         self._host = host
         self._grpc_port = grpc_port
         self._session_id = session_id
         self._grpc_metadata = [("x-session-id", self._session_id)]
+        if custom_headers:
+            self._grpc_metadata.extend(custom_headers)
 
         target = f"{self._host}:{self._grpc_port}"
 
