@@ -106,6 +106,10 @@ class Client:
                 trusted_ca = f.read()
             ssl_credentials = grpc.ssl_channel_credentials(root_certificates=trusted_ca)
             self._channel = grpc.secure_channel(target, ssl_credentials)
+        else:
+            raise ResultExplorerError(
+                "Must provide either ca_cert_path for secure connection or set insecure=True."
+            )
 
         # Wrap stubs to handle errors in a centralized way
         # To enable autocompletion on the stubs, we use a 'wrong' type annotation.
