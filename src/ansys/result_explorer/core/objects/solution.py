@@ -72,10 +72,7 @@ class Solution(NamedBaseEntity[models.Solution]):
 
     def _get(self):
         """Get the latest solution data from the server."""
-        self._pb = self._client._solution_stub.Get(
-            models.ResourceId(id=self.id),
-            metadata=self._client._grpc_metadata,
-        )
+        self._pb = self._client._solution_stub.Get(models.ResourceId(id=self.id))
 
     def _get_plot_view(self, plot_def_id: str) -> PlotView:
         """Get the PlotView associated with a given plot definition ID."""
@@ -98,8 +95,7 @@ class Solution(NamedBaseEntity[models.Solution]):
     def create_plot(self, definition: models.PlotDefinitionCreate) -> PlotView:
         """Create a plot based on a plot definition."""
         pb_plot = self._client._solution_stub.CreatePlotDefinition(
-            models.CreatePlotDefinitionRequest(solution_id=self.id, plot_definition=definition),
-            metadata=self._client._grpc_metadata,
+            models.CreatePlotDefinitionRequest(solution_id=self.id, plot_definition=definition)
         )
         self._get()
         return self._get_plot_view(pb_plot.id)
@@ -118,8 +114,7 @@ class Solution(NamedBaseEntity[models.Solution]):
         pb_plot = self._client._solution_stub.UpdatePlotDefinition(
             models.UpdatePlotDefinitionRequest(
                 solution_id=self.id, plot_definition_id=plot_def.id, plot_definition=plot_def
-            ),
-            metadata=self._client._grpc_metadata,
+            )
         )
         self._get()
         return self._get_plot_view(pb_plot.id)
@@ -133,16 +128,14 @@ class Solution(NamedBaseEntity[models.Solution]):
             plot_id = id.id
 
         self._client._solution_stub.DeletePlotDefinition(
-            models.DeletePlotDefinitionRequest(solution_id=self.id, plot_definition_id=plot_id),
-            metadata=self._client._grpc_metadata,
+            models.DeletePlotDefinitionRequest(solution_id=self.id, plot_definition_id=plot_id)
         )
         self._get()
 
     def create_chart(self, definition: models.ChartDefinitionCreate) -> ChartView:
         """Create a chart based on a chart definition."""
         pb_chart = self._client._solution_stub.CreateChartDefinition(
-            models.CreateChartDefinitionRequest(solution_id=self.id, chart_definition=definition),
-            metadata=self._client._grpc_metadata,
+            models.CreateChartDefinitionRequest(solution_id=self.id, chart_definition=definition)
         )
         self._get()
         return self._get_chart_view(pb_chart.id)
@@ -161,8 +154,7 @@ class Solution(NamedBaseEntity[models.Solution]):
         pb_chart = self._client._solution_stub.UpdateChartDefinition(
             models.UpdateChartDefinitionRequest(
                 solution_id=self.id, chart_definition_id=chart_def.id, chart_definition=chart_def
-            ),
-            metadata=self._client._grpc_metadata,
+            )
         )
         self._get()
         return self._get_chart_view(pb_chart.id)
@@ -176,8 +168,7 @@ class Solution(NamedBaseEntity[models.Solution]):
             chart_id = id.id
 
         self._client._solution_stub.DeleteChartDefinition(
-            models.DeleteChartDefinitionRequest(solution_id=self.id, chart_definition_id=chart_id),
-            metadata=self._client._grpc_metadata,
+            models.DeleteChartDefinitionRequest(solution_id=self.id, chart_definition_id=chart_id)
         )
         self._get()
 
@@ -186,8 +177,7 @@ class Solution(NamedBaseEntity[models.Solution]):
     ) -> models.NamedSelection:
         """Create a named selection."""
         pb_ns = self._client._solution_stub.CreateNamedSelection(
-            models.CreateNamedSelectionRequest(solution_id=self.id, named_selection=definition),
-            metadata=self._client._grpc_metadata,
+            models.CreateNamedSelectionRequest(solution_id=self.id, named_selection=definition)
         )
         self._get()
         return pb_ns
@@ -195,8 +185,7 @@ class Solution(NamedBaseEntity[models.Solution]):
     def delete_named_selection(self, id: str) -> None:
         """Delete a named selection by ID."""
         self._client._solution_stub.DeleteNamedSelection(
-            models.DeleteNamedSelectionRequest(solution_id=self.id, named_selection_id=id),
-            metadata=self._client._grpc_metadata,
+            models.DeleteNamedSelectionRequest(solution_id=self.id, named_selection_id=id)
         )
         self._get()
 
@@ -212,8 +201,7 @@ class Solution(NamedBaseEntity[models.Solution]):
         pb_ns = self._client._solution_stub.UpdateNamedSelection(
             models.UpdateNamedSelectionRequest(
                 solution_id=self.id, named_selection_id=definition.id, named_selection=ns_def
-            ),
-            metadata=self._client._grpc_metadata,
+            )
         )
         self._get()
         return pb_ns

@@ -80,9 +80,7 @@ class Workspace(NamedBaseEntity[models.Workspace]):
     @property
     def viewports(self) -> list[Viewport]:
         """List viewports in this workspace."""
-        vp_response = self._client._workspace_stub.ListViewports(
-            models.ResourceId(id=self.id), metadata=self._client._grpc_metadata
-        )
+        vp_response = self._client._workspace_stub.ListViewports(models.ResourceId(id=self.id))
         return [Viewport(v, self._client) for v in vp_response.viewports]
 
     def create_viewport(self, viewport: Viewport, direction, size: float = None) -> Viewport:
@@ -93,9 +91,7 @@ class Workspace(NamedBaseEntity[models.Workspace]):
             direction=direction,
             size=size,
         )
-        pb_vp = self._client._workspace_stub.CreateViewport(
-            req, metadata=self._client._grpc_metadata
-        )
+        pb_vp = self._client._workspace_stub.CreateViewport(req)
         return Viewport(pb_vp, self._client)
 
     def assign_view(self, view: View, wait: bool = True) -> Viewport:
@@ -131,7 +127,7 @@ class Workspace(NamedBaseEntity[models.Workspace]):
             workspace_id=self.id,
             sync_options=sync_opts,
         )
-        self._pb = self._client._workspace_stub.Update(req, metadata=self._client._grpc_metadata)
+        self._pb = self._client._workspace_stub.Update(req)
 
     def set_fullscreen_viewport(self, viewport: Viewport) -> None:
         """Set a viewport to fullscreen mode."""
@@ -139,7 +135,7 @@ class Workspace(NamedBaseEntity[models.Workspace]):
             workspace_id=self.id,
             fullscreen_viewport_id=viewport.id,
         )
-        self._pb = self._client._workspace_stub.Update(req, metadata=self._client._grpc_metadata)
+        self._pb = self._client._workspace_stub.Update(req)
 
     def exit_fullscreen(self) -> None:
         """Exit fullscreen mode."""
@@ -147,17 +143,13 @@ class Workspace(NamedBaseEntity[models.Workspace]):
             workspace_id=self.id,
             fullscreen_viewport_id="",
         )
-        self._pb = self._client._workspace_stub.Update(req, metadata=self._client._grpc_metadata)
+        self._pb = self._client._workspace_stub.Update(req)
 
     def delete_viewport(self, viewport: Viewport) -> None:
         """Delete a viewport from this workspace."""
-        self._client._workspace_stub.DeleteViewport(
-            models.ResourceId(id=viewport.id), metadata=self._client._grpc_metadata
-        )
+        self._client._workspace_stub.DeleteViewport(models.ResourceId(id=viewport.id))
         # Refresh workspace data
-        self._pb = self._client._workspace_stub.Get(
-            models.ResourceId(id=self.id), metadata=self._client._grpc_metadata
-        )
+        self._pb = self._client._workspace_stub.Get(models.ResourceId(id=self.id))
 
     def export_as_template(self, path: str | Path) -> None:
         """Save this workspace as a template file."""
@@ -166,9 +158,7 @@ class Workspace(NamedBaseEntity[models.Workspace]):
             path = path.with_suffix(path.suffix + RX_WORKSPACE_TEMPLATE_EXTENSION)
         path.parent.mkdir(parents=True, exist_ok=True)
         req = models.ResourceId(id=self.id)
-        template = self._client._workspace_stub.ExportWorkspace(
-            req, metadata=self._client._grpc_metadata
-        )
+        template = self._client._workspace_stub.ExportWorkspace(req)
         with open(path, "w") as f:
             f.write(template.data)
 
@@ -222,8 +212,6 @@ class Workspace(NamedBaseEntity[models.Workspace]):
         if use_body_visibility is not None:
             kwargs["use_body_visibility"] = use_body_visibility
         req = models.WorkspaceImportRequest(**kwargs)
-        resource_id = client._workspace_stub.ImportWorkspace(req, metadata=client._grpc_metadata)
-        pb_ws = client._workspace_stub.Get(
-            models.ResourceId(id=resource_id.id), metadata=client._grpc_metadata
-        )
+        resource_id = client._workspace_stub.ImportWorkspace(req)
+        pb_ws = client._workspace_stub.Get(models.ResourceId(id=resource_id.id))
         return cls(pb_ws, client)

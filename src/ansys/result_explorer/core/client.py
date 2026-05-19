@@ -22,10 +22,11 @@ RX_SESSION_EXTENSION = ".rxs"
 
 
 class GrpcStubWrapper:
-    """Wrapper that automatically handles gRPC errors for all stub method calls."""
+    """Wrapper that automatically handles gRPC errors and injects metadata for insecure channels."""
 
-    def __init__(self, stub):
+    def __init__(self, stub, metadata=None):
         self._stub = stub
+        self._metadata = metadata
 
     def __getattr__(self, name):
         attr = getattr(self._stub, name)
@@ -36,6 +37,9 @@ class GrpcStubWrapper:
 
         @wraps(attr)
         def wrapper(*args, **kwargs):
+            # Inject metadata for insecure connections (for secure, it's in channel credentials)
+            if self._metadata and "metadata" not in kwargs:
+                kwargs["metadata"] = self._metadata
             try:
                 return attr(*args, **kwargs)
             except grpc.RpcError as e:
@@ -71,31 +75,51 @@ class Client:
             )
             insecure = True
 
+        # For storing metadata in wrapper (only for insecure connections)
+        wrapper_metadata = None
+
         if insecure:
             self._channel = grpc.insecure_channel(target)
+            # For insecure channels, metadata will be injected by wrapper
+            wrapper_metadata = self._grpc_metadata
         elif ca_cert_path is not None:
             with open(ca_cert_path, "rb") as f:
                 trusted_ca = f.read()
-            credentials = grpc.ssl_channel_credentials(root_certificates=trusted_ca)
-            self._channel = grpc.secure_channel(target, credentials)
+            ssl_credentials = grpc.ssl_channel_credentials(root_certificates=trusted_ca)
+
+            # Create metadata call credentials that will be composed with SSL
+            call_credentials = grpc.metadata_call_credentials(self._metadata_plugin)
+            combined_credentials = grpc.composite_channel_credentials(
+                ssl_credentials, call_credentials
+            )
+            self._channel = grpc.secure_channel(target, combined_credentials)
 
         # Wrap stubs to handle errors in a centralized way
         # To enable autocompletion on the stubs, we use a 'wrong' type annotation.
         self._solution_stub: solution_pb2_grpc.SolutionServiceStub = GrpcStubWrapper(
-            solution_pb2_grpc.SolutionServiceStub(self._channel)
+            solution_pb2_grpc.SolutionServiceStub(self._channel),
+            metadata=wrapper_metadata,
         )  # type: ignore
         self._workspace_stub: workspace_pb2_grpc.WorkspaceServiceStub = GrpcStubWrapper(
-            workspace_pb2_grpc.WorkspaceServiceStub(self._channel)
+            workspace_pb2_grpc.WorkspaceServiceStub(self._channel),
+            metadata=wrapper_metadata,
         )  # type: ignore
         self._app_stub: app_pb2_grpc.AppServiceStub = GrpcStubWrapper(
-            app_pb2_grpc.AppServiceStub(self._channel)
+            app_pb2_grpc.AppServiceStub(self._channel),
+            metadata=wrapper_metadata,
         )  # type: ignore
         self._filesystem_stub: filesystem_pb2_grpc.FilesystemServiceStub = GrpcStubWrapper(
-            filesystem_pb2_grpc.FilesystemServiceStub(self._channel)
+            filesystem_pb2_grpc.FilesystemServiceStub(self._channel),
+            metadata=wrapper_metadata,
         )  # type: ignore
         self._hps_filesystem_stub: filesystem_pb2_grpc.HpsFilesystemServiceStub = GrpcStubWrapper(
-            filesystem_pb2_grpc.HpsFilesystemServiceStub(self._channel)
+            filesystem_pb2_grpc.HpsFilesystemServiceStub(self._channel),
+            metadata=wrapper_metadata,
         )  # type: ignore
+
+    def _metadata_plugin(self, context, callback):
+        """gRPC metadata plugin that injects session ID and custom headers."""
+        callback(self._grpc_metadata, None)
 
     @classmethod
     def connect_with_token(cls, token: str) -> "Client":
@@ -131,7 +155,7 @@ class Client:
             rp_name = result_provider.name
 
         req = models.LsRequest(result_provider_name=rp_name, path=path, max_depth=depth)
-        res = self._filesystem_stub.Ls(req, metadata=self._grpc_metadata)
+        res = self._filesystem_stub.Ls(req)
         return list(res.items)
 
     def hps_ls(
@@ -154,7 +178,7 @@ class Client:
             rp_name = result_provider.name
 
         req = models.LsRequest(result_provider_name=rp_name, path=path)
-        res = self._hps_filesystem_stub.Ls(req, metadata=self._grpc_metadata)
+        res = self._hps_filesystem_stub.Ls(req)
         return list(res.items)
 
     def _get_file_content(
@@ -168,7 +192,7 @@ class Client:
             rp_name = result_provider.name
 
         req = models.TailRequest(result_provider_name=rp_name, path=path, lines_offset=lines_offset)
-        res = self._filesystem_stub.Tail(req, metadata=self._grpc_metadata)
+        res = self._filesystem_stub.Tail(req)
         return res.content
 
     # ----------- Solution methods ----------------
@@ -207,7 +231,7 @@ class Client:
             files=[file],
             split_mesh_options=split_mesh_options,
         )
-        pb_sol = self._solution_stub.Create(sol, metadata=self._grpc_metadata)
+        pb_sol = self._solution_stub.Create(sol)
         return Solution(pb_sol, self)
 
     def create_hps_solution(
@@ -275,30 +299,26 @@ class Client:
             hps_files=files,
             split_mesh_options=split_mesh_options,
         )
-        pb_sol = self._solution_stub.Create(sol, metadata=self._grpc_metadata)
+        pb_sol = self._solution_stub.Create(sol)
         return Solution(pb_sol, self)
 
     def list_solutions(self) -> list[Solution]:
-        pb_list = self._solution_stub.List(models.Empty(), metadata=self._grpc_metadata)
+        pb_list = self._solution_stub.List(models.Empty())
         return [Solution(s, self) for s in pb_list.solutions]
 
     def delete_solution(self, solution: Solution | str) -> None:
         """Delete a solution. Can pass Solution object or ID string."""
         solution_id = solution.id if isinstance(solution, Solution) else solution
-        self._solution_stub.Delete(models.ResourceId(id=solution_id), metadata=self._grpc_metadata)
+        self._solution_stub.Delete(models.ResourceId(id=solution_id))
 
     def get_solution(self, solution_id: str) -> Solution:
-        pb_sol = self._solution_stub.Get(
-            models.ResourceId(id=solution_id), metadata=self._grpc_metadata
-        )
+        pb_sol = self._solution_stub.Get(models.ResourceId(id=solution_id))
         return Solution(pb_sol, self)
 
     # ----------- Workspace management ----------------
 
     def _create_workspace(self, name: str) -> Workspace:
-        pb_ws = self._workspace_stub.Create(
-            models.WorkspaceCreate(name=name), metadata=self._grpc_metadata
-        )
+        pb_ws = self._workspace_stub.Create(models.WorkspaceCreate(name=name))
         return Workspace(pb_ws, self)
 
     def create_workspace(self, name: str, rows: int = 1, cols: int = 1) -> Workspace:
@@ -310,26 +330,20 @@ class Client:
         return _create_grid_workspace(self, name, rows, cols)
 
     def get_workspace(self, workspace_id: str) -> Workspace:
-        pb_ws = self._workspace_stub.Get(
-            models.ResourceId(id=workspace_id), metadata=self._grpc_metadata
-        )
+        pb_ws = self._workspace_stub.Get(models.ResourceId(id=workspace_id))
         return Workspace(pb_ws, self)
 
     def list_workspaces(self) -> list[Workspace]:
-        pb_list = self._workspace_stub.List(models.Empty(), metadata=self._grpc_metadata)
+        pb_list = self._workspace_stub.List(models.Empty())
         return [Workspace(w, self) for w in pb_list.workspaces]
 
     def delete_workspace(self, workspace: str | Workspace) -> None:
         workspace_id = workspace.id if isinstance(workspace, Workspace) else workspace
-        self._workspace_stub.Delete(
-            models.ResourceId(id=workspace_id), metadata=self._grpc_metadata
-        )
+        self._workspace_stub.Delete(models.ResourceId(id=workspace_id))
 
     def delete_viewport(self, viewport: str | Viewport) -> None:
         viewport_id = viewport.id if isinstance(viewport, Viewport) else viewport
-        self._workspace_stub.DeleteViewport(
-            models.ResourceId(id=viewport_id), metadata=self._grpc_metadata
-        )
+        self._workspace_stub.DeleteViewport(models.ResourceId(id=viewport_id))
 
     def import_workspace_from_template(
         self,
@@ -375,12 +389,12 @@ class Client:
 
     # ----------- App management ----------------
     def list_result_providers(self) -> list[models.ResultProvider]:
-        r = self._app_stub.ListResultProviders(models.Empty(), metadata=self._grpc_metadata)
+        r = self._app_stub.ListResultProviders(models.Empty())
         return list(r.result_providers)
 
     def create_result_provider(self, name: str, url: str) -> models.ResultProvider:
         req = models.CreateResultProviderRequest(name=name, url=url)
-        return self._app_stub.CreateResultProvider(req, metadata=self._grpc_metadata)
+        return self._app_stub.CreateResultProvider(req)
 
     def delete_result_provider(self, result_provider: str | models.ResultProvider) -> None:
         rp_name = (
@@ -388,18 +402,16 @@ class Client:
             if isinstance(result_provider, models.ResultProvider)
             else result_provider
         )
-        self._app_stub.DeleteResultProvider(
-            models.DeleteResultProviderRequest(name=rp_name), metadata=self._grpc_metadata
-        )
+        self._app_stub.DeleteResultProvider(models.DeleteResultProviderRequest(name=rp_name))
 
     def app_info(self) -> models.AppInfo:
-        return self._app_stub.GetAppInfo(models.Empty(), metadata=self._grpc_metadata)
+        return self._app_stub.GetAppInfo(models.Empty())
 
     def app_settings(self) -> models.AppSettings:
-        return self._app_stub.GetAppSettings(models.Empty(), metadata=self._grpc_metadata)
+        return self._app_stub.GetAppSettings(models.Empty())
 
     def update_app_settings(self, settings: models.AppSettings) -> models.AppSettings:
-        return self._app_stub.UpdateAppSettings(settings, metadata=self._grpc_metadata)
+        return self._app_stub.UpdateAppSettings(settings)
 
     def save_session(self, path: str | Path) -> None:
         """Save the current session to file.
@@ -413,7 +425,7 @@ class Client:
         if path.suffix != RX_SESSION_EXTENSION:
             path = path.with_suffix(path.suffix + RX_SESSION_EXTENSION)
         path.parent.mkdir(parents=True, exist_ok=True)
-        session = self._app_stub.SaveSession(models.Empty(), metadata=self._grpc_metadata)
+        session = self._app_stub.SaveSession(models.Empty())
         with open(path, "w") as f:
             f.write(session.data)
 
@@ -430,7 +442,7 @@ class Client:
             raise ValueError(f"Session file should have '{RX_SESSION_EXTENSION}' extension.")
         with open(path) as f:
             data = f.read()
-        self._app_stub.OpenSession(models.Session(data=data), metadata=self._grpc_metadata)
+        self._app_stub.OpenSession(models.Session(data=data))
 
 
 def _create_grid_workspace(client: Client, name, rows: int, cols: int):
