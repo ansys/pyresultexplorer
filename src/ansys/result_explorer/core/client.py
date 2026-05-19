@@ -58,6 +58,28 @@ class Client:
         insecure: bool | None = None,
         custom_headers: list[tuple[str, str]] | None = None,
     ):
+        """Initialize the client and connect to Result Explorer.
+
+
+        Parameters
+        ----------
+        session_id : str
+            Unique identifier for the Result Explorer session.
+        host : str, optional
+            Hostname or IP address of the Result Explorer API. Default is "localhost".
+        grpc_port : int, optional
+            Port number for the gRPC API. Default is 50000.
+        ca_cert_path : str | Path, optional
+            Path to CA certificate for secure gRPC connection.
+            If not provided, connection will be insecure.
+        insecure : bool, optional
+            Whether to use an insecure gRPC connection.
+            If None, will default to True if ca_cert_path is not provided.
+        custom_headers : list of (str, str) tuples, optional
+            Custom headers to include in gRPC requests,
+            in addition to the session ID. Example: [("x-custom-header", "value")].
+        """
+
         self._host = host
         self._grpc_port = grpc_port
         self._session_id = session_id
@@ -75,24 +97,15 @@ class Client:
             )
             insecure = True
 
-        # For storing metadata in wrapper (only for insecure connections)
-        wrapper_metadata = None
+        wrapper_metadata = self._grpc_metadata
 
         if insecure:
             self._channel = grpc.insecure_channel(target)
-            # For insecure channels, metadata will be injected by wrapper
-            wrapper_metadata = self._grpc_metadata
         elif ca_cert_path is not None:
             with open(ca_cert_path, "rb") as f:
                 trusted_ca = f.read()
             ssl_credentials = grpc.ssl_channel_credentials(root_certificates=trusted_ca)
-
-            # Create metadata call credentials that will be composed with SSL
-            call_credentials = grpc.metadata_call_credentials(self._metadata_plugin)
-            combined_credentials = grpc.composite_channel_credentials(
-                ssl_credentials, call_credentials
-            )
-            self._channel = grpc.secure_channel(target, combined_credentials)
+            self._channel = grpc.secure_channel(target, ssl_credentials)
 
         # Wrap stubs to handle errors in a centralized way
         # To enable autocompletion on the stubs, we use a 'wrong' type annotation.
@@ -116,10 +129,6 @@ class Client:
             filesystem_pb2_grpc.HpsFilesystemServiceStub(self._channel),
             metadata=wrapper_metadata,
         )  # type: ignore
-
-    def _metadata_plugin(self, context, callback):
-        """gRPC metadata plugin that injects session ID and custom headers."""
-        callback(self._grpc_metadata, None)
 
     @classmethod
     def connect_with_token(cls, token: str) -> "Client":
