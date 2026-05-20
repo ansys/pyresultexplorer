@@ -14,6 +14,7 @@ import time
 import uuid
 import webbrowser
 from dataclasses import dataclass
+from enum import StrEnum
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -28,6 +29,14 @@ RX_SERVER_ENV_VAR = "ANSYS_RESULT_EXPLORER_SERVER"
 RX_DESKTOP_ENV_VAR = "ANSYS_RESULT_EXPLORER_DESKTOP"
 DEFAULT_GRPC_PORT = 50000
 DEFAULT_WEB_PORT = 5100
+
+
+class BrowserType(StrEnum):
+    """Enumeration of supported browser types for web UI launch."""
+
+    SYSTEM_DEFAULT = "system-default"
+    PLAYWRIGHT_CHROMIUM = "playwright-chromium"
+    PLAYWRIGHT_CHROMIUM_HEADLESS = "playwright-chromium-headless"
 
 
 def _get_viz_server_executable(base_path: Path) -> Path | None:
@@ -402,23 +411,22 @@ class WebLaunchConfig:
     server_url : str, optional
         URL of the Result Explorer server. If None, assumes server is already running
         or will be launched separately.
-    browser_type : str, optional
-        Browser type: 'default', 'playwright', or 'playwright-headless'.
-        'default' uses the system's default browser.
-        'playwright' uses Playwright in windowed mode.
-        'playwright-headless' uses Playwright in headless mode.
-        Default is 'default'.
+    browser_type : BrowserType, optional
+        Browser type to use for launching the web UI.
+        - SYSTEM_DEFAULT: Use the system's default browser.
+        - PLAYWRIGHT_CHROMIUM: Use Playwright with Chromium in windowed mode.
+        - PLAYWRIGHT_CHROMIUM_HEADLESS: Use Playwright with Chromium in headless mode.
+        Default is SYSTEM_DEFAULT.
     """
 
     server_url: str | None = None
-    browser_type: str = "default"
+    browser_type: BrowserType = BrowserType.SYSTEM_DEFAULT
 
     def __post_init__(self):
         """Validate configuration."""
-        valid_browsers = ["default", "playwright", "playwright-headless"]
-        if self.browser_type not in valid_browsers:
+        if not isinstance(self.browser_type, BrowserType):
             raise ValueError(
-                f"browser_type must be one of {valid_browsers}, got {self.browser_type}"
+                f"browser_type must be a BrowserType enum value, got {self.browser_type}"
             )
 
 
@@ -441,8 +449,8 @@ class ResultExplorerWebSession:
 
     def launch(self) -> None:
         """Launch the web UI."""
-        if self._config.browser_type == "default":
-            log.info(f"Opening web UI in default browser: {self._config.server_url}")
+        if self._config.browser_type == BrowserType.SYSTEM_DEFAULT:
+            log.info(f"Opening web UI in system default browser: {self._config.server_url}")
             webbrowser.open(self._config.server_url)
         else:
             self._launch_playwright_browser()
@@ -466,7 +474,7 @@ class ResultExplorerWebSession:
                 "'playwright install' to install the necessary browsers."
             ) from err
 
-        headless = self._config.browser_type == "playwright-headless"
+        headless = self._config.browser_type == BrowserType.PLAYWRIGHT_CHROMIUM_HEADLESS
         log.info(f"Launching Playwright browser (headless={headless}): {self._config.server_url}")
 
         from playwright.sync_api import sync_playwright  # noqa: PLC0415
@@ -676,10 +684,10 @@ def launch_result_explorer(
 
     Examples
     --------
-    Launch with default settings and system browser:
+    Launch with default settings and system default browser:
 
     >>> server_config = ServerLaunchConfig(port=5100, ssl=False, auth=False)
-    >>> web_config = WebLaunchConfig(browser_type='default')
+    >>> web_config = WebLaunchConfig(browser_type=BrowserType.SYSTEM_DEFAULT)
     >>> client = launch_result_explorer(server_config, web_config)
     >>> # Use the client...
     >>> # Instance is cleaned up automatically when client is destroyed
@@ -687,7 +695,7 @@ def launch_result_explorer(
     Launch with Playwright in headless mode:
 
     >>> server_config = ServerLaunchConfig(port=5100)
-    >>> web_config = WebLaunchConfig(browser_type='playwright-headless')
+    >>> web_config = WebLaunchConfig(browser_type=BrowserType.PLAYWRIGHT_CHROMIUM_HEADLESS)
     >>> client = launch_result_explorer(server_config, web_config)
     >>> # Use the client to interact with Result Explorer
     """
