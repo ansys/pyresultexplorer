@@ -174,7 +174,7 @@ def _wait_for_server(
     while time.time() - start_time < timeout:
         try:
             r = requests.get(url, timeout=1, verify=verify_ssl)
-            log.info(f"Server responded with status code {r.status_code}")
+            log.debug(f"Server responded with status code {r.status_code}")
             return True
         except requests.RequestException:
             log.debug(f"Server not ready yet at {url}, retrying in {poll_interval} seconds...")
@@ -192,16 +192,26 @@ def _install_playwright_browsers() -> None:
     """
     try:
         log.info("Installing Playwright browsers (this may take a minute)...")
-        result = subprocess.run(
+        kwargs = {
+            "stdin": subprocess.DEVNULL,
+            "stdout": subprocess.DEVNULL,
+            "stderr": subprocess.PIPE,
+            "text": True,
+            "timeout": 300,  # 5 minute timeout
+        }
+        if os.name == "nt":
+            kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
+        result = subprocess.run(  # noqa PLW1510
             [sys.executable, "-m", "playwright", "install", "chromium"],
-            check=True,
-            capture_output=True,
-            text=True,
-            timeout=300,  # 5 minute timeout
+            **kwargs,
         )
+        if result.returncode != 0:
+            raise subprocess.CalledProcessError(
+                result.returncode,
+                [sys.executable, "-m", "playwright", "install", "chromium"],
+                stderr=result.stderr,
+            )
         log.info("Playwright browsers installed successfully.")
-        if result.stdout:
-            log.debug(result.stdout)
     except subprocess.TimeoutExpired as e:
         raise RuntimeError("Playwright browser installation timed out after 5 minutes.") from e
     except subprocess.CalledProcessError as e:
@@ -352,11 +362,11 @@ class ResultExplorerServerProcess:
 
         # Wait for gateway HTTP API to be ready
         gateway_url = f"{protocol}://127.0.0.1:{self._gateway_http_port}"
-        log.info(f"Waiting for gateway to be ready at {gateway_url}...")
+        log.debug(f"Waiting for gateway to be ready at {gateway_url}...")
         if not _wait_for_server(gateway_url, timeout=30.0):
             self.stop()
             raise RuntimeError(f"Gateway did not become ready within timeout at {gateway_url}")
-        log.info("Gateway is ready.")
+        log.debug("Gateway is ready.")
 
     def stop(self) -> None:
         """Stop the Result Explorer server.
@@ -449,7 +459,7 @@ class ResultExplorerServerProcess:
             if self._gateway_http_port is None or self._gateway_grpc_port is None:
                 raise RuntimeError("Missing gateway_info in server response")
 
-            log.info(
+            log.debug(
                 f"Gateway ports from server: HTTP={self._gateway_http_port}, "
                 f"gRPC={self._gateway_grpc_port}"
             )
@@ -592,33 +602,32 @@ class ResultExplorerWebSession:
         headless = self._config.browser_type == "playwright-headless"
         log.info(f"Launching Playwright browser (headless={headless}): {self._config.server_url}")
 
-        def _do_launch_browser(headless: bool) -> None:
-            """Launch the browser."""
-            from playwright.sync_api import sync_playwright  # noqa: PLC0415
+        from playwright.sync_api import sync_playwright  # noqa: PLC0415
 
-            playwright = sync_playwright().start()
-            self._playwright_browser = playwright.chromium.launch(headless=headless)
-            self._playwright_context = self._playwright_browser.new_context()
-            self._playwright_page = self._playwright_context.new_page()
-            self._playwright_page.goto(self._config.server_url)
+        playwright = sync_playwright().start()
 
         # First attempt: try launching normally
         needs_install = False
         try:
-            _do_launch_browser(headless)
+            self._playwright_browser = playwright.chromium.launch(headless=headless)
         except Exception as e:
             error_msg = str(e).lower()
             if "executable" in error_msg or "chromium" in error_msg or "not found" in error_msg:
                 needs_install = True
             else:
+                playwright.stop()
                 raise
 
         # Install and retry if needed
         if needs_install:
             log.info("Chromium browser not found, installing...")
             _install_playwright_browsers()
-            _do_launch_browser(headless)
+            self._playwright_browser = playwright.chromium.launch(headless=headless)
             log.info("Browser launched successfully after installation.")
+
+        self._playwright_context = self._playwright_browser.new_context()
+        self._playwright_page = self._playwright_context.new_page()
+        self._playwright_page.goto(self._config.server_url)
 
     def close(self) -> None:
         """Close the web session.
