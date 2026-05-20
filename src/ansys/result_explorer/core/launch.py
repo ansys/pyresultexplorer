@@ -4,48 +4,6 @@ This module provides classes and functions to launch a Result Explorer instance,
 including the server process and web UI. The server can be launched with various
 configurations, and the web UI can be opened in either the system's default browser
 or a Playwright browser instance.
-
-Examples
---------
-
-Launch Result Explorer with default settings and open in system browser:
-
-    >>> from ansys.result_explorer.core import (
-    ...     launch_result_explorer, ServerLaunchConfig, WebLaunchConfig
-    ... )
-    >>> server_config = ServerLaunchConfig(port=5100, ssl=False, auth=False)
-    >>> web_config = WebLaunchConfig(browser_type='default')
-    >>> instance = launch_result_explorer(server_config, web_config)
-    >>> # Use the instance...
-    >>> instance.stop()
-
-Launch with Playwright in windowed mode:
-
-    >>> server_config = ServerLaunchConfig(port=5100)
-    >>> web_config = WebLaunchConfig(browser_type='playwright')
-    >>> instance = launch_result_explorer(server_config, web_config)
-    >>> # Access the Playwright page for automation
-    >>> page = instance.web_session.playwright_page
-    >>> instance.stop()
-
-Launch with Playwright in headless mode:
-
-    >>> server_config = ServerLaunchConfig(port=5100, num_threads=4)
-    >>> web_config = WebLaunchConfig(browser_type='playwright-headless')
-    >>> instance = launch_result_explorer(server_config, web_config)
-    >>> instance.stop()
-
-Environment Variables
----------------------
-ANSYS_RESULT_EXPLORER_SERVER : str
-    Path to the Result Explorer server installation directory. The server executable
-    will be looked up at {ANSYS_RESULT_EXPLORER_SERVER}/viz-server.exe (Windows)
-    or {ANSYS_RESULT_EXPLORER_SERVER}/viz-server (Unix-like).
-
-ANSYS_RESULT_EXPLORER_DESKTOP : str
-    Path to the Result Explorer desktop application root directory. The server will be
-    looked up at {ANSYS_RESULT_EXPLORER_DESKTOP}/resources/app/dist/viz-server.
-    This is an alternative to ANSYS_RESULT_EXPLORER_SERVER.
 """
 
 import os
@@ -124,18 +82,7 @@ def _find_result_explorer() -> Path:
 
 
 def _find_free_port(start_port: int = 5100) -> int:
-    """Find an available port starting from start_port.
-
-    Parameters
-    ----------
-    start_port : int, optional
-        Port number to start searching from. Default is 5100.
-
-    Returns
-    -------
-    int
-        An available port number.
-    """
+    """Find an available port starting from start_port."""
     port = start_port
     max_attempts = 100
     for _ in range(max_attempts):
@@ -152,24 +99,7 @@ def _find_free_port(start_port: int = 5100) -> int:
 def _wait_for_server(
     url: str, timeout: float = 30.0, poll_interval: float = 0.2, verify_ssl: bool = False
 ) -> bool:
-    """Wait for the server to be ready to accept connections.
-
-    Parameters
-    ----------
-    url : str
-        Server URL to check.
-    timeout : float, optional
-        Maximum time to wait in seconds. Default is 30.
-    poll_interval : float, optional
-        Time between connection attempts in seconds. Default is 0.5.
-    verify_ssl : bool, optional
-        Whether to verify SSL certificates. Default is False.
-
-    Returns
-    -------
-    bool
-        True if server is ready, False if timeout occurred.
-    """
+    """Wait for the server to be ready to accept connections."""
     start_time = time.time()
     while time.time() - start_time < timeout:
         try:
@@ -183,13 +113,7 @@ def _wait_for_server(
 
 
 def _install_playwright_browsers() -> None:
-    """Install Playwright browsers (chromium, chromium headless).
-
-    Raises
-    ------
-    RuntimeError
-        If the installation fails.
-    """
+    """Install Playwright browsers (chromium, chromium headless)."""
     try:
         log.info("Installing Playwright browsers (this may take a minute)...")
         kwargs = {
@@ -257,13 +181,7 @@ class ServerLaunchConfig:
     # Add more server configuration options as needed
 
     def _build_args(self) -> list[str]:
-        """Build command-line arguments for the server.
-
-        Returns
-        -------
-        list[str]
-            List of command-line arguments.
-        """
+        """Build command-line arguments for the server."""
         args = []
 
         if not self.ssl:
@@ -294,13 +212,7 @@ class ResultExplorerServerProcess:
     """
 
     def __init__(self, config: ServerLaunchConfig):
-        """Initialize the server process manager.
-
-        Parameters
-        ----------
-        config : ServerLaunchConfig
-            Server configuration.
-        """
+        """Initialize the server process manager."""
         self._config = config
         self._process = None
         self._port = None
@@ -407,44 +319,20 @@ class ResultExplorerServerProcess:
 
     @property
     def is_running(self) -> bool:
-        """Check if the server process is running.
-
-        Returns
-        -------
-        bool
-            True if the server is running, False otherwise.
-        """
+        """Check if the server process is running."""
         if self._process is None:
             return False
         return self._process.poll() is None
 
     @property
     def port(self) -> int:
-        """Get the web server port.
-
-        Returns
-        -------
-        int
-            The port number.
-        """
+        """Get the web server port."""
         if self._port is None:
             raise RuntimeError("Server has not been started yet.")
         return self._port
 
     def _query_gateway_ports(self, protocol: str) -> None:
-        """Query the /api/v1 endpoint to get gateway port information.
-
-        Parameters
-        ----------
-        protocol : str
-            Protocol to use ('http' or 'https').
-
-        Raises
-        ------
-        RuntimeError
-            If the gateway ports cannot be retrieved.
-        """
-
+        """Query the /api/v1 endpoint to get gateway port information."""
         api_url = f"{protocol}://127.0.0.1:{self._port}/api/v1"
         try:
             response = requests.get(api_url, timeout=5, verify=False)
@@ -469,35 +357,17 @@ class ResultExplorerServerProcess:
 
     @property
     def grpc_port(self) -> int:
-        """Get the gateway gRPC port.
-
-        Returns
-        -------
-        int
-            The gateway gRPC port (auto-discovered from server logs).
-        """
+        """Get the gateway gRPC port."""
         return self._gateway_grpc_port or self._grpc_port
 
     @property
     def gateway_http_port(self) -> int | None:
-        """Get the gateway HTTP port.
-
-        Returns
-        -------
-        int or None
-            The gateway HTTP port (auto-discovered from server logs).
-        """
+        """Get the gateway HTTP port."""
         return self._gateway_http_port
 
     @property
     def gateway_grpc_port(self) -> int | None:
-        """Get the gateway gRPC port.
-
-        Returns
-        -------
-        int or None
-            The gateway gRPC port (auto-discovered from server logs).
-        """
+        """Get the gateway gRPC port."""
         return self._gateway_grpc_port
 
     def __del__(self):
@@ -543,18 +413,7 @@ class ResultExplorerWebSession:
     """
 
     def __init__(self, config: WebLaunchConfig):
-        """Initialize the web session.
-
-        Parameters
-        ----------
-        config : WebLaunchConfig
-            Web launch configuration.
-
-        Raises
-        ------
-        ValueError
-            If configuration is invalid.
-        """
+        """Initialize the web session."""
         self._config = config
         self._playwright_browser = None
         self._playwright_context = None
@@ -564,16 +423,7 @@ class ResultExplorerWebSession:
             raise ValueError("server_url must be provided in WebLaunchConfig.")
 
     def launch(self) -> None:
-        """Launch the web UI.
-
-        Opens the web UI either in the system's default browser or a Playwright
-        browser, depending on the configuration.
-
-        Raises
-        ------
-        ImportError
-            If Playwright is required but not installed.
-        """
+        """Launch the web UI."""
         if self._config.browser_type == "default":
             log.info(f"Opening web UI in default browser: {self._config.server_url}")
             webbrowser.open(self._config.server_url)
@@ -630,10 +480,7 @@ class ResultExplorerWebSession:
         self._playwright_page.goto(self._config.server_url)
 
     def close(self) -> None:
-        """Close the web session.
-
-        Closes any Playwright browser instances. System browser windows are left open.
-        """
+        """Close the web session."""
         if self._playwright_page is not None:
             self._playwright_context.close()
             self._playwright_page = None
@@ -646,13 +493,7 @@ class ResultExplorerWebSession:
 
     @property
     def playwright_page(self):
-        """Get the Playwright page object for advanced interaction.
-
-        Returns
-        -------
-        playwright.async_api.Page or None
-            The Playwright page object if using Playwright, None otherwise.
-        """
+        """Get the Playwright page object for advanced interaction."""
         return self._playwright_page
 
     def __del__(self):
@@ -672,15 +513,7 @@ class ResultExplorerInstance:
         server_config: ServerLaunchConfig | None = None,
         web_config: WebLaunchConfig | None = None,
     ):
-        """Initialize a Result Explorer instance.
-
-        Parameters
-        ----------
-        server_config : ServerLaunchConfig, optional
-            Server configuration. If None, default configuration is used.
-        web_config : WebLaunchConfig, optional
-            Web UI configuration. If None, default configuration is used.
-        """
+        """Initialize a Result Explorer instance."""
         self._server_config = server_config or ServerLaunchConfig()
         self._web_config = web_config
         self._server_process: ResultExplorerServerProcess | None = None
@@ -728,24 +561,12 @@ class ResultExplorerInstance:
 
     @property
     def server_process(self) -> ResultExplorerServerProcess | None:
-        """Get the server process manager.
-
-        Returns
-        -------
-        ResultExplorerServerProcess or None
-            The server process manager if the server is running, None otherwise.
-        """
+        """Get the server process manager."""
         return self._server_process
 
     @property
     def web_session(self) -> ResultExplorerWebSession | None:
-        """Get the web session manager.
-
-        Returns
-        -------
-        ResultExplorerWebSession or None
-            The web session manager if the web UI is open, None otherwise.
-        """
+        """Get the web session manager."""
         return self._web_session
 
     @property
@@ -769,42 +590,19 @@ class ResultExplorerInstance:
 
     @property
     def grpc_host(self) -> str:
-        """Get the gRPC host.
-
-        Returns
-        -------
-        str
-            The gRPC host address.
-        """
+        """Get the gRPC host."""
         return "localhost"
 
     @property
     def grpc_port(self) -> int:
-        """Get the gRPC port.
-
-        Returns
-        -------
-        int
-            The gRPC port number.
-
-        Raises
-        ------
-        RuntimeError
-            If the server has not been launched yet.
-        """
+        """Get the gRPC port."""
         if self._server_process is None:
             raise RuntimeError("Server has not been launched yet.")
         return self._server_process.grpc_port
 
     @property
     def session_id(self) -> str:
-        """Get the session ID.
-
-        Returns
-        -------
-        str
-            The unique session ID (UUID) for this instance.
-        """
+        """Get the session ID."""
         return self._session_id
 
     def stop(self) -> None:
