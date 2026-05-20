@@ -80,3 +80,13 @@ PyResultExplorer is a Python client library for Result Explorer that communicate
 - **Fix all linting errors** — Before committing, ensure no errors from `ruff check`.
 - **Keep line length ≤100 characters** — Break long lines at logical boundaries.
 
+## Maintenance
+
+These instructions should be kept up to date as the codebase evolves. When you encounter new patterns, best practices, or architectural insights during development, incorporate them back into this document to benefit the entire team. Examples include:
+- Lessons learned from resolving complex issues
+- New architectural patterns or deployment strategies
+- Refinements to coding standards or common pitfalls
+- API design improvements or breaking changes
+
+This ensures the documentation remains a living reference that guides consistent, high-quality development.
+
