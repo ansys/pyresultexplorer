@@ -1,8 +1,13 @@
-name: Tests (docker-based)
+name: Tests
 
 on:
   workflow_call:
     inputs:
+      deployment:
+        description: 'Deployment type (native or docker)'
+        required: false
+        default: 'native'
+        type: string
       update-snapshots:
         description: 'Update snapshots'
         required: false
@@ -11,17 +16,19 @@ on:
 
 env:
   MAIN_PYTHON_VERSION: '3.12'
+  RX_SERVER_INSTALLATION_PATH: '/tmp/result-explorer-server'
 
 jobs:
   tests:
-    name: "Tests (docker-based)"
+    name: "Tests (${{ inputs.deployment }})"
     runs-on: ${{ matrix.os }}
     env:
       UPDATE_SNAPSHOTS: ${{ inputs.update-snapshots }}
+      DEPLOYMENT: ${{ inputs.deployment }}
     strategy:
       matrix:
-       os: [ubuntu-latest] # can't run docker-compose on windows
-       python-version: ['3.12'] # closer to release we can add other python versions
+       os: [ubuntu-latest]
+       python-version: ['3.12']
       fail-fast: false
 
     steps:
@@ -35,8 +42,18 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
 
-      - name: Start Result Explorer
+      - name: Install Result Explorer (native)
+        id: install-rx
+        if: ${{ env.DEPLOYMENT == 'native' }}
+        uses: ./.github/actions/result-explorer-server
+        with:
+          version: 'latest-dev'
+          installation-path: ${{ env.RX_SERVER_INSTALLATION_PATH }}
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+
+      - name: Start Result Explorer (docker)
         id: rx-compose
+        if: ${{ env.DEPLOYMENT == 'docker' }}
         uses: ./.github/actions/result-explorer-docker
         with:
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
@@ -60,11 +77,30 @@ jobs:
           python-version: ${{ matrix.python-version }}
           enable-cache: "false"
 
-      - name: Install dependencies
+      - name: Install dependencies (native)
+        if: ${{ env.DEPLOYMENT == 'native' }}
+        run: |
+            uv sync --group dev --extra playwright
+
+      - name: Install dependencies (docker)
+        if: ${{ env.DEPLOYMENT == 'docker' }}
         run: |
             uv sync --group dev
 
-      - name: Run tests
+      - name: Run tests (native)
+        if: ${{ env.DEPLOYMENT == 'native' }}
+        run: |
+            pytest tests -m "" \
+              --junitxml test_results_native.xml \
+              --cov=ansys --cov-report=term --cov-report=html:.cov/html --cov-report=markdown:cov.md \
+              ${{ env.UPDATE_SNAPSHOTS == 'true' && '--snapshot-update' || '' }} \
+              --launch-native
+        env:
+          ANSYSLMD_LICENSE_FILE: 1055@${{ secrets.LICENSE_SERVER }}
+          ANSYS_RESULT_EXPLORER_SERVER: ${{ env.RX_SERVER_INSTALLATION_PATH }}/viz-server
+
+      - name: Run tests (docker)
+        if: ${{ env.DEPLOYMENT == 'docker' }}
         run: |
             uv run pytest tests -m "" \
               --junitxml test_results_docker.xml \
@@ -79,7 +115,7 @@ jobs:
         if: always()
         with:
           report_paths: '**/test*.xml'
-          check_name: Test Report ${{ matrix.os }}:${{ matrix.python-version }} (Docker)
+          check_name: Test Report ${{ matrix.os }}:${{ matrix.python-version }} (${{ env.DEPLOYMENT }})
           detailed_summary: true
           include_passed: true
 
@@ -91,7 +127,7 @@ jobs:
 
       - name: Upload coverage results
         uses: actions/upload-artifact@v7
-        if: env.MAIN_PYTHON_VERSION == matrix.python-version
+        if: ${{ env.DEPLOYMENT == 'native' && env.MAIN_PYTHON_VERSION == matrix.python-version }}
         with:
           name: coverage-tests-${{ matrix.os }}
           path: .cov
@@ -99,7 +135,7 @@ jobs:
 
       - name: Upload coverage results (as .coverage)
         uses: actions/upload-artifact@v7
-        if: env.MAIN_PYTHON_VERSION == matrix.python-version
+        if: ${{ env.DEPLOYMENT == 'native' && env.MAIN_PYTHON_VERSION == matrix.python-version }}
         with:
           name: coverage-file-tests-${{ matrix.os }}
           path: .coverage
@@ -113,12 +149,12 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: docker-snapshot-diffs-report
+          name: ${{ env.DEPLOYMENT }}-snapshot-diffs-report
           path: snapshot_diffs_report.html
           retention-days: 7
 
       - name: Dump server logs
-        if: failure()
+        if: ${{ failure() && env.DEPLOYMENT == 'docker' }}
         run: |
           docker logs result-explorer-server
 

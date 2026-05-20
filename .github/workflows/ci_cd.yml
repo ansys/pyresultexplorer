@@ -61,15 +61,17 @@ jobs:
 
   tests-docker:
     name: "Tests Docker"
-    uses: ./.github/workflows/tests-docker.yml
+    uses: ./.github/workflows/tests.yml
     with:
-      update-snapshots: ${{ github.event_name == 'workflow_dispatch' && inputs.update-snapshots || false }}
+      deployment: docker
+      update-snapshots: false
     secrets: inherit
 
   tests-native:
     name: "Tests Native"
-    uses: ./.github/workflows/tests-native.yml
+    uses: ./.github/workflows/tests.yml
     with:
+      deployment: native
       update-snapshots: ${{ github.event_name == 'workflow_dispatch' && inputs.update-snapshots || false }}
     secrets: inherit
 
