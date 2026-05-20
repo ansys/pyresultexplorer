@@ -62,8 +62,7 @@ jobs:
 
       - name: Run tests
         run: |
-            export ANSYS_RESULT_EXPLORER_SERVER=${{ steps.install-rx.outputs.exe-path }}
-            uv run pytest tests -m "" \
+            ANSYS_RESULT_EXPLORER_SERVER=${{ steps.install-rx.outputs.exe-path }} pytest tests -m "" \
               --junitxml test_results_native.xml \
               --cov=ansys --cov-report=term --cov-report=html:.cov/html --cov-report=markdown:cov.md \
               ${{ env.UPDATE_SNAPSHOTS == 'true' && '--snapshot-update' || '' }} \
@@ -85,11 +84,6 @@ jobs:
         run: |
           echo "## Code Coverage" >> $GITHUB_STEP_SUMMARY
           cat cov.md >> $GITHUB_STEP_SUMMARY
-
-      - name: Dump server logs
-        if: failure()
-        run: |
-          docker logs result-explorer-server
 
       - name: Commit base images
         if: ${{ (success() || failure()) && env.UPDATE_SNAPSHOTS == 'true' }}

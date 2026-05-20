@@ -60,14 +60,14 @@ jobs:
   #         token: ${{ secrets.GITHUB_TOKEN }}
 
   tests-docker:
-    name: "Tests (docker-based)"
+    name: "Tests Docker"
     uses: ./.github/workflows/tests-docker.yml
     with:
       update-snapshots: ${{ github.event_name == 'workflow_dispatch' && inputs.update-snapshots || false }}
     secrets: inherit
 
   tests-native:
-    name: "Tests (native)"
+    name: "Tests Native"
     uses: ./.github/workflows/tests-native.yml
     with:
       update-snapshots: ${{ github.event_name == 'workflow_dispatch' && inputs.update-snapshots || false }}
