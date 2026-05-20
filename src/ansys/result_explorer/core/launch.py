@@ -10,6 +10,7 @@ import os
 import socket
 import subprocess
 import sys
+import threading
 import time
 import uuid
 import webbrowser
@@ -29,6 +30,88 @@ RX_SERVER_ENV_VAR = "ANSYS_RESULT_EXPLORER_SERVER"
 RX_DESKTOP_ENV_VAR = "ANSYS_RESULT_EXPLORER_DESKTOP"
 DEFAULT_GRPC_PORT = 50000
 DEFAULT_WEB_PORT = 5100
+
+
+class _PlaywrightManager:
+    """Singleton manager for Playwright instance.
+
+    Ensures that sync_playwright is started only once and reused across multiple
+    browser sessions. This prevents conflicts when multiple sessions are created
+    in the same process or in async contexts.
+
+    Can reuse an externally-managed Playwright instance (e.g., from pytest-playwright)
+    or manage its own instance.
+    """
+
+    _instance = None
+    _lock = threading.Lock()
+    _ref_count = 0
+
+    def __new__(cls):
+        """Ensure singleton pattern."""
+        if cls._instance is None:
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = super().__new__(cls)
+                    cls._instance._playwright = None
+                    cls._instance._is_external = False
+        return cls._instance
+
+    def set_external_playwright(self, playwright):
+        """Set an externally-managed Playwright instance.
+
+        Use this when pytest-playwright or another manager is already running
+        a Playwright instance. Our singleton will reuse it instead of starting
+        its own.
+
+        Parameters
+        ----------
+        playwright
+            The Playwright instance to use.
+        """
+        with self._lock:
+            self._playwright = playwright
+            self._is_external = True
+            self._ref_count = 0
+            log.debug("Using externally-managed Playwright instance (e.g., from pytest-playwright)")
+
+    def get_playwright(self):
+        """Get the Playwright instance, starting it if necessary.
+
+        Returns
+        -------
+        playwright.sync_api.Playwright
+            The Playwright instance.
+        """
+        with self._lock:
+            if self._playwright is None:
+                from playwright.sync_api import sync_playwright  # noqa: PLC0415
+
+                log.debug("Starting Playwright instance (singleton)")
+                self._playwright = sync_playwright().start()
+                self._is_external = False
+                self._ref_count = 0
+            self._ref_count += 1
+            log.debug(f"Playwright ref count: {self._ref_count}")
+            return self._playwright
+
+    def release_playwright(self):
+        """Release a reference to the Playwright instance.
+
+        Stops the instance when the reference count reaches zero (if self-managed).
+        Externally-managed instances are not stopped.
+        """
+        with self._lock:
+            if self._playwright is not None:
+                self._ref_count -= 1
+                log.debug(f"Playwright ref count: {self._ref_count}")
+                if self._ref_count <= 0 and not self._is_external:
+                    log.debug("Stopping Playwright instance (singleton)")
+                    self._playwright.stop()
+                    self._playwright = None
+                    self._ref_count = 0
+                elif self._ref_count <= 0:
+                    log.debug("Not stopping externally-managed Playwright instance")
 
 
 class BrowserType(StrEnum):
@@ -443,6 +526,7 @@ class ResultExplorerWebSession:
         self._playwright_browser = None
         self._playwright_context = None
         self._playwright_page = None
+        self._playwright_manager = None
 
         if self._config.server_url is None:
             raise ValueError("server_url must be provided in WebLaunchConfig.")
@@ -477,9 +561,9 @@ class ResultExplorerWebSession:
         headless = self._config.browser_type == BrowserType.PLAYWRIGHT_CHROMIUM_HEADLESS
         log.info(f"Launching Playwright browser (headless={headless}): {self._config.server_url}")
 
-        from playwright.sync_api import sync_playwright  # noqa: PLC0415
-
-        playwright = sync_playwright().start()
+        # Get the singleton Playwright instance
+        self._playwright_manager = _PlaywrightManager()
+        playwright = self._playwright_manager.get_playwright()
 
         # First attempt: try launching normally
         needs_install = False
@@ -490,7 +574,6 @@ class ResultExplorerWebSession:
             if "executable" in error_msg or "chromium" in error_msg or "not found" in error_msg:
                 needs_install = True
             else:
-                playwright.stop()
                 raise
 
         # Install and retry if needed
@@ -507,7 +590,7 @@ class ResultExplorerWebSession:
     def close(self) -> None:
         """Close the web session."""
         if self._playwright_page is not None:
-            self._playwright_context.close()
+            self._playwright_page.close()
             self._playwright_page = None
         if self._playwright_context is not None:
             self._playwright_context.close()
@@ -515,6 +598,9 @@ class ResultExplorerWebSession:
         if self._playwright_browser is not None:
             self._playwright_browser.close()
             self._playwright_browser = None
+        if self._playwright_manager is not None:
+            self._playwright_manager.release_playwright()
+            self._playwright_manager = None
 
     @property
     def playwright_page(self):

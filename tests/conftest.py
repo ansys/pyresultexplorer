@@ -23,7 +23,7 @@ from ansys.result_explorer.core import (
     ServerLaunchConfig,
     Solution,
 )
-from ansys.result_explorer.core.launch import ResultExplorerServerProcess
+from ansys.result_explorer.core.launch import ResultExplorerServerProcess, _PlaywrightManager
 from ansys.result_explorer.core.models import SnapshotSettings
 
 log = logging.getLogger(__name__)
@@ -131,6 +131,26 @@ def install_browser():
     )
     log.info(r.stdout)
     log.info(r.stderr)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def configure_playwright_singleton(request):
+    """Configure the Playwright singleton to reuse pytest-playwright's instance.
+
+    If pytest-playwright is running (has a `playwright` fixture), we tell our
+    singleton to reuse that instance instead of starting its own. This prevents
+    the "using Playwright Sync API inside the asyncio loop" error.
+    """
+    try:
+        # Try to get the playwright fixture from pytest-playwright
+        playwright = request.getfixturevalue("playwright")
+        manager = _PlaywrightManager()
+        manager.set_external_playwright(playwright)
+        log.info("Playwright singleton configured to use pytest-playwright instance")
+    except Exception as e:
+        log.debug(f"pytest-playwright not available or error: {e}")
+        # pytest-playwright not in use, singleton will manage its own instance
+        pass
 
 
 @pytest.fixture(scope="session")
