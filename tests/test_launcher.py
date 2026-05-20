@@ -531,3 +531,46 @@ class TestServerLaunchIntegration:
 
         finally:
             client.stop()
+
+    def test_full_application_launch_twice(self, skip_if_no_native_launch):
+        """Test launching the full application twice concurrently.
+
+        This verifies that the Playwright singleton correctly handles multiple
+        concurrent browser instances without conflicts.
+        """
+        server_config = ServerLaunchConfig(num_threads=2, ssl=False)
+        web_config = WebLaunchConfig(browser_type=BrowserType.PLAYWRIGHT_CHROMIUM_HEADLESS)
+
+        # First launch
+        client1 = launch_result_explorer(server_config, web_config)
+
+        # Second launch while first is still running
+        client2 = launch_result_explorer(server_config, web_config)
+
+        try:
+            # Both should work concurrently
+            app_info1 = client1.app_info()
+            assert app_info1 is not None
+            assert app_info1.version != ""
+
+            app_info2 = client2.app_info()
+            assert app_info2 is not None
+            assert app_info2.version != ""
+
+            # Create resources in each client
+            workspace1 = client1.create_workspace("Workspace from Client 1")
+            assert workspace1 is not None
+
+            workspace2 = client2.create_workspace("Workspace from Client 2")
+            assert workspace2 is not None
+
+            # Verify both can list resources
+            workspaces1 = client1.list_workspaces()
+            assert any(w.name == "Workspace from Client 1" for w in workspaces1)
+
+            workspaces2 = client2.list_workspaces()
+            assert any(w.name == "Workspace from Client 2" for w in workspaces2)
+        finally:
+            # Stop both clients at the end
+            client1.stop()
+            client2.stop()
