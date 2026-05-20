@@ -46,6 +46,7 @@ dependencies = [
     { name = "grpcio" },
     { name = "protobuf" },
     { name = "python-slugify" },
+    { name = "requests" },
 ]
 
 [package.dev-dependencies]
@@ -75,6 +76,7 @@ requires-dist = [
     { name = "grpcio", specifier = ">=1.63.0" },
     { name = "protobuf" },
     { name = "python-slugify", specifier = ">=8.0.4" },
+    { name = "requests" },
 ]
 
 [package.metadata.requires-dev]

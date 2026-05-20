@@ -27,6 +27,7 @@ dependencies = [
     "grpcio>=1.63.0",
     "protobuf",
     "python-slugify>=8.0.4",
+    "requests",
 ]
 
 [dependency-groups]

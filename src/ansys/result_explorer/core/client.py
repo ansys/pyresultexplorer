@@ -3,6 +3,7 @@ import json
 import warnings
 from functools import wraps
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import grpc
 
@@ -16,6 +17,9 @@ from ansys.result_explorer.core import models
 
 from .exceptions import ResultExplorerError, UnsecureConnectionWarning
 from .objects import Solution, Viewport, Workspace
+
+if TYPE_CHECKING:
+    from .launch import ResultExplorerInstance, ResultExplorerWebSession
 
 DEFAULT_RESULT_PROVIDER = "Local"
 RX_SESSION_EXTENSION = ".rxs"
@@ -57,6 +61,7 @@ class Client:
         ca_cert_path: str | Path | None = None,
         insecure: bool | None = None,
         custom_headers: list[tuple[str, str]] | None = None,
+        instance: "ResultExplorerInstance | None" = None,
     ):
         """Initialize the client and connect to Result Explorer.
 
@@ -78,11 +83,15 @@ class Client:
         custom_headers : list of (str, str) tuples, optional
             Custom headers to include in gRPC requests,
             in addition to the session ID. Example: [("x-custom-header", "value")].
+        instance : ResultExplorerInstance, optional
+            Result Explorer instance to tie the client lifetime to. When the client
+            is destroyed, the instance will be stopped as well.
         """
 
         self._host = host
         self._grpc_port = grpc_port
         self._session_id = session_id
+        self._instance = instance
         self._grpc_metadata = [("x-session-id", self._session_id)]
         if custom_headers:
             self._grpc_metadata.extend(custom_headers)
@@ -133,6 +142,56 @@ class Client:
             filesystem_pb2_grpc.HpsFilesystemServiceStub(self._channel),
             metadata=wrapper_metadata,
         )  # type: ignore
+
+    def __del__(self):
+        """Clean up resources when client is destroyed."""
+        try:
+            if self._instance is not None:
+                self._instance.stop()
+        except Exception:
+            pass
+
+    @property
+    def instance(self) -> "ResultExplorerInstance | None":
+        """Get the Result Explorer instance.
+
+        Returns
+        -------
+        ResultExplorerInstance or None
+            The Result Explorer instance if one is attached, None otherwise.
+        """
+        return self._instance
+
+    @property
+    def web_url(self) -> str | None:
+        """Get the web UI URL.
+
+        Returns
+        -------
+        str or None
+            The URL of the web UI if an instance is attached and launched, None otherwise.
+        """
+        return self._instance.web_url if self._instance else None
+
+    @property
+    def web_session(self) -> "ResultExplorerWebSession | None":
+        """Get the web session.
+
+        Returns
+        -------
+        ResultExplorerWebSession or None
+            The web session if an instance is attached, None otherwise.
+        """
+        return self._instance.web_session if self._instance else None
+
+    def stop(self) -> None:
+        """Stop the Result Explorer instance.
+
+        Only effective if the client was created with an attached instance.
+        """
+        if self._instance is not None:
+            self._instance.stop()
+            self._instance = None
 
     @classmethod
     def connect_with_token(cls, token: str) -> "Client":
