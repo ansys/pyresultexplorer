@@ -81,6 +81,25 @@ PyResultExplorer is a Python client library for Result Explorer that communicate
 - **Fix all linting errors** — Before committing, ensure no errors from `ruff check`.
 - **Keep line length ≤100 characters** — Break long lines at logical boundaries.
 
+## Testing Best Practices
+
+- **Always write new tests for new features** — Even integration tests are valuable; prioritize realistic scenarios over trivial coverage.
+- **Do not overdo with unit tests and mocking** — Keep mocking minimal; mock only external dependencies (HTTP, subprocess, file I/O), not core logic.
+- **Do not test trivial stuff** — Skip tests for dataclass defaults, simple attribute assignments, getters, or method existence. Test error conditions, complex logic, and state transitions instead.
+- **Do not abuse docstrings in tests** — Keep test docstrings minimal or omit them; the test name should be self-explanatory.
+- **Integration tests are very valuable** — Write realistic end-to-end tests that start real processes and exercise the full application lifecycle.
+
+### Running tests locally
+
+From activated venv:
+
+```bash
+pytest -vv -s tests --launch-native # Full test suite
+pytest -vv -s tests\test_launcher.py --launch-native  # Filter by file
+pytest -vv -s tests --launch-native --headed  # Show browser window for visual feedback
+pytest -vv -s tests --connection-token=<token>  # To run against an already running instance
+```
+
 ## Maintenance
 
 These instructions should be kept up to date as the codebase evolves. When you encounter new patterns, best practices, or architectural insights during development, incorporate them back into this document to benefit the entire team. Examples include:
@@ -90,23 +109,3 @@ These instructions should be kept up to date as the codebase evolves. When you e
 - API design improvements or breaking changes
 
 This ensures the documentation remains a living reference that guides consistent, high-quality development.
-
-## Testing Best Practices
-
-- **Always write new tests for new features** — Even integration tests are valuable; prioritize realistic scenarios over trivial coverage.
-- **Do not overdo with unit tests and mocking** — Keep mocking minimal; mock only external dependencies (HTTP, subprocess, file I/O), not core logic.
-- **Do not test trivial stuff** — Skip tests for dataclass defaults, simple attribute assignments, getters, or method existence. Test error conditions, complex logic, and state transitions instead.
-- **Do not abuse docstrings in tests** — Keep test docstrings minimal or omit them; the test name should be self-explanatory.
-- **Integration tests are very valuable** — Write realistic end-to-end tests that start real processes and exercise the full application lifecycle.
-
-### Running tests locally: 
-
-From activated venv
-
-```bash
-pytest -vv -s tests --launch-native # Full test suite
-pytest -vv -s tests\test_launcher.py --launch-native  # Filter by file
-pytest -vv -s tests --launch-native --headed  # Show browser window for visual feedback
-pytest -vv -s tests --connection-token=<token>  # To run against an already running instance
-```
-
