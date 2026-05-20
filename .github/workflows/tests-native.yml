@@ -68,6 +68,8 @@ jobs:
               --cov=ansys --cov-report=term --cov-report=html:.cov/html --cov-report=markdown:cov.md \
               ${{ env.UPDATE_SNAPSHOTS == 'true' && '--snapshot-update' || '' }} \
               --launch-native
+        env:
+          ANSYSLMD_LICENSE_FILE: 1055@${{ secrets.LICENSE_SERVER }}
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v6
