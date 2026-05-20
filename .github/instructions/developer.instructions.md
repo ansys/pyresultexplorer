@@ -88,6 +88,7 @@ PyResultExplorer is a Python client library for Result Explorer that communicate
 - **Do not test trivial stuff** — Skip tests for dataclass defaults, simple attribute assignments, getters, or method existence. Test error conditions, complex logic, and state transitions instead.
 - **Do not abuse docstrings in tests** — Keep test docstrings minimal or omit them; the test name should be self-explanatory.
 - **Integration tests are very valuable** — Write realistic end-to-end tests that start real processes and exercise the full application lifecycle.
+- **Platform-agnostic** — Ensure tests run on all supported platforms (Windows, Linux) without platform-specific assumptions.
 
 ### Running tests locally
 
