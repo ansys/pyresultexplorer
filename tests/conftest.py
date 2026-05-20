@@ -18,7 +18,12 @@ import pytest
 from playwright.sync_api import BrowserContext, expect
 from syrupy.extensions.image import PNGImageSnapshotExtension
 
-from ansys.result_explorer.core import Client, Solution
+from ansys.result_explorer.core import (
+    Client,
+    ServerLaunchConfig,
+    Solution,
+)
+from ansys.result_explorer.core.launch import ResultExplorerServerProcess
 from ansys.result_explorer.core.models import SnapshotSettings
 
 log = logging.getLogger(__name__)
@@ -27,12 +32,12 @@ log = logging.getLogger(__name__)
 def pytest_addoption(parser):
     parser.addoption(
         "--server-url",
-        default="http://localhost:5100",
+        default=None,
         help="Server url.",
     )
     parser.addoption(
         "--web-url",
-        default="http://localhost:8000",
+        default=None,
         help="Web url.",
     )
     parser.addoption(
@@ -45,6 +50,12 @@ def pytest_addoption(parser):
         "--connection-token",
         default=None,
         help="Connection token to an existing session.",
+    )
+    parser.addoption(
+        "--launch-native",
+        action="store_true",
+        default=False,
+        help="Indicates if the app should be launched natively.",
     )
 
 
@@ -68,7 +79,23 @@ def install_browser():
 
 
 @pytest.fixture(scope="session")
+def rx_server():
+    server_config = ServerLaunchConfig(num_threads=2)
+
+    server_process = ResultExplorerServerProcess(server_config)
+    server_process.start()
+
+    yield server_process.url
+
+    server_process.stop()
+
+
+@pytest.fixture(scope="session")
 def server_url(request):
+    launch_native = request.config.getoption("--launch-native")
+    if launch_native:
+        return request.getfixturevalue("rx_server")
+
     return request.config.getoption("--server-url")
 
 
@@ -81,7 +108,13 @@ def connection_token(request):
 def web_url(request, server_url) -> str:
     web = request.config.getoption("--web-url")
 
+    launch_native = request.config.getoption("--launch-native")
+    if launch_native:
+        server_url = request.getfixturevalue("rx_server")
+        web = f"{server_url}/web"
+
     url = f"{web}?result_provider_name=Local&result_provider_url={server_url}"
+    log.info(f"Using web URL: {url}")
     return url
 
 
@@ -108,11 +141,11 @@ def browser_context_args(browser_context_args):
 
 
 @pytest.fixture
-def web_session(web_url: str, request):
+def rx(web_url: str, request) -> Client:
     connection_token = request.config.getoption("--connection-token")
     if connection_token is not None:
         log.info("Using provided connection token")
-        return connection_token
+        return Client.connect_with_token(connection_token)
 
     context: BrowserContext = request.getfixturevalue("context")
     log.debug("Starting context for web session fixture")
@@ -129,12 +162,7 @@ def web_session(web_url: str, request):
     connection_token = page.evaluate("navigator.clipboard.readText()")
     log.debug("Obtained connection token from web page")
 
-    return connection_token
-
-
-@pytest.fixture
-def rx(web_session):
-    return Client.connect_with_token(web_session)
+    return Client.connect_with_token(connection_token)
 
 
 @pytest.fixture(scope="session")

@@ -1,0 +1,59 @@
+name: 'Install Result Explorer server'
+
+description: 'Download Result Explorer server and install it'
+
+inputs:
+  
+  version:
+    description: 'Version of the Result Explorer server to install. Example: latest-dev'
+    default: 'latest-dev'
+
+  installation-path:
+    description: 'Installation path. Default: /ansys_inc'
+    required: false
+    default: '/ansys_inc'
+
+  token:
+    description: 'Token to access private repository'
+    required: true
+
+outputs:
+  exe-path:
+    description: 'Installation path where the Result Explorer binary is installed'
+    value: ${{ steps.install.outputs.path }}
+
+runs:
+  using: "composite"
+  
+  steps:
+
+    - name: Download Result Explorer server
+      uses: dsaltares/fetch-gh-release-asset@master
+      with:
+        repo: 'ansys-internal/result-explorer'
+        version: tags/${{ inputs.version }}
+        file: 'result-explorer-server-linux.tar.gz'
+        token: ${{ inputs.token }}
+        target: 'tmp_artifacts/result-explorer-server-linux.tar.gz'
+
+    - name: Unpack Result Explorer artifacts
+      id: install
+      shell: bash
+      run: |
+        echo "Unpacking Result Explorer artifacts"
+        mkdir -p ${INSTALLATION_PATH}
+        ls -ltr tmp_artifacts
+        tar -zxf \
+          ./tmp_artifacts/result-explorer-server-linux.tar.gz \
+          -C ${INSTALLATION_PATH}
+        rm -rf ./tmp_artifacts
+
+        cd ${INSTALLATION_PATH}
+        pwd
+        ls -ltr
+        chmod +x viz-server/viz-server
+        ./viz-server/viz-server --version >> $GITHUB_STEP_SUMMARY
+
+        echo "path=$(pwd)/viz-server/viz-server" >> $GITHUB_OUTPUT
+      env: 
+        INSTALLATION_PATH: ${{ inputs.installation-path }}
