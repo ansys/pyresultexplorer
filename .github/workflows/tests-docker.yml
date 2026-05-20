@@ -109,6 +109,14 @@ jobs:
         if: always()
         run: python .github/scripts/generate_snapshot_summary.py
 
+      - name: Upload snapshot diffs report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-snapshot-diffs-report
+          path: snapshot_diffs_report.html
+          retention-days: 7
+
       - name: Dump server logs
         if: failure()
         run: |
