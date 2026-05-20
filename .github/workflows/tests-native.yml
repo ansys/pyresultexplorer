@@ -70,7 +70,7 @@ jobs:
               --launch-native
         env:
           ANSYSLMD_LICENSE_FILE: 1055@${{ secrets.LICENSE_SERVER }}
-          ANSYS_RESULT_EXPLORER_SERVER: ${{ env.RX_SERVER_INSTALLATION_PATH }} 
+          ANSYS_RESULT_EXPLORER_SERVER: ${{ env.RX_SERVER_INSTALLATION_PATH }}/viz-server 
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v6
