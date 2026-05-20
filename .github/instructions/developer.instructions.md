@@ -70,6 +70,7 @@ PyResultExplorer is a Python client library for Result Explorer that communicate
 - **Avoid unnecessarily verbose docstrings** — Docstrings should add value. Omit them if the function name and type hints are self-explanatory. Use docstrings to clarify intent, parameters, and return values when not obvious.
 - **Avoid long functions** — Extract helper functions and keep functions focused on a single responsibility. Maximum ~50 lines unless there's a strong reason.
 - **Use existing patterns** — Follow established patterns in the codebase (e.g., `@dataclass` for configuration, properties for instance state, context managers for lifecycle).
+- **Never duplicate code** — Extract shared logic into helper functions or methods. Duplicated code creates maintenance burden and inconsistency. If the same pattern appears twice, it should be extracted into a reusable function.
 
 ### Code Style
 - **Use ruff check and format** — Run linting and formatting as configured in the repo:

@@ -35,38 +35,23 @@ Launch with Playwright in headless mode:
     >>> instance = launch_result_explorer(server_config, web_config)
     >>> instance.stop()
 
-Use context manager for automatic cleanup:
-
-    >>> with launch_result_explorer(server_config, web_config) as instance:
-    ...     # Use the instance
-    ...     url = instance.web_url
-    ...     # Cleanup happens automatically
-
-Connect to the gRPC API after launching:
-
-    >>> from ansys.result_explorer.core import Client, launch_result_explorer
-    >>> instance = launch_result_explorer(ServerLaunchConfig(), WebLaunchConfig())
-    >>> # Get connection details from the instance
-    >>> client = Client(
-    ...     session_id="default",
-    ...     host=instance.grpc_host,
-    ...     grpc_port=instance.grpc_port,
-    ...     insecure=True
-    ... )
-    >>> # Use the client...
-    >>> instance.stop()
-
 Environment Variables
 ---------------------
 ANSYS_RESULT_EXPLORER_SERVER : str
-    Path to the Result Explorer installation directory. The server executable
+    Path to the Result Explorer server installation directory. The server executable
     will be looked up at {ANSYS_RESULT_EXPLORER_SERVER}/viz-server.exe (Windows)
     or {ANSYS_RESULT_EXPLORER_SERVER}/viz-server (Unix-like).
+
+ANSYS_RESULT_EXPLORER_DESKTOP : str
+    Path to the Result Explorer desktop application root directory. The server will be
+    looked up at {ANSYS_RESULT_EXPLORER_DESKTOP}/resources/app/dist/viz-server.
+    This is an alternative to ANSYS_RESULT_EXPLORER_SERVER.
 """
 
 import os
 import socket
 import subprocess
+import sys
 import time
 import uuid
 import webbrowser
@@ -82,15 +67,30 @@ if TYPE_CHECKING:
     from .client import Client
 
 RX_SERVER_ENV_VAR = "ANSYS_RESULT_EXPLORER_SERVER"
+RX_DESKTOP_ENV_VAR = "ANSYS_RESULT_EXPLORER_DESKTOP"
 DEFAULT_GRPC_PORT = 50000
 DEFAULT_WEB_PORT = 5100
+
+
+def _get_viz_server_executable(base_path: Path) -> Path | None:
+    """Get viz-server executable from a base path if it exists."""
+    if not base_path.exists():
+        return None
+
+    exe_name = "viz-server.exe" if os.name == "nt" else "viz-server"
+    exe_path = base_path / exe_name
+    return exe_path if exe_path.exists() else None
 
 
 def _find_result_explorer() -> Path:
     """Find the Result Explorer server executable.
 
     Looks for the executable in the path specified by ANSYS_RESULT_EXPLORER_SERVER
-    environment variable.
+    or ANSYS_RESULT_EXPLORER_DESKTOP environment variable.
+
+    For ANSYS_RESULT_EXPLORER_SERVER: points directly to the server installation.
+    For ANSYS_RESULT_EXPLORER_DESKTOP: points to the desktop app root, server is at
+    resources/app/dist/viz-server relative to that path.
 
     Returns
     -------
@@ -102,18 +102,24 @@ def _find_result_explorer() -> Path:
     FileNotFoundError
         If Result Explorer installation is not found.
     """
+    # Check ANSYS_RESULT_EXPLORER_SERVER first (direct path to server)
     if RX_SERVER_ENV_VAR in os.environ:
-        install_path = Path(os.environ[RX_SERVER_ENV_VAR])
-        if install_path.exists():
-            if os.name == "nt":
-                exe_path = install_path / "viz-server.exe"
-            else:
-                exe_path = install_path / "viz-server"
-            if exe_path.exists():
-                return exe_path
+        exe_path = _get_viz_server_executable(Path(os.environ[RX_SERVER_ENV_VAR]))
+        if exe_path is not None:
+            return exe_path
+
+    # Check ANSYS_RESULT_EXPLORER_DESKTOP (desktop app root)
+    if RX_DESKTOP_ENV_VAR in os.environ:
+        desktop_path = Path(os.environ[RX_DESKTOP_ENV_VAR])
+        server_path = desktop_path / "resources" / "app" / "dist" / "viz-server"
+        exe_path = _get_viz_server_executable(server_path)
+        if exe_path is not None:
+            return exe_path
+
     raise FileNotFoundError(
-        f"Result Explorer installation not found. Please set the '{RX_SERVER_ENV_VAR}' "
-        "environment variable to point to the installation directory."
+        f"Result Explorer installation not found. Please set either "
+        f"'{RX_SERVER_ENV_VAR}' (points to server directory) or "
+        f"'{RX_DESKTOP_ENV_VAR}' (points to desktop app root) environment variable."
     )
 
 
@@ -176,6 +182,34 @@ def _wait_for_server(
     return False
 
 
+def _install_playwright_browsers() -> None:
+    """Install Playwright browsers (chromium, chromium headless).
+
+    Raises
+    ------
+    RuntimeError
+        If the installation fails.
+    """
+    try:
+        log.info("Installing Playwright browsers (this may take a minute)...")
+        result = subprocess.run(
+            [sys.executable, "-m", "playwright", "install", "chromium"],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=300,  # 5 minute timeout
+        )
+        log.info("Playwright browsers installed successfully.")
+        if result.stdout:
+            log.debug(result.stdout)
+    except subprocess.TimeoutExpired as e:
+        raise RuntimeError("Playwright browser installation timed out after 5 minutes.") from e
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(f"Failed to install Playwright browsers: {e.stderr}") from e
+    except Exception as e:
+        raise RuntimeError(f"Unexpected error installing Playwright browsers: {e}") from e
+
+
 @dataclass
 class ServerLaunchConfig:
     """Configuration for Result Explorer server startup.
@@ -195,7 +229,8 @@ class ServerLaunchConfig:
     num_threads : int, optional
         Number of DPF threads to use.
     log_level : str, optional
-        Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL).
+        Log level (profile, debug, info, warning, error).
+        Default is None (server default).
     debug_api_responses : bool, optional
         Enable API response debugging.
     strict_checks : bool, optional
@@ -542,24 +577,48 @@ class ResultExplorerWebSession:
         ------
         ImportError
             If Playwright is not installed.
+        RuntimeError
+            If browser installation fails.
         """
         try:
-            from playwright.sync_api import sync_playwright  # noqa: PLC0415
+            from playwright.sync_api import sync_playwright  # noqa
         except ImportError as err:
             raise ImportError(
                 "Playwright is not installed. Please install it with "
-                "'pip install playwright' and run 'playwright install' "
-                "to install the necessary browsers."
+                "'pip install ansys-result-explorer-core[playwright]' and run "
+                "'playwright install' to install the necessary browsers."
             ) from err
 
         headless = self._config.browser_type == "playwright-headless"
         log.info(f"Launching Playwright browser (headless={headless}): {self._config.server_url}")
 
-        playwright = sync_playwright().start()
-        self._playwright_browser = playwright.chromium.launch(headless=headless)
-        self._playwright_context = self._playwright_browser.new_context()
-        self._playwright_page = self._playwright_context.new_page()
-        self._playwright_page.goto(self._config.server_url)
+        def _do_launch_browser(headless: bool) -> None:
+            """Launch the browser."""
+            from playwright.sync_api import sync_playwright  # noqa: PLC0415
+
+            playwright = sync_playwright().start()
+            self._playwright_browser = playwright.chromium.launch(headless=headless)
+            self._playwright_context = self._playwright_browser.new_context()
+            self._playwright_page = self._playwright_context.new_page()
+            self._playwright_page.goto(self._config.server_url)
+
+        # First attempt: try launching normally
+        needs_install = False
+        try:
+            _do_launch_browser(headless)
+        except Exception as e:
+            error_msg = str(e).lower()
+            if "executable" in error_msg or "chromium" in error_msg or "not found" in error_msg:
+                needs_install = True
+            else:
+                raise
+
+        # Install and retry if needed
+        if needs_install:
+            log.info("Chromium browser not found, installing...")
+            _install_playwright_browsers()
+            _do_launch_browser(headless)
+            log.info("Browser launched successfully after installation.")
 
     def close(self) -> None:
         """Close the web session.

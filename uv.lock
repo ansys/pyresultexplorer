@@ -49,6 +49,11 @@ dependencies = [
     { name = "requests" },
 ]
 
+[package.optional-dependencies]
+playwright = [
+    { name = "playwright" },
+]
+
 [package.dev-dependencies]
 dev = [
     { name = "pre-commit" },
@@ -74,10 +79,12 @@ requires-dist = [
     { name = "ansys-api-result-explorer", git = "https://github.com/ansys-internal/result-explorer.git?subdirectory=api%2Fpython&rev=edf59e52258033129ec83175d4f2eda220289472" },
     { name = "ansys-tools-path", specifier = ">=0.7.3" },
     { name = "grpcio", specifier = ">=1.63.0" },
+    { name = "playwright", marker = "extra == 'playwright'", specifier = ">=1.50.0" },
     { name = "protobuf" },
     { name = "python-slugify", specifier = ">=8.0.4" },
     { name = "requests" },
 ]
+provides-extras = ["playwright"]
 
 [package.metadata.requires-dev]
 dev = [
