@@ -217,6 +217,10 @@ class ToleranceImageSnapshotExtension(PNGImageSnapshotExtension):
             return bool(serialized_data == snapshot_data)
 
 
+# Track failed snapshot tests for custom reporting
+_failed_snapshots = []
+
+
 def pytest_addoption(parser):
     parser.addoption(
         "--server-url",
@@ -245,6 +249,54 @@ def pytest_addoption(parser):
         default=False,
         help="Indicates if the app should be launched natively.",
     )
+
+
+def pytest_runtest_logreport(report):
+    """Track failed snapshot tests for cleaner reporting."""
+    if report.failed and hasattr(report, "longrepr"):
+        # Check if this is a snapshot assertion failure
+        longrepr_str = str(report.longrepr) if report.longrepr else ""
+
+        if "snapshot" in longrepr_str.lower() and "assert" in longrepr_str.lower():
+            # Find diff files for this test
+            test_dir = Path(report.fspath).parent
+            diffs_dir = test_dir / "__snapshots__" / "diffs"
+
+            if diffs_dir.exists():
+                diff_files = list(diffs_dir.glob("*.diff.png"))
+                if diff_files:
+                    # Get the most recently modified one (created during this test)
+                    recent_diff = max(diff_files, key=lambda p: p.stat().st_mtime)
+                    _failed_snapshots.append(
+                        {
+                            "test": report.nodeid,
+                            "diff": str(recent_diff),  # Store as string for compatibility
+                        }
+                    )
+
+
+def pytest_terminal_summary(terminalreporter, exitstatus, config):
+    """Add custom summary for failed image snapshots."""
+    if _failed_snapshots:
+        terminalreporter.section("Image Snapshot Failures", sep="=")
+        for entry in _failed_snapshots:
+            test_name = entry["test"].split("::")[-1]
+            diff_path = Path(entry["diff"])
+            # Ensure absolute path
+            if not diff_path.is_absolute():
+                diff_path = Path(config.rootdir) / diff_path
+            try:
+                diff_rel = diff_path.relative_to(Path(config.rootdir))
+            except ValueError:
+                # If relative_to fails, just use the path as-is
+                diff_rel = diff_path
+            # Format: test_name -> diff_path
+            terminalreporter.write_line(
+                f"  {test_name:<50} -> {diff_rel}",
+                bold=True,
+                yellow=True,
+            )
+        terminalreporter.write_line("")
 
 
 @pytest.fixture

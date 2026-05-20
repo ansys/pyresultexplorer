@@ -105,6 +105,10 @@ jobs:
           path: .coverage
           retention-days: 7
 
+      - name: Generate snapshot diff summary
+        if: always()
+        run: python .github/scripts/generate_snapshot_summary.py
+
       - name: Dump server logs
         if: failure()
         run: |

@@ -87,6 +87,10 @@ jobs:
           echo "## Code Coverage" >> $GITHUB_STEP_SUMMARY
           cat cov.md >> $GITHUB_STEP_SUMMARY
 
+      - name: Generate snapshot diff summary
+        if: always()
+        run: python .github/scripts/generate_snapshot_summary.py
+
       - name: Commit base images
         if: ${{ (success() || failure()) && env.UPDATE_SNAPSHOTS == 'true' }}
         uses: EndBug/add-and-commit@v10
