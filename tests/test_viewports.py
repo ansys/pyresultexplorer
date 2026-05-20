@@ -294,6 +294,7 @@ def test_mesh_viewport_named_selection_visibility(
     viewport.set_metadata(meta)
     assert viewport.metadata.visible_named_selection == ns_contact.id
 
+    _ = viewport.take_snapshot(settings=snapshot_settings)
     snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
     assert snapshot_data == snapshot(name="CONTACT")
 
