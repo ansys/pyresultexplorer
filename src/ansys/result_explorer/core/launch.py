@@ -260,6 +260,8 @@ class ResultExplorerServerProcess:
         self._process = None
         self._port = None
         self._grpc_port = config.grpc_port
+        self._gateway_http_port = None
+        self._gateway_grpc_port = None
 
     def start(self) -> None:
         """Start the Result Explorer server.
@@ -309,6 +311,17 @@ class ResultExplorerServerProcess:
             self.stop()
             raise RuntimeError(f"Server did not become ready within timeout at {server_url}")
         log.info("Server is ready.")
+
+        # Query /api/v1 to get gateway port information
+        self._query_gateway_ports(protocol)
+
+        # Wait for gateway HTTP API to be ready
+        gateway_url = f"{protocol}://127.0.0.1:{self._gateway_http_port}"
+        log.info(f"Waiting for gateway to be ready at {gateway_url}...")
+        if not _wait_for_server(gateway_url, timeout=30.0):
+            self.stop()
+            raise RuntimeError(f"Gateway did not become ready within timeout at {gateway_url}")
+        log.info("Gateway is ready.")
 
     def stop(self) -> None:
         """Stop the Result Explorer server.
@@ -373,16 +386,74 @@ class ResultExplorerServerProcess:
             raise RuntimeError("Server has not been started yet.")
         return self._port
 
+    def _query_gateway_ports(self, protocol: str) -> None:
+        """Query the /api/v1 endpoint to get gateway port information.
+
+        Parameters
+        ----------
+        protocol : str
+            Protocol to use ('http' or 'https').
+
+        Raises
+        ------
+        RuntimeError
+            If the gateway ports cannot be retrieved.
+        """
+
+        api_url = f"{protocol}://127.0.0.1:{self._port}/api/v1"
+        try:
+            response = requests.get(api_url, timeout=5, verify=False)
+            response.raise_for_status()
+            data = response.json()
+
+            # Extract gateway ports from response
+            gateway_info = data.get("gateway_info", {})
+            self._gateway_http_port = gateway_info.get("http_port")
+            self._gateway_grpc_port = gateway_info.get("grpc_port")
+
+            if self._gateway_http_port is None or self._gateway_grpc_port is None:
+                raise RuntimeError("Missing gateway_info in server response")
+
+            log.info(
+                f"Gateway ports from server: HTTP={self._gateway_http_port}, "
+                f"gRPC={self._gateway_grpc_port}"
+            )
+        except Exception as e:
+            self.stop()
+            raise RuntimeError(f"Failed to query gateway ports from {api_url}: {e}") from e
+
     @property
     def grpc_port(self) -> int:
-        """Get the gRPC port.
+        """Get the gateway gRPC port.
 
         Returns
         -------
         int
-            The gRPC port number.
+            The gateway gRPC port (auto-discovered from server logs).
         """
-        return self._grpc_port
+        return self._gateway_grpc_port or self._grpc_port
+
+    @property
+    def gateway_http_port(self) -> int | None:
+        """Get the gateway HTTP port.
+
+        Returns
+        -------
+        int or None
+            The gateway HTTP port (auto-discovered from server logs).
+        """
+        return self._gateway_http_port
+
+    @property
+    def gateway_grpc_port(self) -> int | None:
+        """Get the gateway gRPC port.
+
+        Returns
+        -------
+        int or None
+            The gateway gRPC port (auto-discovered from server logs).
+        """
+        return self._gateway_grpc_port
 
     def __del__(self):
         """Ensure server is stopped when object is destroyed."""
@@ -743,6 +814,11 @@ def launch_result_explorer(
     instance = ResultExplorerInstance(server_config, web_config)
     instance.launch()
 
+    # Give the web UI time to connect to the gateway via WebSocket if applicable
+    if instance.web_session is not None:
+        log.debug("Waiting for web UI to establish gateway connection...")
+        time.sleep(2.0)
+
     # Create the Client
     client = ClientImpl(
         session_id=instance.session_id,
@@ -753,8 +829,8 @@ def launch_result_explorer(
     )
 
     # Verify the client is ready by making a test gRPC call
-    max_retries = 10
-    retry_delay = 0.5
+    max_retries = 15
+    retry_delay = 1.0
     for attempt in range(max_retries):
         try:
             client.app_info()
