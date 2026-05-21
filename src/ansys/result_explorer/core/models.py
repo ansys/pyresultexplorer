@@ -4,6 +4,7 @@ from ansys.api.result_explorer.v0.app_pb2 import (
     AppInfo,
     AppSettings,
     AppTheme,
+    AuthenticateResultProviderRequest,
     CreateResultProviderRequest,
     DataProcessingSettings,
     DeleteResultProviderRequest,

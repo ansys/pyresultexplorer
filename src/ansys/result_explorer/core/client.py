@@ -476,6 +476,17 @@ class Client:
         )
         self._app_stub.DeleteResultProvider(models.DeleteResultProviderRequest(name=rp_name))
 
+    def authenticate_result_provider(
+        self, result_provider: str | models.ResultProvider, token: str
+    ) -> None:
+        rp_name = (
+            result_provider.name
+            if isinstance(result_provider, models.ResultProvider)
+            else result_provider
+        )
+        req = models.AuthenticateResultProviderRequest(result_provider_name=rp_name, token=token)
+        self._app_stub.AuthenticateResultProvider(req)
+
     def app_info(self) -> models.AppInfo:
         return self._app_stub.GetAppInfo(models.Empty())
 
