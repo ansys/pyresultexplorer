@@ -480,10 +480,14 @@ class TestServerLaunchIntegration:
             process2.stop()
             time.sleep(0.5)
 
-    def test_full_application_with_client(self, skip_if_no_native_launch):
+    @pytest.mark.parametrize("auth", [False, True])
+    def test_full_application_with_client(self, skip_if_no_native_launch, auth):
         """Test the full application lifecycle."""
 
-        server_config = ServerLaunchConfig(num_threads=2, ssl=False)
+        server_config = ServerLaunchConfig(num_threads=2, ssl=False, auth=auth)
+        if auth:
+            assert server_config.token is not None
+            assert server_config.ssl is True
         web_config = WebLaunchConfig(browser_type=BrowserType.PLAYWRIGHT_CHROMIUM_HEADLESS)
 
         # Launch the full application

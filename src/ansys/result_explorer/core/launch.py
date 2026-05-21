@@ -251,7 +251,8 @@ class ServerLaunchConfig:
     auth : bool, optional
         Whether to enable authentication. Default is False (TODO: change for production).
     token : str, optional
-        Authentication token/password. Only used if SSL is enabled.
+        Authentication token/password. Only used if auth is enabled.
+        If auth is True and token is None, a UUID token will be generated.
     num_threads : int, optional
         Number of DPF threads to use.
     log_level : str, optional
@@ -271,6 +272,18 @@ class ServerLaunchConfig:
     num_threads: int | None = None
     log_level: str | None = None
     # Add more server configuration options as needed
+
+    def __post_init__(self):
+        """Validate and initialize configuration after dataclass initialization."""
+        # Ensure SSL is enabled if auth is enabled
+        if self.auth and not self.ssl:
+            self.ssl = True
+            log.debug("SSL enabled automatically because auth is enabled.")
+
+        # Generate a UUID token if auth is enabled but no token provided
+        if self.auth and self.token is None:
+            self.token = str(uuid.uuid4())
+            log.debug("Generated authentication token.")
 
     def _build_args(self) -> list[str]:
         """Build command-line arguments for the server."""
@@ -311,6 +324,7 @@ class ResultExplorerServerProcess:
         self._grpc_port = config.grpc_port
         self._gateway_http_port = None
         self._gateway_grpc_port = None
+        self._ca_cert_path = None
 
     def start(self) -> None:
         """Start the Result Explorer server.
@@ -448,10 +462,11 @@ class ResultExplorerServerProcess:
             response.raise_for_status()
             data = response.json()
 
-            # Extract gateway ports from response
+            # Extract gateway info from response
             gateway_info = data.get("gateway_info", {})
             self._gateway_http_port = gateway_info.get("http_port")
             self._gateway_grpc_port = gateway_info.get("grpc_port")
+            self._ca_cert_path = gateway_info.get("ca_cert_path")
 
             if self._gateway_http_port is None or self._gateway_grpc_port is None:
                 raise RuntimeError("Missing gateway_info in server response")
@@ -478,6 +493,11 @@ class ResultExplorerServerProcess:
     def gateway_grpc_port(self) -> int | None:
         """Get the gateway gRPC port."""
         return self._gateway_grpc_port
+
+    @property
+    def ca_cert_path(self) -> str | None:
+        """Get the CA certificate path."""
+        return self._ca_cert_path
 
     def __del__(self):
         """Ensure server is stopped when object is destroyed."""
@@ -583,7 +603,10 @@ class ResultExplorerWebSession:
             self._playwright_browser = playwright.chromium.launch(headless=headless)
             log.info("Browser launched successfully after installation.")
 
-        self._playwright_context = self._playwright_browser.new_context()
+        self._playwright_context = self._playwright_browser.new_context(
+            # Ignore HTTPS errors for self-signed certificates (e.g., when SSL is enabled for auth)
+            ignore_https_errors=True
+        )
         self._playwright_page = self._playwright_context.new_page()
         self._playwright_page.goto(self._config.server_url)
 
@@ -656,10 +679,9 @@ class ResultExplorerInstance:
 
         # Launch web UI if configured
         if self._web_config is not None:
-            result_provider_name = f"Local-{self._server_process.port}"
             result_provider_url = base_url
             params = (
-                f"?result_provider_name={result_provider_name}"
+                f"?result_provider_name={self.result_provider_name}"
                 f"&result_provider_url={result_provider_url}"
                 f"&session_id={self._session_id}"
             )
@@ -715,6 +737,13 @@ class ResultExplorerInstance:
     def session_id(self) -> str:
         """Get the session ID."""
         return self._session_id
+
+    @property
+    def result_provider_name(self) -> str:
+        """Get the result provider name."""
+        if self._server_process is None:
+            raise RuntimeError("Server has not been launched yet.")
+        return f"Local-{self._server_process.port}"
 
     def stop(self) -> None:
         """Stop the Result Explorer instance.
@@ -801,7 +830,7 @@ def launch_result_explorer(
         session_id=instance.session_id,
         host="localhost",
         grpc_port=instance.grpc_port,
-        insecure=True,
+        ca_cert_path=instance._server_process.ca_cert_path,
         instance=instance,
     )
 
@@ -812,7 +841,7 @@ def launch_result_explorer(
         try:
             client.app_info()
             log.info("Client connection verified.")
-            return client
+            break
         except Exception as e:
             if attempt < max_retries - 1:
                 msg = (
@@ -825,3 +854,18 @@ def launch_result_explorer(
                 log.error(f"Client failed to connect after {max_retries} attempts: {e}")
                 client.stop()
                 raise RuntimeError(f"Client failed to establish connection: {e}") from e
+
+    # Authenticate the result provider if auth is enabled
+    if instance._server_config.auth and instance._server_config.token:
+        log.debug("Authenticating result provider...")
+        try:
+            client.authenticate_result_provider(
+                instance.result_provider_name, instance._server_config.token
+            )
+            log.debug("Result provider authenticated successfully.")
+        except Exception as e:
+            log.error(f"Failed to authenticate result provider: {e}")
+            client.stop()
+            raise
+
+    return client
