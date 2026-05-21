@@ -27,7 +27,11 @@ dependencies = [
     "grpcio>=1.63.0",
     "protobuf",
     "python-slugify>=8.0.4",
+    "requests",
 ]
+
+[project.optional-dependencies]
+playwright = ["playwright>=1.50.0"]
 
 [dependency-groups]
 dev = [
@@ -36,6 +40,8 @@ dev = [
     "pytest-cov==7.1.0",
     "pytest-playwright>=0.7.2",
     "syrupy>=5.1.0",
+    "Pillow>=12.0.0",
+    "pytest-rerunfailures==16.2",
 ]
 doc = [
     "ansys-sphinx-theme==1.7.2",
@@ -56,7 +62,7 @@ default-groups = ["dev"]
 cache-dir = "./.uv_cache"
 
 [tool.uv.sources]
-ansys-api-result-explorer = { git = "https://github.com/ansys-internal/result-explorer.git", subdirectory = "api/python", rev = "edf59e52258033129ec83175d4f2eda220289472" }
+ansys-api-result-explorer = { git = "https://github.com/ansys-internal/result-explorer.git", subdirectory = "api/python", rev = "eb4e06755195b3b03c8d2c72721b2a0efbd21551" }
 
 [project.urls]
 Source = "https://github.com/ansys-internal/pyresultexplorer"
@@ -97,6 +103,7 @@ ignore = []
 "examples/**/*.py" = ["D", "PLC0415"]
 # ignore docstring on client code for now
 "src/**/client.py" = ["D"]
+".github/scripts/*.py" = ["E501"]
 
 [tool.pydocstyle]
 convention = "numpy"

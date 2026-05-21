@@ -314,9 +314,7 @@ class Viewport(BaseEntity[models.Viewport]):
             view_id=view.id,
             wait=wait,
         )
-        updated_pb = self._client._workspace_stub.UpdateViewport(
-            req, metadata=self._client._grpc_metadata
-        )
+        updated_pb = self._client._workspace_stub.UpdateViewport(req)
         self._pb = updated_pb
         return self
 
@@ -337,9 +335,7 @@ class Viewport(BaseEntity[models.Viewport]):
         req = models.CreateSnapshotRequest(viewport_id=self.id)
         if settings is not None:
             req.settings.CopyFrom(settings)
-        snapshot = self._client._workspace_stub.CreateSnapshot(
-            req, metadata=self._client._grpc_metadata
-        )
+        snapshot = self._client._workspace_stub.CreateSnapshot(req)
         return snapshot.data
 
     def set_metadata(self, metadata: ViewportMetadata) -> None:
@@ -349,9 +345,7 @@ class Viewport(BaseEntity[models.Viewport]):
             metadata=metadata.to_pb(),
             wait=True,
         )
-        self._pb = self._client._workspace_stub.UpdateViewport(
-            req, metadata=self._client._grpc_metadata
-        )
+        self._pb = self._client._workspace_stub.UpdateViewport(req)
 
     def set_size(self, size: float) -> None:
         """Set the size of this viewport in the workspace layout."""
@@ -360,9 +354,7 @@ class Viewport(BaseEntity[models.Viewport]):
             size=size,
             wait=False,
         )
-        self._pb = self._client._workspace_stub.UpdateViewport(
-            req, metadata=self._client._grpc_metadata
-        )
+        self._pb = self._client._workspace_stub.UpdateViewport(req)
 
     @property
     def hidden(self) -> bool:
@@ -375,9 +367,7 @@ class Viewport(BaseEntity[models.Viewport]):
             hidden=hidden,
             wait=False,
         )
-        self._pb = self._client._workspace_stub.UpdateViewport(
-            req, metadata=self._client._grpc_metadata
-        )
+        self._pb = self._client._workspace_stub.UpdateViewport(req)
 
     def hide(self) -> None:
         """Hide this viewport (make it not visible in the UI)."""

@@ -163,3 +163,5 @@ cython_debug/
 *.png
 # Allow PNG snapshots for visual regression tests
 !tests/__snapshots__/**/*.png
+# Ignore generated diff images
+tests/__snapshots__/diffs/

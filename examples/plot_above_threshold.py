@@ -107,6 +107,17 @@ def get_custom_plot_data(
     time_frequencies = fc_disp.time_freq_support.time_frequencies
     annotated_fields = []
 
+    # extract scoped mesh for visualization purposes (if scoping is provided)
+    scoped_mesh = mesh
+    if scoping is not None:
+        extract_mesh_op = dpf.operators.mesh.from_scoping(
+            server=server,
+            inclusive=1,
+            mesh=mesh,
+            scoping=scoping,
+        )
+        scoped_mesh = extract_mesh_op.outputs.mesh()
+
     for index, set_id in enumerate(fc_disp.get_time_scoping().ids):
         disp_field = fc_disp[index]
 
@@ -149,7 +160,7 @@ def get_custom_plot_data(
         #         scoping=above_threshold_scoping,
         #     )
         #     filtered_disp.meshed_region = extract_mesh_op.outputs.mesh()
-        filtered_disp.meshed_region = mesh
+        filtered_disp.meshed_region = scoped_mesh
 
         simulation_time = time_frequencies.data[set_id - 1]
         annotated_fields.append(

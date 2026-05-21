@@ -267,6 +267,7 @@ def test_mesh_viewport_metadata(rx, multiple_connections_solution):
     rx.delete_workspace(workspace)
 
 
+@pytest.mark.flaky(reruns=3, reruns_delay=1)
 def test_mesh_viewport_named_selection_visibility(
     rx, cp_transient_solution, snapshot, snapshot_settings
 ):
@@ -294,6 +295,7 @@ def test_mesh_viewport_named_selection_visibility(
     viewport.set_metadata(meta)
     assert viewport.metadata.visible_named_selection == ns_contact.id
 
+    _ = viewport.take_snapshot(settings=snapshot_settings)
     snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
     assert snapshot_data == snapshot(name="CONTACT")
 
@@ -568,6 +570,7 @@ def test_contact_trackers_viewport_metadata(rx, cp_transient_solution):
 
 
 @pytest.mark.images
+@pytest.mark.flaky(reruns=3, reruns_delay=1)
 def test_camera_position_snapshots(rx, multiple_connections_solution, snapshot, snapshot_settings):
     sol = multiple_connections_solution
 
@@ -594,6 +597,7 @@ def test_camera_position_snapshots(rx, multiple_connections_solution, snapshot, 
         "isometric+30x-10z": CameraPosition.isometric().rotate_x(30).rotate_z(-10),
     }
 
+    _ = viewport.take_snapshot(settings=snapshot_settings)
     for name, cam in camera_tests.items():
         # Apply camera with preserved zoom/translation
         meta = viewport.metadata

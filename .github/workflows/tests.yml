@@ -1,0 +1,170 @@
+name: Tests
+
+on:
+  workflow_call:
+    inputs:
+      deployment:
+        description: 'Deployment type (native or docker)'
+        required: false
+        default: 'native'
+        type: string
+      update-snapshots:
+        description: 'Update snapshots'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  MAIN_PYTHON_VERSION: '3.12'
+  RX_SERVER_INSTALLATION_PATH: '/tmp/result-explorer-server'
+
+jobs:
+  tests:
+    name: "Tests (${{ inputs.deployment }})"
+    runs-on: ${{ matrix.os }}
+    env:
+      UPDATE_SNAPSHOTS: ${{ inputs.update-snapshots }}
+      DEPLOYMENT: ${{ inputs.deployment }}
+    strategy:
+      matrix:
+       os: [ubuntu-latest]
+       python-version: ['3.12']
+      fail-fast: false
+
+    steps:
+
+      - uses: actions/checkout@v6
+        if: ${{ env.UPDATE_SNAPSHOTS != 'true' }}
+
+      - uses: actions/checkout@v6
+        if: ${{ env.UPDATE_SNAPSHOTS == 'true' }}
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+
+      - name: Install Result Explorer (native)
+        id: install-rx
+        if: ${{ env.DEPLOYMENT == 'native' }}
+        uses: ./.github/actions/result-explorer-server
+        with:
+          version: 'latest-dev'
+          installation-path: ${{ env.RX_SERVER_INSTALLATION_PATH }}
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+
+      - name: Start Result Explorer (docker)
+        id: rx-compose
+        if: ${{ env.DEPLOYMENT == 'docker' }}
+        uses: ./.github/actions/result-explorer-docker
+        with:
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+          ghcr-username: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
+          ghcr-token: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
+          license-server: ${{ secrets.LICENSE_SERVER }}
+          server-tag: 'dev-dpf-v2026.1.pre1'
+          web-tag: 'dev'
+          results-folder: '${{ github.workspace }}/tests/data'
+
+      - uses: extractions/netrc@v3
+        with:
+          machine: github.com
+          username: pyansys-ci-bot
+          password: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          activate-environment: true
+          python-version: ${{ matrix.python-version }}
+          enable-cache: "false"
+
+      - name: Install dependencies (native)
+        if: ${{ env.DEPLOYMENT == 'native' }}
+        run: |
+            uv sync --group dev --extra playwright
+
+      - name: Install dependencies (docker)
+        if: ${{ env.DEPLOYMENT == 'docker' }}
+        run: |
+            uv sync --group dev
+
+      - name: Run tests (native)
+        if: ${{ env.DEPLOYMENT == 'native' }}
+        run: |
+            pytest tests -m "" \
+              --junitxml test_results_native.xml \
+              --cov=ansys --cov-report=term --cov-report=html:.cov/html --cov-report=markdown:cov.md \
+              ${{ env.UPDATE_SNAPSHOTS == 'true' && '--snapshot-update' || '' }} \
+              --launch-native
+        env:
+          ANSYSLMD_LICENSE_FILE: 1055@${{ secrets.LICENSE_SERVER }}
+          ANSYS_RESULT_EXPLORER_SERVER: ${{ env.RX_SERVER_INSTALLATION_PATH }}/viz-server
+
+      - name: Run tests (docker)
+        if: ${{ env.DEPLOYMENT == 'docker' }}
+        run: |
+            uv run pytest tests -m "" \
+              --junitxml test_results_docker.xml \
+              --cov=ansys --cov-report=term --cov-report=html:.cov/html --cov-report=markdown:cov.md \
+              ${{ env.UPDATE_SNAPSHOTS == 'true' && '--snapshot-update' || '' }} \
+              --server-url=${{ steps.rx-compose.outputs.server-url }} \
+              --web-url=${{ steps.rx-compose.outputs.web-url }} \
+              --is-docker
+
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v6
+        if: always()
+        with:
+          report_paths: '**/test*.xml'
+          check_name: Test Report ${{ matrix.os }}:${{ matrix.python-version }} (${{ env.DEPLOYMENT }})
+          detailed_summary: true
+          include_passed: true
+
+      - name: Show coverage report
+        if: always()
+        run: |
+          echo "## Code Coverage" >> $GITHUB_STEP_SUMMARY
+          cat cov.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v7
+        if: ${{ env.DEPLOYMENT == 'native' && env.MAIN_PYTHON_VERSION == matrix.python-version }}
+        with:
+          name: coverage-tests-${{ matrix.os }}
+          path: .cov
+          retention-days: 7
+
+      - name: Upload coverage results (as .coverage)
+        uses: actions/upload-artifact@v7
+        if: ${{ env.DEPLOYMENT == 'native' && env.MAIN_PYTHON_VERSION == matrix.python-version }}
+        with:
+          name: coverage-file-tests-${{ matrix.os }}
+          path: .coverage
+          retention-days: 7
+
+      - name: Generate snapshot diff summary
+        if: always()
+        run: python .github/scripts/generate_snapshot_summary.py
+
+      - name: Upload snapshot diffs report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.DEPLOYMENT }}-snapshot-diffs-report
+          path: snapshot_diffs_report.html
+          retention-days: 7
+
+      - name: Dump server logs
+        if: ${{ failure() && env.DEPLOYMENT == 'docker' }}
+        run: |
+          docker logs result-explorer-server
+
+      - name: Commit base images
+        if: ${{ (success() || failure()) && env.UPDATE_SNAPSHOTS == 'true' }}
+        uses: EndBug/add-and-commit@v10
+        with:
+          add: |
+            tests/__snapshots__
+          default_author: github_actions
+          message: 'update snapshots'
+          pull: '--ff-only'
+          github_token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}

@@ -1,7 +1,9 @@
 import base64
 import json
+import warnings
 from functools import wraps
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import grpc
 
@@ -13,18 +15,22 @@ from ansys.api.result_explorer.v0 import (
 )
 from ansys.result_explorer.core import models
 
-from .exceptions import ResultExplorerError
+from .exceptions import ResultExplorerError, UnsecureConnectionWarning
 from .objects import Solution, Viewport, Workspace
+
+if TYPE_CHECKING:
+    from .launch import ResultExplorerInstance, ResultExplorerWebSession
 
 DEFAULT_RESULT_PROVIDER = "Local"
 RX_SESSION_EXTENSION = ".rxs"
 
 
 class GrpcStubWrapper:
-    """Wrapper that automatically handles gRPC errors for all stub method calls."""
+    """Wrapper that automatically handles gRPC errors and injects metadata for insecure channels."""
 
-    def __init__(self, stub):
+    def __init__(self, stub, metadata=None):
         self._stub = stub
+        self._metadata = metadata
 
     def __getattr__(self, name):
         attr = getattr(self._stub, name)
@@ -35,6 +41,9 @@ class GrpcStubWrapper:
 
         @wraps(attr)
         def wrapper(*args, **kwargs):
+            # Inject metadata for insecure connections (for secure, it's in channel credentials)
+            if self._metadata and "metadata" not in kwargs:
+                kwargs["metadata"] = self._metadata
             try:
                 return attr(*args, **kwargs)
             except grpc.RpcError as e:
@@ -49,34 +58,140 @@ class Client:
         session_id: str,
         host: str = "localhost",
         grpc_port: int = 50000,
-        http_port: int | None = None,
+        ca_cert_path: str | Path | None = None,
+        insecure: bool | None = None,
+        custom_headers: list[tuple[str, str]] | None = None,
+        instance: "ResultExplorerInstance | None" = None,
     ):
+        """Initialize the client and connect to Result Explorer.
+
+
+        Parameters
+        ----------
+        session_id : str
+            Unique identifier for the Result Explorer session.
+        host : str, optional
+            Hostname or IP address of the Result Explorer API. Default is "localhost".
+        grpc_port : int, optional
+            Port number for the gRPC API. Default is 50000.
+        ca_cert_path : str | Path, optional
+            Path to CA certificate for secure gRPC connection.
+            If not provided, connection will be insecure.
+        insecure : bool, optional
+            Whether to use an insecure gRPC connection.
+            If None, will default to True if ca_cert_path is not provided.
+        custom_headers : list of (str, str) tuples, optional
+            Custom headers to include in gRPC requests,
+            in addition to the session ID. Example: [("x-custom-header", "value")].
+        instance : ResultExplorerInstance, optional
+            Result Explorer instance to tie the client lifetime to. When the client
+            is destroyed, the instance will be stopped as well.
+        """
+
         self._host = host
         self._grpc_port = grpc_port
-        self._http_port = http_port
         self._session_id = session_id
-
+        self._instance = instance
         self._grpc_metadata = [("x-session-id", self._session_id)]
+        if custom_headers:
+            self._grpc_metadata.extend(custom_headers)
 
-        self._channel = grpc.insecure_channel(f"{self._host}:{self._grpc_port}")
+        target = f"{self._host}:{self._grpc_port}"
+
+        if insecure is None and ca_cert_path is None:
+            warnings.warn(
+                f"Using an insecure gRPC channel, unencrypted communication with {target}.",
+                UnsecureConnectionWarning,
+                stacklevel=2,
+            )
+            insecure = True
+
+        wrapper_metadata = self._grpc_metadata
+
+        if insecure:
+            self._channel = grpc.insecure_channel(target)
+        elif ca_cert_path is not None:
+            with open(ca_cert_path, "rb") as f:
+                trusted_ca = f.read()
+            ssl_credentials = grpc.ssl_channel_credentials(root_certificates=trusted_ca)
+            self._channel = grpc.secure_channel(target, ssl_credentials)
+        else:
+            raise ResultExplorerError(
+                "Must provide either ca_cert_path for secure connection or set insecure=True."
+            )
 
         # Wrap stubs to handle errors in a centralized way
         # To enable autocompletion on the stubs, we use a 'wrong' type annotation.
         self._solution_stub: solution_pb2_grpc.SolutionServiceStub = GrpcStubWrapper(
-            solution_pb2_grpc.SolutionServiceStub(self._channel)
+            solution_pb2_grpc.SolutionServiceStub(self._channel),
+            metadata=wrapper_metadata,
         )  # type: ignore
         self._workspace_stub: workspace_pb2_grpc.WorkspaceServiceStub = GrpcStubWrapper(
-            workspace_pb2_grpc.WorkspaceServiceStub(self._channel)
+            workspace_pb2_grpc.WorkspaceServiceStub(self._channel),
+            metadata=wrapper_metadata,
         )  # type: ignore
         self._app_stub: app_pb2_grpc.AppServiceStub = GrpcStubWrapper(
-            app_pb2_grpc.AppServiceStub(self._channel)
+            app_pb2_grpc.AppServiceStub(self._channel),
+            metadata=wrapper_metadata,
         )  # type: ignore
         self._filesystem_stub: filesystem_pb2_grpc.FilesystemServiceStub = GrpcStubWrapper(
-            filesystem_pb2_grpc.FilesystemServiceStub(self._channel)
+            filesystem_pb2_grpc.FilesystemServiceStub(self._channel),
+            metadata=wrapper_metadata,
         )  # type: ignore
         self._hps_filesystem_stub: filesystem_pb2_grpc.HpsFilesystemServiceStub = GrpcStubWrapper(
-            filesystem_pb2_grpc.HpsFilesystemServiceStub(self._channel)
+            filesystem_pb2_grpc.HpsFilesystemServiceStub(self._channel),
+            metadata=wrapper_metadata,
         )  # type: ignore
+
+    def __del__(self):
+        """Clean up resources when client is destroyed."""
+        try:
+            if self._instance is not None:
+                self._instance.stop()
+        except Exception:
+            pass
+
+    @property
+    def instance(self) -> "ResultExplorerInstance | None":
+        """Get the Result Explorer instance.
+
+        Returns
+        -------
+        ResultExplorerInstance or None
+            The Result Explorer instance if one is attached, None otherwise.
+        """
+        return self._instance
+
+    @property
+    def web_url(self) -> str | None:
+        """Get the web UI URL.
+
+        Returns
+        -------
+        str or None
+            The URL of the web UI if an instance is attached and launched, None otherwise.
+        """
+        return self._instance.web_url if self._instance else None
+
+    @property
+    def web_session(self) -> "ResultExplorerWebSession | None":
+        """Get the web session.
+
+        Returns
+        -------
+        ResultExplorerWebSession or None
+            The web session if an instance is attached, None otherwise.
+        """
+        return self._instance.web_session if self._instance else None
+
+    def stop(self) -> None:
+        """Stop the Result Explorer instance.
+
+        Only effective if the client was created with an attached instance.
+        """
+        if self._instance is not None:
+            self._instance.stop()
+            self._instance = None
 
     @classmethod
     def connect_with_token(cls, token: str) -> "Client":
@@ -87,9 +202,9 @@ class Client:
         data = json.loads(json_string)
 
         host = data.get("host")
-        http_port = data.get("httpPort")
         grpc_port = data.get("grpcPort")
         session_id = data.get("sessionId")
+        ca_cert_path = data.get("caCertPath", None)
 
         if host is None:
             raise ValueError("Token is missing 'host' information.")
@@ -98,7 +213,7 @@ class Client:
         if session_id is None:
             raise ValueError("Token is missing 'sessionId' information.")
 
-        return cls(host=host, grpc_port=grpc_port, http_port=http_port, session_id=session_id)
+        return cls(host=host, grpc_port=grpc_port, session_id=session_id, ca_cert_path=ca_cert_path)
 
     # ----------- FileSystem methods ----------------
     def ls(
@@ -112,7 +227,7 @@ class Client:
             rp_name = result_provider.name
 
         req = models.LsRequest(result_provider_name=rp_name, path=path, max_depth=depth)
-        res = self._filesystem_stub.Ls(req, metadata=self._grpc_metadata)
+        res = self._filesystem_stub.Ls(req)
         return list(res.items)
 
     def hps_ls(
@@ -135,7 +250,7 @@ class Client:
             rp_name = result_provider.name
 
         req = models.LsRequest(result_provider_name=rp_name, path=path)
-        res = self._hps_filesystem_stub.Ls(req, metadata=self._grpc_metadata)
+        res = self._hps_filesystem_stub.Ls(req)
         return list(res.items)
 
     def _get_file_content(
@@ -149,7 +264,7 @@ class Client:
             rp_name = result_provider.name
 
         req = models.TailRequest(result_provider_name=rp_name, path=path, lines_offset=lines_offset)
-        res = self._filesystem_stub.Tail(req, metadata=self._grpc_metadata)
+        res = self._filesystem_stub.Tail(req)
         return res.content
 
     # ----------- Solution methods ----------------
@@ -188,7 +303,7 @@ class Client:
             files=[file],
             split_mesh_options=split_mesh_options,
         )
-        pb_sol = self._solution_stub.Create(sol, metadata=self._grpc_metadata)
+        pb_sol = self._solution_stub.Create(sol)
         return Solution(pb_sol, self)
 
     def create_hps_solution(
@@ -256,30 +371,26 @@ class Client:
             hps_files=files,
             split_mesh_options=split_mesh_options,
         )
-        pb_sol = self._solution_stub.Create(sol, metadata=self._grpc_metadata)
+        pb_sol = self._solution_stub.Create(sol)
         return Solution(pb_sol, self)
 
     def list_solutions(self) -> list[Solution]:
-        pb_list = self._solution_stub.List(models.Empty(), metadata=self._grpc_metadata)
+        pb_list = self._solution_stub.List(models.Empty())
         return [Solution(s, self) for s in pb_list.solutions]
 
     def delete_solution(self, solution: Solution | str) -> None:
         """Delete a solution. Can pass Solution object or ID string."""
         solution_id = solution.id if isinstance(solution, Solution) else solution
-        self._solution_stub.Delete(models.ResourceId(id=solution_id), metadata=self._grpc_metadata)
+        self._solution_stub.Delete(models.ResourceId(id=solution_id))
 
     def get_solution(self, solution_id: str) -> Solution:
-        pb_sol = self._solution_stub.Get(
-            models.ResourceId(id=solution_id), metadata=self._grpc_metadata
-        )
+        pb_sol = self._solution_stub.Get(models.ResourceId(id=solution_id))
         return Solution(pb_sol, self)
 
     # ----------- Workspace management ----------------
 
     def _create_workspace(self, name: str) -> Workspace:
-        pb_ws = self._workspace_stub.Create(
-            models.WorkspaceCreate(name=name), metadata=self._grpc_metadata
-        )
+        pb_ws = self._workspace_stub.Create(models.WorkspaceCreate(name=name))
         return Workspace(pb_ws, self)
 
     def create_workspace(self, name: str, rows: int = 1, cols: int = 1) -> Workspace:
@@ -291,26 +402,20 @@ class Client:
         return _create_grid_workspace(self, name, rows, cols)
 
     def get_workspace(self, workspace_id: str) -> Workspace:
-        pb_ws = self._workspace_stub.Get(
-            models.ResourceId(id=workspace_id), metadata=self._grpc_metadata
-        )
+        pb_ws = self._workspace_stub.Get(models.ResourceId(id=workspace_id))
         return Workspace(pb_ws, self)
 
     def list_workspaces(self) -> list[Workspace]:
-        pb_list = self._workspace_stub.List(models.Empty(), metadata=self._grpc_metadata)
+        pb_list = self._workspace_stub.List(models.Empty())
         return [Workspace(w, self) for w in pb_list.workspaces]
 
     def delete_workspace(self, workspace: str | Workspace) -> None:
         workspace_id = workspace.id if isinstance(workspace, Workspace) else workspace
-        self._workspace_stub.Delete(
-            models.ResourceId(id=workspace_id), metadata=self._grpc_metadata
-        )
+        self._workspace_stub.Delete(models.ResourceId(id=workspace_id))
 
     def delete_viewport(self, viewport: str | Viewport) -> None:
         viewport_id = viewport.id if isinstance(viewport, Viewport) else viewport
-        self._workspace_stub.DeleteViewport(
-            models.ResourceId(id=viewport_id), metadata=self._grpc_metadata
-        )
+        self._workspace_stub.DeleteViewport(models.ResourceId(id=viewport_id))
 
     def import_workspace_from_template(
         self,
@@ -356,12 +461,12 @@ class Client:
 
     # ----------- App management ----------------
     def list_result_providers(self) -> list[models.ResultProvider]:
-        r = self._app_stub.ListResultProviders(models.Empty(), metadata=self._grpc_metadata)
+        r = self._app_stub.ListResultProviders(models.Empty())
         return list(r.result_providers)
 
     def create_result_provider(self, name: str, url: str) -> models.ResultProvider:
         req = models.CreateResultProviderRequest(name=name, url=url)
-        return self._app_stub.CreateResultProvider(req, metadata=self._grpc_metadata)
+        return self._app_stub.CreateResultProvider(req)
 
     def delete_result_provider(self, result_provider: str | models.ResultProvider) -> None:
         rp_name = (
@@ -369,18 +474,27 @@ class Client:
             if isinstance(result_provider, models.ResultProvider)
             else result_provider
         )
-        self._app_stub.DeleteResultProvider(
-            models.DeleteResultProviderRequest(name=rp_name), metadata=self._grpc_metadata
+        self._app_stub.DeleteResultProvider(models.DeleteResultProviderRequest(name=rp_name))
+
+    def authenticate_result_provider(
+        self, result_provider: str | models.ResultProvider, token: str
+    ) -> None:
+        rp_name = (
+            result_provider.name
+            if isinstance(result_provider, models.ResultProvider)
+            else result_provider
         )
+        req = models.AuthenticateResultProviderRequest(result_provider_name=rp_name, token=token)
+        self._app_stub.AuthenticateResultProvider(req)
 
     def app_info(self) -> models.AppInfo:
-        return self._app_stub.GetAppInfo(models.Empty(), metadata=self._grpc_metadata)
+        return self._app_stub.GetAppInfo(models.Empty())
 
     def app_settings(self) -> models.AppSettings:
-        return self._app_stub.GetAppSettings(models.Empty(), metadata=self._grpc_metadata)
+        return self._app_stub.GetAppSettings(models.Empty())
 
     def update_app_settings(self, settings: models.AppSettings) -> models.AppSettings:
-        return self._app_stub.UpdateAppSettings(settings, metadata=self._grpc_metadata)
+        return self._app_stub.UpdateAppSettings(settings)
 
     def save_session(self, path: str | Path) -> None:
         """Save the current session to file.
@@ -394,7 +508,7 @@ class Client:
         if path.suffix != RX_SESSION_EXTENSION:
             path = path.with_suffix(path.suffix + RX_SESSION_EXTENSION)
         path.parent.mkdir(parents=True, exist_ok=True)
-        session = self._app_stub.SaveSession(models.Empty(), metadata=self._grpc_metadata)
+        session = self._app_stub.SaveSession(models.Empty())
         with open(path, "w") as f:
             f.write(session.data)
 
@@ -411,7 +525,7 @@ class Client:
             raise ValueError(f"Session file should have '{RX_SESSION_EXTENSION}' extension.")
         with open(path) as f:
             data = f.read()
-        self._app_stub.OpenSession(models.Session(data=data), metadata=self._grpc_metadata)
+        self._app_stub.OpenSession(models.Session(data=data))
 
 
 def _create_grid_workspace(client: Client, name, rows: int, cols: int):
