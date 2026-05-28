@@ -1,139 +1,139 @@
 /COM,ANSYS RELEASE 2024 R2           BUILD 24.2BETA  UP20240512       14:39:43
 
  *** WARNING ***                         CP =       0.141   TIME= 14:39:44
- Element shape checking is currently inactive.  Issue SHPP,ON or
- SHPP,WARN to reactivate, if desired.
+ Element shape checking is currently inactive.  Issue SHPP,ON or         
+ SHPP,WARN to reactivate, if desired.                                    
 
  *** WARNING ***                         CP =       0.141   TIME= 14:39:44
- The TB,PLAS,,,KINH table for material 1 at field value 25 has a segment
- slope (9.290444655E+09) larger than the previous segment slope (0).
+ The TB,PLAS,,,KINH table for material 1 at field value 25 has a segment 
+ slope (9.290444655E+09) larger than the previous segment slope (0).     
 
  *** WARNING ***                         CP =       0.141   TIME= 14:39:44
- The TB,PLAS,,,KINH table for material 1 at field value 200 has a
- segment slope (100000000) larger than the previous segment slope (0).
+ The TB,PLAS,,,KINH table for material 1 at field value 200 has a        
+ segment slope (100000000) larger than the previous segment slope (0).   
 
  *** WARNING ***                         CP =       0.156   TIME= 14:39:44
- Material property EX of material 1 of element 9 is evaluated at a
- temperature of 22, which is below the supplied temperature range.
- Temperature range checking terminates.
+ Material property EX of material 1 of element 9 is evaluated at a       
+ temperature of 22, which is below the supplied temperature range.       
+ Temperature range checking terminates.                                  
 
  *** WARNING ***                         CP =       0.156   TIME= 14:39:44
- Contact element 215 is missing DOF TEMP (and possibly others) of
- underlying base element 48.  Similar mismatches may exist elsewhere,
- but checking for this is discontinued.
+ Contact element 215 is missing DOF TEMP (and possibly others) of        
+ underlying base element 48.  Similar mismatches may exist elsewhere,    
+ but checking for this is discontinued.                                  
 
  *** WARNING ***                         CP =       6.344   TIME= 14:39:50
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 13, equilibrium iteration 3.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 13, equilibrium iteration 3.  Consider   
+ defining more table points to cover range of behavior.                  
 
  *** WARNING ***                         CP =       6.422   TIME= 14:39:50
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 13, equilibrium iteration 4.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 13, equilibrium iteration 4.  Consider   
+ defining more table points to cover range of behavior.                  
 
  *** WARNING ***                         CP =       6.484   TIME= 14:39:50
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 13, equilibrium iteration 5.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 13, equilibrium iteration 5.  Consider   
+ defining more table points to cover range of behavior.                  
 
  *** WARNING ***                         CP =       6.547   TIME= 14:39:50
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 13, equilibrium iteration 6.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 13, equilibrium iteration 6.  Consider   
+ defining more table points to cover range of behavior.                  
 
  *** WARNING ***                         CP =       6.625   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 13, equilibrium iteration 7.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 13, equilibrium iteration 7.  Consider   
+ defining more table points to cover range of behavior.                  
 
  *** WARNING ***                         CP =       6.672   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 2 element integration
- points at load step 1, substep 14, equilibrium iteration 1.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 2 element integration        
+ points at load step 1, substep 14, equilibrium iteration 1.  Consider   
+ defining more table points to cover range of behavior.                  
 
  *** WARNING ***                         CP =       6.750   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 6 element integration
- points at load step 1, substep 14, equilibrium iteration 2.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 6 element integration        
+ points at load step 1, substep 14, equilibrium iteration 2.  Consider   
+ defining more table points to cover range of behavior.                  
 
  *** WARNING ***                         CP =       6.812   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 14, equilibrium iteration 3.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 14, equilibrium iteration 3.  Consider   
+ defining more table points to cover range of behavior.                  
 
  *** WARNING ***                         CP =       6.875   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 14, equilibrium iteration 4.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 14, equilibrium iteration 4.  Consider   
+ defining more table points to cover range of behavior.                  
 
  *** WARNING ***                         CP =       6.953   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 14, equilibrium iteration 5.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 14, equilibrium iteration 5.  Consider   
+ defining more table points to cover range of behavior.                  
 
  *** WARNING ***                         CP =       7.016   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 14, equilibrium iteration 6.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 14, equilibrium iteration 6.  Consider   
+ defining more table points to cover range of behavior.                  
 
  *** WARNING ***                         CP =       7.078   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 14, equilibrium iteration 7.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 14, equilibrium iteration 7.  Consider   
+ defining more table points to cover range of behavior.                  
 
  *** WARNING ***                         CP =       7.125   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 2 element integration
- points at load step 1, substep 15, equilibrium iteration 1.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 2 element integration        
+ points at load step 1, substep 15, equilibrium iteration 1.  Consider   
+ defining more table points to cover range of behavior.                  
 
  *** WARNING ***                         CP =       7.203   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 6 element integration
- points at load step 1, substep 15, equilibrium iteration 2.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 6 element integration        
+ points at load step 1, substep 15, equilibrium iteration 2.  Consider   
+ defining more table points to cover range of behavior.                  
 
  *** WARNING ***                         CP =       7.266   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 15, equilibrium iteration 3.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 15, equilibrium iteration 3.  Consider   
+ defining more table points to cover range of behavior.                  
 
  *** WARNING ***                         CP =       7.359   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 15, equilibrium iteration 4.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 15, equilibrium iteration 4.  Consider   
+ defining more table points to cover range of behavior.                  
 
  *** WARNING ***                         CP =       7.453   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 15, equilibrium iteration 5.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 15, equilibrium iteration 5.  Consider   
+ defining more table points to cover range of behavior.                  
 
  *** WARNING ***                         CP =       7.547   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 15, equilibrium iteration 6.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 15, equilibrium iteration 6.  Consider   
+ defining more table points to cover range of behavior.                  
 
  *** ERROR ***                           CP =       7.578   TIME= 14:39:52
- The run is terminated at the user's request from the ABT file.
+ The run is terminated at the user's request from the ABT file.          
 
  *** WARNING ***                         CP =       7.578   TIME= 14:39:52
- The unconverged solution (identified as time 1 substep 999999) is
- output for analysis debug purposes.  Results should not be used for
- any other purpose.
+ The unconverged solution (identified as time 1 substep 999999) is       
+ output for analysis debug purposes.  Results should not be used for     
+ any other purpose.                                                      

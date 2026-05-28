@@ -1,5 +1,5 @@
 
- Ansys Mechanical Enterprise
+ Ansys Mechanical Enterprise                       
 
 
  *------------------------------------------------------------------*
@@ -58,36 +58,36 @@
  *                                                             *
  ***************************************************************
 
- 2024 R2
-
- Point Releases and Patches installed:
-
- Ansys, Inc. License Manager 2024 R2
- Discovery 2024 R2
- Core WB Files 2024 R2
- CFD-Post only 2024 R2
- SpaceClaim 2024 R2
- CFX (includes CFD-Post) 2024 R2
- Fluent (includes CFD-Post) 2024 R2
+ 2024 R2 
+     
+ Point Releases and Patches installed:   
+     
+ Ansys, Inc. License Manager 2024 R2 
+ Discovery 2024 R2   
+ Core WB Files 2024 R2   
+ CFD-Post only 2024 R2   
+ SpaceClaim 2024 R2  
+ CFX (includes CFD-Post) 2024 R2 
+ Fluent (includes CFD-Post) 2024 R2  
  Polyflow (includes CFD-Post) 2024 R2
- ACIS Geometry Interface 2024 R2
- AutoCAD Geometry Interface 2024 R2
- Catia, Version 4 Geometry Interface 2024 R2
- Catia, Version 5 Geometry Interface 2024 R2
- Catia, Version 6 Geometry Interface 2024 R2
+ ACIS Geometry Interface 2024 R2 
+ AutoCAD Geometry Interface 2024 R2  
+ Catia, Version 4 Geometry Interface 2024 R2 
+ Catia, Version 5 Geometry Interface 2024 R2 
+ Catia, Version 6 Geometry Interface 2024 R2 
  Creo Elements/Direct Modeling Geometry Interface 2024 R2
- Creo Parametric Geometry Interface 2024 R2
- Inventor Geometry Interface 2024 R2
- JTOpen Geometry Interface 2024 R2
- NX Geometry Interface 2024 R2
- Parasolid Geometry Interface  2024 R2
- Solid Edge Geometry Interface 2024 R2
- SOLIDWORKS Geometry Interface 2024 R2
- optiSLang 2024 R2
+ Creo Parametric Geometry Interface 2024 R2  
+ Inventor Geometry Interface 2024 R2 
+ JTOpen Geometry Interface 2024 R2   
+ NX Geometry Interface 2024 R2   
+ Parasolid Geometry Interface  2024 R2   
+ Solid Edge Geometry Interface 2024 R2   
+ SOLIDWORKS Geometry Interface 2024 R2   
+ optiSLang 2024 R2   
  Aqwa 2024 R2
- LS-DYNA 2024 R2
- Mechanical Products 2024 R2
- Motion 2024 R2
+ LS-DYNA 2024 R2 
+ Mechanical Products 2024 R2 
+ Motion 2024 R2  
 
 
           *****  MAPDL COMMAND LINE ARGUMENTS  *****
@@ -101,11 +101,11 @@
   START-UP FILE MODE           = NOREAD
   STOP FILE MODE               = NOREAD
 
- RELEASE= 2024 R2              BUILD= 24.2BETA  UP20240512   VERSION=WINDOWS x64
+ RELEASE= 2024 R2              BUILD= 24.2BETA  UP20240512   VERSION=WINDOWS x64 
  CURRENT JOBNAME=file  14:39:44  SEP 12, 2024 CP=      0.047
 
 
- PARAMETER _DS_PROGRESS =     999.0000000
+ PARAMETER _DS_PROGRESS =     999.0000000    
 
  /INPUT FILE= ds.dat  LINE=       0
 
@@ -113,17 +113,17 @@
 
  DO NOT WRITE ELEMENT RESULTS INTO DATABASE
 
- *GET  _WALLSTRT  FROM  ACTI  ITEM=TIME WALL  VALUE=  14.6622222
+ *GET  _WALLSTRT  FROM  ACTI  ITEM=TIME WALL  VALUE=  14.6622222    
 
- TITLE=
- coupled_trans_022--Coupled Field Transient (A5)
+ TITLE= 
+ coupled_trans_022--Coupled Field Transient (A5)                               
 
   ACT Extensions:
       LSDYNA, 2024.2
       5f463412-bd3e-484b-87e7-cbc0a665e474, wbex
  /COM,     ANSYSMotion, 2024.2
       20180725-3f81-49eb-9f31-41364844c769, wbex
-
+  
 
  SET PARAMETER DIMENSIONS ON  _WB_PROJECTSCRATCH_DIR
   TYPE=STRI  DIMENSIONS=      248        1        1
@@ -141,7 +141,7 @@
  PARAMETER _WB_USERFILES_DIR(1) = D:\Models\mech-post\nr\coupled_trans_022_files\user_files\
  --- Data in consistent MKS units. See Solving Units in the help system for more
 
- MKS UNITS SPECIFIED FOR INTERNAL
+ MKS UNITS SPECIFIED FOR INTERNAL    
   LENGTH        (l)  = METER (M)
   MASS          (M)  = KILOGRAM (KG)
   TIME          (t)  = SECOND (SEC)
@@ -161,13 +161,13 @@
   RESISTANCE    (R)  = OHM
   ELECTRIC POTENTIAL = VOLT
 
- INPUT  UNITS ARE ALSO SET TO MKS
+ INPUT  UNITS ARE ALSO SET TO MKS 
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2024 R2          24.2BETA ***
- Ansys Mechanical Enterprise
+ Ansys Mechanical Enterprise                       
  00000031  VERSION=WINDOWS x64   14:39:44  SEP 12, 2024 CP=      0.141
 
- coupled_trans_022--Coupled Field Transient (A5)
+ coupled_trans_022--Coupled Field Transient (A5)                               
 
 
 
@@ -204,10 +204,10 @@
  LIST DATA TABLE  PLAS  FOR MATERIAL      1
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2024 R2          24.2BETA ***
- Ansys Mechanical Enterprise
+ Ansys Mechanical Enterprise                       
  00000031  VERSION=WINDOWS x64   14:39:44  SEP 12, 2024 CP=      0.141
 
- coupled_trans_022--Coupled Field Transient (A5)
+ coupled_trans_022--Coupled Field Transient (A5)                               
 
 
 
@@ -215,21 +215,21 @@
   ANSYS,INC TESTING IS NOT COMPLETE - CHECK RESULTS CAREFULLY **
 
                PLASTIC  (PLAS) Table For Material     1
-               KINEMATIC HARDENING PLASTICITY
+               KINEMATIC HARDENING PLASTICITY                                                  
 
-                     1
- Temps     2.5000000e+01
-      PlStrain       Stress
- 0.0000000e+00 1.8000000e+07
- 3.0000000e-04 1.8000000e+07
- 1.0600000e-01 1.0000000e+09
+                     1 
+ Temps     2.5000000e+01 
+      PlStrain       Stress  
+ 0.0000000e+00 1.8000000e+07 
+ 3.0000000e-04 1.8000000e+07 
+ 1.0600000e-01 1.0000000e+09 
 
-                     2
- Temps     2.0000000e+02
-      PlStrain       Stress
- 0.0000000e+00 9.0000000e+06
- 1.5000000e-03 9.0000000e+06
- 1.0150000e-01 1.9000000e+07
+                     2 
+ Temps     2.0000000e+02 
+      PlStrain       Stress  
+ 0.0000000e+00 9.0000000e+06 
+ 1.5000000e-03 9.0000000e+06 
+ 1.0150000e-01 1.9000000e+07 
 
 
 
@@ -244,7 +244,7 @@
  --- Number of condensed parts = 0
  --- Number of total elements = 122
 
- *GET  _WALLBSOL  FROM  ACTI  ITEM=TIME WALL  VALUE=  14.6622222
+ *GET  _WALLBSOL  FROM  ACTI  ITEM=TIME WALL  VALUE=  14.6622222    
  ****************************************************************************
  *************************    SOLUTION       ********************************
  ****************************************************************************
@@ -259,7 +259,7 @@
 
  STEP BOUNDARY CONDITION KEY= 1
 
- PARAMETER _THICKRATIO =     0.000000000
+ PARAMETER _THICKRATIO =     0.000000000    
 
  USE SPARSE MATRIX DIRECT SOLVER
 
@@ -272,28 +272,28 @@
  SECOND ORDER TRANSIENT PARAMETERS
    GAMMA= 0.1000      (ALPHA= 0.3025      DELTA= 0.6000      ALPHAF= 0.1000      ALPHAM=  0.000    )
 
- USE FIRST ORDER TRANSIENT PARAMETER THETA=  1.000
+ USE FIRST ORDER TRANSIENT PARAMETER THETA=  1.000    
 
- USE DEFAULT FIRST ORDER TRANSIENT PARAMETER THETA=  1.000
+ USE DEFAULT FIRST ORDER TRANSIENT PARAMETER THETA=  1.000    
 
  USE DEFAULT FIRST ORDER OSCILLATION LIMIT OF  0.5000     FOR AUTO LOADING
-  WITH A TOLERANCE OF  0.2000
+  WITH A TOLERANCE OF  0.2000    
 
  NLHIST: ADDED NODAL RESULTS HISTORY FOR:
-       NAME = MAX_TEMP
-  ITEM/COMP = TEMPMAX
+       NAME = MAX_TEMP                        
+  ITEM/COMP = TEMPMAX 
        NODE =         0
 
  NLHIST: ADDED NODAL RESULTS HISTORY FOR:
-       NAME = MIN_TEMP
-  ITEM/COMP = TEMPMIN
+       NAME = MIN_TEMP                        
+  ITEM/COMP = TEMPMIN 
        NODE =         0
  ********* Initial Time Increment Check And Fourier Modulus *********
   Specified Initial Time Increment: 0.01
   Estimated Increment Needed, le*le/alpha, Body 1: 0.0436313
   Estimated Increment Needed, le*le/alpha, Body 2: 0.0140781
 
- NLDIAG: Nonlinear diagnostics CONT option is set to ON.
+ NLDIAG: Nonlinear diagnostics CONT option is set to ON. 
          Writing frequency : each ITERATION.
 
  DEFINE RESTART CONTROL FOR LOADSTEP LAST
@@ -303,61 +303,61 @@
  ****************************************************
  ******************* SOLVE FOR LS 1 OF 3 ****************
 
- SELECT       FOR ITEM=NODE COMPONENT=
+ SELECT       FOR ITEM=NODE COMPONENT=    
   IN RANGE       406 TO        406 STEP          1
 
           1  NODES (OF        408  DEFINED) SELECTED BY  NSEL  COMMAND.
 
  SPECIFIED NODAL LOAD FX   FOR SELECTED NODES         1 TO      408 BY        1
-  REAL=  0.00000000       IMAG=  0.00000000
+  REAL=  0.00000000       IMAG=  0.00000000    
 
  SPECIFIED NODAL LOAD FY   FOR SELECTED NODES         1 TO      408 BY        1
-  REAL= -1000.00000       IMAG=  0.00000000
+  REAL= -1000.00000       IMAG=  0.00000000    
 
  SPECIFIED NODAL LOAD FZ   FOR SELECTED NODES         1 TO      408 BY        1
-  REAL=  0.00000000       IMAG=  0.00000000
+  REAL=  0.00000000       IMAG=  0.00000000    
 
- ALL SELECT   FOR ITEM=NODE COMPONENT=
+ ALL SELECT   FOR ITEM=NODE COMPONENT=    
   IN RANGE         1 TO        408 STEP          1
 
         408  NODES (OF        408  DEFINED) SELECTED BY NSEL  COMMAND.
 
  SPECIFIED CONSTRAINT UX   FOR SELECTED NODES          405 TO         405 BY           1
- REAL=  0.00000000       IMAG=  0.00000000
+ REAL=  0.00000000       IMAG=  0.00000000    
 
  SPECIFIED CONSTRAINT UY   FOR SELECTED NODES          405 TO         405 BY           1
- REAL=  0.00000000       IMAG=  0.00000000
+ REAL=  0.00000000       IMAG=  0.00000000    
 
  SPECIFIED CONSTRAINT UZ   FOR SELECTED NODES          405 TO         405 BY           1
- REAL=  0.00000000       IMAG=  0.00000000
+ REAL=  0.00000000       IMAG=  0.00000000    
 
  SPECIFIED CONSTRAINT ROTX FOR SELECTED NODES          405 TO         405 BY           1
- REAL=  0.00000000       IMAG=  0.00000000
+ REAL=  0.00000000       IMAG=  0.00000000    
 
  SPECIFIED CONSTRAINT ROTY FOR SELECTED NODES          405 TO         405 BY           1
- REAL=  0.00000000       IMAG=  0.00000000
+ REAL=  0.00000000       IMAG=  0.00000000    
 
  SPECIFIED CONSTRAINT ROTZ FOR SELECTED NODES          405 TO         405 BY           1
- REAL=  0.00000000       IMAG=  0.00000000
+ REAL=  0.00000000       IMAG=  0.00000000    
  *** Set Displacements ***
  CMBLOCK read of NODE component _CM153UX_XP  completed
 
- SELECT      COMPONENT _CM153UX_XP
+ SELECT      COMPONENT _CM153UX_XP                                                                                                                                                                                                                                                     
 
  SPECIFIED CONSTRAINT UX   FOR SELECTED NODES            1 TO         408 BY           1
  SET ACCORDING TO TABLE PARAMETER = _LOADVARI153XP
 
- ALL SELECT   FOR ITEM=NODE COMPONENT=
+ ALL SELECT   FOR ITEM=NODE COMPONENT=    
   IN RANGE         1 TO        408 STEP          1
 
         408  NODES (OF        408  DEFINED) SELECTED BY NSEL  COMMAND.
  *** Component For All Non-Zero UX Displacements ***
 
- SELECT      COMPONENT _CM153UX_XP
+ SELECT      COMPONENT _CM153UX_XP                                                                                                                                                                                                                                                     
 
  DEFINITION OF COMPONENT = _DISPNONZEROUX  ENTITY=NODE
 
- ALL SELECT   FOR ITEM=NODE COMPONENT=
+ ALL SELECT   FOR ITEM=NODE COMPONENT=    
   IN RANGE         1 TO        408 STEP          1
 
         408  NODES (OF        408  DEFINED) SELECTED BY NSEL  COMMAND.
@@ -371,7 +371,7 @@
    USE   1000 SUBSTEPS AS A MAXIMUM
    USE    100 SUBSTEPS AS A MINIMUM
 
- TIME=  1.0000
+ TIME=  1.0000    
 
  INCLUDE TRANSIENT EFFECTS FOR  ALL DEGREES OF FREEDOM THIS LOAD STEP
 
@@ -381,61 +381,61 @@
  WRITE ALL  ITEMS TO THE DATABASE WITH A FREQUENCY OF NONE
    FOR ALL APPLICABLE ENTITIES
 
- WRITE NSOL ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL
+ WRITE NSOL ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
    FOR ALL APPLICABLE ENTITIES
 
- WRITE RSOL ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL
+ WRITE RSOL ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
    FOR ALL APPLICABLE ENTITIES
 
- WRITE ETMP ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL
+ WRITE ETMP ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
    FOR ALL APPLICABLE ENTITIES
 
- WRITE NLOA ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL
+ WRITE NLOA ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
    FOR ALL APPLICABLE ENTITIES
 
- WRITE STRS ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL
+ WRITE STRS ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
    FOR ALL APPLICABLE ENTITIES
 
- WRITE FFLU ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL
+ WRITE FFLU ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
    FOR ALL APPLICABLE ENTITIES
 
- WRITE CONT ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL
+ WRITE CONT ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
    FOR ALL APPLICABLE ENTITIES
 
- WRITE V    ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL
+ WRITE V    ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
    FOR ALL APPLICABLE ENTITIES
 
- WRITE A    ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL
+ WRITE A    ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
    FOR ALL APPLICABLE ENTITIES
 
  CONVERGENCE ON HEAT BASED ON THE NORM OF THE N-R LOAD
    WITH A TOLERANCE OF 0.1000E-02 AND A MINIMUM REFERENCE VALUE OF 0.1000E-05
    USING THE L2 NORM (CHECK THE SRSS VALUE)
 
- NLDIAG: Nonlinear diagnostics NRRE option is set to ON.
+ NLDIAG: Nonlinear diagnostics NRRE option is set to ON. 
  The number of files/iterations to be saved for NRRE nonlinear diagnostics has been set to   3
 
- NLDIAG: Nonlinear diagnostics EFLG option is set to ON
+ NLDIAG: Nonlinear diagnostics EFLG option is set to ON  
  The number of files/iterations to be saved for EFLG nonlinear diagnostics has been set to   1
 
- *GET  ANSINTER_  FROM  ACTI  ITEM=INT        VALUE=  0.00000000
+ *GET  ANSINTER_  FROM  ACTI  ITEM=INT        VALUE=  0.00000000    
 
- *IF  ANSINTER_  ( =   0.00000     )  NE
-      0  ( =   0.00000     )  THEN
+ *IF  ANSINTER_  ( =   0.00000     )  NE  
+      0  ( =   0.00000     )  THEN    
 
  *ENDIF
 
  *****  MAPDL SOLVE    COMMAND  *****
 
  *** WARNING ***                         CP =       0.141   TIME= 14:39:44
- Element shape checking is currently inactive.  Issue SHPP,ON or
- SHPP,WARN to reactivate, if desired.
+ Element shape checking is currently inactive.  Issue SHPP,ON or         
+ SHPP,WARN to reactivate, if desired.                                    
 
  *** NOTE ***                            CP =       0.141   TIME= 14:39:44
- The model data was checked and warning messages were found.
-  Please review output or errors file (
- D:\Models\mech-post\nr\_ProjectScratch\Scr3F97\file.err ) for these
- warning messages.
+ The model data was checked and warning messages were found.             
+  Please review output or errors file (                                  
+ D:\Models\mech-post\nr\_ProjectScratch\Scr3F97\file.err ) for these     
+ warning messages.                                                       
 
  *** SELECTION OF ELEMENT TECHNOLOGIES FOR APPLICABLE ELEMENTS ***
       --- GIVE SUGGESTIONS AND RESET THE KEY OPTIONS ---
@@ -453,10 +453,10 @@
 
 
  *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2024 R2          24.2BETA ***
- Ansys Mechanical Enterprise
+ Ansys Mechanical Enterprise                       
  00000031  VERSION=WINDOWS x64   14:39:44  SEP 12, 2024 CP=      0.141
 
- coupled_trans_022--Coupled Field Transient (A5)
+ coupled_trans_022--Coupled Field Transient (A5)                               
 
 
 
@@ -465,54 +465,54 @@
 
                        S O L U T I O N   O P T I O N S
 
-   PROBLEM DIMENSIONALITY. . . . . . . . . . . . .3-D
+   PROBLEM DIMENSIONALITY. . . . . . . . . . . . .3-D                  
    DEGREES OF FREEDOM. . . . . . UX   UY   UZ   ROTX ROTY ROTZ TEMP
-   ANALYSIS TYPE . . . . . . . . . . . . . . . . .TRANSIENT
-      SOLUTION METHOD. . . . . . . . . . . . . . .FULL
-   OFFSET TEMPERATURE FROM ABSOLUTE ZERO . . . . .  273.15
+   ANALYSIS TYPE . . . . . . . . . . . . . . . . .TRANSIENT            
+      SOLUTION METHOD. . . . . . . . . . . . . . .FULL                 
+   OFFSET TEMPERATURE FROM ABSOLUTE ZERO . . . . .  273.15    
    NONLINEAR GEOMETRIC EFFECTS . . . . . . . . . .ON
-   EQUATION SOLVER OPTION. . . . . . . . . . . . .SPARSE
+   EQUATION SOLVER OPTION. . . . . . . . . . . . .SPARSE             
    PLASTIC MATERIAL PROPERTIES INCLUDED. . . . . .YES
-   NEWTON-RAPHSON OPTION . . . . . . . . . . . . .PROGRAM CHOSEN
+   NEWTON-RAPHSON OPTION . . . . . . . . . . . . .PROGRAM CHOSEN   
    GLOBALLY ASSEMBLED MATRIX . . . . . . . . . . .UNSYMMETRIC
 
  *** NOTE ***                            CP =       0.141   TIME= 14:39:44
- Property EX of material 1 is defined over a temperature range from 25
- to 200 which does not include the uniform temperature (22).  Change
- either temperature range or the uniform temperature.  Checking for
- this condition discontinues.
+ Property EX of material 1 is defined over a temperature range from 25   
+ to 200 which does not include the uniform temperature (22).  Change     
+ either temperature range or the uniform temperature.  Checking for      
+ this condition discontinues.                                            
 
  *** WARNING ***                         CP =       0.141   TIME= 14:39:44
- The TB,PLAS,,,KINH table for material 1 at field value 25 has a segment
- slope (9.290444655E+09) larger than the previous segment slope (0).
+ The TB,PLAS,,,KINH table for material 1 at field value 25 has a segment 
+ slope (9.290444655E+09) larger than the previous segment slope (0).     
 
  *** WARNING ***                         CP =       0.141   TIME= 14:39:44
- The TB,PLAS,,,KINH table for material 1 at field value 200 has a
- segment slope (100000000) larger than the previous segment slope (0).
+ The TB,PLAS,,,KINH table for material 1 at field value 200 has a        
+ segment slope (100000000) larger than the previous segment slope (0).   
 
  *** NOTE ***                            CP =       0.141   TIME= 14:39:44
- The step data was checked and warning messages were found.
-  Please review output or errors file (
- D:\Models\mech-post\nr\_ProjectScratch\Scr3F97\file.err ) for these
- warning messages.
+ The step data was checked and warning messages were found.              
+  Please review output or errors file (                                  
+ D:\Models\mech-post\nr\_ProjectScratch\Scr3F97\file.err ) for these     
+ warning messages.                                                       
 
  *** NOTE ***                            CP =       0.141   TIME= 14:39:44
- This nonlinear analysis defaults to using the full Newton-Raphson
- solution procedure.  This can be modified using the NROPT command.
+ This nonlinear analysis defaults to using the full Newton-Raphson       
+ solution procedure.  This can be modified using the NROPT command.      
 
  *** NOTE ***                            CP =       0.141   TIME= 14:39:44
- The conditions for direct assembly have been met.  No .emat or .erot
- files will be produced.
+ The conditions for direct assembly have been met.  No .emat or .erot    
+ files will be produced.                                                 
 
  *** NOTE ***                            CP =       0.141   TIME= 14:39:44
- Internal nodes from 409 to 410 are created.
- 2 internal nodes are used for handling degrees of freedom on pilot
- nodes of rigid target surfaces.
+ Internal nodes from 409 to 410 are created.                             
+ 2 internal nodes are used for handling degrees of freedom on pilot      
+ nodes of rigid target surfaces.                                         
 
                       L O A D   S T E P   O P T I O N S
 
    LOAD STEP NUMBER. . . . . . . . . . . . . . . .     1
-   TIME AT END OF THE LOAD STEP. . . . . . . . . .  1.0000
+   TIME AT END OF THE LOAD STEP. . . . . . . . . .  1.0000    
    AUTOMATIC TIME STEPPING . . . . . . . . . . . .    ON
       INITIAL NUMBER OF SUBSTEPS . . . . . . . . .   100
       MAXIMUM NUMBER OF SUBSTEPS . . . . . . . . .  1000
@@ -524,16 +524,16 @@
       STRUCTURAL DOFS. . . . . . . . . . . . . . .    ON
       THERMAL DOFS . . . . . . . . . . . . . . . .    ON
    TRANSIENT INTEGRATION PARAMETERS
-      GAMMA. . . . . . . . . . . . . . . . . . . . 0.10000
-      ALPHA. . . . . . . . . . . . . . . . . . . . 0.30250
-      DELTA. . . . . . . . . . . . . . . . . . . . 0.60000
+      GAMMA. . . . . . . . . . . . . . . . . . . . 0.10000    
+      ALPHA. . . . . . . . . . . . . . . . . . . . 0.30250    
+      DELTA. . . . . . . . . . . . . . . . . . . . 0.60000    
       USING HHT TIME INTEGRATION
-      ALPHAF . . . . . . . . . . . . . . . . . . . 0.10000
-      ALPHAM . . . . . . . . . . . . . . . . . . .  0.0000
-      THETA. . . . . . . . . . . . . . . . . . . .  1.0000
-      OSCILLATION LIMIT CRITERION. . . . . . . . . 0.50000
-      TOLERANCE. . . . . . . . . . . . . . . . . . 0.20000
-   TERMINATE ANALYSIS IF NOT CONVERGED . . . . . .YES (EXIT)
+      ALPHAF . . . . . . . . . . . . . . . . . . . 0.10000    
+      ALPHAM . . . . . . . . . . . . . . . . . . .  0.0000    
+      THETA. . . . . . . . . . . . . . . . . . . .  1.0000    
+      OSCILLATION LIMIT CRITERION. . . . . . . . . 0.50000    
+      TOLERANCE. . . . . . . . . . . . . . . . . . 0.20000    
+   TERMINATE ANALYSIS IF NOT CONVERGED . . . . . .YES (EXIT)  
    CONVERGENCE CONTROLS
       LABEL   REFERENCE    TOLERANCE  NORM     MINREF
        HEAT    0.000       0.1000E-02   2     0.1000E-05
@@ -542,37 +542,37 @@
    PRINT OUTPUT CONTROLS . . . . . . . . . . . . .NO PRINTOUT
    DATABASE OUTPUT CONTROLS
       ITEM     FREQUENCY   COMPONENT
-       ALL       NONE
-      NSOL        ALL
-      RSOL        ALL
-      ETMP        ALL
-      NLOA        ALL
-      STRS        ALL
-      FFLU        ALL
-      CONT        ALL
-      V           ALL
-      A           ALL
+       ALL       NONE               
+      NSOL        ALL               
+      RSOL        ALL               
+      ETMP        ALL               
+      NLOA        ALL               
+      STRS        ALL               
+      FFLU        ALL               
+      CONT        ALL               
+      V           ALL               
+      A           ALL               
 
 
- SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr
-
- *** WARNING ***                         CP =       0.156   TIME= 14:39:44
- Material property EX of material 1 of element 9 is evaluated at a
- temperature of 22, which is below the supplied temperature range.
- Temperature range checking terminates.
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
 
  *** WARNING ***                         CP =       0.156   TIME= 14:39:44
- Contact element 215 is missing DOF TEMP (and possibly others) of
- underlying base element 48.  Similar mismatches may exist elsewhere,
- but checking for this is discontinued.
+ Material property EX of material 1 of element 9 is evaluated at a       
+ temperature of 22, which is below the supplied temperature range.       
+ Temperature range checking terminates.                                  
+
+ *** WARNING ***                         CP =       0.156   TIME= 14:39:44
+ Contact element 215 is missing DOF TEMP (and possibly others) of        
+ underlying base element 48.  Similar mismatches may exist elsewhere,    
+ but checking for this is discontinued.                                  
 
  *** NOTE ***                            CP =       0.156   TIME= 14:39:44
- Symmetric Deformable- deformable contact pair identified by real
- constant set 3 and contact element type 3 has been set up.  The
- companion pair has real constant set ID 4.  Both pairs should have the
- same behavior.
- MAPDL will deactivate the current pair and keep its companion pair,
- resulting in asymmetric contact.
+ Symmetric Deformable- deformable contact pair identified by real        
+ constant set 3 and contact element type 3 has been set up.  The         
+ companion pair has real constant set ID 4.  Both pairs should have the  
+ same behavior.                                                          
+ MAPDL will deactivate the current pair and keep its companion pair,     
+ resulting in asymmetric contact.                                        
  Thermal-structure coupling contact is activated.
  The emissivity is defined through the material property.
  Thermal convection coefficient, environment temperature, and
@@ -581,12 +581,12 @@
   for near field contact.
  Contact algorithm: Penalty method
  Contact detection at: Gauss integration point
- Contact stiffness factor FKN                  1.0000
+ Contact stiffness factor FKN                  1.0000    
  The resulting initial contact stiffness      0.24000E+16
- Default penetration tolerance factor FTOLN   0.10000
+ Default penetration tolerance factor FTOLN   0.10000    
  The resulting penetration tolerance          0.50000E-04
- Max. initial friction coefficient MU         0.20000
- Default tangent stiffness factor FKT          1.0000
+ Max. initial friction coefficient MU         0.20000    
+ Default tangent stiffness factor FKT          1.0000    
  Default elastic slip factor SLTOL            0.10000E-01
  The resulting elastic slip tolerance         0.50000E-05
  Update contact stiffness at each iteration
@@ -594,27 +594,27 @@
  Average contact surface length               0.50000E-03
  Average contact pair depth                   0.50000E-03
  Average target surface length                0.50000E-03
- Default pinball region factor PINB            1.0000
+ Default pinball region factor PINB            1.0000    
  The resulting pinball region                 0.50000E-03
  *WARNING*: Initial penetration is included.
  Thermal contact conductance coef. TCC        0.10898E+09
- Default fraction of friction energy FHTG      1.0000
- Default weight of dissip. to contact FWGT    0.50000
+ Default fraction of friction energy FHTG      1.0000    
+ Default weight of dissip. to contact FWGT    0.50000    
  Heat radiation is excluded.
 
  *** NOTE ***                            CP =       0.156   TIME= 14:39:44
- Max.  Initial penetration 0 was detected between contact element 187
- and target element 214.
+ Max.  Initial penetration 0 was detected between contact element 187    
+ and target element 214.                                                 
  ****************************************
-
+  
 
  *** NOTE ***                            CP =       0.156   TIME= 14:39:44
- Symmetric Deformable- deformable contact pair identified by real
- constant set 4 and contact element type 3 has been set up.  The
- companion pair has real constant set ID 3.  Both pairs should have the
- same behavior.
- MAPDL will keep the current pair and deactivate its companion pair,
- resulting in asymmetric contact.
+ Symmetric Deformable- deformable contact pair identified by real        
+ constant set 4 and contact element type 3 has been set up.  The         
+ companion pair has real constant set ID 3.  Both pairs should have the  
+ same behavior.                                                          
+ MAPDL will keep the current pair and deactivate its companion pair,     
+ resulting in asymmetric contact.                                        
  Thermal-structure coupling contact is activated.
  The emissivity is defined through the material property.
  Thermal convection coefficient, environment temperature, and
@@ -623,12 +623,12 @@
   for near field contact.
  Contact algorithm: Penalty method
  Contact detection at: Gauss integration point
- Contact stiffness factor FKN                  1.0000
+ Contact stiffness factor FKN                  1.0000    
  The resulting initial contact stiffness      0.24000E+16
- Default penetration tolerance factor FTOLN   0.10000
+ Default penetration tolerance factor FTOLN   0.10000    
  The resulting penetration tolerance          0.50000E-04
- Max. initial friction coefficient MU         0.20000
- Default tangent stiffness factor FKT          1.0000
+ Max. initial friction coefficient MU         0.20000    
+ Default tangent stiffness factor FKT          1.0000    
  Default elastic slip factor SLTOL            0.10000E-01
  The resulting elastic slip tolerance         0.50000E-05
  Update contact stiffness at each iteration
@@ -636,70 +636,70 @@
  Average contact surface length               0.50000E-03
  Average contact pair depth                   0.50000E-03
  Average target surface length                0.50000E-03
- Default pinball region factor PINB            1.0000
+ Default pinball region factor PINB            1.0000    
  The resulting pinball region                 0.50000E-03
  *WARNING*: Initial penetration is included.
  Thermal contact conductance coef. TCC        0.10898E+09
- Default fraction of friction energy FHTG      1.0000
- Default weight of dissip. to contact FWGT    0.50000
+ Default fraction of friction energy FHTG      1.0000    
+ Default weight of dissip. to contact FWGT    0.50000    
  Heat radiation is excluded.
 
  *** NOTE ***                            CP =       0.156   TIME= 14:39:44
- Max.  Initial penetration 2.168404345E-19 was detected between contact
- element 207 and target element 178.
+ Max.  Initial penetration 2.168404345E-19 was detected between contact  
+ element 207 and target element 178.                                     
  ****************************************
-
+  
 
  *** NOTE ***                            CP =       0.156   TIME= 14:39:44
- Rigid-constraint surface identified by real constant set 5 and contact
- element type 5 has been set up.  The degrees of freedom of rigid
- surface are driven by the pilot node 405.  Internal MPC will be built.
+ Rigid-constraint surface identified by real constant set 5 and contact  
+ element type 5 has been set up.  The degrees of freedom of rigid        
+ surface are driven by the pilot node 405.  Internal MPC will be built.  
  The used degrees of freedom set is  UX   UY   UZ   ROTX ROTY ROTZ
  Please verify constraints (including rotational degrees of freedom)
   on the pilot node by yourself.
  ****************************************
-
+  
 
  *** NOTE ***                            CP =       0.156   TIME= 14:39:44
- Force-distributed-surface identified by real constant set 7 and
- contact element type 7 has been set up.  The pilot node 406 is used to
- apply the force.  Internal MPC will be built.
+ Force-distributed-surface identified by real constant set 7 and         
+ contact element type 7 has been set up.  The pilot node 406 is used to  
+ apply the force.  Internal MPC will be built.                           
  The used degrees of freedom set is  UX   UY   UZ   ROTX ROTY ROTZ
  Please verify constraints (including rotational degrees of freedom)
   on the pilot node by yourself.
  ****************************************
+  
+  
+  
+ MAXIMUM NUMBER OF EQUILIBRIUM ITERATIONS HAS BEEN MODIFIED              
+  TO BE, NEQIT = 25, BY SOLUTION CONTROL LOGIC.                          
 
-
-
- MAXIMUM NUMBER OF EQUILIBRIUM ITERATIONS HAS BEEN MODIFIED
-  TO BE, NEQIT = 25, BY SOLUTION CONTROL LOGIC.
-
-
- The FEA model contains 0 external CE equations and 516 internal CE
- equations.
-
+  
+ The FEA model contains 0 external CE equations and 516 internal CE      
+ equations.                                                              
+  
  *************************************************
   SUMMARY FOR CONTACT PAIR IDENTIFIED BY REAL CONSTANT SET           3
 
  *** NOTE ***                            CP =       0.203   TIME= 14:39:44
- Contact pair is inactive.
-
+ Contact pair is inactive.                                               
+  
  *************************************************
   SUMMARY FOR CONTACT PAIR IDENTIFIED BY REAL CONSTANT SET           4
- Max.  Penetration of -2.168404345E-19 has been detected between contact
- element 207 and target element 178.
- For total 4 contact elements, there are 4 elements are in contact.
- There are 4 elements are in sticking.
- Contacting area 1.E-06.
- Max.  Pinball distance 5.E-04.
- One of the contact searching regions contains at least 6 target
- elements.
- Max.  Pressure/force 1.065814104E-03.
- Max.  Normal stiffness 2.4E+15.
- Min.  Normal stiffness 2.4E+15.
- Max.  Tangential stiffness 3.6E+13.
- Min.  Tangential stiffness 3.6E+13.
- Contact pair force norm 7.931155732E-10 and criterion 7.93115585E-11.
+ Max.  Penetration of -2.168404345E-19 has been detected between contact 
+ element 207 and target element 178.                                     
+ For total 4 contact elements, there are 4 elements are in contact.      
+ There are 4 elements are in sticking.                                   
+ Contacting area 1.E-06.                                                 
+ Max.  Pinball distance 5.E-04.                                          
+ One of the contact searching regions contains at least 6 target         
+ elements.                                                               
+ Max.  Pressure/force 1.065814104E-03.                                   
+ Max.  Normal stiffness 2.4E+15.                                         
+ Min.  Normal stiffness 2.4E+15.                                         
+ Max.  Tangential stiffness 3.6E+13.                                     
+ Min.  Tangential stiffness 3.6E+13.                                     
+ Contact pair force norm 7.931155732E-10 and criterion 7.93115585E-11.   
  *************************************************
 
 
@@ -709,7 +709,7 @@
                Translational mass               |   Coupled translational/rotational mass
         0.21275E-04    0.0000        0.0000     |     0.0000       0.10638E-07  -0.18488E-07
          0.0000       0.21275E-04    0.0000     |   -0.10638E-07    0.0000       0.37488E-07
-         0.0000        0.0000       0.21275E-04 |    0.18488E-07  -0.37488E-07    0.0000
+         0.0000        0.0000       0.21275E-04 |    0.18488E-07  -0.37488E-07    0.0000    
      ------------------------------------------ | ------------------------------------------
                                                 |         Rotational mass (inertia)
                                                 |    0.29883E-10  -0.22669E-10  -0.18744E-10
@@ -728,7 +728,7 @@
 
    PRINCIPAL INERTIAS =   0.84994E-11   0.50210E-10   0.55163E-10
    ORIENTATION VECTORS OF THE INERTIA PRINCIPAL AXES IN GLOBAL CARTESIAN
-     ( 1.000, 0.000, 0.000) ( 0.000, 1.000, 0.000) ( 0.000, 0.000, 1.000)
+     ( 1.000, 0.000, 0.000) ( 0.000, 1.000, 0.000) ( 0.000, 0.000, 1.000) 
 
 
   *** MASS SUMMARY BY ELEMENT TYPE ***
@@ -738,8 +738,8 @@
      2  0.785000E-05
 
  Range of element maximum matrix coefficients in global coordinates
- Maximum = 97021497 at element 3.
- Minimum = 22118730.9 at element 14.
+ Maximum = 97021497 at element 3.                                        
+ Minimum = 22118730.9 at element 14.                                     
 
    *** ELEMENT MATRIX FORMULATION TIMES
      TYPE    NUMBER   ENAME      TOTAL CP  AVE CP
@@ -752,11 +752,11 @@
         6         1  TARGE170      0.000   0.000000
         7         4  CONTA174      0.000   0.000000
         8         1  TARGE170      0.000   0.000000
- Time at end of element matrix formulation CP = 0.203125.
+ Time at end of element matrix formulation CP = 0.203125.                
 
  ALL CURRENT MAPDL DATA WRITTEN TO FILE NAME= file.rdb
   FOR POSSIBLE RESUME FROM THIS POINT
-     FORCE CONVERGENCE VALUE  =   7049.      CRITERION=   35.20
+     FORCE CONVERGENCE VALUE  =   7049.      CRITERION=   35.20    
      HT FLOW CONVERGENCE VALUE=  0.4281E-11  CRITERION=  0.1000E-08
     Writing NEWTON-RAPHSON residual forces to file: file.nr001
 
@@ -772,51 +772,51 @@
   Total (solver and non-solver) memory allocated       =   386.442 MB
 
  *** NOTE ***                            CP =       0.266   TIME= 14:39:44
- The Sparse Matrix Solver is currently running in the in-core memory
- mode.  This memory mode uses the most amount of memory in order to
- avoid using the hard drive as much as possible, which most often
- results in the fastest solution time.  This mode is recommended if
- enough physical memory is present to accommodate all of the solver
- data.
+ The Sparse Matrix Solver is currently running in the in-core memory     
+ mode.  This memory mode uses the most amount of memory in order to      
+ avoid using the hard drive as much as possible, which most often        
+ results in the fastest solution time.  This mode is recommended if      
+ enough physical memory is present to accommodate all of the solver      
+ data.                                                                   
 
  *** NOTE ***                            CP =       0.266   TIME= 14:39:44
- The system matrix is unsymmetric.
- Sparse solver maximum pivot= 2.762543606E+10 at node 291 TEMP.
- Sparse solver minimum pivot= 29.4369124 at node 406 ROTY.
- Sparse solver minimum pivot in absolute value= 29.4369124 at node 406
- ROTY.
+ The system matrix is unsymmetric.                                       
+ Sparse solver maximum pivot= 2.762543606E+10 at node 291 TEMP.          
+ Sparse solver minimum pivot= 29.4369124 at node 406 ROTY.               
+ Sparse solver minimum pivot in absolute value= 29.4369124 at node 406   
+ ROTY.                                                                   
      DISP CONVERGENCE VALUE   =  0.1875E-04  CRITERION=  0.9375E-06
     EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.1095E-02
      DISP CONVERGENCE VALUE   =  0.1875E-04  CRITERION=  0.9375E-06
      LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC = -0.1095E-02
-     FORCE CONVERGENCE VALUE  =   469.8      CRITERION=   4.970
+     FORCE CONVERGENCE VALUE  =   469.8      CRITERION=   4.970    
      HT FLOW CONVERGENCE VALUE=  0.3603E-02  CRITERION=  0.1000E-08
     Writing NEWTON-RAPHSON residual forces to file: file.nr002
-    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.1494
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.1494    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.7049E-04  CRITERION=  0.4408E-05
-     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.1494
-     FORCE CONVERGENCE VALUE  =   175.0      CRITERION=   6.822
+     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.1494    
+     FORCE CONVERGENCE VALUE  =   175.0      CRITERION=   6.822    
      HT FLOW CONVERGENCE VALUE=  0.8124E-01  CRITERION=  0.3485E-05
     Writing NEWTON-RAPHSON residual forces to file: file.nr003
-    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   2.867
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   2.867    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.1386E-04  CRITERION=  0.4408E-05
-     LINE SEARCH PARAMETER =  0.7098     SCALED MAX DOF INC =   2.035
-     FORCE CONVERGENCE VALUE  =   66.69      CRITERION=   6.810
+     LINE SEARCH PARAMETER =  0.7098     SCALED MAX DOF INC =   2.035    
+     FORCE CONVERGENCE VALUE  =   66.69      CRITERION=   6.810    
      HT FLOW CONVERGENCE VALUE=  0.6165      CRITERION=  0.6322E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr001
-    EQUIL ITER   4 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.1872
+    EQUIL ITER   4 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.1872    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.3331E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.1872
-     FORCE CONVERGENCE VALUE  =   11.10      CRITERION=   6.790
+     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.1872    
+     FORCE CONVERGENCE VALUE  =   11.10      CRITERION=   6.790    
      HT FLOW CONVERGENCE VALUE=  0.5578E-01  CRITERION=  0.6501E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr002
-    EQUIL ITER   5 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.1934
+    EQUIL ITER   5 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.1934    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.9093E-06  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.1934
+     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.1934    
      FORCE CONVERGENCE VALUE  =   1.718      CRITERION=   6.780     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.1498E-02  CRITERION=  0.6880E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr003
@@ -855,34 +855,34 @@
         7         4  CONTA174      0.000   0.000000
  *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      7
  *** TIME =  0.100000E-01     TIME INC =  0.100000E-01
- *** MAX PLASTIC STRAIN STEP = 0.9300E-01   CRITERION = 0.1500
- *** RESPONSE EIGENVALUE =  109.2       OSCILLATION LIMIT =  1.092
+ *** MAX PLASTIC STRAIN STEP = 0.9300E-01   CRITERION = 0.1500    
+ *** RESPONSE EIGENVALUE =  109.2       OSCILLATION LIMIT =  1.092    
  *** RESPONSE FREQ = 0.1913E+06   PERIOD=  0.5228E-05  PTS/CYC = 0.52E-03
  *** AUTO TIME STEP:  NEXT TIME INC = 0.45791E-02  DECREASED (FACTOR = 0.4579)
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
 
-     FORCE CONVERGENCE VALUE  =   2833.      CRITERION=   17.74
+     FORCE CONVERGENCE VALUE  =   2833.      CRITERION=   17.74    
      HT FLOW CONVERGENCE VALUE=  0.6260E-01  CRITERION=  0.6883E-05
     Writing NEWTON-RAPHSON residual forces to file: file.nr003
      DISP CONVERGENCE VALUE   =  0.4819E-05  CRITERION=  0.4408E-05
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -1.200
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -1.200    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.3176E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.6591     SCALED MAX DOF INC = -0.7907
-     FORCE CONVERGENCE VALUE  =   964.2      CRITERION=   9.390
+     LINE SEARCH PARAMETER =  0.6591     SCALED MAX DOF INC = -0.7907    
+     FORCE CONVERGENCE VALUE  =   964.2      CRITERION=   9.390    
      HT FLOW CONVERGENCE VALUE=  0.5265E-01  CRITERION=  0.1454E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr001
-    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2534
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2534    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.1682E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2534
+     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2534    
      FORCE CONVERGENCE VALUE  =   7.270      CRITERION=   7.977     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.3661E-01  CRITERION=  0.3363E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr002
-    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.4318
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.4318    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.3922E-06  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.8889     SCALED MAX DOF INC =  0.3838
+     LINE SEARCH PARAMETER =  0.8889     SCALED MAX DOF INC =  0.3838    
      FORCE CONVERGENCE VALUE  =   2.264      CRITERION=   7.978     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.2834E-02  CRITERION=  0.4806E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr003
@@ -917,34 +917,34 @@
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   7
  *** LOAD STEP     1   SUBSTEP     2  COMPLETED.    CUM ITER =     14
  *** TIME =  0.145791E-01     TIME INC =  0.457912E-02
- *** MAX PLASTIC STRAIN STEP = 0.3423E-02   CRITERION = 0.1500
- *** RESPONSE EIGENVALUE =  145.3       OSCILLATION LIMIT = 0.6653
+ *** MAX PLASTIC STRAIN STEP = 0.3423E-02   CRITERION = 0.1500    
+ *** RESPONSE EIGENVALUE =  145.3       OSCILLATION LIMIT = 0.6653    
  *** RESPONSE FREQ = 0.7357E+05   PERIOD=  0.1359E-04  PTS/CYC = 0.30E-02
  *** AUTO STEP TIME:  NEXT TIME INC = 0.45791E-02  UNCHANGED
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
 
-     FORCE CONVERGENCE VALUE  =   2832.      CRITERION=   17.75
+     FORCE CONVERGENCE VALUE  =   2832.      CRITERION=   17.75    
      HT FLOW CONVERGENCE VALUE=  0.4639E-01  CRITERION=  0.4523E-05
     Writing NEWTON-RAPHSON residual forces to file: file.nr002
      DISP CONVERGENCE VALUE   =  0.4661E-05  CRITERION=  0.4408E-05
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.8017
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.8017    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2645E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.5674     SCALED MAX DOF INC = -0.4549
-     FORCE CONVERGENCE VALUE  =   1226.      CRITERION=   10.23
+     LINE SEARCH PARAMETER =  0.5674     SCALED MAX DOF INC = -0.4549    
+     FORCE CONVERGENCE VALUE  =   1226.      CRITERION=   10.23    
      HT FLOW CONVERGENCE VALUE=  0.4724E-01  CRITERION=  0.1341E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr003
-    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2436
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2436    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.1991E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2436
+     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2436    
      FORCE CONVERGENCE VALUE  =   5.022      CRITERION=   7.990     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.4723E-01  CRITERION=  0.3096E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr001
-    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.4409
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.4409    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2805E-06  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.9203     SCALED MAX DOF INC =  0.4057
+     LINE SEARCH PARAMETER =  0.9203     SCALED MAX DOF INC =  0.4057    
      FORCE CONVERGENCE VALUE  =  0.8129      CRITERION=   7.987     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.2185E-02  CRITERION=  0.4678E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr002
@@ -965,34 +965,34 @@
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   5
  *** LOAD STEP     1   SUBSTEP     3  COMPLETED.    CUM ITER =     19
  *** TIME =  0.191582E-01     TIME INC =  0.457912E-02
- *** MAX PLASTIC STRAIN STEP = 0.3002E-02   CRITERION = 0.1500
+ *** MAX PLASTIC STRAIN STEP = 0.3002E-02   CRITERION = 0.1500    
  *** RESPONSE EIGENVALUE =  3.812       OSCILLATION LIMIT = 0.1745E-01
  *** RESPONSE FREQ = 0.6518E+05   PERIOD=  0.1534E-04  PTS/CYC = 0.34E-02
  *** AUTO TIME STEP:  NEXT TIME INC = 0.50000E-02  INCREASED (FACTOR = 1.0919)
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
 
-     FORCE CONVERGENCE VALUE  =   3093.      CRITERION=   19.13
+     FORCE CONVERGENCE VALUE  =   3093.      CRITERION=   19.13    
      HT FLOW CONVERGENCE VALUE=  0.4758E-01  CRITERION=  0.4676E-05
     Writing NEWTON-RAPHSON residual forces to file: file.nr002
      DISP CONVERGENCE VALUE   =  0.5074E-05  CRITERION=  0.4408E-05
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.7969
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.7969    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2884E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.5684     SCALED MAX DOF INC = -0.4530
-     FORCE CONVERGENCE VALUE  =   1331.      CRITERION=   10.75
+     LINE SEARCH PARAMETER =  0.5684     SCALED MAX DOF INC = -0.4530    
+     FORCE CONVERGENCE VALUE  =   1331.      CRITERION=   10.75    
      HT FLOW CONVERGENCE VALUE=  0.5714E-01  CRITERION=  0.1331E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr003
-    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2662
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2662    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2170E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2662
+     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2662    
      FORCE CONVERGENCE VALUE  =   5.507      CRITERION=   7.992     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.5542E-01  CRITERION=  0.3200E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr001
-    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.4674
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.4674    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.3432E-06  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.9245     SCALED MAX DOF INC =  0.4321
+     LINE SEARCH PARAMETER =  0.9245     SCALED MAX DOF INC =  0.4321    
      FORCE CONVERGENCE VALUE  =  0.7482      CRITERION=   7.991     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.1748E-02  CRITERION=  0.4892E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr002
@@ -1020,34 +1020,34 @@
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   6
  *** LOAD STEP     1   SUBSTEP     4  COMPLETED.    CUM ITER =     25
  *** TIME =  0.241582E-01     TIME INC =  0.500000E-02
- *** MAX PLASTIC STRAIN STEP = 0.3102E-02   CRITERION = 0.1500
+ *** MAX PLASTIC STRAIN STEP = 0.3102E-02   CRITERION = 0.1500    
  *** RESPONSE EIGENVALUE =  2.426       OSCILLATION LIMIT = 0.1213E-01
  *** RESPONSE FREQ = 0.5871E+05   PERIOD=  0.1703E-04  PTS/CYC = 0.34E-02
  *** AUTO STEP TIME:  NEXT TIME INC = 0.50000E-02  UNCHANGED
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
 
-     FORCE CONVERGENCE VALUE  =   3084.      CRITERION=   19.24
+     FORCE CONVERGENCE VALUE  =   3084.      CRITERION=   19.24    
      HT FLOW CONVERGENCE VALUE=  0.4986E-01  CRITERION=  0.4913E-05
     Writing NEWTON-RAPHSON residual forces to file: file.nr003
      DISP CONVERGENCE VALUE   =  0.5064E-05  CRITERION=  0.4408E-05
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.8213
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.8213    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2834E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.5595     SCALED MAX DOF INC = -0.4595
-     FORCE CONVERGENCE VALUE  =   1359.      CRITERION=   10.86
+     LINE SEARCH PARAMETER =  0.5595     SCALED MAX DOF INC = -0.4595    
+     FORCE CONVERGENCE VALUE  =   1359.      CRITERION=   10.86    
      HT FLOW CONVERGENCE VALUE=  0.6279E-01  CRITERION=  0.1374E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr001
-    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2572
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2572    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2215E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2572
+     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2572    
      FORCE CONVERGENCE VALUE  =   5.757      CRITERION=   7.997     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.5915E-01  CRITERION=  0.3346E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr002
-    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.4911
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.4911    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.3368E-06  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.9247     SCALED MAX DOF INC =  0.4541
+     LINE SEARCH PARAMETER =  0.9247     SCALED MAX DOF INC =  0.4541    
      FORCE CONVERGENCE VALUE  =  0.7080      CRITERION=   7.535     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.1417E-02  CRITERION=  0.5163E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr003
@@ -1075,34 +1075,34 @@
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   6
  *** LOAD STEP     1   SUBSTEP     5  COMPLETED.    CUM ITER =     31
  *** TIME =  0.291582E-01     TIME INC =  0.500000E-02
- *** MAX PLASTIC STRAIN STEP = 0.2793E-02   CRITERION = 0.1500
+ *** MAX PLASTIC STRAIN STEP = 0.2793E-02   CRITERION = 0.1500    
  *** RESPONSE EIGENVALUE =  2.838       OSCILLATION LIMIT = 0.1419E-01
  *** RESPONSE FREQ = 0.5324E+05   PERIOD=  0.1878E-04  PTS/CYC = 0.38E-02
  *** AUTO STEP TIME:  NEXT TIME INC = 0.50000E-02  UNCHANGED
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
 
-     FORCE CONVERGENCE VALUE  =   3074.      CRITERION=   19.32
+     FORCE CONVERGENCE VALUE  =   3074.      CRITERION=   19.32    
      HT FLOW CONVERGENCE VALUE=  0.5265E-01  CRITERION=  0.5203E-05
     Writing NEWTON-RAPHSON residual forces to file: file.nr001
      DISP CONVERGENCE VALUE   =  0.5053E-05  CRITERION=  0.4408E-05
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.8488
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.8488    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2784E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.5510     SCALED MAX DOF INC = -0.4676
-     FORCE CONVERGENCE VALUE  =   1381.      CRITERION=   10.87
+     LINE SEARCH PARAMETER =  0.5510     SCALED MAX DOF INC = -0.4676    
+     FORCE CONVERGENCE VALUE  =   1381.      CRITERION=   10.87    
      HT FLOW CONVERGENCE VALUE=  0.6714E-01  CRITERION=  0.1426E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr002
-    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2504
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2504    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2255E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2504
+     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2504    
      FORCE CONVERGENCE VALUE  =   6.072      CRITERION=   7.540     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.6137E-01  CRITERION=  0.3515E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr003
-    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.5105
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.5105    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.3733E-06  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.9176     SCALED MAX DOF INC =  0.4684
+     LINE SEARCH PARAMETER =  0.9176     SCALED MAX DOF INC =  0.4684    
      FORCE CONVERGENCE VALUE  =  0.7829      CRITERION=   7.539     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.1339E-02  CRITERION=  0.5416E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr001
@@ -1130,34 +1130,34 @@
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   6
  *** LOAD STEP     1   SUBSTEP     6  COMPLETED.    CUM ITER =     37
  *** TIME =  0.341582E-01     TIME INC =  0.500000E-02
- *** MAX PLASTIC STRAIN STEP = 0.2531E-02   CRITERION = 0.1500
+ *** MAX PLASTIC STRAIN STEP = 0.2531E-02   CRITERION = 0.1500    
  *** RESPONSE EIGENVALUE =  2.481       OSCILLATION LIMIT = 0.1240E-01
  *** RESPONSE FREQ = 0.4872E+05   PERIOD=  0.2053E-04  PTS/CYC = 0.41E-02
  *** AUTO STEP TIME:  NEXT TIME INC = 0.50000E-02  UNCHANGED
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
 
-     FORCE CONVERGENCE VALUE  =   3074.      CRITERION=   19.32
+     FORCE CONVERGENCE VALUE  =   3074.      CRITERION=   19.32    
      HT FLOW CONVERGENCE VALUE=  0.5519E-01  CRITERION=  0.5458E-05
     Writing NEWTON-RAPHSON residual forces to file: file.nr002
      DISP CONVERGENCE VALUE   =  0.5042E-05  CRITERION=  0.4408E-05
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.8747
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.8747    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2744E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.5442     SCALED MAX DOF INC = -0.4760
-     FORCE CONVERGENCE VALUE  =   1402.      CRITERION=   10.96
+     LINE SEARCH PARAMETER =  0.5442     SCALED MAX DOF INC = -0.4760    
+     FORCE CONVERGENCE VALUE  =   1402.      CRITERION=   10.96    
      HT FLOW CONVERGENCE VALUE=  0.7005E-01  CRITERION=  0.1480E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr003
-    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2445
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2445    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2286E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2445
+     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2445    
      FORCE CONVERGENCE VALUE  =   6.316      CRITERION=   7.542     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.6230E-01  CRITERION=  0.3670E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr001
-    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.5234
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.5234    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.4039E-06  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.9127     SCALED MAX DOF INC =  0.4777
+     LINE SEARCH PARAMETER =  0.9127     SCALED MAX DOF INC =  0.4777    
      FORCE CONVERGENCE VALUE  =  0.8138      CRITERION=   7.382     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.1369E-02  CRITERION=  0.5630E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr002
@@ -1185,34 +1185,34 @@
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   6
  *** LOAD STEP     1   SUBSTEP     7  COMPLETED.    CUM ITER =     43
  *** TIME =  0.391582E-01     TIME INC =  0.500000E-02
- *** MAX PLASTIC STRAIN STEP = 0.2331E-02   CRITERION = 0.1500
+ *** MAX PLASTIC STRAIN STEP = 0.2331E-02   CRITERION = 0.1500    
  *** RESPONSE EIGENVALUE =  2.039       OSCILLATION LIMIT = 0.1019E-01
  *** RESPONSE FREQ = 0.4483E+05   PERIOD=  0.2231E-04  PTS/CYC = 0.45E-02
  *** AUTO STEP TIME:  NEXT TIME INC = 0.50000E-02  UNCHANGED
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
 
-     FORCE CONVERGENCE VALUE  =   3078.      CRITERION=   19.23
+     FORCE CONVERGENCE VALUE  =   3078.      CRITERION=   19.23    
      HT FLOW CONVERGENCE VALUE=  0.5742E-01  CRITERION=  0.5675E-05
     Writing NEWTON-RAPHSON residual forces to file: file.nr003
      DISP CONVERGENCE VALUE   =  0.5032E-05  CRITERION=  0.4408E-05
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.8945
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.8945    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2713E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.5392     SCALED MAX DOF INC = -0.4823
-     FORCE CONVERGENCE VALUE  =   1419.      CRITERION=   10.88
+     LINE SEARCH PARAMETER =  0.5392     SCALED MAX DOF INC = -0.4823    
+     FORCE CONVERGENCE VALUE  =   1419.      CRITERION=   10.88    
      HT FLOW CONVERGENCE VALUE=  0.7125E-01  CRITERION=  0.1533E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr001
-    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2399
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2399    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2313E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2399
+     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2399    
      FORCE CONVERGENCE VALUE  =   6.568      CRITERION=   7.384     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.6213E-01  CRITERION=  0.3802E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr002
-    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.5306
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.5306    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.4443E-06  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.9086     SCALED MAX DOF INC =  0.4821
+     LINE SEARCH PARAMETER =  0.9086     SCALED MAX DOF INC =  0.4821    
      FORCE CONVERGENCE VALUE  =  0.8830      CRITERION=   7.384     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.1422E-02  CRITERION=  0.5798E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr003
@@ -1240,34 +1240,34 @@
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   6
  *** LOAD STEP     1   SUBSTEP     8  COMPLETED.    CUM ITER =     49
  *** TIME =  0.441582E-01     TIME INC =  0.500000E-02
- *** MAX PLASTIC STRAIN STEP = 0.2148E-02   CRITERION = 0.1500
+ *** MAX PLASTIC STRAIN STEP = 0.2148E-02   CRITERION = 0.1500    
  *** RESPONSE EIGENVALUE =  1.542       OSCILLATION LIMIT = 0.7711E-02
  *** RESPONSE FREQ = 0.4161E+05   PERIOD=  0.2403E-04  PTS/CYC = 0.48E-02
  *** AUTO STEP TIME:  NEXT TIME INC = 0.50000E-02  UNCHANGED
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
 
-     FORCE CONVERGENCE VALUE  =   3078.      CRITERION=   19.23
+     FORCE CONVERGENCE VALUE  =   3078.      CRITERION=   19.23    
      HT FLOW CONVERGENCE VALUE=  0.5919E-01  CRITERION=  0.5842E-05
     Writing NEWTON-RAPHSON residual forces to file: file.nr001
      DISP CONVERGENCE VALUE   =  0.5024E-05  CRITERION=  0.4408E-05
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.9076
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.9076    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2692E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.5358     SCALED MAX DOF INC = -0.4863
-     FORCE CONVERGENCE VALUE  =   1429.      CRITERION=   10.93
+     LINE SEARCH PARAMETER =  0.5358     SCALED MAX DOF INC = -0.4863    
+     FORCE CONVERGENCE VALUE  =   1429.      CRITERION=   10.93    
      HT FLOW CONVERGENCE VALUE=  0.7114E-01  CRITERION=  0.1581E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr002
-    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2361
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2361    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2333E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2361
+     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2361    
      FORCE CONVERGENCE VALUE  =   6.819      CRITERION=   7.386     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.6124E-01  CRITERION=  0.3905E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr003
-    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.5334
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.5334    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.4842E-06  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.9061     SCALED MAX DOF INC =  0.4833
+     LINE SEARCH PARAMETER =  0.9061     SCALED MAX DOF INC =  0.4833    
      FORCE CONVERGENCE VALUE  =  0.9385      CRITERION=   6.884     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.1464E-02  CRITERION=  0.5924E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr001
@@ -1295,34 +1295,34 @@
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   6
  *** LOAD STEP     1   SUBSTEP     9  COMPLETED.    CUM ITER =     55
  *** TIME =  0.491582E-01     TIME INC =  0.500000E-02
- *** MAX PLASTIC STRAIN STEP = 0.1973E-02   CRITERION = 0.1500
+ *** MAX PLASTIC STRAIN STEP = 0.1973E-02   CRITERION = 0.1500    
  *** RESPONSE EIGENVALUE =  1.159       OSCILLATION LIMIT = 0.5797E-02
  *** RESPONSE FREQ = 0.3893E+05   PERIOD=  0.2568E-04  PTS/CYC = 0.51E-02
  *** AUTO STEP TIME:  NEXT TIME INC = 0.50000E-02  UNCHANGED
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
 
-     FORCE CONVERGENCE VALUE  =   3087.      CRITERION=   19.05
+     FORCE CONVERGENCE VALUE  =   3087.      CRITERION=   19.05    
      HT FLOW CONVERGENCE VALUE=  0.6055E-01  CRITERION=  0.5966E-05
     Writing NEWTON-RAPHSON residual forces to file: file.nr002
      DISP CONVERGENCE VALUE   =  0.5017E-05  CRITERION=  0.4408E-05
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.9147
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.9147    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2678E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.5337     SCALED MAX DOF INC = -0.4882
-     FORCE CONVERGENCE VALUE  =   1440.      CRITERION=   10.61
+     LINE SEARCH PARAMETER =  0.5337     SCALED MAX DOF INC = -0.4882    
+     FORCE CONVERGENCE VALUE  =   1440.      CRITERION=   10.61    
      HT FLOW CONVERGENCE VALUE=  0.7004E-01  CRITERION=  0.1622E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr003
-    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2328
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2328    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2345E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2328
-     FORCE CONVERGENCE VALUE  =   7.113      CRITERION=   6.885
+     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2328    
+     FORCE CONVERGENCE VALUE  =   7.113      CRITERION=   6.885    
      HT FLOW CONVERGENCE VALUE=  0.6012E-01  CRITERION=  0.3981E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr001
-    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.5360
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.5360    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.5194E-06  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.9024     SCALED MAX DOF INC =  0.4837
+     LINE SEARCH PARAMETER =  0.9024     SCALED MAX DOF INC =  0.4837    
      FORCE CONVERGENCE VALUE  =   1.006      CRITERION=   6.885     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.1489E-02  CRITERION=  0.6020E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr002
@@ -1350,34 +1350,34 @@
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   6
  *** LOAD STEP     1   SUBSTEP    10  COMPLETED.    CUM ITER =     61
  *** TIME =  0.541582E-01     TIME INC =  0.500000E-02
- *** MAX PLASTIC STRAIN STEP = 0.1809E-02   CRITERION = 0.1500
+ *** MAX PLASTIC STRAIN STEP = 0.1809E-02   CRITERION = 0.1500    
  *** RESPONSE EIGENVALUE = 0.8906       OSCILLATION LIMIT = 0.4453E-02
  *** RESPONSE FREQ = 0.3674E+05   PERIOD=  0.2722E-04  PTS/CYC = 0.54E-02
  *** AUTO STEP TIME:  NEXT TIME INC = 0.50000E-02  UNCHANGED
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
 
-     FORCE CONVERGENCE VALUE  =   3086.      CRITERION=   19.05
+     FORCE CONVERGENCE VALUE  =   3086.      CRITERION=   19.05    
      HT FLOW CONVERGENCE VALUE=  0.6156E-01  CRITERION=  0.6055E-05
     Writing NEWTON-RAPHSON residual forces to file: file.nr003
      DISP CONVERGENCE VALUE   =  0.5012E-05  CRITERION=  0.4408E-05
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.9166
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.9166    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2669E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.5325     SCALED MAX DOF INC = -0.4881
-     FORCE CONVERGENCE VALUE  =   1443.      CRITERION=   10.63
+     LINE SEARCH PARAMETER =  0.5325     SCALED MAX DOF INC = -0.4881    
+     FORCE CONVERGENCE VALUE  =   1443.      CRITERION=   10.63    
      HT FLOW CONVERGENCE VALUE=  0.6825E-01  CRITERION=  0.1655E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr001
-    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2300
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2300    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2354E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2300
-     FORCE CONVERGENCE VALUE  =   7.384      CRITERION=   6.886
+     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2300    
+     FORCE CONVERGENCE VALUE  =   7.384      CRITERION=   6.886    
      HT FLOW CONVERGENCE VALUE=  0.5838E-01  CRITERION=  0.4035E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr002
-    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.5335
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.5335    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.5439E-06  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.9022     SCALED MAX DOF INC =  0.4813
+     LINE SEARCH PARAMETER =  0.9022     SCALED MAX DOF INC =  0.4813    
      FORCE CONVERGENCE VALUE  =   1.023      CRITERION=   6.886     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.1507E-02  CRITERION=  0.6085E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr003
@@ -1405,34 +1405,34 @@
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   6
  *** LOAD STEP     1   SUBSTEP    11  COMPLETED.    CUM ITER =     67
  *** TIME =  0.591582E-01     TIME INC =  0.500000E-02
- *** MAX PLASTIC STRAIN STEP = 0.1658E-02   CRITERION = 0.1500
+ *** MAX PLASTIC STRAIN STEP = 0.1658E-02   CRITERION = 0.1500    
  *** RESPONSE EIGENVALUE = 0.7118       OSCILLATION LIMIT = 0.3559E-02
  *** RESPONSE FREQ = 0.3497E+05   PERIOD=  0.2860E-04  PTS/CYC = 0.57E-02
  *** AUTO STEP TIME:  NEXT TIME INC = 0.50000E-02  UNCHANGED
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
 
-     FORCE CONVERGENCE VALUE  =   3086.      CRITERION=   19.05
+     FORCE CONVERGENCE VALUE  =   3086.      CRITERION=   19.05    
      HT FLOW CONVERGENCE VALUE=  0.6229E-01  CRITERION=  0.6117E-05
     Writing NEWTON-RAPHSON residual forces to file: file.nr001
      DISP CONVERGENCE VALUE   =  0.5008E-05  CRITERION=  0.4408E-05
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.9144
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.9144    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2664E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.5319     SCALED MAX DOF INC = -0.4863
-     FORCE CONVERGENCE VALUE  =   1445.      CRITERION=   10.64
+     LINE SEARCH PARAMETER =  0.5319     SCALED MAX DOF INC = -0.4863    
+     FORCE CONVERGENCE VALUE  =   1445.      CRITERION=   10.64    
      HT FLOW CONVERGENCE VALUE=  0.6603E-01  CRITERION=  0.1681E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr002
-    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2285
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2285    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2358E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2285
-     FORCE CONVERGENCE VALUE  =   7.699      CRITERION=   6.887
+     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2285    
+     FORCE CONVERGENCE VALUE  =   7.699      CRITERION=   6.887    
      HT FLOW CONVERGENCE VALUE=  0.5650E-01  CRITERION=  0.4071E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr003
-    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.5306
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.5306    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.5632E-06  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.9017     SCALED MAX DOF INC =  0.4784
+     LINE SEARCH PARAMETER =  0.9017     SCALED MAX DOF INC =  0.4784    
      FORCE CONVERGENCE VALUE  =   1.044      CRITERION=   6.887     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.1536E-02  CRITERION=  0.6130E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr001
@@ -1460,46 +1460,46 @@
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   6
  *** LOAD STEP     1   SUBSTEP    12  COMPLETED.    CUM ITER =     73
  *** TIME =  0.641582E-01     TIME INC =  0.500000E-02
- *** MAX PLASTIC STRAIN STEP = 0.1554E-02   CRITERION = 0.1500
+ *** MAX PLASTIC STRAIN STEP = 0.1554E-02   CRITERION = 0.1500    
  *** RESPONSE EIGENVALUE = 0.5972       OSCILLATION LIMIT = 0.2986E-02
  *** RESPONSE FREQ = 0.3357E+05   PERIOD=  0.2978E-04  PTS/CYC = 0.60E-02
  *** AUTO STEP TIME:  NEXT TIME INC = 0.50000E-02  UNCHANGED
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
 
-     FORCE CONVERGENCE VALUE  =   3086.      CRITERION=   19.05
+     FORCE CONVERGENCE VALUE  =   3086.      CRITERION=   19.05    
      HT FLOW CONVERGENCE VALUE=  0.6280E-01  CRITERION=  0.6159E-05
     Writing NEWTON-RAPHSON residual forces to file: file.nr002
      DISP CONVERGENCE VALUE   =  0.5008E-05  CRITERION=  0.4408E-05
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.9089
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.9089    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2665E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.5322     SCALED MAX DOF INC = -0.4837
-     FORCE CONVERGENCE VALUE  =   1444.      CRITERION=   10.64
+     LINE SEARCH PARAMETER =  0.5322     SCALED MAX DOF INC = -0.4837    
+     FORCE CONVERGENCE VALUE  =   1444.      CRITERION=   10.64    
      HT FLOW CONVERGENCE VALUE=  0.6346E-01  CRITERION=  0.1702E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr003
-    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2312
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2312    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2358E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2312
+     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2312    
 
  *** WARNING ***                         CP =       6.344   TIME= 14:39:50
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 13, equilibrium iteration 3.  Consider
- defining more table points to cover range of behavior.
-     FORCE CONVERGENCE VALUE  =   8.118      CRITERION=   6.888
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 13, equilibrium iteration 3.  Consider   
+ defining more table points to cover range of behavior.                  
+     FORCE CONVERGENCE VALUE  =   8.118      CRITERION=   6.888    
      HT FLOW CONVERGENCE VALUE=  0.5353E-01  CRITERION=  0.4092E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr001
-    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.5223
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.5223    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.9590E-06  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.9059     SCALED MAX DOF INC =  0.4731
+     LINE SEARCH PARAMETER =  0.9059     SCALED MAX DOF INC =  0.4731    
 
  *** WARNING ***                         CP =       6.422   TIME= 14:39:50
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 13, equilibrium iteration 4.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 13, equilibrium iteration 4.  Consider   
+ defining more table points to cover range of behavior.                  
      FORCE CONVERGENCE VALUE  =   1.169      CRITERION=   6.888     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.1941E-02  CRITERION=  0.6149E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr002
@@ -1509,10 +1509,10 @@
      LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC = -0.9088E-02
 
  *** WARNING ***                         CP =       6.484   TIME= 14:39:50
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 13, equilibrium iteration 5.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 13, equilibrium iteration 5.  Consider   
+ defining more table points to cover range of behavior.                  
      FORCE CONVERGENCE VALUE  =  0.5237      CRITERION=   6.887     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.1054E-02  CRITERION=  0.6146E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr003
@@ -1522,10 +1522,10 @@
      LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.6418E-02
 
  *** WARNING ***                         CP =       6.547   TIME= 14:39:50
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 13, equilibrium iteration 6.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 13, equilibrium iteration 6.  Consider   
+ defining more table points to cover range of behavior.                  
      FORCE CONVERGENCE VALUE  =  0.9162E-01  CRITERION=   6.887     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.1202E-03  CRITERION=  0.6179E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr001
@@ -1535,17 +1535,17 @@
      LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.9665E-03
 
  *** WARNING ***                         CP =       6.625   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 13, equilibrium iteration 7.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 13, equilibrium iteration 7.  Consider   
+ defining more table points to cover range of behavior.                  
      FORCE CONVERGENCE VALUE  =  0.2625E-01  CRITERION=   6.887     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.4976E-04  CRITERION=  0.6181E-04 <<< CONVERGED
     Writing NEWTON-RAPHSON residual forces to file: file.nr002
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   6
  *** LOAD STEP     1   SUBSTEP    13  COMPLETED.    CUM ITER =     79
  *** TIME =  0.691582E-01     TIME INC =  0.500000E-02
- *** MAX PLASTIC STRAIN STEP = 0.1500E-02   CRITERION = 0.1500
+ *** MAX PLASTIC STRAIN STEP = 0.1500E-02   CRITERION = 0.1500    
  *** RESPONSE EIGENVALUE = 0.5215       OSCILLATION LIMIT = 0.2607E-02
  *** RESPONSE FREQ = 0.3248E+05   PERIOD=  0.3078E-04  PTS/CYC = 0.62E-02
  *** AUTO STEP TIME:  NEXT TIME INC = 0.50000E-02  UNCHANGED
@@ -1553,50 +1553,50 @@
 
 
  *** WARNING ***                         CP =       6.672   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 2 element integration
- points at load step 1, substep 14, equilibrium iteration 1.  Consider
- defining more table points to cover range of behavior.
-     FORCE CONVERGENCE VALUE  =   3086.      CRITERION=   19.05
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 2 element integration        
+ points at load step 1, substep 14, equilibrium iteration 1.  Consider   
+ defining more table points to cover range of behavior.                  
+     FORCE CONVERGENCE VALUE  =   3086.      CRITERION=   19.05    
      HT FLOW CONVERGENCE VALUE=  0.6312E-01  CRITERION=  0.6183E-05
     Writing NEWTON-RAPHSON residual forces to file: file.nr003
      DISP CONVERGENCE VALUE   =  0.5010E-05  CRITERION=  0.4408E-05
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.9008
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.9008    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2662E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.5314     SCALED MAX DOF INC = -0.4787
+     LINE SEARCH PARAMETER =  0.5314     SCALED MAX DOF INC = -0.4787    
 
  *** WARNING ***                         CP =       6.750   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 6 element integration
- points at load step 1, substep 14, equilibrium iteration 2.  Consider
- defining more table points to cover range of behavior.
-     FORCE CONVERGENCE VALUE  =   1447.      CRITERION=   10.65
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 6 element integration        
+ points at load step 1, substep 14, equilibrium iteration 2.  Consider   
+ defining more table points to cover range of behavior.                  
+     FORCE CONVERGENCE VALUE  =   1447.      CRITERION=   10.65    
      HT FLOW CONVERGENCE VALUE=  0.6102E-01  CRITERION=  0.1714E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr001
-    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2369
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2369    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2365E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2369
+     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2369    
 
  *** WARNING ***                         CP =       6.812   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 14, equilibrium iteration 3.  Consider
- defining more table points to cover range of behavior.
-     FORCE CONVERGENCE VALUE  =   8.326      CRITERION=   6.888
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 14, equilibrium iteration 3.  Consider   
+ defining more table points to cover range of behavior.                  
+     FORCE CONVERGENCE VALUE  =   8.326      CRITERION=   6.888    
      HT FLOW CONVERGENCE VALUE=  0.5180E-01  CRITERION=  0.4108E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr002
-    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.5185
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.5185    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.5653E-06  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.9043     SCALED MAX DOF INC =  0.4688
+     LINE SEARCH PARAMETER =  0.9043     SCALED MAX DOF INC =  0.4688    
 
  *** WARNING ***                         CP =       6.875   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 14, equilibrium iteration 4.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 14, equilibrium iteration 4.  Consider   
+ defining more table points to cover range of behavior.                  
      FORCE CONVERGENCE VALUE  =   1.149      CRITERION=   6.888     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.1749E-02  CRITERION=  0.6168E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr003
@@ -1606,10 +1606,10 @@
      LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC = -0.1170E-01
 
  *** WARNING ***                         CP =       6.953   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 14, equilibrium iteration 5.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 14, equilibrium iteration 5.  Consider   
+ defining more table points to cover range of behavior.                  
      FORCE CONVERGENCE VALUE  =  0.5492      CRITERION=   6.888     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.8034E-03  CRITERION=  0.6165E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr001
@@ -1619,10 +1619,10 @@
      LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.8125E-02
 
  *** WARNING ***                         CP =       7.016   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 14, equilibrium iteration 6.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 14, equilibrium iteration 6.  Consider   
+ defining more table points to cover range of behavior.                  
      FORCE CONVERGENCE VALUE  =  0.9942E-01  CRITERION=   6.888     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.1035E-03  CRITERION=  0.6196E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr002
@@ -1632,17 +1632,17 @@
      LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.1189E-02
 
  *** WARNING ***                         CP =       7.078   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 14, equilibrium iteration 7.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 14, equilibrium iteration 7.  Consider   
+ defining more table points to cover range of behavior.                  
      FORCE CONVERGENCE VALUE  =  0.2786E-01  CRITERION=   6.888     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.4605E-04  CRITERION=  0.6198E-04 <<< CONVERGED
     Writing NEWTON-RAPHSON residual forces to file: file.nr003
     >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   6
  *** LOAD STEP     1   SUBSTEP    14  COMPLETED.    CUM ITER =     85
  *** TIME =  0.741582E-01     TIME INC =  0.500000E-02
- *** MAX PLASTIC STRAIN STEP = 0.1453E-02   CRITERION = 0.1500
+ *** MAX PLASTIC STRAIN STEP = 0.1453E-02   CRITERION = 0.1500    
  *** RESPONSE EIGENVALUE = 0.4809       OSCILLATION LIMIT = 0.2404E-02
  *** RESPONSE FREQ = 0.3169E+05   PERIOD=  0.3156E-04  PTS/CYC = 0.63E-02
  *** AUTO STEP TIME:  NEXT TIME INC = 0.50000E-02  UNCHANGED
@@ -1650,50 +1650,50 @@
 
 
  *** WARNING ***                         CP =       7.125   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 2 element integration
- points at load step 1, substep 15, equilibrium iteration 1.  Consider
- defining more table points to cover range of behavior.
-     FORCE CONVERGENCE VALUE  =   3086.      CRITERION=   19.05
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 2 element integration        
+ points at load step 1, substep 15, equilibrium iteration 1.  Consider   
+ defining more table points to cover range of behavior.                  
+     FORCE CONVERGENCE VALUE  =   3086.      CRITERION=   19.05    
      HT FLOW CONVERGENCE VALUE=  0.6335E-01  CRITERION=  0.6200E-05
     Writing NEWTON-RAPHSON residual forces to file: file.nr001
      DISP CONVERGENCE VALUE   =  0.5009E-05  CRITERION=  0.4408E-05
-    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.8907
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.8907    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2662E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.5315     SCALED MAX DOF INC = -0.4734
+     LINE SEARCH PARAMETER =  0.5315     SCALED MAX DOF INC = -0.4734    
 
  *** WARNING ***                         CP =       7.203   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 6 element integration
- points at load step 1, substep 15, equilibrium iteration 2.  Consider
- defining more table points to cover range of behavior.
-     FORCE CONVERGENCE VALUE  =   1446.      CRITERION=   10.64
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 6 element integration        
+ points at load step 1, substep 15, equilibrium iteration 2.  Consider   
+ defining more table points to cover range of behavior.                  
+     FORCE CONVERGENCE VALUE  =   1446.      CRITERION=   10.64    
      HT FLOW CONVERGENCE VALUE=  0.5850E-01  CRITERION=  0.1724E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr002
-    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2364
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2364    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.2365E-05  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2364
+     LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.2364    
 
  *** WARNING ***                         CP =       7.266   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 15, equilibrium iteration 3.  Consider
- defining more table points to cover range of behavior.
-     FORCE CONVERGENCE VALUE  =   8.640      CRITERION=   6.889
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 15, equilibrium iteration 3.  Consider   
+ defining more table points to cover range of behavior.                  
+     FORCE CONVERGENCE VALUE  =   8.640      CRITERION=   6.889    
      HT FLOW CONVERGENCE VALUE=  0.4973E-01  CRITERION=  0.4112E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr003
-    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.5147
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.5147    
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
      DISP CONVERGENCE VALUE   =  0.5756E-06  CRITERION=  0.4408E-05 <<< CONVERGED
-     LINE SEARCH PARAMETER =  0.9048     SCALED MAX DOF INC =  0.4657
+     LINE SEARCH PARAMETER =  0.9048     SCALED MAX DOF INC =  0.4657    
 
  *** WARNING ***                         CP =       7.359   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 15, equilibrium iteration 4.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 15, equilibrium iteration 4.  Consider   
+ defining more table points to cover range of behavior.                  
      FORCE CONVERGENCE VALUE  =   1.151      CRITERION=   6.889     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.1853E-02  CRITERION=  0.6184E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr001
@@ -1703,10 +1703,10 @@
      LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC = -0.1129E-01
 
  *** WARNING ***                         CP =       7.453   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 15, equilibrium iteration 5.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 15, equilibrium iteration 5.  Consider   
+ defining more table points to cover range of behavior.                  
      FORCE CONVERGENCE VALUE  =  0.5567      CRITERION=   6.888     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.6476E-03  CRITERION=  0.6181E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr002
@@ -1716,10 +1716,10 @@
      LINE SEARCH PARAMETER =   1.000     SCALED MAX DOF INC =  0.7475E-02
 
  *** WARNING ***                         CP =       7.547   TIME= 14:39:51
- Accumulated equivalent plastic strain value outside of bounds of
- defined multilinear hardening table(s) for 4 element integration
- points at load step 1, substep 15, equilibrium iteration 6.  Consider
- defining more table points to cover range of behavior.
+ Accumulated equivalent plastic strain value outside of bounds of        
+ defined multilinear hardening table(s) for 4 element integration        
+ points at load step 1, substep 15, equilibrium iteration 6.  Consider   
+ defining more table points to cover range of behavior.                  
      FORCE CONVERGENCE VALUE  =  0.1005      CRITERION=   6.888     <<< CONVERGED
      HT FLOW CONVERGENCE VALUE=  0.9289E-04  CRITERION=  0.6208E-04
     Writing NEWTON-RAPHSON residual forces to file: file.nr003
@@ -1727,51 +1727,51 @@
      NONLINEAR DIAGNOSTIC DATA HAS BEEN WRITTEN TO  FILE: file.nd001
 
  *** ERROR ***                           CP =       7.578   TIME= 14:39:52
- The run is terminated at the user's request from the ABT file.
-
+ The run is terminated at the user's request from the ABT file.          
+  
  *************************************************
   SUMMARY FOR CONTACT PAIR IDENTIFIED BY REAL CONSTANT SET           3
 
  *** NOTE ***                            CP =       7.578   TIME= 14:39:52
- Contact pair is inactive.
-
+ Contact pair is inactive.                                               
+  
  *************************************************
   SUMMARY FOR CONTACT PAIR IDENTIFIED BY REAL CONSTANT SET           4
- Max.  Penetration of -5.830736615E-06 has been detected between contact
- element 208 and target element 168.
- For total 4 contact elements, there are 4 elements are in contact.
- Contacting area 1.002089749E-06.
- Contact element 209 has Max.  Elastic slip distance of 5.E-06.
- Max.  Total sliding distance 7.118979027E-05.
- Max.  Pinball distance 5.E-04.
- One of the contact searching regions contains at least 4 target
- elements.
- Max.  Pressure/force 1.399376788E+09.
- Max.  Friction stress/force 279875358.
- Max.  Normal stiffness 2.4E+14.
- Min.  Normal stiffness 2.4E+14.
- Max.  Tangential stiffness 5.597507151E+13.
- Min.  Tangential stiffness 2.4718103E+13.
- Contact pair force norm 7.126724287E-02 and criterion 101.952771.
+ Max.  Penetration of -5.830736615E-06 has been detected between contact 
+ element 208 and target element 168.                                     
+ For total 4 contact elements, there are 4 elements are in contact.      
+ Contacting area 1.002089749E-06.                                        
+ Contact element 209 has Max.  Elastic slip distance of 5.E-06.          
+ Max.  Total sliding distance 7.118979027E-05.                           
+ Max.  Pinball distance 5.E-04.                                          
+ One of the contact searching regions contains at least 4 target         
+ elements.                                                               
+ Max.  Pressure/force 1.399376788E+09.                                   
+ Max.  Friction stress/force 279875358.                                  
+ Max.  Normal stiffness 2.4E+14.                                         
+ Min.  Normal stiffness 2.4E+14.                                         
+ Max.  Tangential stiffness 5.597507151E+13.                             
+ Min.  Tangential stiffness 2.4718103E+13.                               
+ Contact pair force norm 7.126724287E-02 and criterion 101.952771.       
  *************************************************
 
  *** WARNING ***                         CP =       7.578   TIME= 14:39:52
- The unconverged solution (identified as time 1 substep 999999) is
- output for analysis debug purposes.  Results should not be used for
- any other purpose.
+ The unconverged solution (identified as time 1 substep 999999) is       
+ output for analysis debug purposes.  Results should not be used for     
+ any other purpose.                                                      
 
 
 
 
          R E S T A R T   I N F O R M A T I O N
 
- REASON FOR TERMINATION. . . . . . . . . .NONLINEAR KEYWORD ON THE ABT FILE
+ REASON FOR TERMINATION. . . . . . . . . .NONLINEAR KEYWORD ON THE ABT FILE       
  FILES NEEDED FOR RESTARTING . . . . . . .  file.Rnnn
                                             file.ldhi
                                             file.rdb
  TIME OF LAST SOLUTION . . . . . . . . . . 0.74158E-01
-    TIME AT START OF THE LOAD STEP . . . .  0.0000
-    TIME AT END OF THE LOAD STEP . . . . .  1.0000
+    TIME AT START OF THE LOAD STEP . . . .  0.0000    
+    TIME AT END OF THE LOAD STEP . . . . .  1.0000    
 
  ALL CURRENT MAPDL DATA WRITTEN TO FILE NAME= file.db
   FOR POSSIBLE RESUME FROM THIS POINT
@@ -1789,7 +1789,7 @@
 
 +--------------------- M A P D L   S T A T I S T I C S ------------------------+
 
-Release: 2024 R2            Build: 24.2BETA   Update: UP20240512   Platform: WINDOWS x64
+Release: 2024 R2            Build: 24.2BETA   Update: UP20240512   Platform: WINDOWS x64 
 Date Run: 09/12/2024   Time: 14:39     Process ID: 40812
 Operating System: Windows 10  (Build: 19045)
 
@@ -1804,7 +1804,7 @@ Total number of cores available         :   24
 Number of physical cores available      :   16
 Number of processes requested           :    1
 Number of threads per process requested :    1
-Total number of cores requested         :    1 (Shared Memory Parallel)
+Total number of cores requested         :    1 (Shared Memory Parallel)                    
 
 GPU Acceleration: Not Requested
 
@@ -1821,7 +1821,7 @@ Elapsed time spent solution - preprocessing       :        0.0 seconds
 Elapsed time spent computing solution             :        7.5 seconds
 Elapsed time spent solution - postprocessing      :        0.0 seconds
 Elapsed time spent post-processing model (/POST1) :        0.0 seconds
-
+ 
 Equation solver used                              :            Sparse (unsymmetric)
 
 Sum of disk space used on all processes           :        5.1 MB

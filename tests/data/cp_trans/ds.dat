@@ -626,7 +626,7 @@ _ASMDIAG=(_xmax-_xmin)*(_xmax-_xmin)+(_ymax-_ymin)*(_ymax-_ymin)+(_zmax-_zmin)*(
 _ASMDIAG=SQRT(_ASMDIAG)
 /wb,contact,start          !  starting to send contact
 /com,*********** Create Contact "Frictional - Solid1 To Solid2" ***********
-/com,            Real Constant Set For Above Contact Is 4 & 3
+/com,            Real Constant Set For Above Contact Is 4 & 3 
 *set,tid,4
 *set,cid,3
 r,tid
@@ -697,7 +697,7 @@ keyo,cid,8,2               ! auto create asymmetric contact (from Program Contro
 keyo,cid,10,0              ! adjust contact stiffness each NR iteration (from Program Controlled setting)
 keyo,cid,12,0              ! standard contact
 mp,mu,cid,0.2       ! unitless
-keyo,cid,2,1               ! penalty function only
+keyo,cid,2,1               ! penalty function only 
 keyo,cid,4,0               ! on Gauss point (from Program Controlled setting)
 keyo,cid,9,0               ! use real geometry with stepped effects
 keyo,cid,7,0               ! No Prediction
@@ -809,7 +809,7 @@ et,cid,174
 et,tid,170
 keyo,tid,2,1               ! Don't fix the pilot node
 keyo,tid,4,0               ! Activate all DOF's due to large deformation
-keyo,cid,12,5              ! Bonded Contact
+keyo,cid,12,5              ! Bonded Contact 
 keyo,cid,4,2               ! Rigid CERIG style load
 keyo,cid,2,2               ! MPC style contact
 eblock,10,,,20
@@ -851,7 +851,7 @@ et,cid,174
 et,tid,170
 keyo,tid,2,1               ! Don't fix the pilot node
 keyo,tid,4,0               ! Activate all DOF's due to large deformation
-keyo,cid,12,5              ! Bonded Contact
+keyo,cid,12,5              ! Bonded Contact 
 keyo,cid,4,1               ! Deformable RBE3 style load
 keyo,cid,2,2               ! MPC style contact
 eblock,10,,,4
@@ -938,9 +938,9 @@ tintp, mosp			! Choose transient integration settings for moderate speed applica
 nlhist,nsol,MAX_TEMP,temp,max
 nlhist,nsol,MIN_TEMP,temp,min
 /com,********* Initial Time Increment Check And Fourier Modulus *********
-/com, Specified Initial Time Increment: 0.01
-/com, Estimated Increment Needed, le*le/alpha, Body 1: 0.0436313
-/com, Estimated Increment Needed, le*le/alpha, Body 2: 0.0140781
+/com, Specified Initial Time Increment: 0.01 
+/com, Estimated Increment Needed, le*le/alpha, Body 1: 0.0436313 
+/com, Estimated Increment Needed, le*le/alpha, Body 2: 0.0140781 
 nldiag,cont,iter           ! print out contact info each equilibrium iteration
 rescontrol,define,last,last,,dele	   ! Program Controlled
 /com,****************************************************
@@ -998,7 +998,7 @@ nldiag,eflg,on,1
 /eof
 *endif
 solve
-/com *************** Write FE CONNECTORS *********
+/com *************** Write FE CONNECTORS ********* 
 CEWRITE,file,ce,,INTE
 /com,****************************************************
 /com,*************** FINISHED SOLVE FOR LS 1 *************
