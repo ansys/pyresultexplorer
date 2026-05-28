@@ -97,7 +97,7 @@ jobs:
         run: |
             pytest tests -m "" \
               --junitxml test_results_native.xml \
-              --cov=ansys --cov-report=term --cov-report=html:.cov/html --cov-report=markdown:cov.md \
+              --cov=ansys --cov-report=term --cov-report=html:.cov/html --cov-report=xml:coverage.xml \
               ${{ env.UPDATE_SNAPSHOTS == 'true' && '--snapshot-update' || '' }} \
               --launch-native
         env:
@@ -109,7 +109,7 @@ jobs:
         run: |
             uv run pytest tests -m "" \
               --junitxml test_results_docker.xml \
-              --cov=ansys --cov-report=term --cov-report=html:.cov/html --cov-report=markdown:cov.md \
+              --cov=ansys --cov-report=term --cov-report=html:.cov/html --cov-report=xml:coverage.xml \
               ${{ env.UPDATE_SNAPSHOTS == 'true' && '--snapshot-update' || '' }} \
               --server-url=${{ steps.rx-compose.outputs.server-url }} \
               --web-url=${{ steps.rx-compose.outputs.web-url }} \
@@ -124,11 +124,30 @@ jobs:
           detailed_summary: true
           include_passed: true
 
-      - name: Show coverage report
-        if: always()
-        run: |
-          echo "## Code Coverage" >> $GITHUB_STEP_SUMMARY
-          cat cov.md >> $GITHUB_STEP_SUMMARY
+      - name: Code Coverage Summary
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        if: ${{ always() && env.MAIN_PYTHON_VERSION == matrix.python-version }}
+        with:
+          filename: coverage.xml
+          badge: true
+          fail_below_min: false
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: '70 80'
+
+      - name: Write coverage to Job Summary
+        if: ${{ always() && env.MAIN_PYTHON_VERSION == matrix.python-version }}
+        run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Comment coverage on PR
+        if: ${{ always() && env.MAIN_PYTHON_VERSION == matrix.python-version && github.event_name == 'pull_request' }}
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-file: code-coverage-results.md
 
       - name: Upload coverage results
         uses: actions/upload-artifact@v7
