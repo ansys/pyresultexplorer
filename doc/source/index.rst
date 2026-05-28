@@ -1,7 +1,5 @@
 .. title:: Welcome to PyResultExplorer
 
-.. include:: ../../README.rst
-
 .. toctree::
    :hidden:
    :maxdepth: 3
