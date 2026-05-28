@@ -13,6 +13,11 @@ on:
         required: false
         default: false
         type: boolean
+      python-versions:
+        description: 'JSON array of Python versions to test against (e.g. ["3.12"])'
+        required: false
+        default: '["3.12"]'
+        type: string
 
 env:
   MAIN_PYTHON_VERSION: '3.12'
@@ -28,7 +33,7 @@ jobs:
     strategy:
       matrix:
        os: [ubuntu-latest]
-       python-version: ['3.12']
+       python-version: ${{ fromJson(inputs.python-versions) }}
       fail-fast: false
 
     steps:
