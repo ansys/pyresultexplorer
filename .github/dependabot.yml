@@ -8,7 +8,7 @@ registries:
     password: ${{secrets.PYANSYS_CI_BOT_TOKEN}}
 
 updates:
-  - package-ecosystem: "pip"
+  - package-ecosystem: "uv"
     insecure-external-code-execution: allow
     registries: "*"
     directory: "/"
@@ -17,6 +17,11 @@ updates:
     labels:
       - "maintenance"
       - "dependencies"
+
+    cooldown:
+      include:
+        - '*'
+      default-days: 7
 
     groups:
       pytest-dependencies:
@@ -32,6 +37,12 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+
+    cooldown:
+      include:
+        - '*'
+      default-days: 7
+
     labels:
       - "maintenance"
     groups:
