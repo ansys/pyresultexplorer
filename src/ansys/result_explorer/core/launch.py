@@ -665,7 +665,7 @@ class ResultExplorerInstance:
     ):
         """Initialize a Result Explorer instance."""
         self._server_config = server_config or ServerLaunchConfig()
-        self._web_config = web_config
+        self._web_config = web_config or WebLaunchConfig()
         self._server_process: ResultExplorerServerProcess | None = None
         self._web_session: ResultExplorerWebSession | None = None
         self._session_id = str(uuid.uuid4())
