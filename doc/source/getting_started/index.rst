@@ -1,6 +1,8 @@
 Getting started
 ---------------
 
+(obsolete, needs to be updated)
+
 At least two installation modes are provided: user and developer.
 
 For users
@@ -104,11 +106,12 @@ For building documentation, you can either run the usual rules provided in the
 
     make -C doc/ html && open doc/html/index.html
 
-However, the recommended way of checking documentation integrity is using:
+You can also build a live version of the documentation that you can preview in the browser,
+with automatic reload on change:
 
 .. code:: bash
 
-    tox -e doc && open .tox/doc_out/index.html
+    sphinx-autobuild source build
 
 
 Distributing

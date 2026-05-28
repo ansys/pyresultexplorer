@@ -42,6 +42,7 @@ extensions = [
     "numpydoc",
     "sphinx.ext.intersphinx",
     "sphinx_copybutton",
+    "sphinx_design",
 ]
 
 # Intersphinx mapping
@@ -55,6 +56,9 @@ intersphinx_mapping = {
     # "pyvista": ("https://docs.pyvista.org/", None),
     # "grpc": ("https://grpc.github.io/grpc/python/", None),
 }
+
+# sphinx-design configuration
+sd_fontawesome_latex = True
 
 # numpydoc configuration
 numpydoc_show_class_members = False
