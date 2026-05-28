@@ -126,7 +126,10 @@ jobs:
 
       - name: Code Coverage Summary
         uses: irongut/CodeCoverageSummary@v1.3.0
-        if: ${{ always() && env.MAIN_PYTHON_VERSION == matrix.python-version }}
+        if: >-
+          always() &&
+          env.DEPLOYMENT == 'native' &&
+          env.MAIN_PYTHON_VERSION == matrix.python-version
         with:
           filename: coverage.xml
           badge: true
@@ -136,14 +139,21 @@ jobs:
           hide_complexity: true
           indicators: true
           output: both
-          thresholds: '70 80'
+          thresholds: '80 90'
 
       - name: Write coverage to Job Summary
-        if: ${{ always() && env.MAIN_PYTHON_VERSION == matrix.python-version }}
+        if: >-
+          always() &&
+          env.DEPLOYMENT == 'native' &&
+          env.MAIN_PYTHON_VERSION == matrix.python-version
         run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
 
       - name: Comment coverage on PR
-        if: ${{ always() && env.MAIN_PYTHON_VERSION == matrix.python-version && github.event_name == 'pull_request' }}
+        if: >-
+          always() &&
+          env.DEPLOYMENT == 'native' &&
+          env.MAIN_PYTHON_VERSION == matrix.python-version &&
+          github.event_name == 'pull_request'
         uses: peter-evans/create-or-update-comment@v4
         with:
           issue-number: ${{ github.event.pull_request.number }}
