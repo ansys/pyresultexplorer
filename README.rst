@@ -6,7 +6,7 @@ Python interface to Ansys Result Explorer.
 https://github.com/user-attachments/assets/ca332819-89d5-4c64-8101-1df0b007e05d
 
 **Warning** - **Early Development Stage**
-   
+
 PyResultExplorer is currently in the very early stages of development. The interface
 is rough and subject to significant changes. Expect rapid and potentially breaking
 changes in the coming months as the API evolves and stabilizes.

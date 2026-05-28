@@ -3,7 +3,7 @@ name: 'Install Result Explorer server'
 description: 'Download Result Explorer server and install it'
 
 inputs:
-  
+
   version:
     description: 'Version of the Result Explorer server to install. Example: latest-dev'
     default: 'latest-dev'
@@ -24,7 +24,7 @@ outputs:
 
 runs:
   using: "composite"
-  
+
   steps:
 
     - name: Download Result Explorer server
@@ -55,5 +55,5 @@ runs:
         ./viz-server/viz-server --version >> $GITHUB_STEP_SUMMARY
 
         echo "path=$(pwd)/viz-server/viz-server" >> $GITHUB_OUTPUT
-      env: 
+      env:
         INSTALLATION_PATH: ${{ inputs.installation-path }}
