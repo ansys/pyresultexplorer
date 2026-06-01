@@ -88,7 +88,6 @@ def get_custom_plot_data(
 def solution(rx: Client, rst_multiple_connections: str) -> Generator[Solution, None, None]:
     sol = rx.create_solution(
         name="Above Threshold Test Solution",
-        result_provider="Local",
         file_path=rst_multiple_connections,
     )
     yield sol

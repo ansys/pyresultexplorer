@@ -159,6 +159,8 @@ class Client:
             metadata=wrapper_metadata,
         )  # type: ignore
 
+        self._default_result_provider: str | None = DEFAULT_RESULT_PROVIDER
+
     def __del__(self):
         """Clean up resources when client is destroyed."""
         try:
@@ -209,6 +211,35 @@ class Client:
             self._instance.stop()
             self._instance = None
 
+    def _get_result_provider_name(
+        self, result_provider: str | models.ResultProvider | None = None
+    ) -> str:
+        """Normalize result provider parameter to a provider name string."""
+        if result_provider is None:
+            return self.default_result_provider
+        if isinstance(result_provider, models.ResultProvider):
+            return result_provider.name
+        return result_provider
+
+    @property
+    def default_result_provider(self) -> str:
+        """Get the default result provider name."""
+        if self._default_result_provider is None:
+            raise ValueError("No default result provider set.")
+        return self._default_result_provider
+
+    @default_result_provider.setter
+    def default_result_provider(self, value: str) -> None:
+        """Set the default result provider name."""
+        # validate that the provided value is in the list of available result providers
+        available_providers = self.list_result_providers()
+        if value not in [rp.name for rp in available_providers]:
+            raise ValueError(
+                f"Result provider '{value}' not found."
+                f" Available providers: {[rp.name for rp in available_providers]}"
+            )
+        self._default_result_provider = value
+
     @classmethod
     def connect_with_token(cls, token: str) -> "Client":
         """Connect with a base64 encoded json object that contains the connection info."""
@@ -235,13 +266,10 @@ class Client:
     def ls(
         self,
         path: str,
-        result_provider: str | models.ResultProvider = DEFAULT_RESULT_PROVIDER,
+        result_provider: str | models.ResultProvider | None = None,
         depth=0,
     ) -> list[models.FSItem]:
-        rp_name = result_provider
-        if isinstance(result_provider, models.ResultProvider):
-            rp_name = result_provider.name
-
+        rp_name = self._get_result_provider_name(result_provider)
         req = models.LsRequest(result_provider_name=rp_name, path=path, max_depth=depth)
         res = self._filesystem_stub.Ls(req)
         return list(res.items)
@@ -249,7 +277,7 @@ class Client:
     def hps_ls(
         self,
         path: str,
-        result_provider: str | models.ResultProvider = DEFAULT_RESULT_PROVIDER,
+        result_provider: str | models.ResultProvider | None = None,
     ) -> list[models.HpsFSItem]:
         """List entities in the HPS file system of the result provider.
 
@@ -261,10 +289,7 @@ class Client:
             Otherwise, the path should be in the format "/project_id/job_id/task_id/file_id".
 
         """
-        rp_name = result_provider
-        if isinstance(result_provider, models.ResultProvider):
-            rp_name = result_provider.name
-
+        rp_name = self._get_result_provider_name(result_provider)
         req = models.LsRequest(result_provider_name=rp_name, path=path)
         res = self._hps_filesystem_stub.Ls(req)
         return list(res.items)
@@ -272,13 +297,10 @@ class Client:
     def _get_file_content(
         self,
         path: str,
-        result_provider: str | models.ResultProvider = DEFAULT_RESULT_PROVIDER,
+        result_provider: str | models.ResultProvider | None = None,
         lines_offset: int = 0,
     ) -> str:
-        rp_name = result_provider
-        if isinstance(result_provider, models.ResultProvider):
-            rp_name = result_provider.name
-
+        rp_name = self._get_result_provider_name(result_provider)
         req = models.TailRequest(result_provider_name=rp_name, path=path, lines_offset=lines_offset)
         res = self._filesystem_stub.Tail(req)
         return res.content
@@ -286,9 +308,9 @@ class Client:
     # ----------- Solution methods ----------------
     def create_solution(
         self,
-        result_provider: str | models.ResultProvider,
         name: str,
         file_path: str,
+        result_provider: str | models.ResultProvider | None = None,
         split_mesh_options: models.SplitMeshOptions | None = None,
     ) -> Solution:
         """Create a solution based on a file path. The file must be accessible by the server.
@@ -307,10 +329,7 @@ class Client:
 
         """
 
-        rp_name = result_provider
-        if isinstance(result_provider, models.ResultProvider):
-            rp_name = result_provider.name
-
+        rp_name = self._get_result_provider_name(result_provider)
         file = models.File(path=file_path)
         split_mesh_options = split_mesh_options or models.SplitMeshOptions(auto_split_mesh=True)
         sol = models.SolutionCreate(
@@ -324,11 +343,11 @@ class Client:
 
     def create_hps_solution(
         self,
-        result_provider: str | models.ResultProvider,
         name: str,
         project_id: str,
         task_id: str,
         file_id: str,
+        result_provider: str | models.ResultProvider | None = None,
         split_mesh_options: models.SplitMeshOptions | None = None,
     ) -> Solution:
         """Create a solution based on a file in the HPS file system of the result provider.
@@ -354,6 +373,8 @@ class Client:
         """
 
         rp = None
+        if result_provider is None:
+            rp = self.default_result_provider
         if isinstance(result_provider, models.ResultProvider):
             rp = result_provider
         else:
@@ -493,13 +514,9 @@ class Client:
         self._app_stub.DeleteResultProvider(models.DeleteResultProviderRequest(name=rp_name))
 
     def authenticate_result_provider(
-        self, result_provider: str | models.ResultProvider, token: str
+        self, token: str, result_provider: str | models.ResultProvider | None = None
     ) -> None:
-        rp_name = (
-            result_provider.name
-            if isinstance(result_provider, models.ResultProvider)
-            else result_provider
-        )
+        rp_name = self._get_result_provider_name(result_provider)
         req = models.AuthenticateResultProviderRequest(result_provider_name=rp_name, token=token)
         self._app_stub.AuthenticateResultProvider(req)
 

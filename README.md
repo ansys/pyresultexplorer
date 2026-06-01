@@ -65,12 +65,8 @@ from ansys.result_explorer.core import launch_result_explorer
 # Launch a new Result Explorer session
 rx = launch_result_explorer()
 
-result_providers = rx.list_result_providers()
-provider = result_providers[0]
-
 # Create a solution from an APDL RST file
 sol = rx.create_solution(
-    result_provider=provider,
     name="PyRX Solution",
     file_path=os.path.join("tests", "data", "multiple_connections.rst"),
 )

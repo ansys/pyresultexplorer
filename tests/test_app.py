@@ -95,7 +95,6 @@ def test_save_session_with_views(rx, rst_multiple_connections, tmp_path):
     # Create a solution
     sol = rx.create_solution(
         name="Session Test Solution",
-        result_provider="Local",
         file_path=rst_multiple_connections,
     )
 
@@ -144,7 +143,6 @@ def test_open_session_round_trip(rx, rst_multiple_connections, tmp_path):
     # --- build initial state ---
     sol = rx.create_solution(
         name="Round Trip Solution",
-        result_provider="Local",
         file_path=rst_multiple_connections,
     )
     workspace = rx.create_workspace("Round Trip WS", rows=1, cols=2)
