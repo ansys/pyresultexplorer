@@ -56,6 +56,19 @@ def test_workspace(rx):
     assert workspace.sync_probe_entity is False
     assert workspace.sync_probe_location is False
 
+    # do the same with more granular APIs
+    workspace.sync_camera = True
+    workspace.sync_time_freq = True
+    workspace.sync_legend = True
+    workspace.sync_probe_entity = False
+    workspace.sync_probe_location = False
+    workspace = rx.get_workspace(workspace.id)
+    assert workspace.sync_camera is True
+    assert workspace.sync_time_freq is True
+    assert workspace.sync_legend is True
+    assert workspace.sync_probe_entity is False
+    assert workspace.sync_probe_location is False
+
     workspace.set_fullscreen_viewport(workspace.viewports[0])
     workspace = rx.get_workspace(workspace.id)
     assert workspace.fullscreen_viewport_id == workspace.viewport_ids[0]
@@ -176,7 +189,10 @@ def test_export_workspace_template_with_views(rx, multiple_connections_solution,
     rx.delete_workspace(workspace)
 
 
-def test_import_workspace_from_template_round_trip(rx, multiple_connections_solution, tmp_path):
+@pytest.mark.parametrize("with_options", [False, True])
+def test_import_workspace_from_template_round_trip(
+    rx, multiple_connections_solution, tmp_path, with_options
+):
     """Export a workspace template then import it and verify the result."""
 
     from ansys.result_explorer.core import models
@@ -198,6 +214,9 @@ def test_import_workspace_from_template_round_trip(rx, multiple_connections_solu
     assert template_path.exists()
 
     # Import template — rebind the same solution slot the template references
+    use_camera_position = None if not with_options else True
+    use_time_freq = None if not with_options else True
+    use_body_visibility = None if not with_options else True
     imported_ws = rx.import_workspace_from_template(
         template_path,
         workspace_name="Imported Round Trip",
@@ -208,6 +227,9 @@ def test_import_workspace_from_template_round_trip(rx, multiple_connections_solu
                 file_path=multiple_connections_solution.files[0].path,
             )
         ],
+        use_camera_position=use_camera_position,
+        use_time_freq=use_time_freq,
+        use_body_visibility=use_body_visibility,
     )
 
     assert imported_ws.id != original_ws.id

@@ -736,11 +736,6 @@ class ResultExplorerInstance:
         return self._server_process.url + "/web"
 
     @property
-    def grpc_host(self) -> str:
-        """Get the gRPC host."""
-        return "localhost"
-
-    @property
     def grpc_port(self) -> int:
         """Get the gRPC port."""
         if self._server_process is None:

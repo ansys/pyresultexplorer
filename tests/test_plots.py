@@ -16,6 +16,7 @@
 
 import logging
 
+import pytest
 from google.protobuf.json_format import MessageToDict
 
 from ansys.result_explorer.core import models
@@ -87,6 +88,31 @@ def test_plot(multiple_connections_solution: Solution):
         None,
     )
     assert plot_def_in_views is None
+
+
+def test_plot_view_no_definition(multiple_connections_solution: Solution):
+
+    sol = multiple_connections_solution
+
+    # create a new plot
+    plot_def = models.PlotDefinitionCreate(
+        name="My stress plot",
+        result_type=models.ResultType.RESULT_TYPE_STRESS,
+        location="Nodal",
+        shell_position=models.ShellPosition.SHELL_POSITION_MIDDLE,
+        fields=[
+            models.Field(name="equivalent_von_mises_stress"),
+        ],
+    )
+
+    plot_view = sol.create_plot(plot_def)
+    plot_def = plot_view.definition
+
+    # delete the plot view
+    sol.delete_plot(plot_def.id)
+
+    with pytest.raises(RuntimeError, match="not found"):
+        _ = plot_view.definition
 
 
 def test_plot_with_default_result_type(multiple_connections_solution: Solution):
