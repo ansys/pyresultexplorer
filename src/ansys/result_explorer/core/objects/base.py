@@ -19,7 +19,6 @@
 from __future__ import annotations
 
 import weakref
-from collections.abc import Sequence
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 if TYPE_CHECKING:
@@ -86,19 +85,3 @@ class SubEntity(NamedBaseEntity[PBType], Generic[PBType, ParentType]):
         if parent is None:
             raise RuntimeError(f"Parent of {self} has been garbage collected.")
         return parent
-
-
-def _pb_to_dataclass(pb_obj, dataclass_type: type):
-    """Convert a protobuf object to a dataclass instance."""
-    # if pb_obj is None, return None
-    if pb_obj is None:
-        return None
-
-    # if pb_obj is a repeated field, convert each item
-    # Use Sequence check to handle protobuf repeated fields, but exclude strings
-    if isinstance(pb_obj, Sequence) and not isinstance(pb_obj, str):
-        return [_pb_to_dataclass(item, dataclass_type) for item in pb_obj]
-
-    field_names = {f.name for f in dataclass_type.__dataclass_fields__.values()}
-    init_kwargs = {field: getattr(pb_obj, field) for field in field_names if hasattr(pb_obj, field)}
-    return dataclass_type(**init_kwargs)
