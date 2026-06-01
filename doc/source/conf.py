@@ -54,6 +54,9 @@ extensions = [
 autosummary_generate = True
 autosummary_imported_members = True
 
+# Suppress warnings for autosummary-generated files not in toctree
+suppress_warnings = ["toctree"]
+
 # Intersphinx mapping
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
