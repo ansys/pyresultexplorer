@@ -44,6 +44,7 @@ if TYPE_CHECKING:
 
 RX_SERVER_ENV_VAR = "ANSYS_RESULT_EXPLORER_SERVER"
 RX_DESKTOP_ENV_VAR = "ANSYS_RESULT_EXPLORER_DESKTOP"
+DEFAULT_HOST = "127.0.0.1"
 DEFAULT_GRPC_PORT = 50000
 DEFAULT_WEB_PORT = 5100
 
@@ -202,7 +203,7 @@ def _find_free_port(start_port: int = 5100) -> int:
     for _ in range(max_attempts):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             try:
-                sock.bind(("127.0.0.1", port))
+                sock.bind((DEFAULT_HOST, port))
                 sock.close()
                 return port
             except OSError:
@@ -390,8 +391,7 @@ class ResultExplorerServerProcess:
             raise RuntimeError(f"Failed to start server: {e}") from e
 
         # Wait for server to be ready
-        protocol = "https" if self._config.ssl else "http"
-        server_url = f"{protocol}://127.0.0.1:{self._port}/api/v1"
+        server_url = self.url + "/api/v1"
         log.info(f"Waiting for server to be ready at {server_url}...")
         if not _wait_for_server(server_url):
             self.stop()
@@ -399,10 +399,11 @@ class ResultExplorerServerProcess:
         log.info("Server is ready.")
 
         # Query /api/v1 to get gateway port information
-        self._query_gateway_ports(protocol)
+        self._query_gateway_ports()
 
         # Wait for gateway HTTP API to be ready
-        gateway_url = f"{protocol}://127.0.0.1:{self._gateway_http_port}"
+        protocol = "https" if self._config.ssl else "http"
+        gateway_url = f"{protocol}://{DEFAULT_HOST}:{self._gateway_http_port}"
         log.debug(f"Waiting for gateway to be ready at {gateway_url}...")
         if not _wait_for_server(gateway_url, timeout=30.0):
             self.stop()
@@ -420,8 +421,7 @@ class ResultExplorerServerProcess:
             # Try graceful shutdown via API
             if self._port is not None:
                 try:
-                    protocol = "https" if self._config.ssl else "http"
-                    shutdown_url = f"{protocol}://127.0.0.1:{self._port}/api/v1/shutdown"
+                    shutdown_url = self.url + "/api/v1/shutdown"
                     log.debug(f"Sending shutdown request to {shutdown_url}")
                     requests.put(shutdown_url, timeout=2, verify=False)
                     log.debug("Shutdown request sent, waiting for process to exit...")
@@ -464,11 +464,11 @@ class ResultExplorerServerProcess:
     def url(self) -> str:
         """Get the server URL."""
         protocol = "https" if self._config.ssl else "http"
-        return f"{protocol}://127.0.0.1:{self.port}"
+        return f"{protocol}://{DEFAULT_HOST}:{self.port}"
 
-    def _query_gateway_ports(self, protocol: str) -> None:
+    def _query_gateway_ports(self) -> None:
         """Query the /api/v1 endpoint to get gateway port information."""
-        api_url = f"{protocol}://127.0.0.1:{self._port}/api/v1"
+        api_url = self.url + "/api/v1"
         try:
             response = requests.get(api_url, timeout=5, verify=False)
             response.raise_for_status()
@@ -688,8 +688,7 @@ class ResultExplorerInstance:
         self._server_process = ResultExplorerServerProcess(self._server_config)
         self._server_process.start()
 
-        protocol = "https" if self._server_config.ssl else "http"
-        base_url = f"{protocol}://127.0.0.1:{self._server_process.port}"
+        base_url = self._server_process.url
         web_url = f"{base_url}/web"
 
         # Launch web UI if configured
@@ -734,8 +733,7 @@ class ResultExplorerInstance:
         """
         if self._server_process is None:
             raise RuntimeError("Server has not been launched yet.")
-        protocol = "https" if self._server_config.ssl else "http"
-        return f"{protocol}://127.0.0.1:{self._server_process.port}/web"
+        return self._server_process.url + "/web"
 
     @property
     def grpc_host(self) -> str:
