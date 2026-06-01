@@ -97,7 +97,7 @@ jobs:
         run: |
             pytest tests -m "" \
               --junitxml test_results_native.xml \
-              --cov=ansys --cov-report=term --cov-report=html:.cov/html --cov-report=xml:coverage.xml --cov-report=markdown:cov.xml\
+              --cov=ansys --cov-report=term --cov-report=html:.cov/html --cov-report=xml:coverage.xml --cov-report=markdown:cov.md\
               ${{ env.UPDATE_SNAPSHOTS == 'true' && '--snapshot-update' || '' }} \
               --launch-native
         env:
