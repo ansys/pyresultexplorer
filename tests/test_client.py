@@ -70,3 +70,13 @@ def test_connect_with_token_missing_session_id():
     token = base64.b64encode(json.dumps({"host": "localhost", "grpcPort": 5000}).encode()).decode()
     with pytest.raises(ValueError, match="missing 'sessionId'"):
         Client.connect_with_token(token)
+
+
+def test_default_result_provider(rx):
+    """Test default result provider getter and setter."""
+    # Verify default result provider is set
+    assert rx.default_result_provider == "Local"
+
+    # Try to set an invalid result provider
+    with pytest.raises(ValueError, match="Result provider 'NonExistent' not found"):
+        rx.default_result_provider = "NonExistent"
