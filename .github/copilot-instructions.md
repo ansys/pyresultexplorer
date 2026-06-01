@@ -81,6 +81,76 @@ PyResultExplorer is a Python client library for Result Explorer that communicate
 - **Fix all linting errors** — Before committing, ensure no errors from `ruff check`.
 - **Keep line length ≤100 characters** — Break long lines at logical boundaries.
 
+### Docstring Guidelines
+
+All docstrings must follow the **Numpydoc style** per the [PyAnsys Development Guide](https://github.com/ansys/pyansys-dev-guide/tree/main/doc/source/doc-style).
+
+**Key formatting rules:**
+- Use `"""` triple quotes to open and close docstrings
+- Keep line length **shorter than 70 characters**
+- No trailing whitespace (causes build errors)
+- Use double backticks (``) to surround code entities: ``ClassName``, ``method_name()``, ``variable_name``
+
+**Required sections (as applicable):**
+1. **Short Summary** (mandatory) — One-line description
+2. **Extended Summary** (if applicable) — Detailed explanation
+3. **Parameters** (if applicable) — All function/method parameters
+4. **Returns** (if applicable) — Return type and description
+5. **Examples** (mandatory) — Executable doctest code
+
+**Short summary rules:**
+- **Classes:** Start with verb ending in 's' (e.g., "Manages", "Provides")
+  ```python
+  class FieldAnalysis3D(Analysis):
+      """Manages 3D field analysis setup in HFSS, Maxwell 3D, and Q3D."""
+  ```
+- **Functions/Methods:** Start with verb NOT ending in 's' (e.g., "Export", "Calculate")
+  ```python
+  def export_mesh_stats(self, setup_name):
+      """Export mesh statistics to a file."""
+  ```
+- **Properties:** Describe as noun; no "Parameters" section
+- **Protected methods** (_prefix): Still document clearly
+
+**Parameters section format:**
+```
+Parameters
+----------
+parameter_name : type, optional
+    Brief description. For optional params, explain default behavior.
+```
+
+**Returns section format:**
+```
+Returns
+-------
+return_type
+    Description of what is returned.
+```
+- Classes do NOT have a "Returns" section
+- Methods without explicit return do NOT need one
+
+**Examples section rules:**
+- Must be doctest-compatible (executable by pytest)
+- Keep examples in sync with API changes
+- Use `>>>` prompt for executable code
+- Example:
+  ```python
+  Examples
+  --------
+  Create an instance and perform a basic operation.
+  
+  >>> from mymodule import MyClass
+  >>> obj = MyClass()
+  >>> result = obj.do_something()
+  ```
+
+**Type hints:**
+- Include in function signatures per [PEP 484](https://peps.python.org/pep-0484/)
+- Sphinx renders them in parameter descriptions (not signatures)
+
+See [.github/instructions/documentation-style.md](.github/instructions/documentation-style.md) for comprehensive documentation guidelines and tools.
+
 ## Testing Best Practices
 
 - **Always write new tests for new features** — Even integration tests are valuable; prioritize realistic scenarios over trivial coverage.
