@@ -509,48 +509,49 @@ class TestServerLaunchIntegration:
         # Launch the full application
         client = launch_result_explorer(server_config, web_config)
 
+        # Verify client is connected
+        assert client is not None
+        assert client.instance is not None
+        assert "/web" in client.web_url
+        assert client.web_session is not None
+
+        # Test app info retrieval
+        app_info = client.app_info()
+        assert app_info is not None
+        assert app_info.version != ""
+
+        # Get app settings
+        settings = client.app_settings()
+        assert settings is not None
+
+        # Create a workspace
+        workspace = client.create_workspace("Integration Test Workspace")
+        assert workspace is not None
+        assert workspace.name == "Integration Test Workspace"
+
+        # List workspaces
+        workspaces = client.list_workspaces()
+        assert len(workspaces) > 0
+        assert any(w.name == "Integration Test Workspace" for w in workspaces)
+
+        # List result providers
+        providers = client.list_result_providers()
+        assert isinstance(providers, list)
+
+        # Save and restore session
+        import tempfile
+
+        with tempfile.NamedTemporaryFile(suffix=".rxs", delete=False) as f:
+            session_path = Path(f.name)
+
         try:
-            # Verify client is connected
-            assert client is not None
-
-            # Test app info retrieval
-            app_info = client.app_info()
-            assert app_info is not None
-            assert app_info.version != ""
-
-            # Get app settings
-            settings = client.app_settings()
-            assert settings is not None
-
-            # Create a workspace
-            workspace = client.create_workspace("Integration Test Workspace")
-            assert workspace is not None
-            assert workspace.name == "Integration Test Workspace"
-
-            # List workspaces
-            workspaces = client.list_workspaces()
-            assert len(workspaces) > 0
-            assert any(w.name == "Integration Test Workspace" for w in workspaces)
-
-            # List result providers
-            providers = client.list_result_providers()
-            assert isinstance(providers, list)
-
-            # Save and restore session
-            import tempfile
-
-            with tempfile.NamedTemporaryFile(suffix=".rxs", delete=False) as f:
-                session_path = Path(f.name)
-
-            try:
-                client.save_session(session_path)
-                assert session_path.exists()
-                assert session_path.stat().st_size > 0
-            finally:
-                session_path.unlink()
-
+            client.save_session(session_path)
+            assert session_path.exists()
+            assert session_path.stat().st_size > 0
         finally:
-            client.stop()
+            session_path.unlink()
+
+        client.stop()
 
     def test_full_application_launch_twice(self, skip_if_no_native_launch):
         """Test launching the full application twice concurrently.
@@ -567,30 +568,29 @@ class TestServerLaunchIntegration:
         # Second launch while first is still running
         client2 = launch_result_explorer(server_config, web_config)
 
-        try:
-            # Both should work concurrently
-            app_info1 = client1.app_info()
-            assert app_info1 is not None
-            assert app_info1.version != ""
+        # Both should work concurrently
+        app_info1 = client1.app_info()
+        assert app_info1 is not None
+        assert app_info1.version != ""
 
-            app_info2 = client2.app_info()
-            assert app_info2 is not None
-            assert app_info2.version != ""
+        app_info2 = client2.app_info()
+        assert app_info2 is not None
+        assert app_info2.version != ""
 
-            # Create resources in each client
-            workspace1 = client1.create_workspace("Workspace from Client 1")
-            assert workspace1 is not None
+        # Create resources in each client
+        workspace1 = client1.create_workspace("Workspace from Client 1")
+        assert workspace1 is not None
 
-            workspace2 = client2.create_workspace("Workspace from Client 2")
-            assert workspace2 is not None
+        workspace2 = client2.create_workspace("Workspace from Client 2")
+        assert workspace2 is not None
 
-            # Verify both can list resources
-            workspaces1 = client1.list_workspaces()
-            assert any(w.name == "Workspace from Client 1" for w in workspaces1)
+        # Verify both can list resources
+        workspaces1 = client1.list_workspaces()
+        assert any(w.name == "Workspace from Client 1" for w in workspaces1)
 
-            workspaces2 = client2.list_workspaces()
-            assert any(w.name == "Workspace from Client 2" for w in workspaces2)
-        finally:
-            # Stop both clients at the end
-            client1.stop()
-            client2.stop()
+        workspaces2 = client2.list_workspaces()
+        assert any(w.name == "Workspace from Client 2" for w in workspaces2)
+
+        # Stop both clients at the end
+        client1.stop()
+        client2.stop()
