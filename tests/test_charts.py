@@ -16,6 +16,8 @@
 
 import logging
 
+import pytest
+
 from ansys.result_explorer.core import models
 from ansys.result_explorer.core.objects import Solution
 
@@ -89,6 +91,38 @@ def test_chart(multiple_connections_solution: Solution):
         None,
     )
     assert chart_def_in_views is None
+
+
+def test_chart_view_no_definition(multiple_connections_solution: Solution):
+
+    sol = multiple_connections_solution
+
+    chart_def = models.ChartDefinitionCreate(
+        name="My chart",
+        user_defined=False,
+        all_sets=True,
+        results=[
+            models.ChartResult(
+                name="Stress",
+                result_type=models.ResultType.RESULT_TYPE_STRESS,
+                location="Nodal",
+                fields=[
+                    models.Field(name="equivalent_von_mises_stress"),
+                    models.Field(name="stress_tensor", components=["XX", "ZZ"]),
+                ],
+                filters=[models.Filter.FILTER_MAX],
+            )
+        ],
+    )
+
+    chart_view = sol.create_chart(chart_def)
+    chart_def = chart_view.definition
+
+    # delete the chart view
+    sol.delete_chart(chart_def.id)
+
+    with pytest.raises(RuntimeError, match="not found"):
+        _ = chart_view.definition
 
 
 def test_new_chart_added_to_views(multiple_connections_solution: Solution):

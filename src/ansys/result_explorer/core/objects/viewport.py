@@ -68,28 +68,28 @@ class PbProperty:
         obj[keys[-1]] = value
 
 
-class PbPropertyReadOnly:
-    """Read-only descriptor for accessing nested protobuf object properties.
+# class PbPropertyReadOnly:
+#     """Read-only descriptor for accessing nested protobuf object properties.
 
-    Supports dot-notation for nested keys (e.g., "explodeSettings.active").
-    Raises AttributeError on write attempts.
-    """
+#     Supports dot-notation for nested keys.
+#     Raises AttributeError on write attempts.
+#     """
 
-    def __init__(self, key: str):
-        """Initialize read-only descriptor with property key path."""
-        self.key = key
+#     def __init__(self, key: str):
+#         """Initialize read-only descriptor with property key path."""
+#         self.key = key
 
-    def __get__(self, obj, objtype=None):
-        """Get read-only property value from nested protobuf object."""
-        if obj is None:
-            return self
-        return PbProperty._get_nested(obj._pb_obj, self.key)
+#     def __get__(self, obj, objtype=None):
+#         """Get read-only property value from nested protobuf object."""
+#         if obj is None:
+#             return self
+#         return PbProperty._get_nested(obj._pb_obj, self.key)
 
-    def __set__(self, obj, value):
-        """Prevent setting value on read-only property."""
-        raise AttributeError(
-            f"Property '{self.key}' of '{type(obj).__name__}' object is read-only."
-        )
+#     def __set__(self, obj, value):
+#         """Prevent setting value on read-only property."""
+#         raise AttributeError(
+#             f"Property '{self.key}' of '{type(obj).__name__}' object is read-only."
+#         )
 
 
 class ViewportMetadata:
