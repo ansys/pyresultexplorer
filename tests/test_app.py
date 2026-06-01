@@ -19,6 +19,8 @@ import logging
 import time
 from pathlib import Path
 
+import pytest
+
 from ansys.result_explorer.core import models
 
 log = logging.getLogger(__name__)
@@ -166,6 +168,10 @@ def test_open_session_round_trip(rx, rst_multiple_connections, tmp_path):
     rx.delete_workspace(workspace)
     rx.delete_solution(sol)
     assert all(w.id != saved_ws_id for w in rx.list_workspaces())
+
+    # --- restore session ---
+    with pytest.raises(ValueError, match="extension"):
+        rx.open_session(str(session_path).replace(".rxs", ".txt"))
 
     # --- restore session ---
     rx.open_session(session_path)
