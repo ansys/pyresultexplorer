@@ -1,7 +1,12 @@
 """Sphinx documentation configuration file."""
 
 import os
+import sys
 from datetime import datetime
+from pathlib import Path
+
+# Add src directory to path for autodoc to find modules
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
 from ansys_sphinx_theme import get_version_match
 
@@ -44,6 +49,10 @@ extensions = [
     "sphinx_copybutton",
     "sphinx_design",
 ]
+
+# autosummary configuration
+autosummary_generate = True
+autosummary_imported_members = True
 
 # Intersphinx mapping
 intersphinx_mapping = {
