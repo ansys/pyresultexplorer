@@ -431,6 +431,8 @@ class TestServerLaunchIntegration:
         assert process.is_running is True
         assert process.port > 0
         assert process.url.startswith("http://127.0.0.1:")
+        assert process.gateway_http_port > 0
+        assert process.gateway_grpc_port > 0
 
         # Verify server responds to requests
         api_url = f"{process.url}/api/v1"
