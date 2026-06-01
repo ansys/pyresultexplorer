@@ -42,7 +42,6 @@ workspace = rx.create_workspace(name="PyRX NS Plot Workspace")
 
 sol_name = "PyRX Cylinder Plate"
 sol = rx.create_solution(
-    result_provider="Local",
     name=sol_name,
     file_path=FILE_PATH,
 )

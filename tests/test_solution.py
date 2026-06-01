@@ -31,7 +31,6 @@ def test_solution(rx, rst_multiple_connections):
     # create a new solution
     sol = rx.create_solution(
         name="Test Solution",
-        result_provider="Local",
         file_path=rst_multiple_connections,
     )
 
@@ -63,7 +62,6 @@ def test_solution(rx, rst_multiple_connections):
 def rst_solution(rx, rst_multiple_connections):
     sol = rx.create_solution(
         name="Test Solution",
-        result_provider="Local",
         file_path=rst_multiple_connections,
     )
     yield sol
@@ -271,14 +269,12 @@ def test_solution_out_files(data_directory, cp_transient_solution: Solution):
     # validate content of additional cp_trans files through filesystem API
     err_content = sol._client._get_file_content(
         path=str(cp_trans_path / "file.err"),
-        result_provider="Local",
     )
     assert "ANSYS RELEASE" in err_content
     assert "*** WARNING ***" in err_content
 
     gst_content = sol._client._get_file_content(
         path=str(cp_trans_path / "file.gst"),
-        result_provider="Local",
     )
     assert "<SOLUTION>" in gst_content
     assert "<LOADSTEPDATA>" in gst_content
@@ -305,7 +301,6 @@ def test_mesh_options_with_processing_mode(rx, rst_multiple_connections):
 
         sol = rx.create_solution(
             name="Test Solution - Data Processing",
-            result_provider="Local",
             file_path=rst_multiple_connections,
         )
 

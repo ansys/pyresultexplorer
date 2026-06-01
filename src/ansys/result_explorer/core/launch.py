@@ -850,6 +850,8 @@ def launch_result_explorer(
         instance=instance,
     )
 
+    client.default_result_provider = instance.result_provider_name
+
     # Verify the client is ready by making a test gRPC call
     max_retries = 15
     retry_delay = 1.0
@@ -876,7 +878,7 @@ def launch_result_explorer(
         log.debug("Authenticating result provider...")
         try:
             client.authenticate_result_provider(
-                instance.result_provider_name, instance._server_config.token
+                instance._server_config.token, result_provider=instance.result_provider_name
             )
             log.debug("Result provider authenticated successfully.")
         except Exception as e:

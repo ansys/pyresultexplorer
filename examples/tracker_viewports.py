@@ -49,7 +49,6 @@ rx = Client.connect_with_token(TOKEN)
 # Create a solution from the transient contact analysis
 sol = rx.create_solution(
     name="Contact Transient Analysis",
-    result_provider="Local",
     file_path=FILE_PATH,
 )
 print(f"Created solution: {sol.name}")

@@ -299,7 +299,6 @@ def snapshot_settings() -> SnapshotSettings:
 def multiple_connections_solution(rx, rst_multiple_connections) -> Generator[Solution, None, None]:
     sol = rx.create_solution(
         name="Test Solution",
-        result_provider="Local",
         file_path=rst_multiple_connections,
     )
     assert sol.n_elements == 246
@@ -319,7 +318,6 @@ def rst_cp_transient(data_directory, is_docker) -> str:
 def cp_transient_solution(rx, rst_cp_transient) -> Generator[Solution, None, None]:
     sol = rx.create_solution(
         name="Test Solution - CP Transient",
-        result_provider="Local",
         file_path=rst_cp_transient,
     )
     assert sol.n_elements == 122
