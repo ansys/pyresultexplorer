@@ -135,6 +135,9 @@ class _PlaywrightManager:
 class BrowserType(StrEnum):
     """Enumeration of supported browser types for web UI launch."""
 
+    def __init__(self, value: str):
+        """Initialize browser type enum."""
+
     SYSTEM_DEFAULT = "system-default"
     PLAYWRIGHT_CHROMIUM = "playwright-chromium"
     PLAYWRIGHT_CHROMIUM_HEADLESS = "playwright-chromium-headless"
@@ -291,7 +294,6 @@ class ServerLaunchConfig:
     token: str | None = None
     num_threads: int | None = None
     log_level: str | None = None
-    # Add more server configuration options as needed
 
     def __post_init__(self):
         """Validate and initialize configuration after dataclass initialization."""

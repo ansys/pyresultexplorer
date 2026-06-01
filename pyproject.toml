@@ -103,8 +103,6 @@ ignore = []
 # ignore docstring requirements for tests, examples
 "tests/**/*.py" = ["D", "PLC0415"]
 "examples/**/*.py" = ["D", "PLC0415"]
-# ignore docstring on client code for now
-# "src/**/client.py" = ["D"]
 ".github/scripts/*.py" = ["E501"]
 
 [tool.pydocstyle]
