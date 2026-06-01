@@ -462,19 +462,7 @@ class ResultExplorerServerProcess:
 
     @property
     def url(self) -> str:
-        """Get the server URL.
-
-        Returns
-        -------
-        str
-            The base URL of the server (e.g., http://127.0.0.1:5100).
-
-        Raises
-        ------
-        RuntimeError
-            If the server has not been started yet.
-
-        """
+        """Get the server URL."""
         protocol = "https" if self._config.ssl else "http"
         return f"{protocol}://127.0.0.1:{self.port}"
 
