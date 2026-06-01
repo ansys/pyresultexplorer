@@ -211,6 +211,16 @@ class Client:
             self._instance.stop()
             self._instance = None
 
+    def _get_result_provider_name(
+        self, result_provider: str | models.ResultProvider | None = None
+    ) -> str:
+        """Normalize result provider parameter to a provider name string."""
+        if result_provider is None:
+            return self.default_result_provider
+        if isinstance(result_provider, models.ResultProvider):
+            return result_provider.name
+        return result_provider
+
     @property
     def default_result_provider(self) -> str:
         """Get the default result provider name."""
@@ -259,12 +269,7 @@ class Client:
         result_provider: str | models.ResultProvider | None = None,
         depth=0,
     ) -> list[models.FSItem]:
-        rp_name = result_provider
-        if rp_name is None:
-            rp_name = self.default_result_provider
-        if isinstance(result_provider, models.ResultProvider):
-            rp_name = result_provider.name
-
+        rp_name = self._get_result_provider_name(result_provider)
         req = models.LsRequest(result_provider_name=rp_name, path=path, max_depth=depth)
         res = self._filesystem_stub.Ls(req)
         return list(res.items)
@@ -284,12 +289,7 @@ class Client:
             Otherwise, the path should be in the format "/project_id/job_id/task_id/file_id".
 
         """
-        rp_name = result_provider
-        if rp_name is None:
-            rp_name = self.default_result_provider
-        if isinstance(result_provider, models.ResultProvider):
-            rp_name = result_provider.name
-
+        rp_name = self._get_result_provider_name(result_provider)
         req = models.LsRequest(result_provider_name=rp_name, path=path)
         res = self._hps_filesystem_stub.Ls(req)
         return list(res.items)
@@ -300,12 +300,7 @@ class Client:
         result_provider: str | models.ResultProvider | None = None,
         lines_offset: int = 0,
     ) -> str:
-        rp_name = result_provider
-        if rp_name is None:
-            rp_name = self.default_result_provider
-        if isinstance(result_provider, models.ResultProvider):
-            rp_name = result_provider.name
-
+        rp_name = self._get_result_provider_name(result_provider)
         req = models.TailRequest(result_provider_name=rp_name, path=path, lines_offset=lines_offset)
         res = self._filesystem_stub.Tail(req)
         return res.content
@@ -334,12 +329,7 @@ class Client:
 
         """
 
-        rp_name = result_provider
-        if rp_name is None:
-            rp_name = self.default_result_provider
-        if isinstance(result_provider, models.ResultProvider):
-            rp_name = result_provider.name
-
+        rp_name = self._get_result_provider_name(result_provider)
         file = models.File(path=file_path)
         split_mesh_options = split_mesh_options or models.SplitMeshOptions(auto_split_mesh=True)
         sol = models.SolutionCreate(
@@ -526,13 +516,7 @@ class Client:
     def authenticate_result_provider(
         self, token: str, result_provider: str | models.ResultProvider | None = None
     ) -> None:
-        rp_name = (
-            result_provider.name
-            if isinstance(result_provider, models.ResultProvider)
-            else result_provider
-        )
-        if rp_name is None:
-            rp_name = self.default_result_provider
+        rp_name = self._get_result_provider_name(result_provider)
         req = models.AuthenticateResultProviderRequest(result_provider_name=rp_name, token=token)
         self._app_stub.AuthenticateResultProvider(req)
 
