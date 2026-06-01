@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Result Explorer client for gRPC communication."""
+
 import base64
 import json
 import warnings
@@ -45,10 +47,21 @@ class GrpcStubWrapper:
     """Wrapper that automatically handles gRPC errors and injects metadata for insecure channels."""
 
     def __init__(self, stub, metadata=None):
+        """Initialize the gRPC stub wrapper.
+
+        Parameters
+        ----------
+        stub
+            The gRPC stub to wrap.
+        metadata : list of (str, str) tuples, optional
+            Metadata to inject into gRPC calls.
+
+        """
         self._stub = stub
         self._metadata = metadata
 
     def __getattr__(self, name):
+        """Get attribute from wrapped stub, wrapping callable methods."""
         attr = getattr(self._stub, name)
 
         # Only wrap callable methods (the actual gRPC service methods)
@@ -87,7 +100,6 @@ class Client:
     ):
         """Initialize the client and connect to Result Explorer.
 
-
         Parameters
         ----------
         session_id : str
@@ -108,8 +120,8 @@ class Client:
         instance : ResultExplorerInstance, optional
             Result Explorer instance to tie the client lifetime to. When the client
             is destroyed, the instance will be stopped as well.
-        """
 
+        """
         self._host = host
         self._grpc_port = grpc_port
         self._session_id = session_id
@@ -183,6 +195,7 @@ class Client:
         -------
         ResultExplorerInstance or None
             The Result Explorer instance if one is attached, None otherwise.
+
         """
         return self._instance
 
@@ -194,6 +207,7 @@ class Client:
         -------
         str or None
             The URL of the web UI if an instance is attached and launched, None otherwise.
+
         """
         return self._instance.web_url if self._instance else None
 
@@ -205,6 +219,7 @@ class Client:
         -------
         ResultExplorerWebSession or None
             The web session if an instance is attached, None otherwise.
+
         """
         return self._instance.web_session if self._instance else None
 
@@ -249,7 +264,6 @@ class Client:
     @classmethod
     def connect_with_token(cls, token: str) -> "Client":
         """Connect with a base64 encoded json object that contains the connection info."""
-
         decoded_bytes = base64.b64decode(token)
         json_string = decoded_bytes.decode("utf-8")
         data = json.loads(json_string)
@@ -290,6 +304,7 @@ class Client:
         -------
         list[FSItem]
             List of file system items at the specified path.
+
         """
         rp_name = self._get_result_provider_name(result_provider)
         req = models.LsRequest(result_provider_name=rp_name, path=path, max_depth=depth)
@@ -305,10 +320,17 @@ class Client:
 
         Parameters
         ----------
-
         path : str
             Path in the HPS file system to list. Use "/" for root.
             Otherwise, the path should be in the format "/project_id/job_id/task_id/file_id".
+        result_provider : str or ResultProvider, optional
+            Name of the result provider or ResultProvider object.
+            If None, uses the default result provider.
+
+        Returns
+        -------
+        list[HpsFSItem]
+            List of items in the HPS file system.
 
         """
         rp_name = self._get_result_provider_name(result_provider)
@@ -339,18 +361,22 @@ class Client:
 
         Parameters
         ----------
-
-        result_provider : str | models.ResultProvider
-            Name of the result provider to use or a ResultProvider object.
-
         name : str
             Name of the solution to create.
-
         file_path : str
             Path to the result file. Must be accessible by the server.
+        result_provider : str or ResultProvider, optional
+            Name of the result provider or ResultProvider object.
+            If None, uses the default result provider.
+        split_mesh_options : SplitMeshOptions, optional
+            Options for splitting the mesh.
+
+        Returns
+        -------
+        Solution
+            The newly created solution.
 
         """
-
         rp_name = self._get_result_provider_name(result_provider)
         file = models.File(path=file_path)
         split_mesh_options = split_mesh_options or models.SplitMeshOptions(auto_split_mesh=True)
@@ -376,24 +402,27 @@ class Client:
 
         Parameters
         ----------
-        result_provider : str | models.ResultProvider
-            Name of the result provider to use or a ResultProvider object.
-            Must have an hps_url defined.
-
         name : str
             Name of the solution to create.
-
         project_id : str
             HPS project ID where the file is located.
-
         task_id : str
             HPS task ID where the file is located.
-
         file_id : str
             HPS file ID of the file to load.
+        result_provider : str or ResultProvider, optional
+            Name of the result provider or ResultProvider object.
+            If None, uses the default result provider.
+            Must have an hps_url defined.
+        split_mesh_options : SplitMeshOptions, optional
+            Options for splitting the mesh.
+
+        Returns
+        -------
+        Solution
+            The newly created solution.
 
         """
-
         rp = None
         if result_provider is None:
             rp = self.default_result_provider
@@ -440,6 +469,7 @@ class Client:
         -------
         list[Solution]
             List of all solutions.
+
         """
         pb_list = self._solution_stub.List(models.Empty())
         return [Solution(s, self) for s in pb_list.solutions]
@@ -461,6 +491,7 @@ class Client:
         -------
         Solution
             The requested solution.
+
         """
         pb_sol = self._solution_stub.Get(models.ResourceId(id=solution_id))
         return Solution(pb_sol, self)
@@ -491,6 +522,7 @@ class Client:
         -------
         Workspace
             The requested workspace.
+
         """
         pb_ws = self._workspace_stub.Get(models.ResourceId(id=workspace_id))
         return Workspace(pb_ws, self)
@@ -502,6 +534,7 @@ class Client:
         -------
         list[Workspace]
             List of all workspaces.
+
         """
         pb_list = self._workspace_stub.List(models.Empty())
         return [Workspace(w, self) for w in pb_list.workspaces]
@@ -513,6 +546,7 @@ class Client:
         ----------
         workspace : str or Workspace
             Workspace ID or Workspace object to delete.
+
         """
         workspace_id = workspace.id if isinstance(workspace, Workspace) else workspace
         self._workspace_stub.Delete(models.ResourceId(id=workspace_id))
@@ -524,6 +558,7 @@ class Client:
         ----------
         viewport : str or Viewport
             Viewport ID or Viewport object to delete.
+
         """
         viewport_id = viewport.id if isinstance(viewport, Viewport) else viewport
         self._workspace_stub.DeleteViewport(models.ResourceId(id=viewport_id))
@@ -559,6 +594,7 @@ class Client:
         -------
         Workspace
             The newly created workspace.
+
         """
         return Workspace.import_from_template(
             self,
@@ -578,6 +614,7 @@ class Client:
         -------
         list[ResultProvider]
             List of all result providers.
+
         """
         r = self._app_stub.ListResultProviders(models.Empty())
         return list(r.result_providers)
@@ -596,6 +633,7 @@ class Client:
         -------
         ResultProvider
             The newly created result provider.
+
         """
         req = models.CreateResultProviderRequest(name=name, url=url)
         return self._app_stub.CreateResultProvider(req)
@@ -607,6 +645,7 @@ class Client:
         ----------
         result_provider : str or ResultProvider
             Name or ResultProvider object to delete.
+
         """
         rp_name = (
             result_provider.name
@@ -627,6 +666,7 @@ class Client:
         result_provider : str or ResultProvider, optional
             Name or ResultProvider object. If None, uses the
             default result provider.
+
         """
         rp_name = self._get_result_provider_name(result_provider)
         req = models.AuthenticateResultProviderRequest(result_provider_name=rp_name, token=token)
@@ -639,6 +679,7 @@ class Client:
         -------
         AppInfo
             Application information and metadata.
+
         """
         return self._app_stub.GetAppInfo(models.Empty())
 
@@ -649,6 +690,7 @@ class Client:
         -------
         AppSettings
             Current application settings.
+
         """
         return self._app_stub.GetAppSettings(models.Empty())
 
@@ -664,6 +706,7 @@ class Client:
         -------
         AppSettings
             Updated application settings.
+
         """
         return self._app_stub.UpdateAppSettings(settings)
 
@@ -674,6 +717,7 @@ class Client:
         ----------
         path : str | Path
             Path to save the session file. Should end with .rxs extension.
+
         """
         path = Path(path)
         if path.suffix != RX_SESSION_EXTENSION:
@@ -690,6 +734,7 @@ class Client:
         ----------
         path : str | Path
             Path to the session file. Should end with .rxs extension.
+
         """
         path = Path(path)
         if path.suffix != RX_SESSION_EXTENSION:

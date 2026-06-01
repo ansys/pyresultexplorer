@@ -33,6 +33,7 @@ class BaseEntity(Generic[PBType]):
     """Base class for all domain objects wrapping protobuf messages."""
 
     def __init__(self, pb_obj: PBType, client: Client):
+        """Initialize base entity."""
         self._pb: PBType = pb_obj
         self._client = client
 
@@ -74,6 +75,7 @@ class SubEntity(NamedBaseEntity[PBType], Generic[PBType, ParentType]):
     """Base class for entities that are sub-entities of a parent entity."""
 
     def __init__(self, pb_obj: PBType, client: Client, parent: ParentType):
+        """Initialize sub-entity."""
         super().__init__(pb_obj, client)
         self._parent_ref = weakref.ref(parent)
 
@@ -87,8 +89,7 @@ class SubEntity(NamedBaseEntity[PBType], Generic[PBType, ParentType]):
 
 
 def _pb_to_dataclass(pb_obj, dataclass_type: type):
-    """Helper function to convert a protobuf object to a dataclass instance."""
-
+    """Convert a protobuf object to a dataclass instance."""
     # if pb_obj is None, return None
     if pb_obj is None:
         return None

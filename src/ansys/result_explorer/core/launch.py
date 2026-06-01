@@ -84,6 +84,7 @@ class _PlaywrightManager:
         ----------
         playwright
             The Playwright instance to use.
+
         """
         with self._lock:
             self._playwright = playwright
@@ -98,6 +99,7 @@ class _PlaywrightManager:
         -------
         playwright.sync_api.Playwright
             The Playwright instance.
+
         """
         with self._lock:
             if self._playwright is None:
@@ -167,6 +169,7 @@ def _find_result_explorer() -> Path:
     ------
     FileNotFoundError
         If Result Explorer installation is not found.
+
     """
     # Check ANSYS_RESULT_EXPLORER_SERVER first (direct path to server)
     if RX_SERVER_ENV_VAR in os.environ:
@@ -278,6 +281,7 @@ class ServerLaunchConfig:
         Enable API response debugging.
     strict_checks : bool, optional
         Enable strict checks.
+
     """
 
     port: int | None = None
@@ -351,6 +355,7 @@ class ResultExplorerServerProcess:
             If the server process is already running or if startup fails.
         FileNotFoundError
             If Result Explorer installation is not found.
+
         """
         if self._process is not None:
             raise RuntimeError("Server process is already running.")
@@ -466,6 +471,7 @@ class ResultExplorerServerProcess:
         ------
         RuntimeError
             If the server has not been started yet.
+
         """
         protocol = "https" if self._config.ssl else "http"
         return f"{protocol}://127.0.0.1:{self.port}"
@@ -536,6 +542,7 @@ class WebLaunchConfig:
         - PLAYWRIGHT_CHROMIUM: Use Playwright with Chromium in windowed mode.
         - PLAYWRIGHT_CHROMIUM_HEADLESS: Use Playwright with Chromium in headless mode.
         Default is SYSTEM_DEFAULT.
+
     """
 
     server_url: str | None = None
@@ -584,6 +591,7 @@ class ResultExplorerWebSession:
             If Playwright is not installed.
         RuntimeError
             If browser installation fails.
+
         """
         try:
             from playwright.sync_api import sync_playwright  # noqa
@@ -684,6 +692,7 @@ class ResultExplorerInstance:
         ------
         RuntimeError
             If the server fails to start.
+
         """
         # Start server
         self._server_process = ResultExplorerServerProcess(self._server_config)
@@ -731,6 +740,7 @@ class ResultExplorerInstance:
         ------
         RuntimeError
             If the server has not been launched yet.
+
         """
         if self._server_process is None:
             raise RuntimeError("Server has not been launched yet.")
@@ -829,6 +839,7 @@ def launch_result_explorer(
     >>> web_config = WebLaunchConfig(browser_type=BrowserType.PLAYWRIGHT_CHROMIUM_HEADLESS)
     >>> client = launch_result_explorer(server_config, web_config)
     >>> # Use the client to interact with Result Explorer
+
     """
     # Import Client here to avoid circular imports
     from .client import Client as ClientImpl  # noqa: PLC0415
