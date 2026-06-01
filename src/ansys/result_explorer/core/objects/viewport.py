@@ -183,15 +183,24 @@ class BaseChartViewportMetadata(ViewportMetadata):
 
     @property
     def series_names(self) -> list[str]:
+        """List of all available series names."""
         return [s.string_value for s in self._pb_obj["displayOptions"]["seriesNames"].values]
 
     @property
     def active_series(self) -> list[str]:
+        """List of currently active series."""
         indices = self._pb_obj["displayOptions"]["activeSeriesIndices"]
         return [self.series_names[int(idx)] for idx in indices]
 
     @active_series.setter
     def active_series(self, names: list[str]) -> None:
+        """Set the active series.
+
+        Parameters
+        ----------
+        names : list[str]
+            List of series names to make active.
+        """
         for name in names:
             if name not in self.series_names:
                 raise ValueError(f"Invalid series name: {name}")
@@ -204,15 +213,24 @@ class ChartViewportMetadata(BaseChartViewportMetadata):
 
     @property
     def chart_names(self) -> list[str]:
+        """List of all available chart names."""
         return [s.string_value for s in self._pb_obj["displayOptions"]["chartNames"].values]
 
     @property
     def active_charts(self) -> list[str]:
+        """List of currently active charts."""
         indices = self._pb_obj["displayOptions"]["activeChartIndices"]
         return [self.chart_names[int(idx)] for idx in indices]
 
     @active_charts.setter
     def active_charts(self, names: list[str]) -> None:
+        """Set the active charts.
+
+        Parameters
+        ----------
+        names : list[str]
+            List of chart names to make active.
+        """
         for name in names:
             if name not in self.chart_names:
                 raise ValueError(f"Invalid chart name: {name}")
@@ -221,11 +239,19 @@ class ChartViewportMetadata(BaseChartViewportMetadata):
 
     @property
     def selected_x_axis(self) -> str:
+        """Name of the currently selected x-axis series."""
         idx = int(self._pb_obj["displayOptions"]["selectedXAxisIndex"])
         return self.series_names[idx]
 
     @selected_x_axis.setter
     def selected_x_axis(self, name: str) -> None:
+        """Set the x-axis series.
+
+        Parameters
+        ----------
+        name : str
+            Name of the series to use as the x-axis.
+        """
         if name not in self.series_names:
             raise ValueError(f"Invalid x-axis name: {name}")
         idx = self.series_names.index(name)
@@ -237,15 +263,24 @@ class ContactTrackersViewportMetadata(BaseChartViewportMetadata):
 
     @property
     def contact_tracker_names(self) -> list[str]:
+        """List of all available contact tracker names."""
         return [s.string_value for s in self._pb_obj["displayOptions"]["chartNames"].values]
 
     @property
     def active_contact_trackers(self) -> list[str]:
+        """List of currently active contact trackers."""
         indices = self._pb_obj["displayOptions"]["activeChartIndices"]
         return [self.contact_tracker_names[int(idx)] for idx in indices]
 
     @active_contact_trackers.setter
     def active_contact_trackers(self, names: list[str]) -> None:
+        """Set the active contact trackers.
+
+        Parameters
+        ----------
+        names : list[str]
+            List of contact tracker names to make active.
+        """
         for name in names:
             if name not in self.contact_tracker_names:
                 raise ValueError(f"Invalid contact tracker name: {name}")
@@ -309,6 +344,7 @@ class Viewport(BaseEntity[models.Viewport]):
 
     @property
     def size(self) -> float:
+        """Size of the viewport as a percentage of its parent."""
         return self._pb.size
 
     @property

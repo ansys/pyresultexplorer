@@ -69,6 +69,12 @@ class GrpcStubWrapper:
 
 
 class Client:
+    """Client for communicating with Result Explorer.
+
+    Provides gRPC-based access to Result Explorer services for managing
+    solutions, workspaces, and result providers.
+    """
+
     def __init__(
         self,
         session_id: str,
@@ -262,13 +268,29 @@ class Client:
 
         return cls(host=host, grpc_port=grpc_port, session_id=session_id, ca_cert_path=ca_cert_path)
 
-    # ----------- FileSystem methods ----------------
     def ls(
         self,
         path: str,
         result_provider: str | models.ResultProvider | None = None,
         depth=0,
     ) -> list[models.FSItem]:
+        """List items in a result provider's file system.
+
+        Parameters
+        ----------
+        path : str
+            File system path to list.
+        result_provider : str or ResultProvider, optional
+            Name of the result provider or ResultProvider object.
+            If None, uses the default result provider.
+        depth : int, optional
+            Maximum depth to traverse. Default is 0.
+
+        Returns
+        -------
+        list[FSItem]
+            List of file system items at the specified path.
+        """
         rp_name = self._get_result_provider_name(result_provider)
         req = models.LsRequest(result_provider_name=rp_name, path=path, max_depth=depth)
         res = self._filesystem_stub.Ls(req)
@@ -412,6 +434,13 @@ class Client:
         return Solution(pb_sol, self)
 
     def list_solutions(self) -> list[Solution]:
+        """List all solutions in the session.
+
+        Returns
+        -------
+        list[Solution]
+            List of all solutions.
+        """
         pb_list = self._solution_stub.List(models.Empty())
         return [Solution(s, self) for s in pb_list.solutions]
 
@@ -421,6 +450,18 @@ class Client:
         self._solution_stub.Delete(models.ResourceId(id=solution_id))
 
     def get_solution(self, solution_id: str) -> Solution:
+        """Get a solution by ID.
+
+        Parameters
+        ----------
+        solution_id : str
+            ID of the solution to retrieve.
+
+        Returns
+        -------
+        Solution
+            The requested solution.
+        """
         pb_sol = self._solution_stub.Get(models.ResourceId(id=solution_id))
         return Solution(pb_sol, self)
 
@@ -439,18 +480,51 @@ class Client:
         return _create_grid_workspace(self, name, rows, cols)
 
     def get_workspace(self, workspace_id: str) -> Workspace:
+        """Get a workspace by ID.
+
+        Parameters
+        ----------
+        workspace_id : str
+            ID of the workspace to retrieve.
+
+        Returns
+        -------
+        Workspace
+            The requested workspace.
+        """
         pb_ws = self._workspace_stub.Get(models.ResourceId(id=workspace_id))
         return Workspace(pb_ws, self)
 
     def list_workspaces(self) -> list[Workspace]:
+        """List all workspaces in the session.
+
+        Returns
+        -------
+        list[Workspace]
+            List of all workspaces.
+        """
         pb_list = self._workspace_stub.List(models.Empty())
         return [Workspace(w, self) for w in pb_list.workspaces]
 
     def delete_workspace(self, workspace: str | Workspace) -> None:
+        """Delete a workspace.
+
+        Parameters
+        ----------
+        workspace : str or Workspace
+            Workspace ID or Workspace object to delete.
+        """
         workspace_id = workspace.id if isinstance(workspace, Workspace) else workspace
         self._workspace_stub.Delete(models.ResourceId(id=workspace_id))
 
     def delete_viewport(self, viewport: str | Viewport) -> None:
+        """Delete a viewport.
+
+        Parameters
+        ----------
+        viewport : str or Viewport
+            Viewport ID or Viewport object to delete.
+        """
         viewport_id = viewport.id if isinstance(viewport, Viewport) else viewport
         self._workspace_stub.DeleteViewport(models.ResourceId(id=viewport_id))
 
@@ -498,14 +572,42 @@ class Client:
 
     # ----------- App management ----------------
     def list_result_providers(self) -> list[models.ResultProvider]:
+        """List all registered result providers.
+
+        Returns
+        -------
+        list[ResultProvider]
+            List of all result providers.
+        """
         r = self._app_stub.ListResultProviders(models.Empty())
         return list(r.result_providers)
 
     def create_result_provider(self, name: str, url: str) -> models.ResultProvider:
+        """Create a new result provider.
+
+        Parameters
+        ----------
+        name : str
+            Name of the result provider.
+        url : str
+            URL or path of the result provider.
+
+        Returns
+        -------
+        ResultProvider
+            The newly created result provider.
+        """
         req = models.CreateResultProviderRequest(name=name, url=url)
         return self._app_stub.CreateResultProvider(req)
 
     def delete_result_provider(self, result_provider: str | models.ResultProvider) -> None:
+        """Delete a result provider.
+
+        Parameters
+        ----------
+        result_provider : str or ResultProvider
+            Name or ResultProvider object to delete.
+        """
         rp_name = (
             result_provider.name
             if isinstance(result_provider, models.ResultProvider)
@@ -516,17 +618,53 @@ class Client:
     def authenticate_result_provider(
         self, token: str, result_provider: str | models.ResultProvider | None = None
     ) -> None:
+        """Authenticate with a result provider.
+
+        Parameters
+        ----------
+        token : str
+            Authentication token for the result provider.
+        result_provider : str or ResultProvider, optional
+            Name or ResultProvider object. If None, uses the
+            default result provider.
+        """
         rp_name = self._get_result_provider_name(result_provider)
         req = models.AuthenticateResultProviderRequest(result_provider_name=rp_name, token=token)
         self._app_stub.AuthenticateResultProvider(req)
 
     def app_info(self) -> models.AppInfo:
+        """Get application information.
+
+        Returns
+        -------
+        AppInfo
+            Application information and metadata.
+        """
         return self._app_stub.GetAppInfo(models.Empty())
 
     def app_settings(self) -> models.AppSettings:
+        """Get current application settings.
+
+        Returns
+        -------
+        AppSettings
+            Current application settings.
+        """
         return self._app_stub.GetAppSettings(models.Empty())
 
     def update_app_settings(self, settings: models.AppSettings) -> models.AppSettings:
+        """Update application settings.
+
+        Parameters
+        ----------
+        settings : AppSettings
+            New application settings to apply.
+
+        Returns
+        -------
+        AppSettings
+            Updated application settings.
+        """
         return self._app_stub.UpdateAppSettings(settings)
 
     def save_session(self, path: str | Path) -> None:
