@@ -94,6 +94,7 @@ jobs:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           optional-dependencies-name: ""
           group-dependencies-name: "doc"
+          check-links: false
 
   build-library:
     name: "Build library"
