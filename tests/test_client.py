@@ -80,3 +80,41 @@ def test_default_result_provider(rx):
     # Try to set an invalid result provider
     with pytest.raises(ValueError, match="Result provider 'NonExistent' not found"):
         rx.default_result_provider = "NonExistent"
+
+
+def test_list_result_providers(rx):
+    """Test listing available result providers."""
+    providers = rx.list_result_providers()
+    assert len(providers) > 0
+    assert any(p.name == "Local" for p in providers)
+    # Verify provider structure
+    for provider in providers:
+        assert hasattr(provider, "name")
+        assert hasattr(provider, "solution_ids")
+
+
+def test_get_result_provider(rx):
+    """Test getting a specific result provider."""
+    providers = rx.list_result_providers()
+    provider = providers[0]
+    fetched = rx.get_result_provider(provider.name)
+    assert fetched.name == provider.name
+
+
+def test_result_provider_name_normalization(rx, multiple_connections_solution):
+    """Test result provider parameter normalization."""
+
+    providers = rx.list_result_providers()
+    provider = providers[0]
+
+    # Test with string name (exercises string path)
+    solutions_by_name = rx.list_solutions(result_provider=provider.name)
+    assert isinstance(solutions_by_name, list)
+
+    # Test with provider object (exercises object path)
+    solutions_by_obj = rx.list_solutions(result_provider=provider)
+    assert isinstance(solutions_by_obj, list)
+
+    # Test with None (exercises default path)
+    solutions_default = rx.list_solutions(result_provider=None)
+    assert isinstance(solutions_default, list)
