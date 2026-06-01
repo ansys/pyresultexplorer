@@ -82,6 +82,7 @@ class Solution(NamedBaseEntity[models.Solution]):
     """Represents a solution loaded in the server."""
 
     def __init__(self, pb_obj: models.Solution, client):
+        """Initialize solution entity."""
         super().__init__(pb_obj, client)
 
         self._result_provider: models.ResultProvider | None = None
@@ -120,7 +121,6 @@ class Solution(NamedBaseEntity[models.Solution]):
         self, plot: models.PlotDefinitionCreate | models.PlotDefinition | PlotView
     ) -> PlotView:
         """Update a plot based on a plot definition."""
-
         plot_def = plot
         if isinstance(plot, models.PlotDefinition):
             plot_def = _clone_msg_to_compatible_type(plot, models.PlotDefinitionCreate)
@@ -160,7 +160,6 @@ class Solution(NamedBaseEntity[models.Solution]):
         self, chart: models.ChartDefinitionCreate | models.ChartDefinition | ChartView
     ) -> ChartView:
         """Update a chart based on a chart definition."""
-
         chart_def = chart
         if isinstance(chart, models.ChartDefinition):
             chart_def = _clone_msg_to_compatible_type(chart, models.ChartDefinitionCreate)
@@ -209,7 +208,6 @@ class Solution(NamedBaseEntity[models.Solution]):
         self, definition: models.NamedSelectionCreate | models.NamedSelection
     ) -> models.NamedSelection:
         """Update a named selection."""
-
         ns_def = definition
         if isinstance(definition, models.NamedSelection):
             ns_def = _clone_msg_to_compatible_type(definition, models.NamedSelectionCreate)
@@ -430,7 +428,21 @@ class Solution(NamedBaseEntity[models.Solution]):
     def get_solver_out_content(
         self, file: str | models.SolverTextOutputFile, lines_offset: int = 0
     ) -> str:
-        """Get content of a solver text output file."""
+        """Get content of a solver text output file.
+
+        Parameters
+        ----------
+        file : str or SolverTextOutputFile
+            File name or SolverTextOutputFile object.
+        lines_offset : int, optional
+            Line offset to start reading from. Default is 0.
+
+        Returns
+        -------
+        str
+            Content of the solver output file.
+
+        """
         if isinstance(file, models.SolverTextOutputFile):
             solver_out = file
         else:
@@ -462,8 +474,7 @@ class Solution(NamedBaseEntity[models.Solution]):
         return views
 
     def __str__(self) -> str:
-        """Return a formatted string representation of the solution."""
-
+        """Return formatted string representation of the solution."""
         lines = [
             "\n",
             "=" * 70,

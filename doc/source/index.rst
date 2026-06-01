@@ -6,6 +6,7 @@
 
    getting_started/index
    examples
+   api/index
    changelog
 
 

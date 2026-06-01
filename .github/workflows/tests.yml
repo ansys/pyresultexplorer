@@ -97,7 +97,7 @@ jobs:
         run: |
             pytest tests -m "" \
               --junitxml test_results_native.xml \
-              --cov=ansys --cov-report=term --cov-report=html:.cov/html --cov-report=xml:coverage.xml \
+              --cov=ansys --cov-report=term --cov-report=html:.cov/html --cov-report=xml:coverage.xml --cov-report=markdown:cov.md\
               ${{ env.UPDATE_SNAPSHOTS == 'true' && '--snapshot-update' || '' }} \
               --launch-native
         env:
@@ -123,6 +123,15 @@ jobs:
           check_name: Test Report ${{ matrix.os }}:${{ matrix.python-version }} (${{ env.DEPLOYMENT }})
           detailed_summary: true
           include_passed: true
+
+      - name: Detailed coverage report
+        if: >-
+          always() &&
+          env.DEPLOYMENT == 'native' &&
+          env.MAIN_PYTHON_VERSION == matrix.python-version
+        run: |
+          echo "## Detailed Code Coverage" >> $GITHUB_STEP_SUMMARY
+          cat cov.md >> $GITHUB_STEP_SUMMARY
 
       - name: Code Coverage Summary
         uses: irongut/CodeCoverageSummary@v1.3.0

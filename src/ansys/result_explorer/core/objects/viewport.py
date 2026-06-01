@@ -39,14 +39,17 @@ class PbProperty:
     """
 
     def __init__(self, key: str):
+        """Initialize descriptor with property key path."""
         self.key = key
 
     def __get__(self, obj, objtype=None):
+        """Get property value from nested protobuf object."""
         if obj is None:
             return self
         return self._get_nested(obj._pb_obj, self.key)
 
     def __set__(self, obj, value):
+        """Set property value on nested protobuf object."""
         self._set_nested(obj._pb_obj, self.key, value)
 
     @staticmethod
@@ -73,14 +76,17 @@ class PbPropertyReadOnly:
     """
 
     def __init__(self, key: str):
+        """Initialize read-only descriptor with property key path."""
         self.key = key
 
     def __get__(self, obj, objtype=None):
+        """Get read-only property value from nested protobuf object."""
         if obj is None:
             return self
         return PbProperty._get_nested(obj._pb_obj, self.key)
 
     def __set__(self, obj, value):
+        """Prevent setting value on read-only property."""
         raise AttributeError(
             f"Property '{self.key}' of '{type(obj).__name__}' object is read-only."
         )
@@ -90,6 +96,7 @@ class ViewportMetadata:
     """Wrapper for viewport metadata."""
 
     def __init__(self, pb_obj: models.Viewport, client: Client, solution_id: str | None = None):
+        """Initialize viewport metadata wrapper."""
         self._pb_obj = pb_obj
         self._client = client
         self._solution_id = solution_id
@@ -99,6 +106,7 @@ class ViewportMetadata:
         return self._pb_obj
 
     def __str__(self):
+        """Return metadata as formatted JSON string."""
         # print as json-like string
         json_str = json.dumps(MessageToDict(self._pb_obj), indent=2)
         return json_str
@@ -124,6 +132,7 @@ class ThreeDViewportMetadata(ViewportMetadata):
 
     @camera_position.setter
     def camera_position(self, value: CameraPosition) -> None:
+        """Set the camera position."""
         self._pb_obj["cameraPosition"] = {"matrix": value.matrix}
 
 
@@ -144,6 +153,7 @@ class MeshViewportMetadata(ThreeDViewportMetadata):
         value : str or NamedSelection, optional
             The named selection to show. Can be specified by id, name or
             by passing a NamedSelection object. If None, no named selection will be shown.
+
         """
         if value is None:
             self._pb_obj["shownNamedSelection"] = None
@@ -183,15 +193,25 @@ class BaseChartViewportMetadata(ViewportMetadata):
 
     @property
     def series_names(self) -> list[str]:
+        """List of all available series names."""
         return [s.string_value for s in self._pb_obj["displayOptions"]["seriesNames"].values]
 
     @property
     def active_series(self) -> list[str]:
+        """List of currently active series."""
         indices = self._pb_obj["displayOptions"]["activeSeriesIndices"]
         return [self.series_names[int(idx)] for idx in indices]
 
     @active_series.setter
     def active_series(self, names: list[str]) -> None:
+        """Set the active series.
+
+        Parameters
+        ----------
+        names : list[str]
+            List of series names to make active.
+
+        """
         for name in names:
             if name not in self.series_names:
                 raise ValueError(f"Invalid series name: {name}")
@@ -204,15 +224,25 @@ class ChartViewportMetadata(BaseChartViewportMetadata):
 
     @property
     def chart_names(self) -> list[str]:
+        """List of all available chart names."""
         return [s.string_value for s in self._pb_obj["displayOptions"]["chartNames"].values]
 
     @property
     def active_charts(self) -> list[str]:
+        """List of currently active charts."""
         indices = self._pb_obj["displayOptions"]["activeChartIndices"]
         return [self.chart_names[int(idx)] for idx in indices]
 
     @active_charts.setter
     def active_charts(self, names: list[str]) -> None:
+        """Set the active charts.
+
+        Parameters
+        ----------
+        names : list[str]
+            List of chart names to make active.
+
+        """
         for name in names:
             if name not in self.chart_names:
                 raise ValueError(f"Invalid chart name: {name}")
@@ -221,11 +251,20 @@ class ChartViewportMetadata(BaseChartViewportMetadata):
 
     @property
     def selected_x_axis(self) -> str:
+        """Name of the currently selected x-axis series."""
         idx = int(self._pb_obj["displayOptions"]["selectedXAxisIndex"])
         return self.series_names[idx]
 
     @selected_x_axis.setter
     def selected_x_axis(self, name: str) -> None:
+        """Set the x-axis series.
+
+        Parameters
+        ----------
+        name : str
+            Name of the series to use as the x-axis.
+
+        """
         if name not in self.series_names:
             raise ValueError(f"Invalid x-axis name: {name}")
         idx = self.series_names.index(name)
@@ -237,15 +276,25 @@ class ContactTrackersViewportMetadata(BaseChartViewportMetadata):
 
     @property
     def contact_tracker_names(self) -> list[str]:
+        """List of all available contact tracker names."""
         return [s.string_value for s in self._pb_obj["displayOptions"]["chartNames"].values]
 
     @property
     def active_contact_trackers(self) -> list[str]:
+        """List of currently active contact trackers."""
         indices = self._pb_obj["displayOptions"]["activeChartIndices"]
         return [self.contact_tracker_names[int(idx)] for idx in indices]
 
     @active_contact_trackers.setter
     def active_contact_trackers(self, names: list[str]) -> None:
+        """Set the active contact trackers.
+
+        Parameters
+        ----------
+        names : list[str]
+            List of contact tracker names to make active.
+
+        """
         for name in names:
             if name not in self.contact_tracker_names:
                 raise ValueError(f"Invalid contact tracker name: {name}")
@@ -309,6 +358,7 @@ class Viewport(BaseEntity[models.Viewport]):
 
     @property
     def size(self) -> float:
+        """Size of the viewport as a percentage of its parent."""
         return self._pb.size
 
     @property
@@ -347,6 +397,7 @@ class Viewport(BaseEntity[models.Viewport]):
         -------
         bytes
             PNG image data.
+
         """
         req = models.CreateSnapshotRequest(viewport_id=self.id)
         if settings is not None:
@@ -378,6 +429,7 @@ class Viewport(BaseEntity[models.Viewport]):
         return self._pb.hidden
 
     def _set_hidden(self, hidden: bool) -> None:
+        """Update hidden state of viewport."""
         req = models.UpdateViewportRequest(
             viewport_id=self.id,
             hidden=hidden,

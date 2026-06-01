@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Camera position representation and utilities."""
+
 from __future__ import annotations
 
 import math
@@ -32,6 +34,14 @@ class CameraPosition:
     """
 
     def __init__(self, matrix: list[float]):
+        """Initialize camera position from 16-element matrix.
+
+        Parameters
+        ----------
+        matrix : list[float]
+            16-element row-major camera matrix.
+
+        """
         if len(matrix) != 16:
             raise ValueError(f"Expected 16 matrix values, got {len(matrix)}")
         self._m = matrix
@@ -81,6 +91,7 @@ class CameraPosition:
         return CameraPosition(new_m)
 
     def __repr__(self) -> str:
+        """Return string representation of camera position."""
         return (
             f"CameraPosition(right={self.right}, up={self.up}, forward={self.forward},"
             f" zoom={self.zoom}, translation={self.translation})"
@@ -97,6 +108,7 @@ class CameraPosition:
         up: tuple[float, float, float],
         forward: tuple[float, float, float],
     ) -> CameraPosition:
+        """Create camera position from axis vectors."""
         m = [0.0] * 16
         m[0], m[1], m[2] = right
         m[4], m[5], m[6] = up
@@ -136,7 +148,7 @@ class CameraPosition:
 
     @classmethod
     def isometric(cls) -> CameraPosition:
-        """Standard isometric view (+X+Y+Z corner, Y up).
+        """Return standard isometric view (+X+Y+Z corner, Y up).
 
         Axes derived from camera looking toward origin from (1,1,1):
           right   = normalize(cross(look, worldUp)) = (1/√2, 0, -1/√2)
@@ -176,6 +188,7 @@ class CameraPosition:
         return self._rotate(degrees, axis="z")
 
     def _rotate(self, degrees: float, axis: Literal["x", "y", "z"]) -> CameraPosition:
+        """Rotate camera around specified world axis."""
         a = math.radians(degrees)
         c, s = math.cos(a), math.sin(a)
 

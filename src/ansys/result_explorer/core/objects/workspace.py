@@ -214,6 +214,7 @@ class Workspace(NamedBaseEntity[models.Workspace]):
         -------
         Workspace
             The newly created workspace.
+
         """
         template_data = Path(path).read_text()
         kwargs = {

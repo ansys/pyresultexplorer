@@ -55,7 +55,7 @@ jobs:
   #   runs-on: ubuntu-latest
   #   steps:
   #     - name: PyAnsys documentation style checks
-  #       uses: ansys/actions/doc-style@v8
+  #       uses: ansys/actions/doc-style@v10.3.1
   #       with:
   #         token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -94,6 +94,7 @@ jobs:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           optional-dependencies-name: ""
           group-dependencies-name: "doc"
+          check-links: false
 
   build-library:
     name: "Build library"

@@ -59,30 +59,7 @@ Before contributing to the project, please refer to the `PyAnsys Developer's gui
 How to test
 -----------
 
-This project takes advantage of `tox`_. This tool allows to automate common
-development tasks (similar to Makefile) but it is oriented towards Python
-development.
-
-Using tox
-^^^^^^^^^
-
-As Makefile has rules, `tox`_ has environments. In fact, the tool creates its
-own virtual environment so anything being tested is isolated from the project in
-order to guarantee project's integrity. The following environments commands are provided:
-
-- **tox -e style**: checks for coding style quality.
-- **tox -e py**: checks for unit tests.
-- **tox -e py-coverage**: checks for unit testing and code coverage.
-- **tox -e doc**: checks for documentation building process.
-
-
-Raw testing
-^^^^^^^^^^^
-
-If required, you can always call the style commands (`ruff`)
-or unit testing ones (`pytest`_) from the command line. However,
-this does not guarantee that your project is being tested in an isolated
-environment, which is the reason why tools like `tox`_ exist.
+Coming soon.
 
 
 A note on pre-commit
@@ -133,4 +110,3 @@ the building requirements and then executing the build module:
 .. _PyAnsys Developer's guide: https://dev.docs.pyansys.com/
 .. _pytest: https://docs.pytest.org/en/stable/
 .. _Sphinx: https://www.sphinx-doc.org/en/master/
-.. _tox: https://tox.wiki/
