@@ -34,11 +34,14 @@ from .launch import (
 from .logger import log
 from .objects import (
     CameraPosition,
+    ChartView,
     ChartViewportMetadata,
     ContactTrackersViewportMetadata,
     ConvergenceTrackersViewportMetadata,
     LogsViewportMetadata,
+    MeshView,
     MeshViewportMetadata,
+    PlotView,
     PlotViewportMetadata,
     Solution,
     View,

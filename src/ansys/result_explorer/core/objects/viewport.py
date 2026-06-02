@@ -19,6 +19,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal
 
 from google.protobuf.json_format import MessageToDict
@@ -68,28 +69,28 @@ class PbProperty:
         obj[keys[-1]] = value
 
 
-# class PbPropertyReadOnly:
-#     """Read-only descriptor for accessing nested protobuf object properties.
+class PbPropertyReadOnly:
+    """Read-only descriptor for accessing nested protobuf object properties.
 
-#     Supports dot-notation for nested keys.
-#     Raises AttributeError on write attempts.
-#     """
+    Supports dot-notation for nested keys.
+    Raises AttributeError on write attempts.
+    """
 
-#     def __init__(self, key: str):
-#         """Initialize read-only descriptor with property key path."""
-#         self.key = key
+    def __init__(self, key: str):
+        """Initialize read-only descriptor with property key path."""
+        self.key = key
 
-#     def __get__(self, obj, objtype=None):
-#         """Get read-only property value from nested protobuf object."""
-#         if obj is None:
-#             return self
-#         return PbProperty._get_nested(obj._pb_obj, self.key)
+    def __get__(self, obj, objtype=None):
+        """Get read-only property value from nested protobuf object."""
+        if obj is None:
+            return self
+        return PbProperty._get_nested(obj._pb_obj, self.key)
 
-#     def __set__(self, obj, value):
-#         """Prevent setting value on read-only property."""
-#         raise AttributeError(
-#             f"Property '{self.key}' of '{type(obj).__name__}' object is read-only."
-#         )
+    def __set__(self, obj, value):
+        """Prevent setting value on read-only property."""
+        raise AttributeError(
+            f"Property '{self.key}' of '{type(obj).__name__}' object is read-only."
+        )
 
 
 class ViewportMetadata:
@@ -177,11 +178,100 @@ class MeshViewportMetadata(ThreeDViewportMetadata):
         self._pb_obj["shownNamedSelection"] = ns.id
 
 
+class LegendSettings:
+    """Legend display settings for a plot result.
+
+    Controls colors, range, and discretization.
+    """
+
+    use_global_min_max: bool = PbProperty("useGlobalMinMax")
+    range: list[float] = PbProperty("range")
+
+    def __init__(self, pb_obj):
+        """Initialize legend settings wrapper."""
+        self._pb_obj = pb_obj
+
+
+@dataclass(frozen=True)
+class ResultExtreme:
+    """Minimum or maximum extreme of a plot result."""
+
+    value: float
+    """Scalar result value."""
+    entity_id: int | None
+    """ID of the entity (node/element) at the extreme."""
+    position: tuple[float, float, float] | None
+    """World-space position (x, y, z) of the extreme."""
+    displacement: tuple[float, float, float] | None
+    """Displacement vector (x, y, z) at the extreme."""
+
+    @classmethod
+    def _from_pb(cls, pb_obj) -> ResultExtreme:
+        """Build from a protobuf struct object."""
+        pos = pb_obj["position"] if "position" in pb_obj else None
+        disp = pb_obj["displacement"] if "displacement" in pb_obj else None
+        return cls(
+            value=pb_obj["value"],
+            entity_id=int(pb_obj["entityId"]) if "entityId" in pb_obj else None,
+            position=(
+                pos["x"] if "x" in pos else 0.0,
+                pos["y"] if "y" in pos else 0.0,
+                pos["z"] if "z" in pos else 0.0,
+            )
+            if pos is not None
+            else None,
+            displacement=(
+                disp["x"] if "x" in disp else 0.0,
+                disp["y"] if "y" in disp else 0.0,
+                disp["z"] if "z" in disp else 0.0,
+            )
+            if disp is not None
+            else None,
+        )
+
+
+class ActiveResult:
+    """Active result currently displayed in a plot viewport."""
+
+    result_name: str = PbProperty("resultName")
+    time_set_index: int = PbProperty("timeSetIndex")
+    component_index: int = PbProperty("componentIndex")
+
+    type: str = PbPropertyReadOnly("type")
+    result_index: int = PbPropertyReadOnly("resultIndex")
+    set_id: int = PbPropertyReadOnly("setId")
+    data_array_name: str = PbPropertyReadOnly("dataArrayName")
+    range: list[float] = PbPropertyReadOnly("range")
+
+    def __init__(self, pb_obj):
+        """Initialize active result wrapper."""
+        self._pb_obj = pb_obj
+
+    @property
+    def legend(self) -> LegendSettings:
+        """Legend settings for this result."""
+        return LegendSettings(self._pb_obj["legend"])
+
+    @property
+    def extremes(self) -> list[ResultExtreme]:
+        """Min/max extremes of the result."""
+        if "extremes" not in self._pb_obj:
+            return []
+        return [ResultExtreme._from_pb(e) for e in self._pb_obj["extremes"] if "value" in e]
+
+
 class PlotViewportMetadata(ThreeDViewportMetadata):
     """Metadata specific to plot viewports."""
 
     show_min_max_labels: bool = PbProperty("showMinMaxLabels")
     deformation_scale: float = PbProperty("deformationScale")
+
+    @property
+    def active_result(self) -> ActiveResult | None:
+        """Active result currently displayed, or None if not set."""
+        if "activeResult" not in self._pb_obj:
+            return None
+        return ActiveResult(self._pb_obj["activeResult"])
 
 
 class BaseChartViewportMetadata(ViewportMetadata):

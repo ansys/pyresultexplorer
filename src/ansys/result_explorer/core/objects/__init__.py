@@ -18,7 +18,7 @@
 
 from .base import BaseEntity, NamedBaseEntity
 from .camera_position import CameraPosition
-from .solution import Solution, View
+from .solution import ChartView, MeshView, PlotView, Solution, View
 from .viewport import (
     ChartViewportMetadata,
     ContactTrackersViewportMetadata,
@@ -42,6 +42,9 @@ __all__ = [
     "MeshViewportMetadata",
     "NamedBaseEntity",
     "View",
+    "PlotView",
+    "ChartView",
+    "MeshView",
     "ViewportMetadata",
     "Viewport",
     "Solution",
