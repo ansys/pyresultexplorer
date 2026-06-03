@@ -35,7 +35,7 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - uses: ansys/actions/doc-deploy-changelog@v10.3.2
+      - uses: ansys/actions/doc-deploy-changelog@d946b24b9a765f4169bcc94afdb27bd1a0533741 # v10.3.2
         with:
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
@@ -46,7 +46,7 @@ jobs:
     name: "Code style"
     runs-on: ubuntu-latest
     steps:
-      - uses: ansys/actions/code-style@v10.3.2
+      - uses: ansys/actions/code-style@d946b24b9a765f4169bcc94afdb27bd1a0533741 # v10.3.2
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -83,13 +83,13 @@ jobs:
     # needs: [doc-style]
     steps:
 
-      - uses: extractions/netrc@v3
+      - uses: extractions/netrc@c3879108aae6b4ed5c4eb60854ae04f06d2f2f68 # v3.0.0
         with:
           machine: github.com
           username: pyansys-ci-bot
           password: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
 
-      - uses: ansys/actions/doc-build@v10.3.2
+      - uses: ansys/actions/doc-build@d946b24b9a765f4169bcc94afdb27bd1a0533741 # v10.3.2
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           optional-dependencies-name: ""
@@ -101,14 +101,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - uses: extractions/netrc@v3
+      - uses: extractions/netrc@c3879108aae6b4ed5c4eb60854ae04f06d2f2f68 # v3.0.0
         with:
           machine: github.com
           username: pyansys-ci-bot
           password: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
 
       - name: "Build library source and wheel artifacts"
-        uses: ansys/actions/build-library@v10.3.2
+        uses: ansys/actions/build-library@d946b24b9a765f4169bcc94afdb27bd1a0533741 # v10.3.2
         with:
           library-name: ${{ env.LIBRARY_NAME }}
 
@@ -118,7 +118,7 @@ jobs:
     needs: [doc-build, build-library, tests-docker, tests-native]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
-      - uses: ansys/actions/doc-deploy-dev@v10.3.2
+      - uses: ansys/actions/doc-deploy-dev@d946b24b9a765f4169bcc94afdb27bd1a0533741 # v10.3.2
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -131,7 +131,7 @@ jobs:
     needs: [doc-build, build-library, tests-docker, tests-native]
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     steps:
-      - uses: ansys/actions/doc-deploy-stable@v10.3.2
+      - uses: ansys/actions/doc-deploy-stable@d946b24b9a765f4169bcc94afdb27bd1a0533741 # v10.3.2
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}

@@ -56,18 +56,18 @@ runs:
     - name: Checkout Result Explorer repo
       # at some point we'll instead publish the docker compose as
       # a release artifact and download it here
-      uses: actions/checkout@v6
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       with:
         repository: ansys-internal/result-explorer
         token: ${{ inputs.token }}
         path: result-explorer
 
-    - uses: KengoTODA/actions-setup-docker-compose@main
+    - uses: KengoTODA/actions-setup-docker-compose@477353946803dd64eaa44008b865b6bfc88cab4e # v1.2.4
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
 
     - name: Login in Github Container registry
-      uses: docker/login-action@v3
+      uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
       with:
         registry: ghcr.io
         username: ${{ inputs.ghcr-username }}
