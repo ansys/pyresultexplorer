@@ -61,6 +61,7 @@ runs:
         repository: ansys-internal/result-explorer
         token: ${{ inputs.token }}
         path: result-explorer
+        persist-credentials: false
 
     - uses: KengoTODA/actions-setup-docker-compose@477353946803dd64eaa44008b865b6bfc88cab4e # v1.2.4
       env:
