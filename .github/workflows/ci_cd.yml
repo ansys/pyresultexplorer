@@ -81,19 +81,12 @@ jobs:
     permissions:
       contents: read
     steps:
-      - name: "Install Git and clone project"
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
-          persist-credentials: true # zizmor: ignore[artipacked] , credentials need to pull private packages
-
       - uses: ansys/actions/check-vulnerabilities@d946b24b9a765f4169bcc94afdb27bd1a0533741 # v10.3.2
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           python-package-name: ${{ env.LIBRARY_NAME }}
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           dev-mode: ${{ github.ref != 'refs/heads/main' }}
-          checkout: false
 
   tests-docker:
     name: "Tests Docker"
