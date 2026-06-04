@@ -63,6 +63,18 @@ jobs:
   #       with:
   #         token: ${{ secrets.GITHUB_TOKEN }}
 
+  check-actions-security:
+    name: "Check Actions security"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: ansys/actions/check-actions-security@d946b24b9a765f4169bcc94afdb27bd1a0533741 # v10.3.2
+        with:
+          generate-summary: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          auditing-level: 'high'
+
   tests-docker:
     name: "Tests Docker"
     uses: ./.github/workflows/tests.yml
