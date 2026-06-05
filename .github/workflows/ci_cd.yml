@@ -64,7 +64,7 @@ jobs:
     uses: ./.github/workflows/tests.yml
     with:
       deployment: docker
-      update-snapshots: ${{ github.event_name == 'workflow_dispatch' && inputs.update-snapshots || false }}
+      update-snapshots: false
       python-versions: ${{ github.event_name == 'pull_request' && '["3.12"]' || '["3.11", "3.12", "3.13", "3.14"]' }}
     secrets: inherit
 
@@ -73,7 +73,7 @@ jobs:
     uses: ./.github/workflows/tests.yml
     with:
       deployment: native
-      update-snapshots: false
+      update-snapshots: ${{ github.event_name == 'workflow_dispatch' && inputs.update-snapshots || false }}
       python-versions: ${{ github.event_name == 'pull_request' && '["3.12"]' || '["3.11", "3.12", "3.13", "3.14"]' }}
     secrets: inherit
 
