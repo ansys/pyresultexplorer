@@ -96,7 +96,8 @@ for tracker in trackers:
     print(f"    - {tracker}")
 
 # Configure active trackers
-contact_meta.active_contact_trackers = trackers
+contact_opts = contact_viewport.display_options
+contact_opts.active_contact_trackers = trackers
 
 # Show available series
 series = contact_meta.series_names
@@ -105,15 +106,16 @@ for s in series:
     print(f"    - {s}")
 
 # Configure active series
-contact_meta.active_series = ["Max. Normal Stiffness"]
-contact_viewport.set_metadata(contact_meta)
-print(f"\n  Active series set to: {contact_meta.active_series}")
+contact_opts.active_series = ["Max. Normal Stiffness"]
+contact_viewport.set_display_options(contact_opts)
+print(f"\n  Active series set to: {contact_opts.active_series}")
 
 # Configure display options
-contact_meta.show_legend = True
-contact_meta.show_table = True
-contact_meta.split_direction = "horizontal"
-contact_viewport.set_metadata(contact_meta)
+contact_opts = contact_viewport.display_options
+contact_opts.show_legend = True
+contact_opts.show_table = True
+contact_opts.split_direction = "horizontal"
+contact_viewport.set_display_options(contact_opts)
 print("  Legend enabled, table enabled, split direction: horizontal")
 
 print("\nViewport configuration complete!")
