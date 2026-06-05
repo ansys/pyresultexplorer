@@ -32,7 +32,6 @@ import os
 from ansys.result_explorer.core import (
     Client,
     ContactTrackersViewportMetadata,
-    ConvergenceTrackersViewportMetadata,
 )
 from ansys.result_explorer.core.models import ViewType
 
@@ -42,7 +41,7 @@ FILE_PATH = os.path.abspath(
 )
 
 # Replace this with your connection token
-TOKEN = "<YOUR_TOKEN_HERE>"  # noqa E501
+TOKEN = "eyJob3N0IjoibG9jYWxob3N0IiwiaHR0cFBvcnQiOjgwMDAsImdycGNQb3J0Ijo1MDAwMCwic2Vzc2lvbklkIjoiZDQ2MDUyZGEtYTYxMC00Mzk3LWEzZTItNzdiNjA2ZGFiODliIn0="  # noqa E501
 
 rx = Client.connect_with_token(TOKEN)
 
@@ -75,10 +74,10 @@ print(f"Created workspace with {len(workspace.viewport_ids)} viewports (2x1 grid
 conv_viewport = workspace.viewports[0]
 conv_viewport.set_view(convergence_view, wait=True)
 
-# Configure convergence trackers metadata
-conv_meta: ConvergenceTrackersViewportMetadata = conv_viewport.metadata
+# Configure convergence trackers display options
+conv_opts = conv_viewport.display_options
 print("\nConfiguring convergence trackers viewport:")
-print(f"  Selected tracker: {conv_meta.selected_tracker_name}")
+print(f"  Selected tracker: {conv_opts.selected_tracker_name}")
 
 
 # Assign contact trackers view to bottom viewport

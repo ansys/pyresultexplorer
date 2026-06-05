@@ -27,6 +27,7 @@ from ansys.result_explorer.core import (
     MeshViewportMetadata,
 )
 from ansys.result_explorer.core.models import ViewportDirection, ViewType
+from ansys.result_explorer.core.objects.viewport import ResultDisplayOptions
 
 log = logging.getLogger(__name__)
 
@@ -647,6 +648,90 @@ def test_camera_position_snapshots(rx, multiple_connections_solution, snapshot, 
         assert snapshot_data == snapshot(name=name)
 
     # Cleanup
+    rx.delete_workspace(workspace)
+
+
+@pytest.mark.flaky(reruns=3, reruns_delay=1)
+def test_result_display_options_snapshots(
+    rx, cp_transient_solution, snapshot, snapshot_settings_with_legend
+):
+    """Test snapshot comparisons for result display option changes."""
+    sol = cp_transient_solution
+
+    view = next((v for v in sol.views if "Displacement" in v.name), None)
+    assert view is not None
+
+    # Enable all time steps so set_id can be changed freely
+    time_frequencies = sol.time_frequencies
+    assert len(time_frequencies) >= 2
+    first_tf = time_frequencies[0]
+    last_tf = time_frequencies[-1]
+
+    view.definition.all_sets = True
+    view.definition.last_set = False
+    sol.update_plot(view.definition)
+
+    workspace = rx.create_workspace("Test Result Display Options")
+    viewport = workspace.assign_view(view=view, wait=True)
+
+    opts = viewport.display_options
+    opts.result_options = ResultDisplayOptions(set_id=last_tf.set_id)
+    viewport.set_display_options(opts)
+
+    _ = viewport.take_snapshot(settings=snapshot_settings_with_legend)
+
+    # Different component indices produce visually distinct color distributions
+    for name, component_index in [("component_x", 0), ("component_y", 1), ("component_z", 2)]:
+        opts = viewport.display_options
+        opts.result_options.component_index = component_index
+        opts.result_options.legend_range = None  # reset legend range to auto for new component
+        viewport.set_display_options(opts)
+        snapshot_data = viewport.take_snapshot(settings=snapshot_settings_with_legend)
+        assert snapshot_data == snapshot(name=name)
+
+    # reset some options for further tests
+    opts = viewport.display_options
+    opts.result_options = ResultDisplayOptions(component_index=-1)
+    viewport.set_display_options(opts)
+
+    # Deformation scale changes the shape of the deformed mesh
+    for name, scale in [("deformation_1x", 1.0), ("deformation_5x", 5.0)]:
+        opts = viewport.display_options
+        opts.result_options.deformation_scale = scale
+        viewport.set_display_options(opts)
+        snapshot_data = viewport.take_snapshot(settings=snapshot_settings_with_legend)
+        assert snapshot_data == snapshot(name=name)
+
+    # reset some options for further tests
+    opts = viewport.display_options
+    opts.result_options.deformation_scale = 1
+    viewport.set_display_options(opts)
+
+    # use_global_min_max affects how the legend range is computed
+    opts = viewport.display_options
+    opts.result_options = ResultDisplayOptions(
+        set_id=first_tf.set_id,
+        deformation_scale=1.0,
+        use_global_min_max=False,
+    )
+    viewport.set_display_options(opts)
+    assert snapshot(name="use_local_min_max") == viewport.take_snapshot(
+        settings=snapshot_settings_with_legend
+    )
+
+    # legend_range pins the color scale to a fixed interval
+    opts = viewport.display_options
+    opts.result_options = ResultDisplayOptions(
+        set_id=last_tf.set_id,
+        deformation_scale=1.0,
+        use_global_min_max=False,
+        legend_range=(0.0, 5e-5),
+    )
+    viewport.set_display_options(opts)
+    assert snapshot(name="legend_range_fixed") == viewport.take_snapshot(
+        settings=snapshot_settings_with_legend
+    )
+
     rx.delete_workspace(workspace)
 
 

@@ -345,11 +345,7 @@ class ResultDisplayOptions:
 
 
 class DisplayOptions:
-    """Read/write wrapper for viewport display options.
-
-    Initialized from the current ``Viewport.metadata`` Struct so that
-    reading and writing back is a safe round-trip.
-    """
+    """Read/write wrapper for viewport display options."""
 
     def __init__(self, pb_obj, client: Client, solution_id: str | None = None):
         """Initialize viewport display options wrapper."""
@@ -459,10 +455,8 @@ class MeshDisplayOptions(ThreeDDisplayOptions):
 class PlotDisplayOptions(ThreeDDisplayOptions):
     """Read/write display options for plot viewports.
 
-    The ``result_options`` field holds the result-specific options that
-    are sent via ``UpdateViewportRequest.display_options``. It is
-    initialized from the current viewport metadata so that a
-    read-modify-write cycle is safe.
+    The ``result_options`` field holds result-specific options
+    such as the active result, component, and deformation scale.
     """
 
     show_min_max_labels: bool = PbProperty("showMinMaxLabels")
@@ -710,12 +704,7 @@ class Viewport(BaseEntity[models.Viewport]):
 
     @property
     def display_options(self) -> DisplayOptions:
-        """Read/write viewport display options.
-
-        Initialized from the current viewport metadata so that modifying
-        a single field and calling ``set_display_options`` is a safe
-        round-trip.
-        """
+        """Read/write viewport display options."""
         view = self._resolve_view()
         pb_obj = self._pb.metadata
 
@@ -742,16 +731,12 @@ class Viewport(BaseEntity[models.Viewport]):
     def set_display_options(self, opts: DisplayOptions) -> None:
         """Apply display options to this viewport.
 
-        For plot viewports, if ``opts.result_options`` is set the
-        result-specific fields are sent via the
-        ``UpdateViewportRequest.display_options`` field. All other
-        options are sent via the ``metadata`` field.
-
         Parameters
         ----------
-        opts : ViewportDisplayOptions
-            Display options to apply. Obtain via ``viewport.display_options``,
-            modify as needed, then pass back here.
+        opts : DisplayOptions
+            Display options to apply. Obtain via
+            ``viewport.display_options``, modify as needed,
+            then pass back here.
 
         """
         req = models.UpdateViewportRequest(
@@ -759,9 +744,11 @@ class Viewport(BaseEntity[models.Viewport]):
             metadata=opts.to_pb(),
             wait=True,
         )
+        self._pb = self._client._workspace_stub.UpdateViewport(req)
+
         if isinstance(opts, PlotDisplayOptions) and opts.result_options is not None:
             req.display_options.CopyFrom(opts.result_options.to_pb())
-        self._pb = self._client._workspace_stub.UpdateViewport(req)
+            self._pb = self._client._workspace_stub.UpdateViewport(req)
 
     @property
     def size(self) -> float:
