@@ -147,7 +147,10 @@ class ResultExtreme:
         pos = pb_obj["position"] if "position" in pb_obj else None
         disp = pb_obj["displacement"] if "displacement" in pb_obj else None
         return cls(
-            value=pb_obj["value"],
+            # default to 0.0 if value is missing
+            # because originally this comes from a graphics-data pb where value is a required float,
+            # which gets not included in the dict if it's not set
+            value=pb_obj["value"] if "value" in pb_obj else 0.0,
             entity_id=int(pb_obj["entityId"]) if "entityId" in pb_obj else None,
             position=(
                 pos["x"] if "x" in pos else 0.0,
@@ -188,11 +191,27 @@ class ActiveResult:
         return LegendSettings(self._pb_obj["legend"])
 
     @property
-    def extremes(self) -> list[ResultExtreme]:
+    def _extremes(self) -> list[ResultExtreme]:
         """Min/max extremes of the result."""
         if "extremes" not in self._pb_obj:
             return []
-        return [ResultExtreme._from_pb(e) for e in self._pb_obj["extremes"] if "value" in e]
+        return [ResultExtreme._from_pb(e) for e in self._pb_obj["extremes"]]
+
+    @property
+    def min(self) -> ResultExtreme | None:
+        """Minimum extreme of the result, or None if not available."""
+        extremes = self._extremes
+        if not extremes:
+            return None
+        return min(extremes, key=lambda e: e.value)
+
+    @property
+    def max(self) -> ResultExtreme | None:
+        """Maximum extreme of the result, or None if not available."""
+        extremes = self._extremes
+        if not extremes:
+            return None
+        return max(extremes, key=lambda e: e.value)
 
 
 class PlotViewportMetadata(ViewportMetadata):

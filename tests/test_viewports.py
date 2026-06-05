@@ -25,6 +25,7 @@ from ansys.result_explorer.core import (
     ConvergenceTrackersViewportMetadata,
     LogsViewportMetadata,
     MeshViewportMetadata,
+    PlotViewportMetadata,
 )
 from ansys.result_explorer.core.models import ViewportDirection, ViewType
 from ansys.result_explorer.core.objects.viewport import ResultDisplayOptions
@@ -732,6 +733,13 @@ def test_result_display_options_snapshots(
     assert snapshot(name="legend_range_fixed") == viewport.take_snapshot(
         settings=snapshot_settings_with_legend
     )
+
+    # verify extremes
+    meta: PlotViewportMetadata = viewport.metadata
+    assert meta.active_result.min.value == 0.0
+    assert meta.active_result.min.entity_id == 150
+    assert meta.active_result.max.value == pytest.approx(1.187e-4, rel=1e-3)
+    assert meta.active_result.max.entity_id == 7
 
     rx.delete_workspace(workspace)
 
