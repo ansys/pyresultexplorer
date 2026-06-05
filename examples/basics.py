@@ -132,14 +132,12 @@ workspace.set_fullscreen_viewport(viewport=top_left_viewport)
 print("Exiting fullscreen...")
 workspace.exit_fullscreen()
 
-# modify view metadata
-print("Modifying view metadata...")
-meta = viewport.metadata
-meta.show_mesh_edges = not meta.show_mesh_edges
-meta.show_min_max_labels = True
-viewport.set_metadata(
-    metadata=meta,
-)
+# modify view display options
+print("Modifying view display options...")
+opts = viewport.display_options
+opts.show_mesh_edges = not opts.show_mesh_edges
+opts.show_min_max_labels = True
+viewport.set_display_options(opts)
 
 # take new snapshot
 snapshot_data = top_left_viewport.take_snapshot()

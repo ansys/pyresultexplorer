@@ -77,9 +77,9 @@ print(f"Initial zoom={initial_zoom}, translation={initial_translation}")
 def apply_camera(label: str, cam: CameraPosition) -> None:
     print(f"\n--- {label} ---")
     cam = cam.with_zoom(initial_zoom).with_translation(*initial_translation)
-    meta = viewport.metadata
-    meta.camera_position = cam
-    viewport.set_metadata(meta)
+    opts = viewport.display_options
+    opts.camera_position = cam
+    viewport.set_display_options(opts)
 
     time.sleep(1)
 

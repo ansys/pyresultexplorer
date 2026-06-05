@@ -296,6 +296,15 @@ def snapshot_settings() -> SnapshotSettings:
 
 
 @pytest.fixture
+def snapshot_settings_with_legend(snapshot_settings) -> SnapshotSettings:
+    """Snapshot settings with the legend enabled."""
+    settings = SnapshotSettings()
+    settings.CopyFrom(snapshot_settings)
+    settings.show_legend = True
+    return settings
+
+
+@pytest.fixture
 def multiple_connections_solution(rx, rst_multiple_connections) -> Generator[Solution, None, None]:
     sol = rx.create_solution(
         name="Test Solution",

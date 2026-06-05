@@ -32,7 +32,6 @@ import os
 from ansys.result_explorer.core import (
     Client,
     ContactTrackersViewportMetadata,
-    ConvergenceTrackersViewportMetadata,
 )
 from ansys.result_explorer.core.models import ViewType
 
@@ -42,7 +41,7 @@ FILE_PATH = os.path.abspath(
 )
 
 # Replace this with your connection token
-TOKEN = "<YOUR_TOKEN_HERE>"  # noqa E501
+TOKEN = "eyJob3N0IjoibG9jYWxob3N0IiwiaHR0cFBvcnQiOjgwMDAsImdycGNQb3J0Ijo1MDAwMCwic2Vzc2lvbklkIjoiZDQ2MDUyZGEtYTYxMC00Mzk3LWEzZTItNzdiNjA2ZGFiODliIn0="  # noqa E501
 
 rx = Client.connect_with_token(TOKEN)
 
@@ -75,10 +74,10 @@ print(f"Created workspace with {len(workspace.viewport_ids)} viewports (2x1 grid
 conv_viewport = workspace.viewports[0]
 conv_viewport.set_view(convergence_view, wait=True)
 
-# Configure convergence trackers metadata
-conv_meta: ConvergenceTrackersViewportMetadata = conv_viewport.metadata
+# Configure convergence trackers display options
+conv_opts = conv_viewport.display_options
 print("\nConfiguring convergence trackers viewport:")
-print(f"  Selected tracker: {conv_meta.selected_tracker_name}")
+print(f"  Selected tracker: {conv_opts.selected_tracker_name}")
 
 
 # Assign contact trackers view to bottom viewport
@@ -96,7 +95,8 @@ for tracker in trackers:
     print(f"    - {tracker}")
 
 # Configure active trackers
-contact_meta.active_contact_trackers = trackers
+contact_opts = contact_viewport.display_options
+contact_opts.active_contact_trackers = trackers
 
 # Show available series
 series = contact_meta.series_names
@@ -105,15 +105,16 @@ for s in series:
     print(f"    - {s}")
 
 # Configure active series
-contact_meta.active_series = ["Max. Normal Stiffness"]
-contact_viewport.set_metadata(contact_meta)
-print(f"\n  Active series set to: {contact_meta.active_series}")
+contact_opts.active_series = ["Max. Normal Stiffness"]
+contact_viewport.set_display_options(contact_opts)
+print(f"\n  Active series set to: {contact_opts.active_series}")
 
 # Configure display options
-contact_meta.show_legend = True
-contact_meta.show_table = True
-contact_meta.split_direction = "horizontal"
-contact_viewport.set_metadata(contact_meta)
+contact_opts = contact_viewport.display_options
+contact_opts.show_legend = True
+contact_opts.show_table = True
+contact_opts.split_direction = "horizontal"
+contact_viewport.set_display_options(contact_opts)
 print("  Legend enabled, table enabled, split direction: horizontal")
 
 print("\nViewport configuration complete!")

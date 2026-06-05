@@ -18,14 +18,24 @@
 
 from .base import BaseEntity, NamedBaseEntity
 from .camera_position import CameraPosition
-from .solution import Solution, View
+from .solution import ChartView, MeshView, PlotView, Solution, View
 from .viewport import (
+    BaseChartDisplayOptions,
+    ChartDisplayOptions,
     ChartViewportMetadata,
+    ContactTrackersDisplayOptions,
     ContactTrackersViewportMetadata,
+    ConvergenceTrackersDisplayOptions,
     ConvergenceTrackersViewportMetadata,
+    DisplayOptions,
+    LogsDisplayOptions,
     LogsViewportMetadata,
+    MeshDisplayOptions,
     MeshViewportMetadata,
+    PlotDisplayOptions,
     PlotViewportMetadata,
+    ResultDisplayOptions,
+    ThreeDDisplayOptions,
     Viewport,
     ViewportMetadata,
 )
@@ -33,15 +43,28 @@ from .workspace import Workspace
 
 __all__ = [
     "BaseEntity",
+    "BaseChartDisplayOptions",
+    "ChartDisplayOptions",
     "ChartViewportMetadata",
     "CameraPosition",
+    "ContactTrackersDisplayOptions",
     "ContactTrackersViewportMetadata",
+    "ConvergenceTrackersDisplayOptions",
     "ConvergenceTrackersViewportMetadata",
+    "LogsDisplayOptions",
     "LogsViewportMetadata",
-    "PlotViewportMetadata",
+    "MeshDisplayOptions",
     "MeshViewportMetadata",
     "NamedBaseEntity",
+    "ResultDisplayOptions",
+    "PlotDisplayOptions",
+    "PlotViewportMetadata",
+    "ThreeDDisplayOptions",
     "View",
+    "PlotView",
+    "ChartView",
+    "MeshView",
+    "DisplayOptions",
     "ViewportMetadata",
     "Viewport",
     "Solution",
