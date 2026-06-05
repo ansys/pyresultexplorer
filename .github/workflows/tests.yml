@@ -38,10 +38,10 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.2
         if: ${{ env.UPDATE_SNAPSHOTS != 'true' }}
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.2
         if: ${{ env.UPDATE_SNAPSHOTS == 'true' }}
         with:
           ref: ${{ github.event.pull_request.head.ref }}
