@@ -651,6 +651,7 @@ def test_camera_position_snapshots(rx, multiple_connections_solution, snapshot, 
     rx.delete_workspace(workspace)
 
 
+@pytest.mark.images
 @pytest.mark.flaky(reruns=3, reruns_delay=1)
 def test_result_display_options_snapshots(
     rx, cp_transient_solution, snapshot, snapshot_settings_with_legend
