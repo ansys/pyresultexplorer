@@ -57,6 +57,8 @@ jobs:
   doc-style:
     name: "Documentation Style Check"
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: PyAnsys documentation style checks
         uses: ansys/actions/doc-style@d946b24b9a765f4169bcc94afdb27bd1a0533741 # v10.3.2
