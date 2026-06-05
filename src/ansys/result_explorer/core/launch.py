@@ -836,11 +836,13 @@ def launch_result_explorer(
         time.sleep(2.0)
 
     # Create the Client
+    ca_cert_path = instance._server_process.ca_cert_path
     client = ClientImpl(
         session_id=instance.session_id,
         host="localhost",
         grpc_port=instance.grpc_port,
-        ca_cert_path=instance._server_process.ca_cert_path,
+        ca_cert_path=ca_cert_path,
+        insecure=ca_cert_path is None,
         instance=instance,
     )
 

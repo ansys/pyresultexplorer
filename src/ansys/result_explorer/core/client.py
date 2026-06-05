@@ -94,7 +94,7 @@ class Client:
         host: str = "localhost",
         grpc_port: int = 50000,
         ca_cert_path: str | Path | None = None,
-        insecure: bool | None = None,
+        insecure: bool = False,
         custom_headers: list[tuple[str, str]] | None = None,
         instance: "ResultExplorerInstance | None" = None,
     ):
@@ -110,10 +110,11 @@ class Client:
             Port number for the gRPC API. Default is 50000.
         ca_cert_path : str | Path, optional
             Path to CA certificate for secure gRPC connection.
-            If not provided, connection will be insecure.
+            If not provided, ``insecure=True`` must be set.
         insecure : bool, optional
-            Whether to use an insecure gRPC connection.
-            If None, will default to True if ca_cert_path is not provided.
+            If ``True``, use an unencrypted gRPC channel and
+            ignore ``ca_cert_path``. Issues an
+            ``UnsecureConnectionWarning``. Default is ``False``.
         custom_headers : list of (str, str) tuples, optional
             Custom headers to include in gRPC requests,
             in addition to the session ID. Example: [("x-custom-header", "value")].
@@ -132,17 +133,14 @@ class Client:
 
         target = f"{self._host}:{self._grpc_port}"
 
-        if insecure is None and ca_cert_path is None:
+        wrapper_metadata = self._grpc_metadata
+
+        if insecure:
             warnings.warn(
                 f"Using an insecure gRPC channel, unencrypted communication with {target}.",
                 UnsecureConnectionWarning,
                 stacklevel=2,
             )
-            insecure = True
-
-        wrapper_metadata = self._grpc_metadata
-
-        if insecure:
             self._channel = grpc.insecure_channel(target)
         elif ca_cert_path is not None:
             with open(ca_cert_path, "rb") as f:
@@ -151,7 +149,8 @@ class Client:
             self._channel = grpc.secure_channel(target, ssl_credentials)
         else:
             raise ResultExplorerError(
-                "Must provide either ca_cert_path for secure connection or set insecure=True."
+                "Secure gRPC mode selected but no CA certificate has been provided."
+                "Provide either a ca_cert_path for secure connection or set insecure=True."
             )
 
         # Wrap stubs to handle errors in a centralized way
@@ -271,7 +270,8 @@ class Client:
         host = data.get("host")
         grpc_port = data.get("grpcPort")
         session_id = data.get("sessionId")
-        ca_cert_path = data.get("caCertPath", None)
+        ca_cert_path = data.get("caCertPath")
+        insecure = data.get("insecure")
 
         if host is None:
             raise ValueError("Token is missing 'host' information.")
@@ -279,8 +279,16 @@ class Client:
             raise ValueError("Token is missing 'grpcPort' information.")
         if session_id is None:
             raise ValueError("Token is missing 'sessionId' information.")
+        if insecure is None:
+            insecure = ca_cert_path is None
 
-        return cls(host=host, grpc_port=grpc_port, session_id=session_id, ca_cert_path=ca_cert_path)
+        return cls(
+            host=host,
+            grpc_port=grpc_port,
+            session_id=session_id,
+            ca_cert_path=ca_cert_path,
+            insecure=insecure,
+        )
 
     def ls(
         self,
