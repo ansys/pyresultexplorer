@@ -106,16 +106,14 @@ for s in series:
 
 # Configure active series
 contact_opts.active_series = ["Max. Normal Stiffness"]
-contact_viewport.set_display_options(contact_opts)
 print(f"\n  Active series set to: {contact_opts.active_series}")
 
 # Configure display options
-contact_opts = contact_viewport.display_options
-contact_opts.show_legend = True
-contact_opts.show_table = True
-contact_opts.split_direction = "horizontal"
-contact_viewport.set_display_options(contact_opts)
-print("  Legend enabled, table enabled, split direction: horizontal")
+with contact_viewport.update_display_options() as contact_opts:
+    contact_opts.show_legend = True
+    contact_opts.show_table = True
+    contact_opts.split_direction = "horizontal"
+    print("  Legend enabled, table enabled, split direction: horizontal")
 
 print("\nViewport configuration complete!")
 print(f"Workspace '{workspace.name}' is ready with tracker views configured.")

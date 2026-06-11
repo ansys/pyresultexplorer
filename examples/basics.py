@@ -134,10 +134,9 @@ workspace.exit_fullscreen()
 
 # modify view display options
 print("Modifying view display options...")
-opts = viewport.display_options
-opts.show_mesh_edges = not opts.show_mesh_edges
-opts.show_min_max_labels = True
-viewport.set_display_options(opts)
+with viewport.update_display_options() as opts:
+    opts.show_mesh_edges = not opts.show_mesh_edges
+    opts.show_min_max_labels = True
 
 # take new snapshot
 snapshot_data = top_left_viewport.take_snapshot()
