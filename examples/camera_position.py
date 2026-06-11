@@ -79,7 +79,6 @@ def apply_camera(label: str, cam: CameraPosition) -> None:
     cam = cam.with_zoom(initial_zoom).with_translation(*initial_translation)
     opts = viewport.display_options
     opts.camera_position = cam
-    viewport.set_display_options(opts)
 
     time.sleep(1)
 
