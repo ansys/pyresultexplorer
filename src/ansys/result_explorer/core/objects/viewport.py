@@ -316,17 +316,19 @@ class ResultDisplayOptions:
         _viewport=None,
     ):
         """Initialize result display options."""
-        object.__setattr__(self, "_viewport_id", _viewport_id)
-        object.__setattr__(self, "_client", _client)
-        object.__setattr__(self, "_viewport", _viewport)
-        object.__setattr__(self, "_batch_mode", False)
-        object.__setattr__(self, "_dirty", False)
-        object.__setattr__(self, "result", result)
-        object.__setattr__(self, "set_id", set_id)
-        object.__setattr__(self, "component_index", component_index)
-        object.__setattr__(self, "deformation_scale", deformation_scale)
-        object.__setattr__(self, "legend_range", legend_range)
-        object.__setattr__(self, "use_global_min_max", use_global_min_max)
+        self._viewport = _viewport
+        self._batch_mode = False
+        self._dirty = False
+        # Public attrs, won't trigger _apply because viewport_id/client aren't set yet
+        self.result = result
+        self.set_id = set_id
+        self.component_index = component_index
+        self.deformation_scale = deformation_scale
+        self.legend_range = legend_range
+        self.use_global_min_max = use_global_min_max
+        # Set last — after this, future assignments will auto-apply
+        self._viewport_id = _viewport_id
+        self._client = _client
 
     def __setattr__(self, name: str, value) -> None:
         """Set attribute and apply to server on change."""
@@ -968,7 +970,7 @@ class Viewport(BaseEntity[models.Viewport]):
         """Batch display options updates in a single server call.
 
         Suppresses auto-commit during the block and flushes all
-        changes as one (or two, for plot viewports) gRPC calls on exit.
+        changes on exit.
 
         Yields
         ------
