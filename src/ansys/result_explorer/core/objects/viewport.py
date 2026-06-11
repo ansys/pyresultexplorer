@@ -19,6 +19,8 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Generator
+from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal
 
@@ -38,6 +40,7 @@ class PbProperty:
     """Descriptor for accessing nested protobuf object properties.
 
     Supports dot-notation for nested keys (e.g., "explodeSettings.active").
+    Auto-commits to server when property is set.
     """
 
     def __init__(self, key: str):
@@ -51,8 +54,10 @@ class PbProperty:
         return self._get_nested(obj._pb_obj, self.key)
 
     def __set__(self, obj, value):
-        """Set property value on nested protobuf object."""
+        """Set property value on nested protobuf object and apply to server."""
         self._set_nested(obj._pb_obj, self.key, value)
+        if hasattr(obj, "_apply"):
+            obj._apply()
 
     @staticmethod
     def _get_nested(obj, path: str):
@@ -269,12 +274,12 @@ class LogsViewportMetadata(ViewportMetadata):
 # ---------------------------------------------------------------------------
 
 
-@dataclass
 class ResultDisplayOptions:
     """Result-specific display options for plot viewports.
 
     These are sent to the server via the
     ``UpdateViewportRequest.display_options`` field.
+    Changes to properties on this object auto-commit to the server.
 
     Parameters
     ----------
@@ -298,18 +303,50 @@ class ResultDisplayOptions:
 
     """
 
-    result: str | None = None
-    set_id: int | None = None
-    component_index: int | None = None
-    deformation_scale: float | None = None
-    legend_range: tuple[float, float] | None = None
-    use_global_min_max: bool | None = None
+    def __init__(
+        self,
+        result: str | None = None,
+        set_id: int | None = None,
+        component_index: int | None = None,
+        deformation_scale: float | None = None,
+        legend_range: tuple[float, float] | None = None,
+        use_global_min_max: bool | None = None,
+        _viewport_id: str | None = None,
+        _client: Client | None = None,
+        _viewport=None,
+    ):
+        """Initialize result display options."""
+        object.__setattr__(self, "_viewport_id", _viewport_id)
+        object.__setattr__(self, "_client", _client)
+        object.__setattr__(self, "_viewport", _viewport)
+        object.__setattr__(self, "_batch_mode", False)
+        object.__setattr__(self, "_dirty", False)
+        object.__setattr__(self, "result", result)
+        object.__setattr__(self, "set_id", set_id)
+        object.__setattr__(self, "component_index", component_index)
+        object.__setattr__(self, "deformation_scale", deformation_scale)
+        object.__setattr__(self, "legend_range", legend_range)
+        object.__setattr__(self, "use_global_min_max", use_global_min_max)
+
+    def __setattr__(self, name: str, value) -> None:
+        """Set attribute and apply to server on change."""
+        object.__setattr__(self, name, value)
+        # Only auto-apply if attribute is not internal (_viewport_id, _client)
+        # and both viewport_id and client are set
+        if not name.startswith("_") and self._viewport_id is not None and self._client is not None:
+            self._apply()
 
     @classmethod
-    def _from_pb(cls, pb_obj) -> ResultDisplayOptions:
+    def _from_pb(
+        cls,
+        pb_obj,
+        _viewport_id: str | None = None,
+        _client: Client | None = None,
+        _viewport=None,
+    ) -> ResultDisplayOptions:
         """Build from active result and deformation_scale in metadata Struct."""
         if "activeResult" not in pb_obj:
-            return cls()
+            return cls(_viewport_id=_viewport_id, _client=_client, _viewport=_viewport)
 
         ar = pb_obj["activeResult"]
         legend = ar["legend"] if "legend" in ar else {}
@@ -329,6 +366,9 @@ class ResultDisplayOptions:
             use_global_min_max=(
                 bool(legend["useGlobalMinMax"]) if "useGlobalMinMax" in legend else None
             ),
+            _viewport_id=_viewport_id,
+            _client=_client,
+            _viewport=_viewport,
         )
 
     def to_pb(self) -> struct_pb2.Struct:
@@ -357,6 +397,27 @@ class ResultDisplayOptions:
         ParseDict(d, s)
         return s
 
+    def _apply(self) -> None:
+        """Apply result options to server.
+
+        Sends result-specific options to the server and updates parent viewport state.
+
+        """
+        if self._viewport_id is None or self._client is None:
+            return
+        if self._batch_mode:
+            object.__setattr__(self, "_dirty", True)
+            return
+        object.__setattr__(self, "_dirty", False)
+        req = models.UpdateViewportRequest(
+            viewport_id=self._viewport_id,
+            display_options=self.to_pb(),
+            wait=True,
+        )
+        updated_viewport = self._client._workspace_stub.UpdateViewport(req)
+        if self._viewport is not None:
+            self._viewport._pb = updated_viewport
+
 
 # ---------------------------------------------------------------------------
 # Viewport display options classes (read/write)
@@ -366,11 +427,37 @@ class ResultDisplayOptions:
 class DisplayOptions:
     """Read/write wrapper for viewport display options."""
 
-    def __init__(self, pb_obj, client: Client, solution_id: str | None = None):
-        """Initialize viewport display options wrapper."""
+    def __init__(
+        self,
+        pb_obj,
+        client: Client,
+        solution_id: str | None = None,
+        viewport_id: str | None = None,
+        viewport=None,
+    ):
+        """Initialize viewport display options wrapper.
+
+        Parameters
+        ----------
+        pb_obj : dict-like
+            Protobuf Struct for metadata.
+        client : Client
+            gRPC client for server communication.
+        solution_id : str, optional
+            Solution ID for this viewport.
+        viewport_id : str, optional
+            Viewport ID for this display options instance.
+        viewport : Viewport, optional
+            Parent viewport reference for state updates after auto-commit.
+
+        """
         self._pb_obj = pb_obj
         self._client = client
         self._solution_id = solution_id
+        self._viewport_id = viewport_id
+        self._viewport = viewport
+        self._batch_mode = False
+        self._dirty = False
 
     def to_pb(self):
         """Return the underlying protobuf Struct for metadata updates.
@@ -383,10 +470,41 @@ class DisplayOptions:
         """
         return self._pb_obj
 
+    def _apply(self) -> None:
+        """Apply changes to this viewport via gRPC.
+
+        Sends the current display options to the server and updates local state.
+
+        """
+        if self._viewport_id is None:
+            raise ValueError(
+                "Cannot apply display options: viewport_id is not set. "
+                "Obtain options via viewport.display_options property."
+            )
+        if self._batch_mode:
+            self._dirty = True
+            return
+        self._dirty = False
+        req = models.UpdateViewportRequest(
+            viewport_id=self._viewport_id,
+            metadata=self.to_pb(),
+            wait=True,
+        )
+        updated_viewport = self._client._workspace_stub.UpdateViewport(req)
+        if self._viewport is not None:
+            self._viewport._pb = updated_viewport
+
     @classmethod
-    def _from_pb(cls, pb_obj, client: Client, solution_id: str | None = None) -> DisplayOptions:
+    def _from_pb(
+        cls,
+        pb_obj,
+        client: Client,
+        solution_id: str | None = None,
+        viewport_id: str | None = None,
+        viewport=None,
+    ) -> DisplayOptions:
         """Build from a metadata Struct."""
-        return cls(pb_obj, client, solution_id)
+        return cls(pb_obj, client, solution_id, viewport_id, viewport)
 
     def __str__(self):
         """Return display options as formatted JSON string."""
@@ -415,13 +533,19 @@ class ThreeDDisplayOptions(DisplayOptions):
     def camera_position(self, value: CameraPosition) -> None:
         """Set the camera position."""
         self._pb_obj["cameraPosition"] = {"matrix": value.matrix}
+        self._apply()
 
     @classmethod
     def _from_pb(
-        cls, pb_obj, client: Client, solution_id: str | None = None
+        cls,
+        pb_obj,
+        client: Client,
+        solution_id: str | None = None,
+        viewport_id: str | None = None,
+        viewport=None,
     ) -> ThreeDDisplayOptions:
         """Build from a metadata Struct."""
-        return cls(pb_obj, client, solution_id)
+        return cls(pb_obj, client, solution_id, viewport_id, viewport)
 
 
 class MeshDisplayOptions(ThreeDDisplayOptions):
@@ -464,11 +588,19 @@ class MeshDisplayOptions(ThreeDDisplayOptions):
             raise ValueError(f"No named selection with id or name '{value}' found in solution.")
 
         self._pb_obj["shownNamedSelection"] = ns.id
+        self._apply()
 
     @classmethod
-    def _from_pb(cls, pb_obj, client: Client, solution_id: str | None = None) -> MeshDisplayOptions:
+    def _from_pb(
+        cls,
+        pb_obj,
+        client: Client,
+        solution_id: str | None = None,
+        viewport_id: str | None = None,
+        viewport=None,
+    ) -> MeshDisplayOptions:
         """Build from a metadata Struct."""
-        return cls(pb_obj, client, solution_id)
+        return cls(pb_obj, client, solution_id, viewport_id, viewport)
 
 
 class PlotDisplayOptions(ThreeDDisplayOptions):
@@ -485,17 +617,60 @@ class PlotDisplayOptions(ThreeDDisplayOptions):
         pb_obj,
         client: Client,
         solution_id: str | None = None,
+        viewport_id: str | None = None,
+        viewport=None,
         result_options: ResultDisplayOptions | None = None,
     ):
         """Initialize plot viewport display options."""
-        super().__init__(pb_obj, client, solution_id)
-        self.result_options = result_options
+        super().__init__(pb_obj, client, solution_id, viewport_id, viewport)
+        self._result_options = result_options
+
+    @property
+    def result_options(self) -> ResultDisplayOptions:
+        """Result-specific display options wrapper."""
+        if self._result_options is None:
+            self._result_options = ResultDisplayOptions._from_pb(
+                self._pb_obj,
+                _viewport_id=self._viewport_id,
+                _client=self._client,
+                _viewport=self._viewport,
+            )
+        return self._result_options
+
+    @result_options.setter
+    def result_options(self, value: ResultDisplayOptions) -> None:
+        """Set result options and apply to server."""
+        self._result_options = value
+        if self._viewport_id is not None and self._client is not None:
+            req = models.UpdateViewportRequest(
+                viewport_id=self._viewport_id,
+                display_options=self._result_options.to_pb(),
+                wait=True,
+            )
+            self._client._workspace_stub.UpdateViewport(req)
 
     @classmethod
-    def _from_pb(cls, pb_obj, client: Client, solution_id: str | None = None) -> PlotDisplayOptions:
+    def _from_pb(
+        cls,
+        pb_obj,
+        client: Client,
+        solution_id: str | None = None,
+        viewport_id: str | None = None,
+        viewport=None,
+    ) -> PlotDisplayOptions:
         """Build from a metadata Struct, populating result_options."""
         return cls(
-            pb_obj, client, solution_id, result_options=ResultDisplayOptions._from_pb(pb_obj)
+            pb_obj,
+            client,
+            solution_id,
+            viewport_id,
+            viewport,
+            result_options=ResultDisplayOptions._from_pb(
+                pb_obj,
+                _viewport_id=viewport_id,
+                _client=client,
+                _viewport=viewport,
+            ),
         )
 
 
@@ -532,13 +707,19 @@ class BaseChartDisplayOptions(DisplayOptions):
                 raise ValueError(f"Invalid series name: {name}")
         indices = [self.series_names.index(name) for name in names]
         self._pb_obj["displayOptions"]["activeSeriesIndices"] = indices
+        self._apply()
 
     @classmethod
     def _from_pb(
-        cls, pb_obj, client: Client, solution_id: str | None = None
+        cls,
+        pb_obj,
+        client: Client,
+        solution_id: str | None = None,
+        viewport_id: str | None = None,
+        viewport=None,
     ) -> BaseChartDisplayOptions:
         """Build from a metadata Struct."""
-        return cls(pb_obj, client, solution_id)
+        return cls(pb_obj, client, solution_id, viewport_id, viewport)
 
 
 class ChartDisplayOptions(BaseChartDisplayOptions):
@@ -570,6 +751,7 @@ class ChartDisplayOptions(BaseChartDisplayOptions):
                 raise ValueError(f"Invalid chart name: {name}")
         indices = [self.chart_names.index(name) for name in names]
         self._pb_obj["displayOptions"]["activeChartIndices"] = indices
+        self._apply()
 
     @property
     def selected_x_axis(self) -> str:
@@ -591,13 +773,19 @@ class ChartDisplayOptions(BaseChartDisplayOptions):
             raise ValueError(f"Invalid x-axis name: {name}")
         idx = self.series_names.index(name)
         self._pb_obj["displayOptions"]["selectedXAxisIndex"] = idx
+        self._apply()
 
     @classmethod
     def _from_pb(
-        cls, pb_obj, client: Client, solution_id: str | None = None
+        cls,
+        pb_obj,
+        client: Client,
+        solution_id: str | None = None,
+        viewport_id: str | None = None,
+        viewport=None,
     ) -> ChartDisplayOptions:
         """Build from a metadata Struct."""
-        return cls(pb_obj, client, solution_id)
+        return cls(pb_obj, client, solution_id, viewport_id, viewport)
 
 
 class ContactTrackersDisplayOptions(BaseChartDisplayOptions):
@@ -629,13 +817,19 @@ class ContactTrackersDisplayOptions(BaseChartDisplayOptions):
                 raise ValueError(f"Invalid contact tracker name: {name}")
         indices = [self.contact_tracker_names.index(name) for name in names]
         self._pb_obj["displayOptions"]["activeChartIndices"] = indices
+        self._apply()
 
     @classmethod
     def _from_pb(
-        cls, pb_obj, client: Client, solution_id: str | None = None
+        cls,
+        pb_obj,
+        client: Client,
+        solution_id: str | None = None,
+        viewport_id: str | None = None,
+        viewport=None,
     ) -> ContactTrackersDisplayOptions:
         """Build from a metadata Struct."""
-        return cls(pb_obj, client, solution_id)
+        return cls(pb_obj, client, solution_id, viewport_id, viewport)
 
 
 class ConvergenceTrackersDisplayOptions(DisplayOptions):
@@ -645,10 +839,15 @@ class ConvergenceTrackersDisplayOptions(DisplayOptions):
 
     @classmethod
     def _from_pb(
-        cls, pb_obj, client: Client, solution_id: str | None = None
+        cls,
+        pb_obj,
+        client: Client,
+        solution_id: str | None = None,
+        viewport_id: str | None = None,
+        viewport=None,
     ) -> ConvergenceTrackersDisplayOptions:
         """Build from a metadata Struct."""
-        return cls(pb_obj, client, solution_id)
+        return cls(pb_obj, client, solution_id, viewport_id, viewport)
 
 
 class LogsDisplayOptions(DisplayOptions):
@@ -657,9 +856,16 @@ class LogsDisplayOptions(DisplayOptions):
     log_path: str = PbProperty("currentLogPath")
 
     @classmethod
-    def _from_pb(cls, pb_obj, client: Client, solution_id: str | None = None) -> LogsDisplayOptions:
+    def _from_pb(
+        cls,
+        pb_obj,
+        client: Client,
+        solution_id: str | None = None,
+        viewport_id: str | None = None,
+        viewport=None,
+    ) -> LogsDisplayOptions:
         """Build from a metadata Struct."""
-        return cls(pb_obj, client, solution_id)
+        return cls(pb_obj, client, solution_id, viewport_id, viewport)
 
 
 # ---------------------------------------------------------------------------
@@ -728,46 +934,70 @@ class Viewport(BaseEntity[models.Viewport]):
         pb_obj = self._pb.metadata
 
         if view is None:
-            return DisplayOptions._from_pb(pb_obj, self._client, self.solution_id)
+            return DisplayOptions._from_pb(pb_obj, self._client, self.solution_id, self.id, self)
 
         if view.type == models.ViewType.VIEW_TYPE_PLOT:
-            return PlotDisplayOptions._from_pb(pb_obj, self._client, self.solution_id)
+            return PlotDisplayOptions._from_pb(
+                pb_obj, self._client, self.solution_id, self.id, self
+            )
         elif view.type == models.ViewType.VIEW_TYPE_CHART:
-            return ChartDisplayOptions._from_pb(pb_obj, self._client, self.solution_id)
+            return ChartDisplayOptions._from_pb(
+                pb_obj, self._client, self.solution_id, self.id, self
+            )
         elif view.type == models.ViewType.VIEW_TYPE_MESH:
-            return MeshDisplayOptions._from_pb(pb_obj, self._client, self.solution_id)
+            return MeshDisplayOptions._from_pb(
+                pb_obj, self._client, self.solution_id, self.id, self
+            )
         elif view.type == models.ViewType.VIEW_TYPE_CONVERGENCE_TRACKERS:
             return ConvergenceTrackersDisplayOptions._from_pb(
-                pb_obj, self._client, self.solution_id
+                pb_obj, self._client, self.solution_id, self.id, self
             )
         elif view.type == models.ViewType.VIEW_TYPE_CONTACT_TRACKERS:
-            return ContactTrackersDisplayOptions._from_pb(pb_obj, self._client, self.solution_id)
+            return ContactTrackersDisplayOptions._from_pb(
+                pb_obj, self._client, self.solution_id, self.id, self
+            )
         elif view.type == models.ViewType.VIEW_TYPE_LOGS:
-            return LogsDisplayOptions._from_pb(pb_obj, self._client, self.solution_id)
+            return LogsDisplayOptions._from_pb(
+                pb_obj, self._client, self.solution_id, self.id, self
+            )
 
-        return DisplayOptions._from_pb(pb_obj, self._client, self.solution_id)
+        return DisplayOptions._from_pb(pb_obj, self._client, self.solution_id, self.id, self)
 
-    def set_display_options(self, opts: DisplayOptions) -> None:
-        """Apply display options to this viewport.
+    @contextmanager
+    def update_display_options(self) -> Generator[DisplayOptions, None, None]:
+        """Batch display options updates in a single server call.
 
-        Parameters
-        ----------
-        opts : DisplayOptions
-            Display options to apply. Obtain via
-            ``viewport.display_options``, modify as needed,
-            then pass back here.
+        Suppresses auto-commit during the block and flushes all
+        changes as one (or two, for plot viewports) gRPC calls on exit.
+
+        Yields
+        ------
+        DisplayOptions
+            The display options object to modify.
+
+        Examples
+        --------
+        >>> with viewport.update_display_options() as opts:
+        ...     opts.show_mesh_edges = True
+        ...     opts.result_options.deformation_scale = 2.5
 
         """
-        req = models.UpdateViewportRequest(
-            viewport_id=self.id,
-            metadata=opts.to_pb(),
-            wait=True,
-        )
-        self._pb = self._client._workspace_stub.UpdateViewport(req)
-
-        if isinstance(opts, PlotDisplayOptions) and opts.result_options is not None:
-            req.display_options.CopyFrom(opts.result_options.to_pb())
-            self._pb = self._client._workspace_stub.UpdateViewport(req)
+        opts = self.display_options
+        opts._batch_mode = True
+        result_opts = opts._result_options if isinstance(opts, PlotDisplayOptions) else None
+        if result_opts is not None:
+            object.__setattr__(result_opts, "_batch_mode", True)
+        try:
+            yield opts
+        finally:
+            opts._batch_mode = False
+            result_opts = opts._result_options if isinstance(opts, PlotDisplayOptions) else None
+            if result_opts is not None:
+                object.__setattr__(result_opts, "_batch_mode", False)
+            if opts._dirty:
+                opts._apply()
+            if result_opts is not None and result_opts._dirty:
+                result_opts._apply()
 
     @property
     def size(self) -> float:
