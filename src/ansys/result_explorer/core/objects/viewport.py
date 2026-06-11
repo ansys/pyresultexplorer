@@ -316,10 +316,11 @@ class ResultDisplayOptions:
         _viewport=None,
     ):
         """Initialize result display options."""
+        self._viewport_id = None
+        self._client = None
         self._viewport = _viewport
         self._batch_mode = False
         self._dirty = False
-        # Public attrs, won't trigger _apply because viewport_id/client aren't set yet
         self.result = result
         self.set_id = set_id
         self.component_index = component_index
