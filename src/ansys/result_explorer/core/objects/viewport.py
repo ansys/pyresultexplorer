@@ -643,6 +643,9 @@ class PlotDisplayOptions(ThreeDDisplayOptions):
     @result_options.setter
     def result_options(self, value: ResultDisplayOptions) -> None:
         """Set result options and apply to server."""
+        value._viewport_id = self._viewport_id
+        value._client = self._client
+        value._viewport = self._viewport
         self._result_options = value
         if self._viewport_id is not None and self._client is not None:
             req = models.UpdateViewportRequest(
@@ -650,7 +653,9 @@ class PlotDisplayOptions(ThreeDDisplayOptions):
                 display_options=self._result_options.to_pb(),
                 wait=True,
             )
-            self._client._workspace_stub.UpdateViewport(req)
+            updated_viewport = self._client._workspace_stub.UpdateViewport(req)
+            if self._viewport is not None:
+                self._viewport._pb = updated_viewport
 
     @classmethod
     def _from_pb(
