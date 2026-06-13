@@ -47,6 +47,7 @@ from ansys.api.result_explorer.v0.server_models_pb2 import (
     Body,
     ChartDefinition,
     ChartDefinitionCreate,
+    ChartResult,
     ChunkingStrategy,
     ConfigurableChart,
     ConfigurablePlot,
@@ -76,9 +77,6 @@ from ansys.api.result_explorer.v0.server_models_pb2 import (
     TimeFrequency,
     View,
     ViewType,
-)
-from ansys.api.result_explorer.v0.server_models_pb2 import (
-    ChartResultInput as ChartResult,
 )
 from ansys.api.result_explorer.v0.solution_pb2 import (
     CreateChartDefinitionRequest,
