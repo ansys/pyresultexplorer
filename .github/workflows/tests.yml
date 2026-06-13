@@ -65,8 +65,8 @@ jobs:
           ghcr-username: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
           ghcr-token: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
           license-server: ${{ secrets.LICENSE_SERVER }}
-          server-tag: 'bump-gateway-dpf-v2026.1.pre1'
-          web-tag: 'bump-web-api'
+          server-tag: 'dev-dpf-v2026.1.pre1'
+          web-tag: 'dev'
           results-folder: '${{ github.workspace }}/tests/data'
 
       - uses: extractions/netrc@v3
