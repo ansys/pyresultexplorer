@@ -374,7 +374,7 @@ class ResultDisplayOptions:
             _viewport=_viewport,
         )
 
-    def to_pb(self) -> struct_pb2.Struct:
+    def _to_pb(self) -> struct_pb2.Struct:
         """Serialize to a protobuf Struct (only non-None fields).
 
         Returns
@@ -414,7 +414,7 @@ class ResultDisplayOptions:
         object.__setattr__(self, "_dirty", False)
         req = models.UpdateViewportRequest(
             viewport_id=self._viewport_id,
-            display_options=self.to_pb(),
+            display_options=self._to_pb(),
             wait=True,
         )
         updated_viewport = self._client._workspace_stub.UpdateViewport(req)
@@ -462,7 +462,7 @@ class DisplayOptions:
         self._batch_mode = False
         self._dirty = False
 
-    def to_pb(self):
+    def _to_pb(self):
         """Return the underlying protobuf Struct for metadata updates.
 
         Returns
@@ -490,7 +490,7 @@ class DisplayOptions:
         self._dirty = False
         req = models.UpdateViewportRequest(
             viewport_id=self._viewport_id,
-            metadata=self.to_pb(),
+            metadata=self._to_pb(),
             wait=True,
         )
         updated_viewport = self._client._workspace_stub.UpdateViewport(req)
@@ -518,11 +518,17 @@ class ThreeDDisplayOptions(DisplayOptions):
     """Read/write display options for 3D viewports."""
 
     show_mesh_edges: bool = PbProperty("showMeshEdges")
+    """Whether to display mesh edges."""
     explode: bool = PbProperty("explodeSettings.active")
+    """Whether to enable explode mode."""
     explode_scale_factor: float = PbProperty("explodeSettings.scaleFactor")
+    """Scale factor for explode visualization."""
     explode_direction: Literal["Radial", "X", "Y", "Z"] = PbProperty("explodeSettings.direction")
+    """Direction of explosion: ``Radial``, ``X``, ``Y``, or ``Z``."""
     expanded_groups: list[str] = PbProperty("expandedGroups")
+    """List of expanded group."""
     visible_bodies: list[str] = PbProperty("shownBodies")
+    """List of visible body IDs."""
 
     @property
     def camera_position(self) -> CameraPosition | None:
@@ -614,6 +620,7 @@ class PlotDisplayOptions(ThreeDDisplayOptions):
     """
 
     show_min_max_labels: bool = PbProperty("showMinMaxLabels")
+    """Whether to display min/max labels on the plot."""
 
     def __init__(
         self,
@@ -650,7 +657,7 @@ class PlotDisplayOptions(ThreeDDisplayOptions):
         if self._viewport_id is not None and self._client is not None:
             req = models.UpdateViewportRequest(
                 viewport_id=self._viewport_id,
-                display_options=self._result_options.to_pb(),
+                display_options=self._result_options._to_pb(),
                 wait=True,
             )
             updated_viewport = self._client._workspace_stub.UpdateViewport(req)
@@ -686,8 +693,11 @@ class BaseChartDisplayOptions(DisplayOptions):
     """Read/write display options for base chart viewports."""
 
     show_legend: bool = PbProperty("displayOptions.showLegend")
+    """Whether to display the legend."""
     show_table: bool = PbProperty("displayOptions.showTable")
+    """Whether to display the data table."""
     split_direction: Literal["horizontal", "vertical"] = PbProperty("displayOptions.splitDirection")
+    """Direction to split chart and table: ``horizontal`` or ``vertical``."""
 
     @property
     def series_names(self) -> list[str]:
@@ -844,6 +854,7 @@ class ConvergenceTrackersDisplayOptions(DisplayOptions):
     """Read/write display options for convergence trackers viewports."""
 
     selected_tracker_name: str = PbProperty("selectedTrackerName")
+    """Name of the currently selected convergence tracker."""
 
     @classmethod
     def _from_pb(
@@ -862,6 +873,7 @@ class LogsDisplayOptions(DisplayOptions):
     """Read/write display options for logs viewports."""
 
     log_path: str = PbProperty("currentLogPath")
+    """Path to the currently displayed log file."""
 
     @classmethod
     def _from_pb(

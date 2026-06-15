@@ -18,3 +18,11 @@ Result objects
    ContactTrackersViewportMetadata
    ConvergenceTrackersViewportMetadata
    LogsViewportMetadata
+   DisplayOptions
+   ResultDisplayOptions
+   MeshDisplayOptions
+   PlotDisplayOptions
+   ChartDisplayOptions
+   ContactTrackersDisplayOptions
+   ConvergenceTrackersDisplayOptions
+   LogsDisplayOptions
