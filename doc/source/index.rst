@@ -5,7 +5,7 @@
    :maxdepth: 3
 
    getting_started/index
-   examples
+   examples/index
    api/index
    changelog
 
@@ -39,7 +39,7 @@ which is a tool to explore and visualize structural simulation results.
         start guide to begin using it.
 
     .. grid-item-card:: :fa:`code` Browse code examples
-        :link: examples
+        :link: examples/index
         :link-type: doc
 
         See how to use PyResultExplorer in different scenarios

@@ -536,7 +536,7 @@ class WebLaunchConfig:
     """
 
     server_url: str | None = None
-    browser_type: BrowserType = BrowserType.SYSTEM_DEFAULT
+    browser_type: BrowserType = BrowserType.PLAYWRIGHT_CHROMIUM_HEADLESS
 
     def __post_init__(self):
         """Validate configuration."""

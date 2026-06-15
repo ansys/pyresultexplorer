@@ -1,6 +1,7 @@
 """Sphinx documentation configuration file."""
 
 import os
+import pathlib
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -11,6 +12,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 from ansys_sphinx_theme import get_version_match
 
 from ansys.result_explorer.core import __version__
+
+SKIP_GALLERY = os.environ.get("PYRX_DOC_SKIP_GALLERY", "0").lower() in ("1", "true")
 
 # Project information
 project = "ansys-result-explorer-core"
@@ -47,6 +50,7 @@ extensions = [
     "numpydoc",
     "sphinx.ext.intersphinx",
     "sphinx_copybutton",
+    "sphinx_gallery.gen_gallery",
     "sphinx_design",
 ]
 
@@ -91,6 +95,43 @@ numpydoc_validation_checks = {
     # type, unless multiple values are being returned"
 }
 
+if SKIP_GALLERY:
+    # Generate the gallery without executing the code. The gallery will not
+    # contain the output of the code cells.
+    # This is useful for more quickly building the documentation.
+    gallery_filename_pattern = "<MATCH NOTHING>"
+else:
+    gallery_filename_pattern = r".*\.py"
+
+examples_dirs_base = pathlib.Path(__file__).parent.parent.parent / "examples"
+gallery_dirs_base = pathlib.Path(__file__).parent / "examples"
+
+# sphinx gallery options
+sphinx_gallery_conf = {
+    # convert rst to md for ipynb
+    "pypandoc": True,
+    # path to your examples scripts
+    "examples_dirs": [str(examples_dirs_base)],
+    # path where to save gallery generated examples
+    "gallery_dirs": [str(gallery_dirs_base)],
+    # Pattern to search for example files
+    "filename_pattern": gallery_filename_pattern,
+    # Remove the "Download all examples" button from the top level gallery
+    "download_all_examples": False,
+    # Sort gallery example by filename instead of number of lines (default)
+    "within_subsection_order": "FileNameSortKey",
+    # directory where function granular galleries are stored
+    "backreferences_dir": "api/_gallery_backreferences",
+    # Modules for which function level galleries are created.
+    "doc_module": ("ansys.result_explorer.core"),
+    "exclude_implicit_doc": {"ansys\\.result_explorer\\.core\\._.*"},  # ignore private submodules
+    # "image_scrapers": (DynamicScraper(), "matplotlib"),
+    "ignore_pattern": r"__init__\.py",
+    "thumbnail_size": (320, 240),
+    "remove_config_comments": True,
+}
+
+print(sphinx_gallery_conf)
 
 # static path
 html_static_path = ["_static"]

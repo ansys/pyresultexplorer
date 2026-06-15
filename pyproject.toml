@@ -49,6 +49,8 @@ doc = [
     "sphinx-copybutton==0.5.2",
     "sphinx-autobuild",
     "sphinx-design>=0.6.1",
+    "sphinx-gallery>=0.15.0",
+    "pypandoc>=1.13",
 ]
 examples = [
     "matplotlib",
