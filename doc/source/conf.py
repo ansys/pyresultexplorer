@@ -19,6 +19,9 @@ from ansys.result_explorer.core import __version__
 
 SKIP_GALLERY = os.environ.get("PYRX_DOC_SKIP_GALLERY", "0").lower() in ("1", "true")
 
+# Suppress config cache warning for sphinx_gallery_conf (contains unpicklable function)
+suppress_warnings = ["config.cache"]
+
 # Project information
 project = "ansys-result-explorer-core"
 copyright = f"(c) {datetime.now().year} ANSYS, Inc. All rights reserved"
@@ -165,8 +168,8 @@ def image_scraper(block, block_vars, gallery_conf, **kwargs):
 
 # sphinx gallery options
 sphinx_gallery_conf = {
-    # convert rst to md for ipynb
-    "pypandoc": True,
+    # convert rst to md for ipynb (use sphinx-gallery's built-in converter)
+    "pypandoc": False,
     # path to your examples scripts
     "examples_dirs": [str(examples_dirs_base)],
     # path where to save gallery generated examples
