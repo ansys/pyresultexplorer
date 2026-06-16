@@ -62,3 +62,5 @@ for r in range(1, 4):
         viewports = workspace.viewports
         print(f"Viewport count: {len(viewports)}")
         print("-" * 40)
+
+rx.stop()

@@ -123,14 +123,14 @@ class _PlaywrightManager:
         with self._lock:
             if self._playwright is not None:
                 self._ref_count -= 1
-                log.debug(f"Playwright ref count: {self._ref_count}")
+                log.info(f"Playwright ref count: {self._ref_count}")
                 if self._ref_count <= 0 and not self._is_external:
-                    log.debug("Stopping Playwright instance (singleton)")
+                    log.info("Stopping Playwright instance (singleton)")
                     self._playwright.stop()
                     self._playwright = None
                     self._ref_count = 0
                 elif self._ref_count <= 0:
-                    log.debug("Not stopping externally-managed Playwright instance")
+                    log.info("Not stopping externally-managed Playwright instance")
 
 
 class BrowserType(StrEnum):
@@ -776,9 +776,11 @@ class ResultExplorerInstance:
         Closes the web session and stops the server process.
         """
         if self._web_session is not None:
+            log.info("Closing web session...")
             self._web_session.close()
             self._web_session = None
         if self._server_process is not None:
+            log.info("Stopping server process...")
             self._server_process.stop()
             self._server_process = None
 

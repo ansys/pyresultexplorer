@@ -198,3 +198,5 @@ top_left_viewport.save_snapshot(
 # Delete the bottom right viewport to demonstrate viewport deletion.
 print("Deleting bottom right viewport...")
 workspace.delete_viewport(viewport=bottom_right_viewport)
+
+rx.stop()
