@@ -107,6 +107,7 @@ jobs:
           check-links: false
         env:
           ANSYS_RESULT_EXPLORER_SERVER: ${{ env.RX_SERVER_INSTALLATION_PATH }}/viz-server
+          ANSYSLMD_LICENSE_FILE: 1055@${{ secrets.LICENSE_SERVER }}
 
   build-library:
     name: "Build library"
