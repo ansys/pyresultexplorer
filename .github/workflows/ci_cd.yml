@@ -80,6 +80,8 @@ jobs:
   doc-build:
     name: "Build documentation"
     runs-on: ubuntu-latest
+    env:
+      RX_SERVER_INSTALLATION_PATH: '/tmp/result-explorer-server'
     # needs: [doc-style]
     steps:
 
@@ -89,12 +91,22 @@ jobs:
           username: pyansys-ci-bot
           password: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
 
+      - name: Install Result Explorer (native)
+        id: install-rx
+        uses: ./.github/actions/result-explorer-server
+        with:
+          version: 'latest-dev'
+          installation-path: ${{ env.RX_SERVER_INSTALLATION_PATH }}
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+
       - uses: ansys/actions/doc-build@v10.3.2
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          optional-dependencies-name: ""
-          group-dependencies-name: "doc"
+          optional-dependencies-name: "playwright"
+          group-dependencies-name: "doc,examples"
           check-links: false
+        env:
+          ANSYS_RESULT_EXPLORER_SERVER: ${{ env.RX_SERVER_INSTALLATION_PATH }}/viz-server
 
   build-library:
     name: "Build library"
