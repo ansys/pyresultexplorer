@@ -627,16 +627,28 @@ class ResultExplorerWebSession:
     def close(self) -> None:
         """Close the web session."""
         if self._playwright_page is not None:
-            self._playwright_page.close()
+            try:
+                self._playwright_page.close()
+            except Exception as e:
+                log.debug(f"Error closing Playwright page during cleanup: {e}")
             self._playwright_page = None
         if self._playwright_context is not None:
-            self._playwright_context.close()
+            try:
+                self._playwright_context.close()
+            except Exception as e:
+                log.debug(f"Error closing Playwright context during cleanup: {e}")
             self._playwright_context = None
         if self._playwright_browser is not None:
-            self._playwright_browser.close()
+            try:
+                self._playwright_browser.close()
+            except Exception as e:
+                log.debug(f"Error closing Playwright browser during cleanup: {e}")
             self._playwright_browser = None
         if self._playwright_manager is not None:
-            self._playwright_manager.release_playwright()
+            try:
+                self._playwright_manager.release_playwright()
+            except Exception as e:
+                log.debug(f"Error releasing Playwright manager during cleanup: {e}")
             self._playwright_manager = None
 
     @property
@@ -646,7 +658,10 @@ class ResultExplorerWebSession:
 
     def __del__(self):
         """Ensure web session is closed when object is destroyed."""
-        self.close()
+        try:
+            self.close()
+        except Exception as e:
+            log.debug(f"Error closing web session during garbage collection: {e}")
 
 
 class ResultExplorerInstance:
