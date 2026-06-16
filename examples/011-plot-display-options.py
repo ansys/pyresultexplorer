@@ -136,3 +136,5 @@ with imageio.get_writer("011-plot-display-options.gif", mode="I") as writer:
         snapshot_data = disp_viewport.take_snapshot(settings=get_example_snapshot_settings())
         image = imageio.imread(snapshot_data)
         writer.append_data(image)
+
+rx.stop()

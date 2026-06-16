@@ -138,3 +138,5 @@ for workspace in rx.list_workspaces():
     print(f"Saved workspace template: {template_path}")
 
 print(f"\nAll files saved to: {temp_dir}")
+
+rx.stop()

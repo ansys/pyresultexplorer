@@ -144,3 +144,5 @@ apply_camera(
     "Isometric + 15° X + 30° Y + 45° Z",
     iso.rotate_x(15).rotate_y(30).rotate_z(45),
 )
+
+rx.stop()

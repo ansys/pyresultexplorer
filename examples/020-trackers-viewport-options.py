@@ -147,3 +147,5 @@ with contact_viewport.update_display_options() as contact_opts:
 
 print("\nViewport configuration complete!")
 print(f"Workspace '{workspace.name}' is ready with tracker views configured.")
+
+rx.stop()

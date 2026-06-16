@@ -247,3 +247,5 @@ with viewport.update_display_options() as opts:
 viewport.save_snapshot(
     file_path="013-user-defined-plot.png", settings=get_example_snapshot_settings()
 )
+
+rx.stop()
