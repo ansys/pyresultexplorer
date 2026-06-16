@@ -1,9 +1,11 @@
-Utilities
----------
+Solution and views
+------------------
+
 
 .. currentmodule:: ansys.result_explorer.core
 
 .. autosummary::
    :toctree: _autosummary
 
-   log
+   Solution
+   View

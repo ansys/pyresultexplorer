@@ -38,7 +38,6 @@ This example uses transient structural analysis results for demonstration.
 # ----------------------
 
 # Import dependencies.
-import pathlib
 
 from ansys.result_explorer.core import launch_result_explorer, models
 from ansys.result_explorer.core.examples import ExampleKeys, get_example_file
@@ -49,7 +48,6 @@ rx = launch_result_explorer()
 # Get the path to the example result file. This is a transient structural
 # analysis result in RST format.
 rst_path = get_example_file(ExampleKeys.RST_CP_TRANSIENT)
-folder_path = pathlib.Path(rst_path).parent
 
 # %%
 # Query the File System
@@ -72,7 +70,7 @@ def pretty_print_fs_items(items: list[models.FSItem], indent: int = 0) -> None:
 
 # %%
 # Query the directory at depth 0 to see the top-level contents.
-content = rx.ls(path=folder_path, depth=0)
+content = rx.ls(path=rst_path.parent, depth=0)
 pretty_print_fs_items(content)
 
 # %%
