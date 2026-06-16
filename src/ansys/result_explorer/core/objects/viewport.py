@@ -22,6 +22,7 @@ import json
 from collections.abc import Generator
 from contextlib import contextmanager
 from dataclasses import dataclass
+from pathlib import Path
 from typing import TYPE_CHECKING, Literal
 
 from google.protobuf import struct_pb2
@@ -277,9 +278,9 @@ class LogsViewportMetadata(ViewportMetadata):
 class ResultDisplayOptions:
     """Result-specific display options for plot viewports.
 
-    These are sent to the server via the
+    These are sent to the application via the
     ``UpdateViewportRequest.display_options`` field.
-    Changes to properties on this object auto-commit to the server.
+    Changes to properties on this object auto-commit to the application.
 
     Parameters
     ----------
@@ -374,7 +375,7 @@ class ResultDisplayOptions:
             _viewport=_viewport,
         )
 
-    def to_pb(self) -> struct_pb2.Struct:
+    def _to_pb(self) -> struct_pb2.Struct:
         """Serialize to a protobuf Struct (only non-None fields).
 
         Returns
@@ -401,11 +402,7 @@ class ResultDisplayOptions:
         return s
 
     def _apply(self) -> None:
-        """Apply result options to server.
-
-        Sends result-specific options to the server and updates parent viewport state.
-
-        """
+        """Apply result options to the application."""
         if self._viewport_id is None or self._client is None:
             return
         if self._batch_mode:
@@ -414,7 +411,7 @@ class ResultDisplayOptions:
         object.__setattr__(self, "_dirty", False)
         req = models.UpdateViewportRequest(
             viewport_id=self._viewport_id,
-            display_options=self.to_pb(),
+            display_options=self._to_pb(),
             wait=True,
         )
         updated_viewport = self._client._workspace_stub.UpdateViewport(req)
@@ -462,7 +459,7 @@ class DisplayOptions:
         self._batch_mode = False
         self._dirty = False
 
-    def to_pb(self):
+    def _to_pb(self):
         """Return the underlying protobuf Struct for metadata updates.
 
         Returns
@@ -474,11 +471,7 @@ class DisplayOptions:
         return self._pb_obj
 
     def _apply(self) -> None:
-        """Apply changes to this viewport via gRPC.
-
-        Sends the current display options to the server and updates local state.
-
-        """
+        """Apply changes to this viewport via gRPC."""
         if self._viewport_id is None:
             raise ValueError(
                 "Cannot apply display options: viewport_id is not set. "
@@ -490,7 +483,7 @@ class DisplayOptions:
         self._dirty = False
         req = models.UpdateViewportRequest(
             viewport_id=self._viewport_id,
-            metadata=self.to_pb(),
+            metadata=self._to_pb(),
             wait=True,
         )
         updated_viewport = self._client._workspace_stub.UpdateViewport(req)
@@ -518,11 +511,17 @@ class ThreeDDisplayOptions(DisplayOptions):
     """Read/write display options for 3D viewports."""
 
     show_mesh_edges: bool = PbProperty("showMeshEdges")
+    """Whether to display mesh edges."""
     explode: bool = PbProperty("explodeSettings.active")
+    """Whether to enable explode mode."""
     explode_scale_factor: float = PbProperty("explodeSettings.scaleFactor")
+    """Scale factor for explode visualization."""
     explode_direction: Literal["Radial", "X", "Y", "Z"] = PbProperty("explodeSettings.direction")
+    """Direction of explosion: ``Radial``, ``X``, ``Y``, or ``Z``."""
     expanded_groups: list[str] = PbProperty("expandedGroups")
+    """List of expanded group."""
     visible_bodies: list[str] = PbProperty("shownBodies")
+    """List of visible body IDs."""
 
     @property
     def camera_position(self) -> CameraPosition | None:
@@ -614,6 +613,7 @@ class PlotDisplayOptions(ThreeDDisplayOptions):
     """
 
     show_min_max_labels: bool = PbProperty("showMinMaxLabels")
+    """Whether to display min/max labels on the plot."""
 
     def __init__(
         self,
@@ -650,7 +650,7 @@ class PlotDisplayOptions(ThreeDDisplayOptions):
         if self._viewport_id is not None and self._client is not None:
             req = models.UpdateViewportRequest(
                 viewport_id=self._viewport_id,
-                display_options=self._result_options.to_pb(),
+                display_options=self._result_options._to_pb(),
                 wait=True,
             )
             updated_viewport = self._client._workspace_stub.UpdateViewport(req)
@@ -686,8 +686,11 @@ class BaseChartDisplayOptions(DisplayOptions):
     """Read/write display options for base chart viewports."""
 
     show_legend: bool = PbProperty("displayOptions.showLegend")
+    """Whether to display the legend."""
     show_table: bool = PbProperty("displayOptions.showTable")
+    """Whether to display the data table."""
     split_direction: Literal["horizontal", "vertical"] = PbProperty("displayOptions.splitDirection")
+    """Direction to split chart and table: ``horizontal`` or ``vertical``."""
 
     @property
     def series_names(self) -> list[str]:
@@ -844,6 +847,7 @@ class ConvergenceTrackersDisplayOptions(DisplayOptions):
     """Read/write display options for convergence trackers viewports."""
 
     selected_tracker_name: str = PbProperty("selectedTrackerName")
+    """Name of the currently selected convergence tracker."""
 
     @classmethod
     def _from_pb(
@@ -862,6 +866,7 @@ class LogsDisplayOptions(DisplayOptions):
     """Read/write display options for logs viewports."""
 
     log_path: str = PbProperty("currentLogPath")
+    """Path to the currently displayed log file."""
 
     @classmethod
     def _from_pb(
@@ -1043,6 +1048,33 @@ class Viewport(BaseEntity[models.Viewport]):
             req.settings.CopyFrom(settings)
         snapshot = self._client._workspace_stub.CreateSnapshot(req)
         return snapshot.data
+
+    def save_snapshot(
+        self, file_path: str | Path, settings: models.SnapshotSettings | None = None
+    ) -> None:
+        """Take a snapshot of this viewport and save it to PNG.
+
+        Parameters
+        ----------
+        file_path : str | Path
+            Path to save the PNG image.
+        settings : SnapshotSettings, optional
+            Snapshot settings to control what elements appear in the image
+            (timestamp, logo, legend, solution name, etc.). If None, uses server defaults.
+
+        """
+        snapshot_data = self.take_snapshot(settings)
+
+        # make sure the directory exists
+        file_path = Path(file_path)
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # if the extension is not .png, add it
+        if file_path.suffix.lower() != ".png":
+            file_path = file_path.with_suffix(".png")
+
+        with open(file_path, "wb") as f:
+            f.write(snapshot_data)
 
     def set_size(self, size: float) -> None:
         """Set the size of this viewport in the workspace layout."""

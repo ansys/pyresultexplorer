@@ -167,4 +167,5 @@ cython_debug/
 tests/__snapshots__/diffs/
 
 
-doc/**/_autosummary
+_autosummary
+_gallery_backreferences

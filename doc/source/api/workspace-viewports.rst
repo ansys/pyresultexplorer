@@ -1,5 +1,5 @@
-Result objects
----------------
+Workspace and viewports
+-----------------------
 
 .. currentmodule:: ansys.result_explorer.core
 
@@ -7,9 +7,7 @@ Result objects
    :toctree: _autosummary
 
    Workspace
-   Solution
    Viewport
-   View
    CameraPosition
    ViewportMetadata
    ChartViewportMetadata
@@ -18,3 +16,11 @@ Result objects
    ContactTrackersViewportMetadata
    ConvergenceTrackersViewportMetadata
    LogsViewportMetadata
+   DisplayOptions
+   ResultDisplayOptions
+   MeshDisplayOptions
+   PlotDisplayOptions
+   ChartDisplayOptions
+   ContactTrackersDisplayOptions
+   ConvergenceTrackersDisplayOptions
+   LogsDisplayOptions

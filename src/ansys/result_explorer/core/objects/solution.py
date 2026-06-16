@@ -79,7 +79,7 @@ class MeshView(View):
 
 
 class Solution(NamedBaseEntity[models.Solution]):
-    """Represents a solution loaded in the server."""
+    """Represents a solution loaded in the application."""
 
     def __init__(self, pb_obj: models.Solution, client):
         """Initialize solution entity."""
@@ -88,7 +88,7 @@ class Solution(NamedBaseEntity[models.Solution]):
         self._result_provider: models.ResultProvider | None = None
 
     def _get(self):
-        """Get the latest solution data from the server."""
+        """Get the latest solution data from the application."""
         self._pb = self._client._solution_stub.Get(models.ResourceId(id=self.id))
 
     def _get_plot_view(self, plot_def_id: str) -> PlotView:
@@ -272,6 +272,11 @@ class Solution(NamedBaseEntity[models.Solution]):
     def errors(self) -> list[str]:
         """List of error messages."""
         return list(self._pb.errors)
+
+    @property
+    def warnings(self) -> list[str]:
+        """List of warning messages."""
+        return list(self._pb.warnings)
 
     @property
     def live(self) -> bool:

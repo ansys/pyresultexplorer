@@ -10,8 +10,8 @@ This section describes the API of the public PyResultExplorer classes, functions
 .. toctree::
    :maxdepth: 2
 
-   server
-   objects
-   models
+   instance
+   client
+   solution-views
+   workspace-viewports
    exceptions
-   utilities
