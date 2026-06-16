@@ -15,38 +15,57 @@
 # limitations under the License.
 
 """
+.. _create_plots_example:
+
+Create Plots on Named selections
+=============================================
+
 This example demonstrates how to create named selections and use them to
-create displacement plots in Result Explorer.
+create plots in Result Explorer:
 
-It covers the following steps:
-- Connecting to the PyResultExplorer service
-- Creating a workspace
-- Creating a solution from a result file
-- Creating named selections based on element IDs
-- Creating plot definitions for displacement and velocity using the named selections
-- Assigning the plots to viewports in the workspace
+- **Named selections** based on element IDs to filter and organize data.
+- **Plot definitions** for displacement and velocity using named selections.
+- **Multiple result sets** handling across different timesteps.
+- **Viewport assignment** to display plots side-by-side for comparison.
 
-Make sure to update the FILE_PATH and TOKEN variables
-with appropriate values before running the example.
+This example uses a transient structural analysis result with multiple
+timesteps for visualization.
 """
 
-from ansys.result_explorer.core import models
-from ansys.result_explorer.core.client import Client
+# %%
+# Import the Result Explorer dependencies.
+from ansys.result_explorer.core import launch_result_explorer, models
+from ansys.result_explorer.core.examples import ExampleKeys, get_example_file
 
-FILE_PATH = r"D:\Models\mech-post\cylinder_plate\d3plot"
-TOKEN = "<insert here>"  # noqa E501
+# %%
+# Launch Result Explorer
+# ----------------------
+# Start a Result Explorer instance for this example.
+rx = launch_result_explorer()
 
-rx = Client.connect_with_token(TOKEN)
+# %%
+# Locate Example Data
+# --------------------
+# Get the path to the example result file.
+rst_path = get_example_file(ExampleKeys.RST_CP_TRANSIENT)
 
+# %%
+# Create a Workspace and Solution
+# --------------------------------
+# Create a workspace and load a solution from the result file.
 workspace = rx.create_workspace(name="PyRX NS Plot Workspace")
 
-sol_name = "PyRX Cylinder Plate"
+sol_name = "Coupled Field Transient Analysis"
 sol = rx.create_solution(
     name=sol_name,
-    file_path=FILE_PATH,
+    file_path=rst_path,
 )
 print(f"Created solution: {sol.name}")
 
+# %%
+# Identify Available Result Sets
+# --------------------------------
+# Verify the solution has multiple timesteps and extract the set IDs.
 if sol.n_sets < 2:
     raise RuntimeError("This example requires at least two result sets/timesteps.")
 
@@ -57,11 +76,15 @@ if len(set_ids) < 2:
 set_id_1, set_id_2 = set_ids[0], set_ids[1]
 print(f"Using timesteps (set IDs): {set_id_1}, {set_id_2}")
 
+# %%
+# Create Named Selections
+# ------------------------
+# Create named selections based on element IDs for filtering results.
 ns_1 = sol.create_named_selection(
     models.NamedSelectionCreate(
         name="Elements NS 1",
         type=models.NamedSelectionType.NAMED_SELECTION_TYPE_ELEMENT,
-        element_ids=[models.IdsScoping(values=[1, 2, 3, 4, 5])],
+        element_ids=[models.IdsScoping(range=models.Range(min=23, max=28))],
     )
 )
 
@@ -69,12 +92,16 @@ ns_2 = sol.create_named_selection(
     models.NamedSelectionCreate(
         name="Elements NS 2",
         type=models.NamedSelectionType.NAMED_SELECTION_TYPE_ELEMENT,
-        element_ids=[models.IdsScoping(values=[20, 21, 22, 23, 24])],
+        element_ids=[models.IdsScoping(values=[3, 4, 7, 8, 9, 11, 13, 15, 17, 19])],
     )
 )
 
 print(f"Created named selections: {ns_1.name}, {ns_2.name}")
 
+# %%
+# Create Plot Definitions
+# -------------------------
+# Create displacement and velocity plots using the named selections.
 existing_view_ids = {v.id for v in sol.views}
 plot_1 = sol.create_plot(
     models.PlotDefinitionCreate(
@@ -103,6 +130,10 @@ plot_2 = sol.create_plot(
     )
 )
 
+# %%
+# Assign Plots to Viewports
+# ---------------------------
+# Display the plots in side-by-side viewports for comparison.
 left_viewport = workspace.assign_view(view=plot_1, wait=True)
 right_viewport = workspace.create_viewport(
     viewport=left_viewport,
@@ -110,6 +141,8 @@ right_viewport = workspace.create_viewport(
 )
 right_viewport.set_view(plot_2, wait=True)
 
-print("Opened displacement plots in two side-by-side viewports.")
+print("Opened plots in two side-by-side viewports.")
 print(f" - Left viewport:  {plot_1.name}")
 print(f" - Right viewport: {plot_2.name}")
+
+# take screenshot of the two viewports
