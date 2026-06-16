@@ -278,9 +278,9 @@ class LogsViewportMetadata(ViewportMetadata):
 class ResultDisplayOptions:
     """Result-specific display options for plot viewports.
 
-    These are sent to the server via the
+    These are sent to the application via the
     ``UpdateViewportRequest.display_options`` field.
-    Changes to properties on this object auto-commit to the server.
+    Changes to properties on this object auto-commit to the application.
 
     Parameters
     ----------
@@ -402,11 +402,7 @@ class ResultDisplayOptions:
         return s
 
     def _apply(self) -> None:
-        """Apply result options to server.
-
-        Sends result-specific options to the server and updates parent viewport state.
-
-        """
+        """Apply result options to the application."""
         if self._viewport_id is None or self._client is None:
             return
         if self._batch_mode:
@@ -475,11 +471,7 @@ class DisplayOptions:
         return self._pb_obj
 
     def _apply(self) -> None:
-        """Apply changes to this viewport via gRPC.
-
-        Sends the current display options to the server and updates local state.
-
-        """
+        """Apply changes to this viewport via gRPC."""
         if self._viewport_id is None:
             raise ValueError(
                 "Cannot apply display options: viewport_id is not set. "

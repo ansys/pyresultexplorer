@@ -619,7 +619,8 @@ class ResultExplorerWebSession:
 
         self._playwright_context = self._playwright_browser.new_context(
             # Ignore HTTPS errors for self-signed certificates (e.g., when SSL is enabled for auth)
-            ignore_https_errors=True
+            ignore_https_errors=True,
+            viewport={"width": 1920, "height": 1080},
         )
         self._playwright_page = self._playwright_context.new_page()
         self._playwright_page.goto(self._config.server_url)
