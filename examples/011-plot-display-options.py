@@ -14,31 +14,61 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
+"""
+.. _plot_display_options_example:
+
+Customize Plot Display Options and Animate Results
+===================================================
+
+This example demonstrates how to configure plot display options and animate
+results across time steps in Result Explorer:
+
+- **Plot view management** to find and configure displacement views.
+- **Display options customization** for deformation, component selection,
+  and mesh visualization.
+- **Result range control** using global min/max settings.
+- **Animation through time steps** by updating plot properties dynamically.
+
+This example uses a transient contact analysis result to showcase animation
+and visualization options across multiple timesteps.
+"""
+
+# %%
+# Import the standard library and third-party dependencies.
 import time
 
+# %%
+# Import the Result Explorer dependencies.
 from ansys.result_explorer.core import (
     PlotDisplayOptions,
     PlotView,
     launch_result_explorer,
 )
+from ansys.result_explorer.core.examples import ExampleKeys, get_example_file
 from ansys.result_explorer.core.models import ViewType
 
-# Path to cp_trans test data (contact + transient analysis)
-FILE_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "tests", "data", "cp_trans", "file.rst")
-)
-
+# %%
+# Launch Result Explorer
+# ----------------------
+# Start a Result Explorer instance for this example.
 rx = launch_result_explorer()
 
-# Create a solution from the transient contact analysis
+# %%
+# Load Example Data
+# ------------------
+# Create a solution from the transient contact analysis data.
+rst_path = get_example_file(ExampleKeys.RST_CP_TRANSIENT)
+
 sol = rx.create_solution(
     name="Contact Transient Analysis",
-    file_path=FILE_PATH,
+    file_path=rst_path,
 )
 print(f"Created solution:\n{sol}")
 
-# Find plot view
+# %%
+# Find and Configure a Plot View
+# --------------------------------
+# Locate the displacement view and configure it to show all time steps.
 views = sol.views
 disp_view: PlotView = next(
     (v for v in views if v.type == ViewType.VIEW_TYPE_PLOT and "Displacement" in v.name), None
@@ -52,15 +82,20 @@ sol.update_plot(disp_view.definition)
 
 print(f"Found displacement view: {disp_view.name}")
 
-# Create a workspace with a 2x1 grid layout
+# %%
+# Create Workspace and Assign View
+# ----------------------------------
+# Create a workspace and assign the displacement view to a viewport.
 workspace = rx.create_workspace(name="Plot Viewports")
 print(f"Created workspace with {len(workspace.viewport_ids)} viewports (2x1 grid)")
 
-# Assign displacement view to top viewport
 disp_viewport = workspace.viewports[0]
 disp_viewport.set_view(disp_view, wait=True)
 
-# Configure displacement plot display options
+# %%
+# Customize Display Options
+# ----------------------------
+# Configure plot display options including deformation scale and mesh edges.
 with disp_viewport.update_display_options() as disp_opts:
     assert isinstance(disp_opts, PlotDisplayOptions)
     disp_opts.result_options.use_global_min_max = False
@@ -68,8 +103,10 @@ with disp_viewport.update_display_options() as disp_opts:
     disp_opts.result_options.deformation_scale = 2
     disp_opts.show_mesh_edges = True
 
-
-# Animate through all time steps
+# %%
+# Animate Through Time Steps
+# ----------------------------
+# Animate the displacement plot across all available time steps.
 time_frequencies = sol.time_frequencies
 print(f"Animating over {len(time_frequencies)} time steps...")
 for i, tf in enumerate(time_frequencies):

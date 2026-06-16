@@ -14,34 +14,56 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
-This example exercises camera position functionality of the PyResultExplorer API:
-- Connecting to the PyResultExplorer service
-- Creating a workspace and solution from a result file
-- Setting axis-aligned camera positions (top, bottom, front, back, left, right, isometric)
-- Reading back the current camera position
-- Rotating the camera around each world axis
-- Combining rotations
+# Copyright (C) 2026 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: Apache-2.0
+#
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-Make sure to update the TOKEN variable with an appropriate value before running.
+"""
+.. _camera_position_example:
+
+Control Camera Position and Orientation
+========================================
+
+This example demonstrates camera position functionality in PyResultExplorer:
+
+- **Axis-aligned camera positions** (top, bottom, front, back, left, right, isometric).
+- **Camera rotation** around world axes (X, Y, Z).
+- **Combined transformations** by chaining rotation operations.
+- **Viewport-level camera control** for visualization management.
+
+This example showcases various camera positioning and rotation techniques to
+navigate and view results from different angles.
 """
 
-import os
+# %%
+# Import the standard library and third-party dependencies.
 import time
 
-from ansys.result_explorer.core.client import Client
+# %%
+# Import the Result Explorer dependencies.
+from ansys.result_explorer.core import launch_result_explorer
+from ansys.result_explorer.core.examples import ExampleKeys, get_example_file
 from ansys.result_explorer.core.objects.viewport import CameraPosition
 
-FILE_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "tests", "data", "multiple_connections.rst")
-)
-TOKEN = "<insert here>"  # noqa E501
+# %%
+# Launch Result Explorer and Load Data
+# ------------------------------------
+# Start a Result Explorer instance and create a workspace with a solution.
+rx = launch_result_explorer()
 
-# ---------------------------------------------------------------------------
-# Connect and set up a workspace / solution
-# ---------------------------------------------------------------------------
-print("Connecting...")
-rx = Client.connect_with_token(TOKEN)
+rst_path = get_example_file(ExampleKeys.RST_MULTIPLE_CONNECTIONS)
 
 print("Creating workspace...")
 workspace = rx.create_workspace(name="Camera Example Workspace")
@@ -49,43 +71,48 @@ workspace = rx.create_workspace(name="Camera Example Workspace")
 print("Creating solution...")
 sol = rx.create_solution(
     name="Camera Example Solution",
-    file_path=FILE_PATH,
+    file_path=rst_path,
 )
 print(f"Solution created: {sol}")
 
-# Pick a 3-D view (Displacement preferred, fall back to first available)
+# %%
+# Assign a View to a Viewport
+# ----------------------------
+# Pick a 3-D view and assign it to the workspace viewport.
 views = sol.views
 view = next((v for v in views if "Displacement" in v.name), None) or views[0]
 print(f"Using view: {view.name}")
 
 print("Assigning view to viewport...")
 viewport = workspace.assign_view(view=view, wait=True)
+viewport.display_options.show_mesh_edges = True
 print(f"Viewport ready: {viewport}")
 time.sleep(1)
 
-# Read the initial camera set by the app so we can preserve its zoom and
-# translation when applying our own preset orientations.
-initial_cam = viewport.metadata.camera_position
+# %%
+# Preserve Initial Camera State
+# ------------------------------
+# Read the initial camera state to preserve zoom and translation when
+# applying preset orientations.
+initial_cam = viewport.display_options.camera_position
 initial_zoom = initial_cam.zoom if initial_cam is not None else 1.0
 initial_translation = initial_cam.translation if initial_cam is not None else (0.0, 0.0, 0.0)
 print(f"Initial zoom={initial_zoom}, translation={initial_translation}")
 
 
-# Helper: apply a camera position and print the result.
-# Zoom and translation from the app's initial camera are preserved so that
-# the model stays in view when only the orientation changes.
 def apply_camera(label: str, cam: CameraPosition) -> None:
+    """Apply a camera position and print the result."""
     print(f"\n--- {label} ---")
     cam = cam.with_zoom(initial_zoom).with_translation(*initial_translation)
     opts = viewport.display_options
     opts.camera_position = cam
-
     time.sleep(1)
 
 
-# ---------------------------------------------------------------------------
-# Axis-aligned preset views
-# ---------------------------------------------------------------------------
+# %%
+# Apply Axis-Aligned Preset Views
+# --------------------------------
+# Set the camera to standard axis-aligned orientations.
 apply_camera("Top view", CameraPosition.top())
 apply_camera("Bottom view", CameraPosition.bottom())
 apply_camera("Front view", CameraPosition.front())
@@ -94,25 +121,21 @@ apply_camera("Left view", CameraPosition.left())
 apply_camera("Right view", CameraPosition.right_view())
 apply_camera("Isometric view", CameraPosition.isometric())
 
-# ---------------------------------------------------------------------------
-# Rotations from the isometric base
-# ---------------------------------------------------------------------------
+# %%
+# Apply Rotations Around World Axes
+# -----------------------------------
+# Rotate the camera from an isometric base around each world axis.
 iso = CameraPosition.isometric()
 
 apply_camera("Isometric + 30° around X", iso.rotate_x(30))
 apply_camera("Isometric + 45° around Y", iso.rotate_y(45))
 apply_camera("Isometric + 60° around Z", iso.rotate_z(60))
 
-# Chained rotations
+# %%
+# Combine Multiple Rotations
+# ----------------------------
+# Chain multiple rotations to create complex camera orientations.
 apply_camera(
     "Isometric + 15° X + 30° Y + 45° Z",
     iso.rotate_x(15).rotate_y(30).rotate_z(45),
 )
-
-# ---------------------------------------------------------------------------
-# Cleanup
-# ---------------------------------------------------------------------------
-print("\nCleaning up...")
-rx.delete_solution(solution=sol)
-rx.delete_workspace(workspace=workspace)
-print("Done.")
