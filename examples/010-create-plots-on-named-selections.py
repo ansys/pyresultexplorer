@@ -35,7 +35,11 @@ timesteps for visualization.
 # %%
 # Import the Result Explorer dependencies.
 from ansys.result_explorer.core import launch_result_explorer, models
-from ansys.result_explorer.core.examples import ExampleKeys, get_example_file
+from ansys.result_explorer.core.examples import (
+    ExampleKeys,
+    get_example_file,
+    get_example_snapshot_settings,
+)
 
 # %%
 # Launch Result Explorer
@@ -146,7 +150,15 @@ print(f" - Left viewport:  {plot_1.name}")
 print(f" - Right viewport: {plot_2.name}")
 
 # take screenshot of the two viewports
-left_viewport.save_snapshot("left_viewport.png")
-right_viewport.save_snapshot("right_viewport.png")
+
+right_viewport.display_options.show_mesh_edges = True
+left_viewport.save_snapshot(
+    "left_viewport.png",
+    settings=get_example_snapshot_settings(),
+)
+right_viewport.save_snapshot(
+    "right_viewport.png",
+    settings=get_example_snapshot_settings(),
+)
 
 rx.stop()
