@@ -34,8 +34,6 @@ This example requires a valid authentication token and HPS-enabled result provid
 
     This example requires user interaction for selecting items from the HPS hierarchy.
     Make sure to replace the TOKEN variable with a valid token before running.
-
-sphinx_gallery_skip_execution
 """
 
 from ansys.result_explorer.core.client import Client

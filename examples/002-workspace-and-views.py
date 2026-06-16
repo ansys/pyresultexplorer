@@ -35,16 +35,17 @@ This example uses a transient structural analysis result with multiple load case
 
 # %%
 # Import the standard library and third-party dependencies.
-import os
 
-import matplotlib.image as img
-import matplotlib.pyplot as plt
 from slugify import slugify
 
 # %%
 # Import the Result Explorer dependencies.
 from ansys.result_explorer.core import launch_result_explorer
-from ansys.result_explorer.core.examples import ExampleKeys, get_example_file
+from ansys.result_explorer.core.examples import (
+    ExampleKeys,
+    get_example_file,
+    get_example_snapshot_settings,
+)
 from ansys.result_explorer.core.models import ViewportDirection
 
 # %%
@@ -125,22 +126,11 @@ print(f"Assigned viewport: {viewport}")
 # %%
 # Capture and Save Snapshots
 # ---------------------------
-# Take a snapshot of the viewport and save it as an image file.
-snapshot_data = viewport.take_snapshot()
-
-print("Saving snapshot to file...")
-file_name = slugify(sol_name + " - " + view.name) + ".png"
-with open(file_name, "wb") as image_file:
-    image_file.write(snapshot_data)
-
-print(f"Snapshot saved to: {os.path.abspath(file_name)}")
-
-# %%
-# Display the snapshot.
-print("Displaying snapshot...")
-im = img.imread(file_name)
-plt.imshow(im)
-plt.show()
+# Take a snapshot of the viewport and save it as a PNG file.
+viewport.save_snapshot(
+    file_path=slugify(sol_name + " - " + view.name) + ".png",
+    settings=get_example_snapshot_settings(),
+)
 
 # %%
 # Create a Viewport Grid Layout
@@ -197,87 +187,14 @@ with viewport.update_display_options() as opts:
 # Capture a Modified Snapshot
 # ----------------------------
 # Take a new snapshot after modifying display options and save it as a separate file.
-snapshot_data = top_left_viewport.take_snapshot()
-
-print("Saving modified snapshot to file...")
-file_name = slugify(sol_name + " - " + view.name) + "-modified.png"
-with open(file_name, "wb") as image_file:
-    image_file.write(snapshot_data)
-
-print(f"Snapshot saved to: {os.path.abspath(file_name)}")
+top_left_viewport.save_snapshot(
+    file_path=slugify(sol_name + " - " + view.name) + "-modified.png",
+    settings=get_example_snapshot_settings(),
+)
 
 # %%
-# Display the modified snapshot.
-print("Displaying snapshot...")
-im = img.imread(file_name)
-plt.imshow(im)
-plt.show()
-
-# %%
-# Clean Up
-# --------
+# Clean up
+# --------------------
 # Delete the bottom right viewport to demonstrate viewport deletion.
 print("Deleting bottom right viewport...")
 workspace.delete_viewport(viewport=bottom_right_viewport)
-im = img.imread(file_name)
-plt.imshow(im)
-plt.show()
-
-# Turn the layout into a 2x2 grid by adding more viewports
-print("Creating 2 x 2 grid layout...")
-top_left_viewport = viewport
-bottom_left_viewport = workspace.create_viewport(
-    viewport=top_left_viewport,
-    direction=ViewportDirection.VIEWPORT_DIRECTION_BOTTOM,
-)
-
-top_right_viewport = workspace.create_viewport(
-    viewport=top_left_viewport,
-    direction=ViewportDirection.VIEWPORT_DIRECTION_RIGHT,
-)
-
-bottom_right_viewport = workspace.create_viewport(
-    viewport=bottom_left_viewport,
-    direction=ViewportDirection.VIEWPORT_DIRECTION_RIGHT,
-)
-
-# set sync options for the workspace
-print("Setting workspace sync options...")
-workspace.set_sync(camera=True, time_freq=True, legend=True)
-
-# set viewport to fullscreen
-print("Setting viewport to fullscreen...")
-workspace.set_fullscreen_viewport(viewport=top_left_viewport)
-
-# exit fullscreen
-print("Exiting fullscreen...")
-workspace.exit_fullscreen()
-
-# modify view display options
-print("Modifying view display options...")
-with viewport.update_display_options() as opts:
-    opts.show_mesh_edges = not opts.show_mesh_edges
-    opts.show_min_max_labels = True
-
-# take new snapshot
-snapshot_data = top_left_viewport.take_snapshot()
-
-print("Saving snapshot to file...")
-file_name = slugify(sol_name + " - " + view.name) + "-modified.png"
-with open(file_name, "wb") as image_file:
-    image_file.write(snapshot_data)
-
-print(f"Snapshot saved to: {os.path.abspath(file_name)}")
-
-print("Displaying snapshot...")
-im = img.imread(file_name)
-plt.imshow(im)
-plt.show()
-
-# delete the bottom right viewport
-print("Deleting bottom right viewport...")
-workspace.delete_viewport(viewport=bottom_right_viewport)
-
-# # delete the solution
-# print("Deleting the solution...")
-# rx.delete_solution(solution=sol)

@@ -35,7 +35,8 @@ and visualization options across multiple timesteps.
 
 # %%
 # Import the standard library and third-party dependencies.
-import time
+
+import imageio
 
 # %%
 # Import the Result Explorer dependencies.
@@ -44,7 +45,11 @@ from ansys.result_explorer.core import (
     PlotView,
     launch_result_explorer,
 )
-from ansys.result_explorer.core.examples import ExampleKeys, get_example_file
+from ansys.result_explorer.core.examples import (
+    ExampleKeys,
+    get_example_file,
+    get_example_snapshot_settings,
+)
 from ansys.result_explorer.core.models import ViewType
 
 # %%
@@ -98,25 +103,36 @@ disp_viewport.set_view(disp_view, wait=True)
 # Configure plot display options including deformation scale and mesh edges.
 with disp_viewport.update_display_options() as disp_opts:
     assert isinstance(disp_opts, PlotDisplayOptions)
-    disp_opts.result_options.use_global_min_max = False
+    disp_opts.result_options.use_global_min_max = True
     disp_opts.result_options.component_index = 0
     disp_opts.result_options.deformation_scale = 2
+    disp_opts.result_options.legend_range = None  # auto-range based on current component values
     disp_opts.show_mesh_edges = True
+
+# Save thumbnail image
+disp_viewport.save_snapshot(
+    file_path="011-plot-display-options-set-1.png", settings=get_example_snapshot_settings()
+)
 
 # %%
 # Animate Through Time Steps
 # ----------------------------
-# Animate the displacement plot across all available time steps.
+# Animate the displacement plot across all available time steps and save as a GIF.
 time_frequencies = sol.time_frequencies
 print(f"Animating over {len(time_frequencies)} time steps...")
-for i, tf in enumerate(time_frequencies):
-    print(f"  Step {i}: set_id={tf.set_id}, value={tf.value}")
-    opts = disp_viewport.display_options
-    # Setting this property auto-commits to the server
-    opts.result_options.set_id = tf.set_id
 
-    meta = disp_viewport.metadata
-    for extreme in [meta.active_result.min, meta.active_result.max]:
-        print(f"    entity={extreme.entity_id}, value={extreme.value}, pos={extreme.position}")
+with imageio.get_writer("011-plot-display-options.gif", mode="I") as writer:
+    for i, tf in enumerate(time_frequencies):
+        print(f"  Step {i}: set_id={tf.set_id}, value={tf.value}")
+        with disp_viewport.update_display_options() as opts:
+            assert isinstance(opts, PlotDisplayOptions)
+            # Update the set_id to change the displayed time step
+            opts.result_options.set_id = tf.set_id
 
-    time.sleep(0.2)
+        meta = disp_viewport.metadata
+        for extreme in [meta.active_result.min, meta.active_result.max]:
+            print(f"    entity={extreme.entity_id}, value={extreme.value}, pos={extreme.position}")
+
+        snapshot_data = disp_viewport.take_snapshot(settings=get_example_snapshot_settings())
+        image = imageio.imread(snapshot_data)
+        writer.append_data(image)

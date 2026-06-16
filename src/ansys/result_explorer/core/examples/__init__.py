@@ -16,4 +16,22 @@
 
 """Helpers to access example test files used in examples."""
 
+from ansys.result_explorer.core.models import SnapshotSettings
+
 from .test_files import ExampleKeys, get_example_file
+
+
+# return SnapshotSettings for examples to use consistent settings across screenshots
+def get_example_snapshot_settings() -> SnapshotSettings:
+    """Get snapshot settings for examples."""
+    return SnapshotSettings(
+        height=600,
+        width=800,
+        show_time_stamp=False,
+        show_logo=True,
+        show_legend=True,
+        show_solution_name=False,
+        show_result_picker=True,
+        transparent_background=False,
+        background_color="#FFFFFF",
+    )

@@ -38,7 +38,11 @@ maximum displacement.
 # %%
 # Import the Result Explorer dependencies.
 from ansys.result_explorer.core import launch_result_explorer, models
-from ansys.result_explorer.core.examples import ExampleKeys, get_example_file
+from ansys.result_explorer.core.examples import (
+    ExampleKeys,
+    get_example_file,
+    get_example_snapshot_settings,
+)
 
 # %%
 # Define the DPF Server-Side Script
@@ -240,4 +244,6 @@ with viewport.update_display_options() as opts:
     opts.show_mesh_edges = True
     opts.show_min_max_labels = True
 
-print("Opened above-threshold plot in viewport.")
+viewport.save_snapshot(
+    file_path="013-user-defined-plot.png", settings=get_example_snapshot_settings()
+)

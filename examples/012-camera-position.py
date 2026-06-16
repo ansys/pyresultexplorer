@@ -48,14 +48,14 @@ navigate and view results from different angles.
 """
 
 # %%
-# Import the standard library and third-party dependencies.
-import time
-
-# %%
-# Import the Result Explorer dependencies.
+# Import dependencies
 from ansys.result_explorer.core import launch_result_explorer
-from ansys.result_explorer.core.examples import ExampleKeys, get_example_file
-from ansys.result_explorer.core.objects.viewport import CameraPosition
+from ansys.result_explorer.core.examples import (
+    ExampleKeys,
+    get_example_file,
+    get_example_snapshot_settings,
+)
+from ansys.result_explorer.core.objects import CameraPosition
 
 # %%
 # Launch Result Explorer and Load Data
@@ -87,7 +87,9 @@ print("Assigning view to viewport...")
 viewport = workspace.assign_view(view=view, wait=True)
 viewport.display_options.show_mesh_edges = True
 print(f"Viewport ready: {viewport}")
-time.sleep(1)
+viewport.save_snapshot(
+    file_path="012-camera-position-initial.png", settings=get_example_snapshot_settings()
+)
 
 # %%
 # Preserve Initial Camera State
@@ -106,7 +108,10 @@ def apply_camera(label: str, cam: CameraPosition) -> None:
     cam = cam.with_zoom(initial_zoom).with_translation(*initial_translation)
     opts = viewport.display_options
     opts.camera_position = cam
-    time.sleep(1)
+    viewport.save_snapshot(
+        file_path=f"012-camera-position-{label.replace(' ', '-').lower()}.png",
+        settings=get_example_snapshot_settings(),
+    )
 
 
 # %%

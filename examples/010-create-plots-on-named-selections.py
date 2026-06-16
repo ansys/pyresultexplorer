@@ -146,3 +146,5 @@ print(f" - Left viewport:  {plot_1.name}")
 print(f" - Right viewport: {plot_2.name}")
 
 # take screenshot of the two viewports
+left_viewport.save_snapshot("left_viewport.png")
+right_viewport.save_snapshot("right_viewport.png")

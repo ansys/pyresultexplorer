@@ -38,7 +38,11 @@ from ansys.result_explorer.core import (
     ContactTrackersViewportMetadata,
     launch_result_explorer,
 )
-from ansys.result_explorer.core.examples import ExampleKeys, get_example_file
+from ansys.result_explorer.core.examples import (
+    ExampleKeys,
+    get_example_file,
+    get_example_snapshot_settings,
+)
 from ansys.result_explorer.core.models import ViewType
 
 # %%
@@ -94,6 +98,10 @@ conv_opts = conv_viewport.display_options
 print("\nConfiguring convergence trackers viewport:")
 print(f"  Selected tracker: {conv_opts.selected_tracker_name}")
 
+conv_viewport.save_snapshot(
+    file_path="020-convergence-trackers.png", settings=get_example_snapshot_settings()
+)
+
 # %%
 # Configure Contact Trackers Viewport
 # ------------------------------------
@@ -119,6 +127,10 @@ series = contact_meta.series_names
 print(f"  Available data series: {len(series)}")
 for s in series:
     print(f"    - {s}")
+
+contact_viewport.save_snapshot(
+    file_path="020-contact-trackers.png", settings=get_example_snapshot_settings()
+)
 
 # %%
 # Set Display Options

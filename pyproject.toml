@@ -55,6 +55,7 @@ doc = [
 examples = [
     "matplotlib",
     "ipython",
+    "imageio",
 ]
 
 [tool.flit.module]

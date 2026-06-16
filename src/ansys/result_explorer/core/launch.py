@@ -531,7 +531,7 @@ class WebLaunchConfig:
         - SYSTEM_DEFAULT: Use the system's default browser.
         - PLAYWRIGHT_CHROMIUM: Use Playwright with Chromium in windowed mode.
         - PLAYWRIGHT_CHROMIUM_HEADLESS: Use Playwright with Chromium in headless mode.
-        Default is SYSTEM_DEFAULT.
+        Default is PLAYWRIGHT_CHROMIUM_HEADLESS.
 
     """
 

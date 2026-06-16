@@ -22,6 +22,7 @@ import json
 from collections.abc import Generator
 from contextlib import contextmanager
 from dataclasses import dataclass
+from pathlib import Path
 from typing import TYPE_CHECKING, Literal
 
 from google.protobuf import struct_pb2
@@ -1055,6 +1056,33 @@ class Viewport(BaseEntity[models.Viewport]):
             req.settings.CopyFrom(settings)
         snapshot = self._client._workspace_stub.CreateSnapshot(req)
         return snapshot.data
+
+    def save_snapshot(
+        self, file_path: str | Path, settings: models.SnapshotSettings | None = None
+    ) -> None:
+        """Take a snapshot of this viewport and save it to PNG.
+
+        Parameters
+        ----------
+        file_path : str | Path
+            Path to save the PNG image.
+        settings : SnapshotSettings, optional
+            Snapshot settings to control what elements appear in the image
+            (timestamp, logo, legend, solution name, etc.). If None, uses server defaults.
+
+        """
+        snapshot_data = self.take_snapshot(settings)
+
+        # make sure the directory exists
+        file_path = Path(file_path)
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # if the extension is not .png, add it
+        if file_path.suffix.lower() != ".png":
+            file_path = file_path.with_suffix(".png")
+
+        with open(file_path, "wb") as f:
+            f.write(snapshot_data)
 
     def set_size(self, size: float) -> None:
         """Set the size of this viewport in the workspace layout."""
