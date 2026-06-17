@@ -1,112 +1,117 @@
 Getting started
----------------
+===============
 
-(obsolete, needs to be updated)
-
-At least two installation modes are provided: user and developer.
-
-For users
-^^^^^^^^^
-In order to install pyresultexplorer, make sure you
-have the latest version of `pip`_. To do so, run:
-
-.. code:: bash
-
-    python -m pip install -U pip
-
-Then, you can simply execute:
-
-.. code:: bash
-
-    python -m pip install ansys-result-explorer-core
-
-For developers
-^^^^^^^^^^^^^^
-
-Installing PyResultExplorer in developer mode allows
-you to modify the source and enhance it.
-
-Before contributing to the project, please refer to the `PyAnsys Developer's guide`_ and then follow these steps:
-
-#. Start by cloning this repository:
-
-   .. code:: bash
-
-      git clone https://github.com/ansys-internal/pyresultexplorer
-
-#. Create a fresh-clean Python environment and activate it:
-
-   .. code:: bash
-
-      # Create a virtual environment
-      uv venv
-
-      # Activate it in a POSIX system
-      source .venv/bin/activate
-
-      # Activate it in Windows CMD environment
-      .venv\Scripts\activate.bat
-
-      # Activate it in Windows Powershell
-      .venv\Scripts\Activate.ps1
-
-#. Install the project:
-
-    .. code:: bash
-
-      uv sync --all-groups
-
-How to test
------------
-
-Coming soon.
+This section will help you get started with PyResultExplorer, from installation to controlling your first Result Explorer session.
 
 
-A note on pre-commit
-^^^^^^^^^^^^^^^^^^^^
-
-The style checks take advantage of `pre-commit`_. Developers are not forced but
-encouraged to install this tool via:
-
-.. code:: bash
-
-    python -m pip install pre-commit && pre-commit install
-
-
-Documentation
--------------
-
-For building documentation, you can either run the usual rules provided in the
-`Sphinx`_ Makefile, such as:
-
-.. code:: bash
-
-    make -C doc/ html && open doc/html/index.html
-
-You can also build a live version of the documentation that you can preview in the browser,
-with automatic reload on change:
-
-.. code:: bash
-
-    sphinx-autobuild source build
-
-
-Distributing
+Installation
 ------------
 
-If you would like to create either source or wheel files, start by installing
-the building requirements and then executing the build module:
+To use PyResultExplorer, a licensed copy of Ansys Result Explorer is required.
+Please contact your Ansys representative to obtain a license of the product.
+
+Install Result Explorer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To install Result Explorer, download the installer from the Ansys Customer Portal and
+follow the installation instructions provided in the Result Explorer User's Guide on the Ansys Help.
+
+You can install either the Desktop or Server version of Result Explorer. 
+Both versions are compatible with PyResultExplorer.
+
+Configure the installation path
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+After installing Result Explorer, you must register its installation path as an environment variable 
+so that PyResultExplorer can locate it.
+Set one of the following environment variables depending on your installation:
+
+- ``ANSYS_RESULT_EXPLORER_SERVER``: points directly to the server installation directory (the directory containing the ``viz-server`` executable)
+- ``ANSYS_RESULT_EXPLORER_DESKTOP``: points to the desktop application root directory (the directory containing the ``result-explorer-desktop`` executable)
+
+
+Install the package
+^^^^^^^^^^^^^^^^^^^^
+
+The latest ``ansys.result_explorer.core`` package supports Python 3.11 through Python 3.14 on Windows, Linux, and Mac OS.
+You should consider installing PyResultExplorer in a virtual environment.
+
+Until the project is open sourced, you can install ``pyresultexplorer`` directly from sources:
 
 .. code:: bash
 
-    python -m pip install -r requirements/requirements_build.txt
-    python -m build
-    python -m twine check dist/*
+    python -m pip install git+https://github.com/ansys-internal/pyresultexplorer
 
 
-.. LINKS AND REFERENCES
-.. _pip: https://pypi.org/project/pip/
-.. _pre-commit: https://pre-commit.com/
-.. _PyAnsys Developer's guide: https://dev.docs.pyansys.com/
-.. _pytest: https://docs.pytest.org/en/stable/
-.. _Sphinx: https://www.sphinx-doc.org/en/master/
+Launch or connect to Result Explorer
+------------------------------------
+
+PyResultExplorer provides two ways to work with Result Explorer, either by launching a new instance or connecting to an existing one.
+Choose the option that best fits your workflow.
+
+Connect to an existing instance
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If Result Explorer is already running (desktop app or remote server), grab the **Connection Token** 
+from the Result Explorer GUI and use it:
+
+.. code:: python
+
+    from ansys.result_explorer.core import Client
+
+    # Get the connection token from the Result Explorer GUI
+    rx = Client.connect_with_token("your-connection-token-from-gui")
+
+    # Now use the client to interact with Result Explorer
+    solutions = rx.list_solutions()
+
+The token is a base64-encoded string that contains all connection details (host, port, session ID, etc.). 
+This approach is ideal for connecting to remote servers or existing desktop instances.
+
+
+Launch a new instance
+^^^^^^^^^^^^^^^^^^^^^
+
+Use ``launch_result_explorer()`` to start a fresh Result Explorer session, with the GUI served in a browser window. 
+You have the option to customize the server and web configurations:
+
+.. code:: python
+
+    from ansys.result_explorer.core import launch_result_explorer, ServerLaunchConfig, WebLaunchConfig, BrowserType
+
+    # Simplest: launch with defaults
+    rx = launch_result_explorer()
+
+    # Or with custom configuration
+    server_config = ServerLaunchConfig(port=5100, num_threads=12)
+    web_config = WebLaunchConfig(browser_type=BrowserType.SYSTEM_DEFAULT)
+    rx = launch_result_explorer(server_config, web_config)
+
+The Result Explorer web UI can run in three modes:
+
+- ``BrowserType.SYSTEM_DEFAULT`` — Opens the system's default browser
+- ``BrowserType.PLAYWRIGHT_CHROMIUM`` — Uses Chromium via Playwright, with visible window
+- ``BrowserType.PLAYWRIGHT_CHROMIUM_HEADLESS`` — Uses Chromium via Playwright in headless mode (default)
+
+The instance lifecycle is tied to the client. When you destroy the client, the server automatically stops.
+
+
+Compatibility with Result Explorer versions
+-------------------------------------------
+
+The current version of PyResultExplorer is compatible with Ansys Result Explorer 2026.7.0.
+
+
+Report issues
+-------------
+
+Use the `PyResultExplorer Issues <https://github.com/ansys-internal/pyresultexplorer/issues>`_
+page to report bugs and request new features. When possible, use the issue
+templates provided. If your issue does not fit into one of these templates,
+click the link for opening a blank issue.
+
+On the `PyResultExplorer Discussions <https://github.com/ansys-internal/pyresultexplorer/discussions>`_ page
+or the `Discussions <https://discuss.ansys.com/>`_ page on the Ansys Developer portal,
+you can post questions, share ideas, and get community feedback.
+
+To reach the project support team, email `pyansys.core@ansys.com <pyansys.core@ansys.com>`_.

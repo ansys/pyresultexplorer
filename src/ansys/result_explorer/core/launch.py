@@ -281,10 +281,6 @@ class ServerLaunchConfig:
     log_level : str, optional
         Log level (profile, debug, info, warning, error).
         Default is None (server default).
-    debug_api_responses : bool, optional
-        Enable API response debugging.
-    strict_checks : bool, optional
-        Enable strict checks.
 
     """
 

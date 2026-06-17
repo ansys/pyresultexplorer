@@ -193,8 +193,6 @@ sphinx_gallery_conf = {
     "remove_config_comments": True,
 }
 
-print(sphinx_gallery_conf)
-
 # static path
 html_static_path = ["_static"]
 
