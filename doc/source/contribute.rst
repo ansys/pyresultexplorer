@@ -86,6 +86,8 @@ To build the documentation locally, navigate to the ``docs`` directory and run t
     # On Windows
     ./make.bat html
 
-Note that to build the documentation, you must have Result Explorer
-installed on your machine because it is used to generate the
-examples.
+You can set the environment variable ``PYRX_DOC_SKIP_GALLERY`` to ``1`` to skip building the gallery examples,
+which can take a long time to build. 
+
+Note that to build the documentation examples you must have Result Explorer
+installed on your machine.
