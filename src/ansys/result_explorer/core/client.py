@@ -187,6 +187,22 @@ class Client:
         except Exception:
             pass
 
+    def __str__(self):
+        """Return a user-friendly string representation of the client."""
+        web_info = ""
+        instance_type = "External Connection"
+
+        if self._instance is not None:
+            instance_type = "Managed"
+            web_info = f"\n  Web UI: {self._instance.web_url}" if self._instance.web_url else ""
+
+        return (
+            f"Result Explorer Client\n"
+            f"  Instance Type: {instance_type}\n"
+            f"  Host: {self._host}:{self._grpc_port}\n"
+            f"  Session: {self._session_id}{web_info}"
+        )
+
     @property
     def instance(self) -> "ResultExplorerInstance | None":
         """Get the Result Explorer instance.

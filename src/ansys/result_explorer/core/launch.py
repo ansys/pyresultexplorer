@@ -424,10 +424,13 @@ class ResultExplorerServerProcess:
                     try:
                         self._process.wait(timeout=5)
                         self._process = None
-                        log.info("Server stopped gracefully.")
+                        log.info("Result Explorer server stopped gracefully.")
                         return
                     except subprocess.TimeoutExpired:
-                        log.debug("Server did not stop gracefully via API, will terminate process.")
+                        log.debug(
+                            "Result Explorer server did not stop gracefully via API, "
+                            "will terminate the process."
+                        )
                 except Exception as e:
                     log.debug(f"Graceful shutdown request failed: {e}, will terminate process.")
 
@@ -436,11 +439,13 @@ class ResultExplorerServerProcess:
             try:
                 self._process.wait(timeout=10)
             except subprocess.TimeoutExpired:
-                log.warning("Server did not terminate gracefully, killing process...")
+                log.warning(
+                    "Result Explorer server did not terminate gracefully, killing process..."
+                )
                 self._process.kill()
                 self._process.wait()
             self._process = None
-            log.info("Server stopped.")
+            log.info("Result Explorer server stopped.")
 
     @property
     def is_running(self) -> bool:
@@ -772,11 +777,11 @@ class ResultExplorerInstance:
         Closes the web session and stops the server process.
         """
         if self._web_session is not None:
-            log.info("Closing web session...")
+            log.info("Closing Result Explorer web session...")
             self._web_session.close()
             self._web_session = None
         if self._server_process is not None:
-            log.info("Stopping server process...")
+            log.info("Stopping Result Explorer server process...")
             self._server_process.stop()
             self._server_process = None
 

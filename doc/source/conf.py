@@ -50,6 +50,7 @@ html_theme_options = {
     },
     "check_switcher": False,
     "logo": "pyansys",
+    "collapse_navigation": False,
 }
 
 # Sphinx extensions
