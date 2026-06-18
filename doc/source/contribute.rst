@@ -1,10 +1,17 @@
 Contribute
----------------
+==========
 
-Installing PyResultExplorer in developer mode allows
-you to modify the source and enhance it.
+Overall guidance on contributing to a PyAnsys library appears in the
+`Contributing <https://dev.docs.pyansys.com/how-to/contributing.html>`_ topic
+in the *PyAnsys Developer's Guide*. Ensure that you are thoroughly familiar
+with this guide before attempting to contribute to PyResultExplorer.
 
-Before contributing to the project, please refer to the `PyAnsys Developer's guide`_ and then follow these steps:
+The following contribution information is specific to PyResultExplorer.
+
+Install in developer mode
+-------------------------
+
+Installing PyResultExplorer in developer mode allows you to modify the source and enhance it.
 
 #. Start by cloning this repository:
 
@@ -12,7 +19,7 @@ Before contributing to the project, please refer to the `PyAnsys Developer's gui
 
       git clone https://github.com/ansys-internal/pyresultexplorer
 
-#. Create a fresh-clean Python environment and activate it:
+#. Create a fresh-clean Python environment and activate it, we recommend using `uv <https://pypi.org/project/uv/>`_ for this purpose:
 
    .. code:: bash
 
@@ -28,63 +35,57 @@ Before contributing to the project, please refer to the `PyAnsys Developer's gui
       # Activate it in Windows Powershell
       .venv\Scripts\Activate.ps1
 
-#. Install the project:
+#. Install the library with its dependencies:
 
-    .. code:: bash
+   .. code:: bash
 
       uv sync --all-groups
+
+#. Install pre-commit hooks to automatically check code style before committing:
+
+   .. code:: bash
+
+      pre-commit install
 
 How to test
 -----------
 
-Coming soon.
-
-
-A note on pre-commit
-^^^^^^^^^^^^^^^^^^^^
-
-The style checks take advantage of `pre-commit`_. Developers are not forced but
-encouraged to install this tool via:
+To run the tests, you must have Result Explorer installed on your machine.
+Navigate to the root directory of the repository and run ``pytest``.
+You can specify additional options to control the test execution, for example:
 
 .. code:: bash
 
-    python -m pip install pre-commit && pre-commit install
+    # Full test suite, running against a native instance of Result Explorer
+    pytest tests --launch-native
 
+    # Filter by file, additional verbosity, and show print statements
+    pytest -vv -s tests\test_launcher.py --launch-native
+
+    # Show browser window for visual feedback
+    pytest tests --launch-native --headed
+
+    # To run against an already running instance
+    pytest tests --connection-token=<token>  
+
+.. tip::
+
+   To interactively debug tests in Visual Studio Code, you may need
+   to disable the ``install_browser`` fixture, as it may interfere with the debugger. 
 
 Documentation
 -------------
 
-For building documentation, you can either run the usual rules provided in the
-`Sphinx`_ Makefile, such as:
+To build the documentation locally, navigate to the ``docs`` directory and run this command:
 
 .. code:: bash
 
-    make -C doc/ html && open doc/html/index.html
+    # On Linux or macOS
+    make html
+    
+    # On Windows
+    ./make.bat html
 
-You can also build a live version of the documentation that you can preview in the browser,
-with automatic reload on change:
-
-.. code:: bash
-
-    sphinx-autobuild source build
-
-
-Distributing
-------------
-
-If you would like to create either source or wheel files, start by installing
-the building requirements and then executing the build module:
-
-.. code:: bash
-
-    python -m pip install -r requirements/requirements_build.txt
-    python -m build
-    python -m twine check dist/*
-
-
-.. LINKS AND REFERENCES
-.. _pip: https://pypi.org/project/pip/
-.. _pre-commit: https://pre-commit.com/
-.. _PyAnsys Developer's guide: https://dev.docs.pyansys.com/
-.. _pytest: https://docs.pytest.org/en/stable/
-.. _Sphinx: https://www.sphinx-doc.org/en/master/
+Note that to build the documentation, you must have Result Explorer
+installed on your machine because it is used to generate the
+examples.
