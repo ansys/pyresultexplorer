@@ -1,9 +1,10 @@
 .. _api_reference:
 
-API reference
-=============
+API Reference
+==============
 
-This section describes the API of the public PyResultExplorer classes, functions, and attributes.
+This section describes the API (public classes, functions, and attributes) 
+of the ``ansys.result_explorer.core`` library.
 
 .. currentmodule:: ansys.result_explorer.core
 

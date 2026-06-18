@@ -8,12 +8,12 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+from ansys_sphinx_theme import ansys_favicon, get_version_match, pyansys_logo_black
 from sphinx_gallery.scrapers import figure_rst
 
 # Add src directory to path for autodoc to find modules
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
-from ansys_sphinx_theme import get_version_match
 
 from ansys.result_explorer.core import __version__
 
@@ -32,7 +32,9 @@ switcher_version = get_version_match(__version__)
 
 # Select desired logo, theme, and declare the html title
 html_theme = "ansys_sphinx_theme"
-html_short_title = html_title = "pyresultexplorer"
+html_short_title = html_title = "PyResultExplorer"
+html_logo = pyansys_logo_black
+html_favicon = ansys_favicon
 
 # specify the location of your github repo
 html_theme_options = {
@@ -48,6 +50,7 @@ html_theme_options = {
     },
     "check_switcher": False,
     "logo": "pyansys",
+    "collapse_navigation": False,
 }
 
 # Sphinx extensions
@@ -190,8 +193,6 @@ sphinx_gallery_conf = {
     "thumbnail_size": (320, 240),
     "remove_config_comments": True,
 }
-
-print(sphinx_gallery_conf)
 
 # static path
 html_static_path = ["_static"]
