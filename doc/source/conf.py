@@ -17,7 +17,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
 from ansys.result_explorer.core import __version__
 
-SKIP_GALLERY = os.environ.get("PYRX_DOC_SKIP_GALLERY", "1").lower() in ("1", "true")
+SKIP_GALLERY = os.environ.get("PYRX_DOC_SKIP_GALLERY", "0").lower() in ("1", "true")
 
 # Suppress config cache warning for sphinx_gallery_conf (contains unpicklable function)
 suppress_warnings = ["config.cache"]
