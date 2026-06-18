@@ -16,9 +16,11 @@
 
 import logging
 
+import pytest
 from google.protobuf.json_format import MessageToDict
 
 from ansys.result_explorer.core import models
+from ansys.result_explorer.core.exceptions import ResultExplorerError
 from ansys.result_explorer.core.objects import Solution
 
 log = logging.getLogger(__name__)
@@ -81,3 +83,90 @@ def test_named_selections(multiple_connections_solution: Solution):
     sol.delete_named_selection(named_selection.id)
     ns_in_sol = next((ns for ns in sol.named_selections if ns.id == named_selection.id), None)
     assert ns_in_sol is None
+
+
+def test_named_selection_types(multiple_connections_solution: Solution):
+
+    sol = multiple_connections_solution
+
+    # -- create body named selection --
+    bodies = sol.bodies
+
+    # find bodies with elm type SOLID186 and wrap their labels in StringMap
+    solid186_bodies = []
+    for body in bodies:
+        if "SOLID186" in body.element_types:
+            string_map = models.StringMap(string_map=body.labels)
+            solid186_bodies.append(string_map)
+
+    # create a new named selection
+    named_selection = models.NamedSelectionCreate(
+        name="Selection-SOLID186",
+        type=models.NamedSelectionType.NAMED_SELECTION_TYPE_BODY,
+        bodies=solid186_bodies,
+    )
+
+    # let's check it errors out since body-based named selections are not supported for creation
+    with pytest.raises(ValueError, match="currently not supported"):
+        _ = sol.create_named_selection(named_selection)
+
+    # -- create node named selection --
+    named_selection = models.NamedSelectionCreate(
+        name="Selection-Nodes",
+        type=models.NamedSelectionType.NAMED_SELECTION_TYPE_NODE,
+        node_ids=[
+            models.IdsScoping(
+                values=[59, 60, 61, 62],
+            ),
+        ],
+    )
+
+    named_selection = sol.create_named_selection(named_selection)
+    assert named_selection.id is not None
+    assert named_selection.name == "Selection-Nodes"
+    assert named_selection.type == models.NamedSelectionType.NAMED_SELECTION_TYPE_NODE
+    assert named_selection.size == 4
+    assert named_selection.location == "Nodal"
+
+    # -- create a mesh property named selection --
+    named_selection = models.NamedSelectionCreate(
+        name="Selection-MeshProperty",
+        type=models.NamedSelectionType.NAMED_SELECTION_TYPE_MESH_PROPERTY,
+        property_ids=models.PropertyScoping(
+            name="mat",
+            ids=[
+                models.IdsScoping(
+                    values=[2, 4],
+                )
+            ],
+        ),
+    )
+
+    named_selection = sol.create_named_selection(named_selection)
+    assert named_selection.id is not None
+    assert named_selection.name == "Selection-MeshProperty"
+    assert named_selection.type == models.NamedSelectionType.NAMED_SELECTION_TYPE_MESH_PROPERTY
+    assert named_selection.size == 27 + 27
+    assert named_selection.location == "Elemental"
+
+    ## -- create a solver ns based named selection --
+    elmisc_ns = next((ns for ns in sol.solver_named_selections if ns.name == "_ELMISC"), None)
+    fixedsu_ns = next((ns for ns in sol.solver_named_selections if ns.name == "_FIXEDSU"), None)
+    assert elmisc_ns is not None
+    assert elmisc_ns.location == "Elemental"
+    assert elmisc_ns.size == 2
+    assert fixedsu_ns is not None
+    assert fixedsu_ns.location == "Nodal"
+    assert fixedsu_ns.size == 80
+
+    named_selection = models.NamedSelectionCreate(
+        name="Selection-SolverNS",
+        type=models.NamedSelectionType.NAMED_SELECTION_TYPE_SOLVER_NAMED_SELECTION,
+        solver_named_selections=[
+            "_ELMISC",
+            "_FIXEDSU",
+        ],
+    )
+
+    with pytest.raises(ResultExplorerError, match="must have the same location"):
+        _ = sol.create_named_selection(named_selection)

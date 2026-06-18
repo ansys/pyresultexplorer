@@ -191,6 +191,10 @@ class Solution(NamedBaseEntity[models.Solution]):
         self, definition: models.NamedSelectionCreate
     ) -> models.NamedSelection:
         """Create a named selection."""
+        if definition.type == models.NamedSelectionType.NAMED_SELECTION_TYPE_BODY:
+            raise ValueError(
+                "Body-based named selections are currently not supported for creation."
+            )
         pb_ns = self._client._solution_stub.CreateNamedSelection(
             models.CreateNamedSelectionRequest(solution_id=self.id, named_selection=definition)
         )
@@ -289,7 +293,7 @@ class Solution(NamedBaseEntity[models.Solution]):
         return self._pb.outdated
 
     @property
-    def solver_named_selections(self) -> list[str]:
+    def solver_named_selections(self) -> list[models.SolverNamedSelection]:
         """Solver named selections."""
         return list(self._pb.solver_named_selections)
 
