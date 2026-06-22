@@ -23,7 +23,7 @@ classifiers = [
 ]
 dependencies = [
     "ansys-api-result-explorer",
-    "grpcio>=1.63.0",
+    "grpcio>=1.81.1",
     "protobuf",
     "python-slugify>=8.0.4",
     "requests",
