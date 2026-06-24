@@ -23,7 +23,7 @@ from collections.abc import Generator
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Generic, Literal, TypeVar, overload
 
 from google.protobuf import struct_pb2
 from google.protobuf.json_format import MessageToDict, ParseDict
@@ -34,7 +34,7 @@ from .camera_position import CameraPosition
 
 if TYPE_CHECKING:
     from ..client import Client
-    from .solution import View
+    from .solution import ChartView, MeshView, PlotView, View
 
 
 class PbProperty:
@@ -881,12 +881,15 @@ class LogsDisplayOptions(DisplayOptions):
         return cls(pb_obj, client, solution_id, viewport_id, viewport)
 
 
+TDisplayOptions = TypeVar("TDisplayOptions", bound=DisplayOptions)
+
+
 # ---------------------------------------------------------------------------
 # Viewport entity
 # ---------------------------------------------------------------------------
 
 
-class Viewport(BaseEntity[models.Viewport]):
+class Viewport(BaseEntity[models.Viewport], Generic[TDisplayOptions]):
     """Represents a viewport in a workspace."""
 
     @property
@@ -941,7 +944,7 @@ class Viewport(BaseEntity[models.Viewport]):
         return ViewportMetadata(pb_obj, self._client, self.solution_id)
 
     @property
-    def display_options(self) -> DisplayOptions:
+    def display_options(self) -> TDisplayOptions:
         """Read/write viewport display options."""
         view = self._resolve_view()
         pb_obj = self._pb.metadata
@@ -977,7 +980,7 @@ class Viewport(BaseEntity[models.Viewport]):
         return DisplayOptions._from_pb(pb_obj, self._client, self.solution_id, self.id, self)
 
     @contextmanager
-    def update_display_options(self) -> Generator[DisplayOptions, None, None]:
+    def update_display_options(self) -> Generator[TDisplayOptions, None, None]:
         """Batch display options updates in a single server call.
 
         Suppresses auto-commit during the block and flushes all
@@ -1017,6 +1020,14 @@ class Viewport(BaseEntity[models.Viewport]):
         """Size of the viewport as a percentage of its parent."""
         return self._pb.size
 
+    @overload
+    def set_view(self, view: PlotView, wait: bool = ...) -> Viewport[PlotDisplayOptions]: ...
+    @overload
+    def set_view(self, view: ChartView, wait: bool = ...) -> Viewport[ChartDisplayOptions]: ...
+    @overload
+    def set_view(self, view: MeshView, wait: bool = ...) -> Viewport[MeshDisplayOptions]: ...
+    @overload
+    def set_view(self, view: View, wait: bool = ...) -> Viewport[DisplayOptions]: ...
     def set_view(self, view: View, wait: bool = True) -> Viewport:
         """Assign a view to this viewport."""
         req = models.UpdateViewportRequest(
