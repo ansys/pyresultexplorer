@@ -22,12 +22,13 @@ Both versions are compatible with PyResultExplorer.
 Configure the installation path
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-After installing Result Explorer, you must register its installation path as an environment variable 
-so that PyResultExplorer can locate it.
-Set one of the following environment variables depending on your installation:
+After installing Result Explorer, set the environment variable that matches your installation type
+so that PyResultExplorer can locate it. You only need to set one:
 
-- ``ANSYS_RESULT_EXPLORER_SERVER``: points directly to the server installation directory (the directory containing the ``viz-server`` executable)
-- ``ANSYS_RESULT_EXPLORER_DESKTOP``: points to the desktop application root directory (the directory containing the ``result-explorer-desktop`` executable)
+- If you installed the **Server** version, set ``ANSYS_RESULT_EXPLORER_SERVER`` to the server
+  installation directory (the directory containing the ``viz-server`` executable).
+- If you installed the **Desktop** version, set ``ANSYS_RESULT_EXPLORER_DESKTOP`` to the desktop
+  application root directory (the directory containing the ``result-explorer-desktop`` executable).
 
 
 Install the package
