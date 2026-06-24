@@ -19,7 +19,7 @@ Installing PyResultExplorer in developer mode allows you to modify the source an
 
       git clone https://github.com/ansys-internal/pyresultexplorer
 
-#. Create a fresh-clean Python environment and activate it, we recommend using `uv <https://pypi.org/project/uv/>`_ for this purpose:
+#. Create a fresh-clean Python environment and activate it, `uv <https://pypi.org/project/uv/>`_ is recommended for this purpose:
 
    .. code:: bash
 
@@ -71,7 +71,7 @@ You can specify additional options to control the test execution, for example:
 .. tip::
 
    To interactively debug tests in Visual Studio Code, you may need
-   to disable the ``install_browser`` fixture, as it may interfere with the debugger. 
+   to turn off the ``install_browser`` fixture, as it may interfere with the debugger. 
 
 Documentation
 -------------

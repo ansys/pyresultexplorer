@@ -1,7 +1,7 @@
 Getting started
 ===============
 
-This section will help you get started with PyResultExplorer, from installation to controlling your first Result Explorer session.
+This section contains information to get you started with PyResultExplorer, from installation to controlling your first Result Explorer session.
 
 
 Installation
@@ -11,7 +11,7 @@ To use PyResultExplorer, a licensed copy of Ansys Result Explorer is required.
 Please contact your Ansys representative to obtain a license of the product.
 
 Install Result Explorer
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
 
 To install Result Explorer, download the installer from the Ansys Customer Portal and
 follow the installation instructions provided in the Result Explorer User's Guide on the Ansys Help.
@@ -27,7 +27,7 @@ so that PyResultExplorer can locate it.
 Set one of the following environment variables depending on your installation:
 
 - ``ANSYS_RESULT_EXPLORER_SERVER``: points directly to the server installation directory (the directory containing the ``viz-server`` executable)
-- ``ANSYS_RESULT_EXPLORER_DESKTOP``: points to the desktop application root directory (the directory containing the ``result-explorer-desktop`` executable)
+- ``ANSYS_RESULT_EXPLORER_DESKTOP``: points to the desktop app root directory (the directory containing the ``result-explorer-desktop`` executable)
 
 
 Install the package
@@ -89,9 +89,9 @@ You have the option to customize the server and web configurations:
 
 The Result Explorer web UI can run in three modes:
 
-- ``BrowserType.SYSTEM_DEFAULT`` — Opens the system's default browser
-- ``BrowserType.PLAYWRIGHT_CHROMIUM`` — Uses Chromium via Playwright, with visible window
-- ``BrowserType.PLAYWRIGHT_CHROMIUM_HEADLESS`` — Uses Chromium via Playwright in headless mode (default)
+- ``BrowserType.SYSTEM_DEFAULT``: Opens the system's default browser
+- ``BrowserType.PLAYWRIGHT_CHROMIUM``: Uses Chromium via Playwright, with visible window
+- ``BrowserType.PLAYWRIGHT_CHROMIUM_HEADLESS``: Uses Chromium via Playwright in headless mode (default)
 
 The instance lifecycle is tied to the client. When you destroy the client, the server automatically stops.
 

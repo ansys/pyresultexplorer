@@ -28,7 +28,7 @@ Using the :class:`Client <ansys.result_explorer.core.Client>` object, you can li
 The :class:`Workspace <ansys.result_explorer.core.Workspace>` object allows you to:
 
 - manage the viewports within that workspace, including creating new viewports and assigning views to them.
-- enter fullscreen mode for a specific viewport to focus on a particular view.
+- enter full screen mode for a specific viewport to focus on a particular view.
 - set synchronization options to link viewports together
 
 Managing viewports
@@ -112,8 +112,8 @@ Direct commit vs. batch update of display options
 
 
 When you assign a display option directly 
-(e.g., ``opts.show_mesh_edges = True``), it immediately commits the change 
-to the application. For multiple changes, use the :meth:`viewport.update_display_options() <ansys.result_explorer.core.Viewport.update_display_options>` 
+(for example, ``opts.show_mesh_edges = True``), it immediately commits the change 
+to the app. For multiple changes, use the :meth:`viewport.update_display_options() <ansys.result_explorer.core.Viewport.update_display_options>` 
 context manager to batch all updates into a single API call, which is more 
 efficient:
 

@@ -107,11 +107,11 @@ View types
 
 PyResultExplorer supports the following types of views:
 
-- **Mesh views** — Display the mesh of the model
-- **Plot views** — Display results as 3D contours on the mesh
-- **Chart views** — Display results as charts (e.g., line plots, bar charts)
-- **Convergence trackers** — Display solver convergence across iterations
-- **Contact trackers** — Visualize and analyze contact behavior
+- **Mesh views**: Display the mesh of the model
+- **Plot views**: Display results as 3D contours on the mesh
+- **Chart views**: Display results as charts (for example, line plots, bar charts)
+- **Convergence trackers**: Display solver convergence across iterations
+- **Contact trackers**: Visualize and analyze contact behavior
 
 Creating a new view
 ^^^^^^^^^^^^^^^^^^^
@@ -119,7 +119,7 @@ Creating a new view
 You can programmatically create new plot and chart views using the :meth:`Solution.create_plot() <ansys.result_explorer.core.Solution.create_plot>`
 and :meth:`Solution.create_chart() <ansys.result_explorer.core.Solution.create_chart>` methods.
 
-The following example creates a displacement plot on a named selection at a specific timestep:
+The following example creates a displacement plot on a named selection at a specific time step:
 
 .. code:: python
 
