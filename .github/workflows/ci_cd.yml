@@ -136,7 +136,7 @@ jobs:
 
       - name: Install Result Explorer (native)
         id: install-rx
-        uses: ansys-internal/pyresultexplorer/.github/actions/result-explorer-server@main
+        uses: ansys-internal/pyresultexplorer/.github/actions/result-explorer-server@main # zizmor: ignore[unpinned-uses]
         with:
           version: 'latest-dev'
           installation-path: ${{ env.RX_SERVER_INSTALLATION_PATH }}
