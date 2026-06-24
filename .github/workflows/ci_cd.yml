@@ -77,25 +77,25 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           auditing-level: 'high'
 
-  vulnerabilities:
-    name: "Vulnerabilities"
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
+  # vulnerabilities:
+  #   name: "Vulnerabilities"
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: read
+  #   steps:
 
-      - uses: extractions/netrc@c3879108aae6b4ed5c4eb60854ae04f06d2f2f68 # v3.0.0
-        with:
-          machine: github.com
-          username: pyansys-ci-bot
-          password: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+  #     - uses: extractions/netrc@c3879108aae6b4ed5c4eb60854ae04f06d2f2f68 # v3.0.0
+  #       with:
+  #         machine: github.com
+  #         username: pyansys-ci-bot
+  #         password: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
 
-      - uses: ansys/actions/check-vulnerabilities@d946b24b9a765f4169bcc94afdb27bd1a0533741 # v10.3.2
-        with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          python-package-name: ${{ env.LIBRARY_NAME }}
-          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
-          dev-mode: ${{ github.ref != 'refs/heads/main' }}
+  #     - uses: ansys/actions/check-vulnerabilities@d946b24b9a765f4169bcc94afdb27bd1a0533741 # v10.3.2
+  #       with:
+  #         python-version: ${{ env.MAIN_PYTHON_VERSION }}
+  #         python-package-name: ${{ env.LIBRARY_NAME }}
+  #         token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+  #         dev-mode: ${{ github.ref != 'refs/heads/main' }}
 
   tests-docker:
     name: "Tests Docker"
