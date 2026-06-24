@@ -1,5 +1,5 @@
 Workspaces and viewports
-=========================
+########################
 
 Result Explorer allows you to create multiple workspaces, each with its own layout of viewports. 
 A workspace is a collection of viewports that can display different views of the solution data. 
@@ -7,7 +7,7 @@ You can switch between workspaces to organize your analysis and visualization ta
 
 
 Managing workspaces
--------------------
+===================
 
 Using the :class:`Client <ansys.result_explorer.core.Client>` object, you can list, create, rename, and delete workspaces.
 
@@ -32,13 +32,13 @@ The :class:`Workspace <ansys.result_explorer.core.Workspace>` object allows you 
 - set synchronization options to link viewports together
 
 Managing viewports
-------------------
+==================
 
 A workspace can contain multiple viewports, which you access through the :attr:`Workspace.viewports <ansys.result_explorer.core.Workspace.viewports>` attribute.
 Each viewport can display a view of the solution data, and you can customize the display options for each viewport independently.
 
 Accessing and assigning views
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------------
 
 You can list all viewports in a workspace and assign views to them:
 
@@ -55,7 +55,7 @@ You can list all viewports in a workspace and assign views to them:
     viewport = workspace.assign_view(view=displacement_view, wait=True)
 
 Creating and deleting viewports
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------
 
 You can create new viewports by splitting existing ones in different directions:
 
@@ -79,7 +79,7 @@ You can create new viewports by splitting existing ones in different directions:
     workspace.delete_viewport(right_viewport)
 
 Customizing viewport display options
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------------
 
 Each viewport has display options that you can customize independently:
 
@@ -108,7 +108,7 @@ while chart viewports have options for hiding/showing the legend and data table.
 
 
 Direct commit vs. batch update of display options
-"""""""""""""""""""""""""""""""""""""""""""""""""
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 When you assign a display option directly 
@@ -133,7 +133,7 @@ efficient:
 
 
 Saving viewport snapshots
-^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------
 
 You can save viewport visualizations as PNG images:
 

@@ -1,11 +1,11 @@
 Solutions and views
-=======================
+###################
 
 When a solution is created, Result Explorer automatically creates predefined views. 
 The available predefined views depend on the solution type and on the result data available in the solution files.
 
 Creating a solution
--------------------
+===================
 
 You create a :class:`Solution <ansys.result_explorer.core.Solution>` object using the client:
 
@@ -34,7 +34,7 @@ The solution object provides access to rich metadata about the loaded results, i
 
 
 Named selections
-----------------
+================
 
 A solution can include named selections (groups of elements/nodes), which can be either solver-defined or custom-defined in Result Explorer.
 
@@ -74,7 +74,7 @@ You can also create new named selections programmatically using the :meth:`Solut
     )
 
 Views
------
+=====
 
 A view represents a specific analysis result that can be displayed in a viewport. Predefined views are created automatically when 
 a solution is loaded based on the available result data, but you can also create your own.
@@ -85,7 +85,7 @@ The actual data retrieval happens when the view is displayed in a viewport.
 Once a view is shown in at least one viewport, subsequent changes to the view definition trigger its re-evaluation.
 
 Accessing predefined views
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------
 
 Predefined views are automatically created based on the solution's result data:
 
@@ -103,7 +103,7 @@ Predefined views are automatically created based on the solution's result data:
     )
 
 View types
-^^^^^^^^^^
+----------
 
 PyResultExplorer supports the following types of views:
 
@@ -114,7 +114,7 @@ PyResultExplorer supports the following types of views:
 - **Contact trackers**: Visualize and analyze contact behavior
 
 Creating a new view
-^^^^^^^^^^^^^^^^^^^
+-------------------
 
 You can programmatically create new plot and chart views using the :meth:`Solution.create_plot() <ansys.result_explorer.core.Solution.create_plot>`
 and :meth:`Solution.create_chart() <ansys.result_explorer.core.Solution.create_chart>` methods.

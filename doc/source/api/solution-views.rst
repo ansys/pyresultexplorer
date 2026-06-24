@@ -1,5 +1,5 @@
 Solution and views
-------------------
+##################
 
 
 .. currentmodule:: ansys.result_explorer.core

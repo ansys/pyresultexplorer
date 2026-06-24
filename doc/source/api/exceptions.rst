@@ -1,5 +1,5 @@
 Exceptions
-----------
+##########
 
 .. currentmodule:: ansys.result_explorer.core
 

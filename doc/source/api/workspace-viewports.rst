@@ -1,5 +1,5 @@
 Workspace and viewports
------------------------
+#######################
 
 .. currentmodule:: ansys.result_explorer.core
 
