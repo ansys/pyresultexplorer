@@ -123,14 +123,14 @@ class _PlaywrightManager:
         with self._lock:
             if self._playwright is not None:
                 self._ref_count -= 1
-                log.debug(f"Playwright ref count: {self._ref_count}")
+                log.info(f"Playwright ref count: {self._ref_count}")
                 if self._ref_count <= 0 and not self._is_external:
-                    log.debug("Stopping Playwright instance (singleton)")
+                    log.info("Stopping Playwright instance (singleton)")
                     self._playwright.stop()
                     self._playwright = None
                     self._ref_count = 0
                 elif self._ref_count <= 0:
-                    log.debug("Not stopping externally-managed Playwright instance")
+                    log.info("Not stopping externally-managed Playwright instance")
 
 
 class BrowserType(StrEnum):
@@ -281,10 +281,6 @@ class ServerLaunchConfig:
     log_level : str, optional
         Log level (profile, debug, info, warning, error).
         Default is None (server default).
-    debug_api_responses : bool, optional
-        Enable API response debugging.
-    strict_checks : bool, optional
-        Enable strict checks.
 
     """
 
@@ -428,10 +424,13 @@ class ResultExplorerServerProcess:
                     try:
                         self._process.wait(timeout=5)
                         self._process = None
-                        log.info("Server stopped gracefully.")
+                        log.info("Result Explorer server stopped gracefully.")
                         return
                     except subprocess.TimeoutExpired:
-                        log.debug("Server did not stop gracefully via API, will terminate process.")
+                        log.debug(
+                            "Result Explorer server did not stop gracefully via API, "
+                            "will terminate the process."
+                        )
                 except Exception as e:
                     log.debug(f"Graceful shutdown request failed: {e}, will terminate process.")
 
@@ -440,11 +439,13 @@ class ResultExplorerServerProcess:
             try:
                 self._process.wait(timeout=10)
             except subprocess.TimeoutExpired:
-                log.warning("Server did not terminate gracefully, killing process...")
+                log.warning(
+                    "Result Explorer server did not terminate gracefully, killing process..."
+                )
                 self._process.kill()
                 self._process.wait()
             self._process = None
-            log.info("Server stopped.")
+            log.info("Result Explorer server stopped.")
 
     @property
     def is_running(self) -> bool:
@@ -531,12 +532,12 @@ class WebLaunchConfig:
         - SYSTEM_DEFAULT: Use the system's default browser.
         - PLAYWRIGHT_CHROMIUM: Use Playwright with Chromium in windowed mode.
         - PLAYWRIGHT_CHROMIUM_HEADLESS: Use Playwright with Chromium in headless mode.
-        Default is SYSTEM_DEFAULT.
+        Default is PLAYWRIGHT_CHROMIUM_HEADLESS.
 
     """
 
     server_url: str | None = None
-    browser_type: BrowserType = BrowserType.SYSTEM_DEFAULT
+    browser_type: BrowserType = BrowserType.PLAYWRIGHT_CHROMIUM_HEADLESS
 
     def __post_init__(self):
         """Validate configuration."""
@@ -619,7 +620,8 @@ class ResultExplorerWebSession:
 
         self._playwright_context = self._playwright_browser.new_context(
             # Ignore HTTPS errors for self-signed certificates (e.g., when SSL is enabled for auth)
-            ignore_https_errors=True
+            ignore_https_errors=True,
+            viewport={"width": 1920, "height": 1080},
         )
         self._playwright_page = self._playwright_context.new_page()
         self._playwright_page.goto(self._config.server_url)
@@ -627,16 +629,28 @@ class ResultExplorerWebSession:
     def close(self) -> None:
         """Close the web session."""
         if self._playwright_page is not None:
-            self._playwright_page.close()
+            try:
+                self._playwright_page.close()
+            except Exception as e:
+                log.debug(f"Error closing Playwright page during cleanup: {e}")
             self._playwright_page = None
         if self._playwright_context is not None:
-            self._playwright_context.close()
+            try:
+                self._playwright_context.close()
+            except Exception as e:
+                log.debug(f"Error closing Playwright context during cleanup: {e}")
             self._playwright_context = None
         if self._playwright_browser is not None:
-            self._playwright_browser.close()
+            try:
+                self._playwright_browser.close()
+            except Exception as e:
+                log.debug(f"Error closing Playwright browser during cleanup: {e}")
             self._playwright_browser = None
         if self._playwright_manager is not None:
-            self._playwright_manager.release_playwright()
+            try:
+                self._playwright_manager.release_playwright()
+            except Exception as e:
+                log.debug(f"Error releasing Playwright manager during cleanup: {e}")
             self._playwright_manager = None
 
     @property
@@ -646,7 +660,10 @@ class ResultExplorerWebSession:
 
     def __del__(self):
         """Ensure web session is closed when object is destroyed."""
-        self.close()
+        try:
+            self.close()
+        except Exception as e:
+            log.debug(f"Error closing web session during garbage collection: {e}")
 
 
 class ResultExplorerInstance:
@@ -760,9 +777,11 @@ class ResultExplorerInstance:
         Closes the web session and stops the server process.
         """
         if self._web_session is not None:
+            log.info("Closing Result Explorer web session...")
             self._web_session.close()
             self._web_session = None
         if self._server_process is not None:
+            log.info("Stopping Result Explorer server process...")
             self._server_process.stop()
             self._server_process = None
 

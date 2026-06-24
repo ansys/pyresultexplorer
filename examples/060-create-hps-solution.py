@@ -15,13 +15,25 @@
 # limitations under the License.
 
 """
-Create an HPS solution by selecting from available projects, jobs, tasks, and files.
+.. _create_hps_solution_example:
 
-This script connects to the Result Explorer application, lists available result providers,
-lets the user select one with HPS access, then guides them through selecting a project,
-job, task, and file to create an HPS solution.
+Create an HPS Solution
+======================
 
-Make sure to replace the TOKEN variable with a valid token before running the script.
+This example demonstrates how to interactively create an HPS solution by selecting
+from available projects, jobs, tasks, and files:
+
+- **Connect to Result Explorer** using a token for HPS access.
+- **Browse HPS providers** to find available result providers.
+- **Navigate the HPS hierarchy** through projects, jobs, and tasks.
+- **Create an HPS solution** from selected file resources.
+
+This example requires a valid authentication token and HPS-enabled result provider.
+
+.. note::
+
+    This example requires user interaction for selecting items from the HPS hierarchy.
+    Make sure to replace the TOKEN variable with a valid token before running.
 """
 
 from ansys.result_explorer.core.client import Client

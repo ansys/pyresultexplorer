@@ -135,6 +135,7 @@ def snapshot(snapshot):
     return snapshot.use_extension(ToleranceImageSnapshotExtension)
 
 
+# To debug in VS Code, you may need to disable this fixture.
 @pytest.fixture(scope="session", autouse=True)
 def install_browser():
     """Ensure Playwright browsers are installed for the test session."""
@@ -293,6 +294,15 @@ def snapshot_settings() -> SnapshotSettings:
         height=300,
         width=300,
     )
+
+
+@pytest.fixture
+def snapshot_settings_with_legend(snapshot_settings) -> SnapshotSettings:
+    """Snapshot settings with the legend enabled."""
+    settings = SnapshotSettings()
+    settings.CopyFrom(snapshot_settings)
+    settings.show_legend = True
+    return settings
 
 
 @pytest.fixture

@@ -15,40 +15,38 @@
 # limitations under the License.
 
 """
+.. _user_defined_plot_example:
+
+Create a User-Defined Plot with DPF Filtering
+==============================================
+
 This example demonstrates how to create a user-defined plot that displays only
-the nodes whose total displacement magnitude exceeds a percentage of the
-maximum displacement in the model.
+the nodes whose total displacement magnitude exceeds a percentage of the maximum
+displacement in the model:
 
-It creates a user-defined plot that uses a DPF ``high_pass`` operator to
-filter out nodes whose displacement magnitude falls below the threshold,
-showing only the regions that meet or exceed the specified percentage of the
+- **Server-side DPF scripting** to define custom plot data computation.
+- **User-defined plots** with configurable custom options for filtering.
+- **Threshold filtering** using DPF operators to filter by displacement magnitude.
+- **Viewport visualization** of user-defined plot results with display options.
+
+The example creates a user-defined plot that uses a DPF ``high_pass`` operator
+to filter out nodes whose displacement magnitude falls below the threshold,
+showing only regions that meet or exceed the specified percentage of the
 maximum displacement.
-
-It covers the following steps:
-
-- Connecting to the PyResultExplorer service
-- Creating a workspace and loading a solution
-- Defining a server-side script using DPF operators to filter by threshold
-- Creating a user-defined plot with a configurable percent threshold option
-- Assigning the plot to a viewport
-
-Make sure to update the FILE_PATH and TOKEN variables
-with appropriate values before running the example.
 """
 
-import os
-
-from ansys.result_explorer.core import models
-from ansys.result_explorer.core.client import Client
-
-FILE_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "tests", "data", "multiple_connections.rst")
+# %%
+# Import the Result Explorer dependencies.
+from ansys.result_explorer.core import launch_result_explorer, models
+from ansys.result_explorer.core.examples import (
+    ExampleKeys,
+    get_example_file,
+    get_example_snapshot_settings,
 )
-TOKEN = "<insert_your_token_here>"  # noqa E501
 
-# ---------------------------------------------------------------------------
-# Plot above threshold script
-# ---------------------------------------------------------------------------
+# %%
+# Define the DPF Server-Side Script
+# ----------------------------------
 # This script is executed server-side by Result Explorer to compute the plot
 # data. It extracts displacement, computes the per-node displacement magnitude
 # (L2 norm of X/Y/Z components), determines the maximum magnitude across all
@@ -195,24 +193,31 @@ def get_custom_plot_data(
 
 """
 
-# ---------------------------------------------------------------------------
-# Connect and set up workspace / solution
-# ---------------------------------------------------------------------------
+# %%
+# Launch Result Explorer
+# ----------------------
+# Start a Result Explorer instance for this example.
+rx = launch_result_explorer()
 
-rx = Client.connect_with_token(TOKEN)
+# %%
+# Create Workspace and Solution
+# ------------------------------
+# Create a workspace and load a solution from the example data.
+rst_path = get_example_file(ExampleKeys.RST_MULTIPLE_CONNECTIONS)
 
 workspace = rx.create_workspace(name="PyRX Above Threshold Workspace")
 
 sol = rx.create_solution(
     name="PyRX Above Threshold Solution",
-    file_path=FILE_PATH,
+    file_path=rst_path,
 )
 print(f"Created solution: {sol.name}")
 
-# ---------------------------------------------------------------------------
-# Create the user-defined above-threshold plot
-# ---------------------------------------------------------------------------
-
+# %%
+# Create the User-Defined Plot
+# -----------------------------
+# Create a user-defined plot using the DPF script with configurable
+# threshold filtering.
 ud_plot = sol.create_plot(
     models.PlotDefinitionCreate(
         name="Displacement Above Threshold",
@@ -229,10 +234,18 @@ ud_plot = sol.create_plot(
 
 print(f"Created user-defined above-threshold plot: '{ud_plot.name}'")
 
-# ---------------------------------------------------------------------------
-# Assign to viewport
-# ---------------------------------------------------------------------------
-
+# %%
+# Assign to Viewport and Configure Display
+# ------------------------------------------
+# Assign the user-defined plot to a viewport and configure display options.
 viewport = workspace.assign_view(view=ud_plot, wait=True)
 
-print("Opened above-threshold plot in viewport.")
+with viewport.update_display_options() as opts:
+    opts.show_mesh_edges = True
+    opts.show_min_max_labels = True
+
+viewport.save_snapshot(
+    file_path="013-user-defined-plot.png", settings=get_example_snapshot_settings()
+)
+
+rx.stop()

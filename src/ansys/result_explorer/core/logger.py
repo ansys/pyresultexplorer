@@ -20,6 +20,11 @@ import logging
 import sys
 
 log = logging.getLogger("ansys-result-explorer-core")
+"""Logger for the ansys-result-explorer-core package.
+
+This logger is configured with an INFO level handler that outputs to stdout.
+Use this logger for all module-level logging throughout the package.
+"""
 
 log.setLevel(logging.INFO)
 

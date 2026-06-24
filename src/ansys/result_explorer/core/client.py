@@ -186,6 +186,22 @@ class Client:
         except Exception:
             pass
 
+    def __str__(self):
+        """Return a user-friendly string representation of the client."""
+        web_info = ""
+        instance_type = "External Connection"
+
+        if self._instance is not None:
+            instance_type = "Managed"
+            web_info = f"\n  Web UI: {self._instance.web_url}" if self._instance.web_url else ""
+
+        return (
+            f"Result Explorer Client\n"
+            f"  Instance Type: {instance_type}\n"
+            f"  Host: {self._host}:{self._grpc_port}\n"
+            f"  Session: {self._session_id}{web_info}"
+        )
+
     @property
     def instance(self) -> "ResultExplorerInstance | None":
         """Get the Result Explorer instance.
@@ -289,7 +305,7 @@ class Client:
 
     def ls(
         self,
-        path: str,
+        path: str | Path,
         result_provider: str | models.ResultProvider | None = None,
         depth=0,
     ) -> list[models.FSItem]:
@@ -312,7 +328,7 @@ class Client:
 
         """
         rp_name = self._get_result_provider_name(result_provider)
-        req = models.LsRequest(result_provider_name=rp_name, path=path, max_depth=depth)
+        req = models.LsRequest(result_provider_name=rp_name, path=str(path), max_depth=depth)
         res = self._filesystem_stub.Ls(req)
         return list(res.items)
 
@@ -345,12 +361,14 @@ class Client:
 
     def _get_file_content(
         self,
-        path: str,
+        path: str | Path,
         result_provider: str | models.ResultProvider | None = None,
         lines_offset: int = 0,
     ) -> str:
         rp_name = self._get_result_provider_name(result_provider)
-        req = models.TailRequest(result_provider_name=rp_name, path=path, lines_offset=lines_offset)
+        req = models.TailRequest(
+            result_provider_name=rp_name, path=str(path), lines_offset=lines_offset
+        )
         res = self._filesystem_stub.Tail(req)
         return res.content
 
@@ -358,7 +376,7 @@ class Client:
     def create_solution(
         self,
         name: str,
-        file_path: str,
+        file_path: str | Path,
         result_provider: str | models.ResultProvider | None = None,
         split_mesh_options: models.SplitMeshOptions | None = None,
     ) -> Solution:
@@ -368,7 +386,7 @@ class Client:
         ----------
         name : str
             Name of the solution to create.
-        file_path : str
+        file_path : str | Path
             Path to the result file. Must be accessible by the server.
         result_provider : str or ResultProvider, optional
             Name of the result provider or ResultProvider object.
@@ -383,7 +401,7 @@ class Client:
 
         """
         rp_name = self._get_result_provider_name(result_provider)
-        file = models.File(path=file_path)
+        file = models.File(path=str(file_path))
         split_mesh_options = split_mesh_options or models.SplitMeshOptions(auto_split_mesh=True)
         sol = models.SolutionCreate(
             result_provider_name=rp_name,
@@ -632,7 +650,7 @@ class Client:
         name : str
             Name of the result provider.
         url : str
-            URL or path of the result provider.
+            URL of the result provider.
 
         Returns
         -------
