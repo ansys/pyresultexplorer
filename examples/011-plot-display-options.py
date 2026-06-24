@@ -41,7 +41,6 @@ import imageio
 # %%
 # Import the Result Explorer dependencies.
 from ansys.result_explorer.core import (
-    PlotDisplayOptions,
     PlotView,
     launch_result_explorer,
 )
@@ -95,14 +94,13 @@ workspace = rx.create_workspace(name="Plot Viewports")
 print(f"Created workspace with {len(workspace.viewport_ids)} viewports (2x1 grid)")
 
 disp_viewport = workspace.viewports[0]
-disp_viewport.set_view(disp_view, wait=True)
+disp_viewport = disp_viewport.set_view(disp_view, wait=True)
 
 # %%
 # Customize Display Options
 # ----------------------------
 # Configure plot display options including deformation scale and mesh edges.
 with disp_viewport.update_display_options() as disp_opts:
-    assert isinstance(disp_opts, PlotDisplayOptions)
     disp_opts.result_options.use_global_min_max = True
     disp_opts.result_options.component_index = 0
     disp_opts.result_options.deformation_scale = 2
@@ -125,7 +123,6 @@ with imageio.get_writer("011-plot-display-options.gif", mode="I") as writer:
     for i, tf in enumerate(time_frequencies):
         print(f"  Step {i}: set_id={tf.set_id}, value={tf.value}")
         with disp_viewport.update_display_options() as opts:
-            assert isinstance(opts, PlotDisplayOptions)
             # Update the set_id to change the displayed time step
             opts.result_options.set_id = tf.set_id
 
