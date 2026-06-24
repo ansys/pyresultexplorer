@@ -36,7 +36,7 @@ permissions: {}
 
 jobs:
   tests:
-    name: "Tests (${{ inputs.deployment }})"
+    name: "Tests (${{ inputs.deployment }}) on Python ${{ matrix.python-version }}"
     runs-on: ${{ matrix.os }}
     permissions:
       contents: read
