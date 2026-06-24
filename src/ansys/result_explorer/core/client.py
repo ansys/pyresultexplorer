@@ -271,7 +271,6 @@ class Client:
         grpc_port = data.get("grpcPort")
         session_id = data.get("sessionId")
         ca_cert_path = data.get("caCertPath")
-        insecure = data.get("insecure")
 
         if host is None:
             raise ValueError("Token is missing 'host' information.")
@@ -279,15 +278,13 @@ class Client:
             raise ValueError("Token is missing 'grpcPort' information.")
         if session_id is None:
             raise ValueError("Token is missing 'sessionId' information.")
-        if insecure is None:
-            insecure = ca_cert_path is None
 
         return cls(
             host=host,
             grpc_port=grpc_port,
             session_id=session_id,
             ca_cert_path=ca_cert_path,
-            insecure=insecure,
+            insecure=(ca_cert_path is None),
         )
 
     def ls(
