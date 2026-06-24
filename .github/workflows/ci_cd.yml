@@ -78,7 +78,7 @@ jobs:
           auditing-level: 'high'
 
   vulnerabilities:
-    name: Vulnerabilities
+    name: "Vulnerabilities"
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -134,7 +134,7 @@ jobs:
           username: pyansys-ci-bot
           password: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
 
-      - name: Install Result Explorer (native)
+      - name: "Install Result Explorer (native)"
         id: install-rx
         uses: ansys-internal/pyresultexplorer/.github/actions/result-explorer-server@main # zizmor: ignore[unpinned-uses]
         with:

@@ -19,7 +19,7 @@ permissions: {}
 jobs:
 
   label-syncer:
-    name: Syncer
+    name: "Syncer"
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -33,7 +33,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   labeler:
-    name: Set labels
+    name: "Set labels"
     needs: [label-syncer]
     permissions:
       contents: read
@@ -42,19 +42,19 @@ jobs:
     steps:
 
     # Label based on modified files or branch name
-    - name: Label based on changed files
+    - name: "Label based on changed files"
       uses: actions/labeler@f27b608878404679385c85cfa523b85ccb86e213 # v6.1.0
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         sync-labels: true
 
   commenter:
-    name: Commenter
+    name: "Commenter"
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write # Required to comment on pull requests
     steps:
-    - name: Suggest to add labels
+    - name: "Suggest to add labels"
       uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
       # Execute only when no labels have been applied to the pull request
       if: toJSON(github.event.pull_request.labels.*.name) == '{}'
