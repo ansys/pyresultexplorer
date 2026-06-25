@@ -9,7 +9,6 @@ registries:
 
 updates:
   - package-ecosystem: "uv"
-    insecure-external-code-execution: allow
     registries: "*"
     directory: "/"
     schedule:

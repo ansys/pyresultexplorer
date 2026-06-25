@@ -1,9 +1,15 @@
 documentation:
 - changed-files:
   - any-glob-to-any-file: ['doc/source/**/*']
+- head-branch: ['^doc']
 maintenance:
 - changed-files:
   - any-glob-to-any-file: ['.github/**/*', '.flake8', 'pyproject.toml']
+- head-branch: ['^maint', '^no-ci', '^ci']
+enhancement:
+- head-branch: ['^feat']
+bug:
+- head-branch: ['^fix', '^patch']
 dependencies:
 - changed-files:
   - any-glob-to-any-file: ['pyproject.toml']

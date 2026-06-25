@@ -4,3 +4,8 @@ isort
 Makefile
 py
 pytest
+PyResultExplorer
+Result Explorer
+uv
+viewport
+viewports

@@ -1,5 +1,5 @@
 PyResultExplorer
-================
+################
 
 .. toctree::
    :hidden:

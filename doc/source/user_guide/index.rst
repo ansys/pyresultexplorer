@@ -1,8 +1,7 @@
 .. _ref_user_guide:
 
-==========
 User guide
-==========
+##########
 
 .. toctree::
    :maxdepth: 2
@@ -15,9 +14,9 @@ User guide
 This section walks you through the basics of how to interact with Result Explorer. 
 For more elaborate examples, see :doc:`/examples/index`. For more details on the PyResultExplorer API, see :doc:`/api/index`.
 
-The PyResultExplorer library is organized around the following core concepts based on the Result Explorer application structure: 
+The PyResultExplorer library is organized around the following core concepts based on the Result Explorer app structure: 
 
-- **Instance**: Represents a running instance of the Result Explorer application. 
+- **Instance**: Represents a running instance of the Result Explorer app. 
   An instance can manage multiple workspaces and solutions.
 
 - **Client**: The main entry point for interacting with the Result ExplorerAPI. 
