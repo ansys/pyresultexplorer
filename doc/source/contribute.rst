@@ -1,5 +1,5 @@
 Contribute
-==========
+##########
 
 Overall guidance on contributing to a PyAnsys library appears in the
 `Contributing <https://dev.docs.pyansys.com/how-to/contributing.html>`_ topic
@@ -9,7 +9,7 @@ with this guide before attempting to contribute to PyResultExplorer.
 The following contribution information is specific to PyResultExplorer.
 
 Install in developer mode
--------------------------
+=========================
 
 Installing PyResultExplorer in developer mode allows you to modify the source and enhance it.
 
@@ -19,7 +19,7 @@ Installing PyResultExplorer in developer mode allows you to modify the source an
 
       git clone https://github.com/ansys-internal/pyresultexplorer
 
-#. Create a fresh-clean Python environment and activate it, we recommend using `uv <https://pypi.org/project/uv/>`_ for this purpose:
+#. Create a fresh-clean Python environment and activate it, `uv <https://pypi.org/project/uv/>`_ is recommended for this purpose:
 
    .. code:: bash
 
@@ -48,7 +48,7 @@ Installing PyResultExplorer in developer mode allows you to modify the source an
       pre-commit install
 
 How to test
------------
+===========
 
 To run the tests, you must have Result Explorer installed on your machine.
 Navigate to the root directory of the repository and run ``pytest``.
@@ -71,10 +71,10 @@ You can specify additional options to control the test execution, for example:
 .. tip::
 
    To interactively debug tests in Visual Studio Code, you may need
-   to disable the ``install_browser`` fixture, as it may interfere with the debugger. 
+   to turn off the ``install_browser`` fixture, as it may interfere with the debugger. 
 
 Documentation
--------------
+=============
 
 To build the documentation locally, navigate to the ``docs`` directory and run this command:
 

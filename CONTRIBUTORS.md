@@ -2,8 +2,8 @@
 
 ## Project Lead or Owner
 
-* [First Last]()
+* [Federico Negri](https://github.com/FedericoNegri)
 
 ## Individual Contributors
 
-* [First Last]()
+* [Muhammed Adedigba](https://github.com/moe-ad)

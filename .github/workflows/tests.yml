@@ -18,15 +18,28 @@ on:
         required: false
         default: '["3.12"]'
         type: string
+    secrets:
+      PYANSYS_CI_BOT_TOKEN:
+        required: true
+      PYANSYS_CI_BOT_USERNAME:
+        required: false
+      PYANSYS_CI_BOT_PACKAGE_TOKEN:
+        required: false
+      LICENSE_SERVER:
+        required: false
 
 env:
   MAIN_PYTHON_VERSION: '3.12'
   RX_SERVER_INSTALLATION_PATH: '/tmp/result-explorer-server'
 
+permissions: {}
+
 jobs:
   tests:
-    name: "Tests (${{ inputs.deployment }})"
+    name: "Tests (${{ inputs.deployment }}) on Python ${{ matrix.python-version }}"
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
     env:
       UPDATE_SNAPSHOTS: ${{ inputs.update-snapshots }}
       DEPLOYMENT: ${{ inputs.deployment }}
@@ -38,16 +51,19 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v6.0.3
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         if: ${{ env.UPDATE_SNAPSHOTS != 'true' }}
+        with:
+          persist-credentials: false
 
-      - uses: actions/checkout@v6.0.3
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         if: ${{ env.UPDATE_SNAPSHOTS == 'true' }}
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+          persist-credentials: false
 
-      - name: Install Result Explorer (native)
+      - name: "Install Result Explorer (native)"
         id: install-rx
         if: ${{ env.DEPLOYMENT == 'native' }}
         uses: ./.github/actions/result-explorer-server
@@ -56,7 +72,7 @@ jobs:
           installation-path: ${{ env.RX_SERVER_INSTALLATION_PATH }}
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
 
-      - name: Start Result Explorer (docker)
+      - name: "Start Result Explorer (docker)"
         id: rx-compose
         if: ${{ env.DEPLOYMENT == 'docker' }}
         uses: ./.github/actions/result-explorer-docker
@@ -69,54 +85,59 @@ jobs:
           web-tag: 'dev'
           results-folder: '${{ github.workspace }}/tests/data'
 
-      - uses: extractions/netrc@v3
+      - uses: extractions/netrc@c3879108aae6b4ed5c4eb60854ae04f06d2f2f68 # v3.0.0
         with:
           machine: github.com
           username: pyansys-ci-bot
           password: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v8.2.0
+      - name: "Install uv"
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
         with:
           activate-environment: true
           python-version: ${{ matrix.python-version }}
           enable-cache: "false"
 
-      - name: Install dependencies (native)
+      - name: "Install dependencies (native)"
         if: ${{ env.DEPLOYMENT == 'native' }}
         run: |
             uv sync --group dev --extra playwright
 
-      - name: Install dependencies (docker)
+      - name: "Install dependencies (docker)"
         if: ${{ env.DEPLOYMENT == 'docker' }}
         run: |
             uv sync --group dev
 
-      - name: Run tests (native)
+      - name: "Run tests (native)"
         if: ${{ env.DEPLOYMENT == 'native' }}
         run: |
             pytest tests -m "" \
               --junitxml test_results_native.xml \
               --cov=ansys --cov-report=term --cov-report=html:.cov/html --cov-report=xml:coverage.xml --cov-report=markdown:cov.md\
-              ${{ env.UPDATE_SNAPSHOTS == 'true' && '--snapshot-update' || '' }} \
+              $SNAPSHOT_ARG \
               --launch-native
         env:
+          SNAPSHOT_ARG: ${{ env.UPDATE_SNAPSHOTS == 'true' && '--snapshot-update' || '' }}
           ANSYSLMD_LICENSE_FILE: 1055@${{ secrets.LICENSE_SERVER }}
           ANSYS_RESULT_EXPLORER_SERVER: ${{ env.RX_SERVER_INSTALLATION_PATH }}/viz-server
 
-      - name: Run tests (docker)
+      - name: "Run tests (docker)"
         if: ${{ env.DEPLOYMENT == 'docker' }}
         run: |
             uv run pytest tests -m "" \
               --junitxml test_results_docker.xml \
               --cov=ansys --cov-report=term --cov-report=html:.cov/html --cov-report=xml:coverage.xml \
-              ${{ env.UPDATE_SNAPSHOTS == 'true' && '--snapshot-update' || '' }} \
-              --server-url=${{ steps.rx-compose.outputs.server-url }} \
-              --web-url=${{ steps.rx-compose.outputs.web-url }} \
+              $SNAPSHOT_ARG \
+              --server-url="$SERVER_URL" \
+              --web-url="$WEB_URL" \
               --is-docker
+        env:
+          SNAPSHOT_ARG: ${{ env.UPDATE_SNAPSHOTS == 'true' && '--snapshot-update' || '' }}
+          SERVER_URL: ${{ steps.rx-compose.outputs.server-url }}
+          WEB_URL: ${{ steps.rx-compose.outputs.web-url }}
 
-      - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v6.4.1
+      - name: "Publish Test Report"
+        uses: mikepenz/action-junit-report@3a81627bfac62268172037048872e8ebd4207e6d # v6.4.1
         if: always()
         with:
           report_paths: '**/test*.xml'
@@ -124,7 +145,7 @@ jobs:
           detailed_summary: true
           include_passed: true
 
-      - name: Detailed coverage report
+      - name: "Detailed coverage report"
         if: >-
           always() &&
           env.DEPLOYMENT == 'native' &&
@@ -133,8 +154,8 @@ jobs:
           echo "## Detailed Code Coverage" >> $GITHUB_STEP_SUMMARY
           cat cov.md >> $GITHUB_STEP_SUMMARY
 
-      - name: Code Coverage Summary
-        uses: irongut/CodeCoverageSummary@v1.3.0
+      - name: "Code Coverage Summary"
+        uses: irongut/CodeCoverageSummary@51cc3a756ddcd398d447c044c02cb6aa83fdae95 # v1.3.0
         if: >-
           always() &&
           env.DEPLOYMENT == 'native' &&
@@ -150,61 +171,61 @@ jobs:
           output: both
           thresholds: '80 90'
 
-      - name: Write coverage to Job Summary
+      - name: "Write coverage to Job Summary"
         if: >-
           always() &&
           env.DEPLOYMENT == 'native' &&
           env.MAIN_PYTHON_VERSION == matrix.python-version
         run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
 
-      - name: Comment coverage on PR
+      - name: "Comment coverage on PR"
         if: >-
           always() &&
           env.DEPLOYMENT == 'native' &&
           env.MAIN_PYTHON_VERSION == matrix.python-version &&
           github.event_name == 'pull_request'
-        uses: peter-evans/create-or-update-comment@v5
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body-file: code-coverage-results.md
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
 
-      - name: Upload coverage results
-        uses: actions/upload-artifact@v7
+      - name: "Upload coverage results"
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: ${{ env.DEPLOYMENT == 'native' && env.MAIN_PYTHON_VERSION == matrix.python-version }}
         with:
           name: coverage-tests-${{ matrix.os }}
           path: .cov
           retention-days: 7
 
-      - name: Upload coverage results (as .coverage)
-        uses: actions/upload-artifact@v7
+      - name: "Upload coverage results (as .coverage)"
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: ${{ env.DEPLOYMENT == 'native' && env.MAIN_PYTHON_VERSION == matrix.python-version }}
         with:
           name: coverage-file-tests-${{ matrix.os }}
           path: .coverage
           retention-days: 7
 
-      - name: Generate snapshot diff summary
+      - name: "Generate snapshot diff summary"
         if: always()
         run: python .github/scripts/generate_snapshot_summary.py
 
-      - name: Upload snapshot diffs report
+      - name: "Upload snapshot diffs report"
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ${{ env.DEPLOYMENT }}-snapshot-diffs-report
           path: snapshot_diffs_report.html
           retention-days: 7
 
-      - name: Dump server logs
+      - name: "Dump server logs"
         if: ${{ failure() && env.DEPLOYMENT == 'docker' }}
         run: |
           docker logs result-explorer-server
 
-      - name: Commit base images
+      - name: "Commit base images"
         if: ${{ (success() || failure()) && env.UPDATE_SNAPSHOTS == 'true' }}
-        uses: EndBug/add-and-commit@v10
+        uses: EndBug/add-and-commit@290ea2c423ad77ca9c62ae0f5b224379612c0321 # v10.0.0
         with:
           add: |
             tests/__snapshots__

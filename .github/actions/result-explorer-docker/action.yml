@@ -53,27 +53,28 @@ runs:
   using: "composite"
 
   steps:
-    - name: Checkout Result Explorer repo
+    - name: "Checkout Result Explorer repo"
       # at some point we'll instead publish the docker compose as
       # a release artifact and download it here
-      uses: actions/checkout@v6
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       with:
         repository: ansys-internal/result-explorer
         token: ${{ inputs.token }}
         path: result-explorer
+        persist-credentials: false
 
-    - uses: KengoTODA/actions-setup-docker-compose@main
+    - uses: KengoTODA/actions-setup-docker-compose@477353946803dd64eaa44008b865b6bfc88cab4e # v1.2.4
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
 
-    - name: Login in Github Container registry
-      uses: docker/login-action@v3
+    - name: "Login in Github Container registry"
+      uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
       with:
         registry: ghcr.io
         username: ${{ inputs.ghcr-username }}
         password: ${{ inputs.ghcr-token }}
 
-    - name: Start containers
+    - name: "Start containers"
       shell: bash
       run: |
         docker-compose -f docker-compose.yaml --env-file .env pull
@@ -86,7 +87,7 @@ runs:
           SERVER_TAG: ${{ inputs.server-tag }}
           DPF_SERVER_TAG: ${{ inputs.dpf-server-tag }}
 
-    - name: Publish build info to summary
+    - name: "Publish build info to summary"
       shell: bash
       run: |
         echo "## Build info" >> $GITHUB_STEP_SUMMARY
@@ -105,7 +106,7 @@ runs:
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
-    - name: Set outputs
+    - name: "Set outputs"
       id: set-outputs
       shell: bash
       run: |
