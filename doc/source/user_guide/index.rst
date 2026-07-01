@@ -19,19 +19,19 @@ The PyResultExplorer library is organized around the following core concepts bas
 - **Instance**: Represents a running instance of the Result Explorer app. 
   An instance can manage multiple workspaces and solutions.
 
-- **Client**: The main entry point for interacting with the Result ExplorerAPI. 
+- **Client**: The main entry point for interacting with the Result Explorer API. 
   It provides methods to launch or connect to an instance, manage workspaces and solutions, and query results.
 
 - **Solution**: Represents a simulation solution loaded into Result Explorer. 
   You can interact with the solution to access its metadata, create views, and visualize results.
 
-- **View**: Represents a specific view of the solution data, such as a plot or a chart. 
+- **View**: A displayable item under a solution. Views can include mesh views, plots, charts, logs, convergence and contact tracker charts.
   You can create multiple views for a solution and customize their settings.
 
-- **Workspace**: A viewport layout and workspace-specific state.
+- **Workspace**: A collection of viewports, their layout, and associated workspace settings.
   Solution and views are shared across workspaces.
   You can have multiple workspaces in an instance.
 
-- **Viewport**: A specific area within a workspace where a view is displayed. 
-  You can have multiple viewports in a workspace, each showing different views of the solution data.
+- **Viewport**: A display area used to show a view.
+  You can have multiple viewports in a workspace, each showing possibly different views of the solution data.
   A view can be displayed in multiple viewports, and each viewport can have its own display options.
