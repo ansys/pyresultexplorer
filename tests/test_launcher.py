@@ -518,7 +518,7 @@ class TestServerLaunchIntegration:
         assert client.web_session is not None
 
         # Test app info retrieval
-        app_info = client.app_info()
+        app_info = client.app_info
         assert app_info is not None
         assert app_info.version != ""
 
@@ -571,11 +571,11 @@ class TestServerLaunchIntegration:
         client2 = launch_result_explorer(server_config, web_config)
 
         # Both should work concurrently
-        app_info1 = client1.app_info()
+        app_info1 = client1.app_info
         assert app_info1 is not None
         assert app_info1.version != ""
 
-        app_info2 = client2.app_info()
+        app_info2 = client2.app_info
         assert app_info2 is not None
         assert app_info2.version != ""
 

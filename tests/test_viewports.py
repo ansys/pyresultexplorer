@@ -738,3 +738,49 @@ def test_camera_position_with_zoom():
     cam = CameraPosition(m)
     assert cam.zoom == 2.5
     assert cam.with_translation(10, 20, 30).translation == (10, 20, 30)
+
+
+def test_visible_bodies_option(rx, multiple_connections_solution, snapshot, snapshot_settings):
+    """Test visible bodies display option."""
+
+    if rx.app_info.version == "2026.7.0":
+        pytest.skip("Skipping test due to known issue in version 2026.7.0")
+
+    sol = multiple_connections_solution
+
+    # Find a mesh view from the solution
+    views = sol.views
+    mesh_view = next((v for v in views if v.type == ViewType.VIEW_TYPE_MESH), None)
+    assert mesh_view is not None
+
+    # Create workspace and assign mesh view
+    workspace = rx.create_workspace("Test Body Visibility")
+    viewport = workspace.assign_view(view=mesh_view, wait=True)
+
+    _ = viewport.take_snapshot(settings=snapshot_settings)
+
+    # image comparison
+    snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
+    assert snapshot_data == snapshot(name="initial")
+
+    import time
+
+    time.sleep(5)
+
+    bodies = sol.bodies
+    solid186_body_ids = []
+    for body in bodies:
+        if "SOLID186" in body.element_types:
+            solid186_body_ids.append(body.id)
+
+    # Test visible_bodies property
+    opts = viewport.display_options
+    opts.visible_bodies = solid186_body_ids
+    assert viewport.display_options.visible_bodies == solid186_body_ids
+
+    # image comparison
+    snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
+    assert snapshot_data == snapshot(name="SOLID186_bodies")
+
+    # Cleanup
+    rx.delete_workspace(workspace)

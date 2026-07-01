@@ -178,6 +178,8 @@ class Client:
 
         self._default_result_provider: str | None = DEFAULT_RESULT_PROVIDER
 
+        self._app_info: models.AppInfo | None = None
+
     def __del__(self):
         """Clean up resources when client is destroyed."""
         try:
@@ -695,6 +697,7 @@ class Client:
         req = models.AuthenticateResultProviderRequest(result_provider_name=rp_name, token=token)
         self._app_stub.AuthenticateResultProvider(req)
 
+    @property
     def app_info(self) -> models.AppInfo:
         """Get application information.
 
@@ -704,7 +707,9 @@ class Client:
             Application information and metadata.
 
         """
-        return self._app_stub.GetAppInfo(models.Empty())
+        if self._app_info is None:
+            self._app_info = self._app_stub.GetAppInfo(models.Empty())
+        return self._app_info
 
     def app_settings(self) -> models.AppSettings:
         """Get current application settings.
