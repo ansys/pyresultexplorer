@@ -18,6 +18,16 @@ on:
         required: false
         default: '["3.12"]'
         type: string
+      rx-version:
+        description: 'Version of Result Explorer to use (e.g. "dev", "v2026.7.0")'
+        required: false
+        default: 'dev'
+        type: string
+      upload-coverage:
+        description: 'Whether to upload coverage results'
+        required: false
+        default: false
+        type: boolean
     secrets:
       PYANSYS_CI_BOT_TOKEN:
         required: true
@@ -51,12 +61,12 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         if: ${{ env.UPDATE_SNAPSHOTS != 'true' }}
         with:
           persist-credentials: false
 
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         if: ${{ env.UPDATE_SNAPSHOTS == 'true' }}
         with:
           ref: ${{ github.event.pull_request.head.ref }}
@@ -68,7 +78,7 @@ jobs:
         if: ${{ env.DEPLOYMENT == 'native' }}
         uses: ./.github/actions/result-explorer-server
         with:
-          version: 'latest-dev'
+          version: ${{ inputs.rx-version == 'dev' && 'latest-dev' || inputs.rx-version }}
           installation-path: ${{ env.RX_SERVER_INSTALLATION_PATH }}
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
 
@@ -81,8 +91,8 @@ jobs:
           ghcr-username: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
           ghcr-token: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
           license-server: ${{ secrets.LICENSE_SERVER }}
-          server-tag: 'dev-dpf-v2026.1.pre1'
-          web-tag: 'dev'
+          server-tag: '${{ inputs.rx-version }}-dpf-v2026.1.pre1'
+          web-tag: ${{ inputs.rx-version }}
           results-folder: '${{ github.workspace }}/tests/data'
 
       - uses: extractions/netrc@c3879108aae6b4ed5c4eb60854ae04f06d2f2f68 # v3.0.0
@@ -141,7 +151,7 @@ jobs:
         if: always()
         with:
           report_paths: '**/test*.xml'
-          check_name: Test Report ${{ matrix.os }}:${{ matrix.python-version }} (${{ env.DEPLOYMENT }})
+          check_name: Test Report ${{ matrix.os }}:${{ matrix.python-version }} (${{ env.DEPLOYMENT }}-${{ inputs.rx-version }})
           detailed_summary: true
           include_passed: true
 
@@ -158,7 +168,7 @@ jobs:
         uses: irongut/CodeCoverageSummary@51cc3a756ddcd398d447c044c02cb6aa83fdae95 # v1.3.0
         if: >-
           always() &&
-          env.DEPLOYMENT == 'native' &&
+          inputs.upload-coverage &&
           env.MAIN_PYTHON_VERSION == matrix.python-version
         with:
           filename: coverage.xml
@@ -174,14 +184,14 @@ jobs:
       - name: "Write coverage to Job Summary"
         if: >-
           always() &&
-          env.DEPLOYMENT == 'native' &&
+          inputs.upload-coverage &&
           env.MAIN_PYTHON_VERSION == matrix.python-version
         run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
 
       - name: "Comment coverage on PR"
         if: >-
           always() &&
-          env.DEPLOYMENT == 'native' &&
+          inputs.upload-coverage &&
           env.MAIN_PYTHON_VERSION == matrix.python-version &&
           github.event_name == 'pull_request'
         uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
@@ -192,7 +202,7 @@ jobs:
 
       - name: "Upload coverage results"
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: ${{ env.DEPLOYMENT == 'native' && env.MAIN_PYTHON_VERSION == matrix.python-version }}
+        if: ${{ inputs.upload-coverage && env.MAIN_PYTHON_VERSION == matrix.python-version }}
         with:
           name: coverage-tests-${{ matrix.os }}
           path: .cov
@@ -200,7 +210,7 @@ jobs:
 
       - name: "Upload coverage results (as .coverage)"
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: ${{ env.DEPLOYMENT == 'native' && env.MAIN_PYTHON_VERSION == matrix.python-version }}
+        if: ${{ inputs.upload-coverage && env.MAIN_PYTHON_VERSION == matrix.python-version }}
         with:
           name: coverage-file-tests-${{ matrix.os }}
           path: .coverage
