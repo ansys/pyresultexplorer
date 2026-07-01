@@ -122,6 +122,24 @@ jobs:
       deployment: native
       update-snapshots: ${{ github.event_name == 'workflow_dispatch' && inputs.update-snapshots || false }}
       python-versions: ${{ github.event_name == 'pull_request' && '["3.12"]' || '["3.11", "3.12", "3.13", "3.14"]' }}
+      upload-coverage: true
+    secrets:
+      PYANSYS_CI_BOT_TOKEN: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+      LICENSE_SERVER: ${{ secrets.LICENSE_SERVER }}
+
+  backward-compatibility-tests:
+    strategy:
+      matrix:
+        rx-version: ['v2026.7.0']
+      fail-fast: false
+    uses: ./.github/workflows/tests.yml
+    permissions:
+      contents: read
+    with:
+      deployment: native
+      update-snapshots: false
+      python-versions: '["3.12"]'
+      rx-version: ${{ matrix.rx-version }}
     secrets:
       PYANSYS_CI_BOT_TOKEN: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
       LICENSE_SERVER: ${{ secrets.LICENSE_SERVER }}
