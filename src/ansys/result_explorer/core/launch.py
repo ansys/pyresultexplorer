@@ -212,9 +212,31 @@ def _find_free_port(start_port: int = 5100) -> int:
 
 
 def _wait_for_server(
-    url: str, timeout: float = 30.0, poll_interval: float = 0.2, verify_ssl: bool = False
+    url: str,
+    timeout: float = 30.0,
+    poll_interval: float = 0.2,
+    verify_ssl: bool | str = False,
 ) -> bool:
-    """Wait for the server to be ready to accept connections."""
+    """Wait for the server to be ready to accept connections.
+
+    Parameters
+    ----------
+    url : str
+        The URL to wait for.
+    timeout : float, optional
+        Maximum time to wait in seconds. Default is 30.0.
+    poll_interval : float, optional
+        Time between checks in seconds. Default is 0.2.
+    verify_ssl : bool or str, optional
+        SSL verification. Can be False (no verification), True (default CA),
+        or a path to a CA certificate file. Default is False.
+
+    Returns
+    -------
+    bool
+        True if server became ready, False if timeout occurred.
+
+    """
     start_time = time.time()
     while time.time() - start_time < timeout:
         try:
@@ -270,9 +292,9 @@ class ServerLaunchConfig:
     grpc_port : int, optional
         gRPC server port. Default is 50000.
     ssl : bool, optional
-        Whether to enable SSL. Default is False (TODO: change for production).
+        Whether to enable SSL. Default is True.
     auth : bool, optional
-        Whether to enable authentication. Default is False (TODO: change for production).
+        Whether to enable authentication. Default is True.
     token : str, optional
         Authentication token/password. Only used if auth is enabled.
         If auth is True and token is None, a UUID token will be generated.
@@ -286,8 +308,8 @@ class ServerLaunchConfig:
 
     port: int | None = None
     grpc_port: int = DEFAULT_GRPC_PORT
-    ssl: bool = False
-    auth: bool = False
+    ssl: bool = True
+    auth: bool = True
     token: str | None = None
     num_threads: int | None = None
     log_level: str | None = None
@@ -401,7 +423,9 @@ class ResultExplorerServerProcess:
         protocol = "https" if self._config.ssl else "http"
         gateway_url = f"{protocol}://{DEFAULT_HOST}:{self._gateway_http_port}"
         log.debug(f"Waiting for gateway to be ready at {gateway_url}...")
-        if not _wait_for_server(gateway_url, timeout=30.0):
+        # Use CA certificate if available for SSL verification
+        verify_ssl = self._ca_cert_path if self._ca_cert_path else False
+        if not _wait_for_server(gateway_url, timeout=30.0, verify_ssl=verify_ssl):
             self.stop()
             raise RuntimeError(f"Gateway did not become ready within timeout at {gateway_url}")
         log.debug("Gateway is ready.")
@@ -419,7 +443,9 @@ class ResultExplorerServerProcess:
                 try:
                     shutdown_url = self.url + "/api/v1/shutdown"
                     log.debug(f"Sending shutdown request to {shutdown_url}")
-                    requests.put(shutdown_url, timeout=2, verify=False)
+                    # Use CA certificate if available for SSL verification
+                    verify_ssl = self._ca_cert_path if self._ca_cert_path else False
+                    requests.put(shutdown_url, timeout=2, verify=verify_ssl)
                     log.debug("Shutdown request sent, waiting for process to exit...")
                     try:
                         self._process.wait(timeout=5)
