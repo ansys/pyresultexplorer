@@ -872,7 +872,7 @@ def launch_result_explorer(
     retry_delay = 1.0
     for attempt in range(max_retries):
         try:
-            client.app_info()
+            _ = client.app_info
             log.info("Client connection verified.")
             break
         except Exception as e:

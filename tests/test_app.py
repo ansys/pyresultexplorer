@@ -28,7 +28,7 @@ log = logging.getLogger(__name__)
 
 def test_app(rx):
     # build info
-    app_info = rx.app_info()
+    app_info = rx.app_info
     assert app_info.version != ""
     assert app_info.commit_hash != ""
 
