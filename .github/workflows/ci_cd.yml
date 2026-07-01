@@ -107,6 +107,7 @@ jobs:
       deployment: docker
       update-snapshots: false
       python-versions: ${{ github.event_name == 'pull_request' && '["3.12"]' || '["3.11", "3.12", "3.13", "3.14"]' }}
+      rx-version: 'v2026.7.0' # revert to dev after first release of PyRX
     secrets:
       PYANSYS_CI_BOT_TOKEN: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
       PYANSYS_CI_BOT_USERNAME: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
@@ -122,9 +123,29 @@ jobs:
       deployment: native
       update-snapshots: ${{ github.event_name == 'workflow_dispatch' && inputs.update-snapshots || false }}
       python-versions: ${{ github.event_name == 'pull_request' && '["3.12"]' || '["3.11", "3.12", "3.13", "3.14"]' }}
+      upload-coverage: true
+      rx-version: 'v2026.7.0' # revert to dev after first release of PyRX
     secrets:
       PYANSYS_CI_BOT_TOKEN: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
       LICENSE_SERVER: ${{ secrets.LICENSE_SERVER }}
+  
+  # enable after first release of PyRX
+  # backward-compatibility-tests:
+  #   strategy:
+  #     matrix:
+  #       rx-version: ['v2026.7.0']
+  #     fail-fast: false
+  #   uses: ./.github/workflows/tests.yml
+  #   permissions:
+  #     contents: read
+  #   with:
+  #     deployment: native
+  #     update-snapshots: false
+  #     python-versions: '["3.12"]'
+  #     rx-version: ${{ matrix.rx-version }}
+  #   secrets:
+  #     PYANSYS_CI_BOT_TOKEN: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+  #     LICENSE_SERVER: ${{ secrets.LICENSE_SERVER }}
 
   doc-build:
     name: "Build documentation"
