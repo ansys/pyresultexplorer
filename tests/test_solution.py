@@ -20,7 +20,7 @@ from pathlib import Path
 import pytest
 
 from ansys.result_explorer.core import models
-from ansys.result_explorer.core.objects import ResultType, Solution
+from ansys.result_explorer.core.objects import ResultType, Solution, View
 
 log = logging.getLogger(__name__)
 
@@ -330,3 +330,29 @@ def test_solver_text_output_invalid_file(rst_solution: Solution):
 
     with pytest.raises(ValueError, match="not found"):
         sol.get_solver_out_content("nonexistent_file.out")
+
+
+def test_solution_views(cp_transient_solution: Solution):
+
+    sol = cp_transient_solution
+
+    assert sol.logs_view is not None
+    assert sol.mesh_view is not None
+    assert len(sol.plot_views) == len(
+        [v for v in sol.views if v.type == models.ViewType.VIEW_TYPE_PLOT]
+    )
+    assert len(sol.chart_views) == len(
+        [v for v in sol.views if v.type == models.ViewType.VIEW_TYPE_CHART]
+    )
+    assert isinstance(sol.contact_trackers_view, View)
+    assert isinstance(sol.contact_trackers_view, View)
+    assert isinstance(sol.logs_view, View)
+    assert sol.mesh_view.options is not None
+
+
+def test_solution_warnings(cp_transient_solution: Solution):
+
+    sol = cp_transient_solution
+
+    assert len(sol.errors) == 0
+    assert len(sol.warnings) > 0

@@ -149,11 +149,7 @@ def test_new_chart_added_to_views(multiple_connections_solution: Solution):
     existing_view_ids = {v.id for v in sol.views}
     chart_def = sol.create_chart(chart_def).definition
 
-    new_chart_views = [
-        v
-        for v in sol.views
-        if v.id not in existing_view_ids and v.type == models.ViewType.VIEW_TYPE_CHART
-    ]
+    new_chart_views = [v for v in sol.chart_views if v.id not in existing_view_ids]
     view = next((v for v in new_chart_views if v.name == chart_def.name), None)
     assert view is not None
 

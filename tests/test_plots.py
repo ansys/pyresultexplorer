@@ -172,11 +172,7 @@ def test_new_plot_added_to_views(multiple_connections_solution: Solution):
     existing_view_ids = {v.id for v in sol.views}
     plot_def = sol.create_plot(plot_def).definition
 
-    new_plot_views = [
-        v
-        for v in sol.views
-        if v.id not in existing_view_ids and v.type == models.ViewType.VIEW_TYPE_PLOT
-    ]
+    new_plot_views = [v for v in sol.plot_views if v.id not in existing_view_ids]
     view = next((v for v in new_plot_views if v.name == plot_def.name), None)
     assert view is not None
 
