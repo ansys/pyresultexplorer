@@ -60,7 +60,7 @@ class ChartResult:
 
 @dataclass
 class ChartDefinition:
-    """Defines a chart, including its results and display options."""
+    """Defines a chart."""
 
     name: str
     supports_monitoring: bool | None = None
