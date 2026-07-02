@@ -35,7 +35,9 @@ from .logger import log
 from .objects import (
     BaseChartDisplayOptions,
     CameraPosition,
+    ChartDefinition,
     ChartDisplayOptions,
+    ChartResult,
     ChartView,
     ChartViewportMetadata,
     Component,
@@ -45,6 +47,7 @@ from .objects import (
     ConvergenceTrackersViewportMetadata,
     DisplayOptions,
     Field,
+    Filter,
     Location,
     LogsDisplayOptions,
     LogsViewportMetadata,

@@ -20,7 +20,7 @@ from pathlib import Path
 import pytest
 
 from ansys.result_explorer.core import models
-from ansys.result_explorer.core.objects import ResultType, Solution, View
+from ansys.result_explorer.core.objects import ChartDefinition, ResultType, Solution, View
 
 log = logging.getLogger(__name__)
 
@@ -175,7 +175,7 @@ def test_solution_properties(rst_solution: Solution):
 
     # Test charts property
     assert len(sol.charts) > 0
-    assert isinstance(sol.charts[0], models.ChartDefinition)
+    assert isinstance(sol.charts[0], ChartDefinition)
 
     # Test result_provider property
     result_provider = sol.result_provider

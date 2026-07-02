@@ -18,6 +18,7 @@
 
 from .base import BaseEntity, NamedBaseEntity
 from .camera_position import CameraPosition
+from .chart_definition import ChartDefinition, ChartResult, Filter
 from .plot_definition import (
     Component,
     Field,
@@ -83,4 +84,9 @@ __all__ = [
     "ShellPosition",
     "ResultFieldName",
     "Location",
+    "Field",
+    "Component",
+    "ChartDefinition",
+    "ChartResult",
+    "Filter",
 ]
