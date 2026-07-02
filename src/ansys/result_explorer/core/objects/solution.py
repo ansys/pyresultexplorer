@@ -479,6 +479,44 @@ class Solution(NamedBaseEntity[models.Solution]):
                 views.append(View(v, self._client, parent=self))
         return views
 
+    @property
+    def mesh_view(self) -> MeshView:
+        """Get the mesh view for this solution."""
+        mesh_view = next((v for v in self.views if isinstance(v, MeshView)), None)
+        if mesh_view is None:
+            raise RuntimeError(f"No mesh view found in solution '{self.name}'")
+        return mesh_view
+
+    @property
+    def plot_views(self) -> list[PlotView]:
+        """Get all plot views for this solution."""
+        return [v for v in self.views if isinstance(v, PlotView)]
+
+    @property
+    def chart_views(self) -> list[ChartView]:
+        """Get all chart views for this solution."""
+        return [v for v in self.views if isinstance(v, ChartView)]
+
+    @property
+    def logs_view(self) -> View | None:
+        """Get the log view for this solution, if available."""
+        return next((v for v in self.views if v.type == models.ViewType.VIEW_TYPE_LOGS), None)
+
+    @property
+    def contact_trackers_view(self) -> View | None:
+        """Get the contact trackers view for this solution, if available."""
+        return next(
+            (v for v in self.views if v.type == models.ViewType.VIEW_TYPE_CONTACT_TRACKERS), None
+        )
+
+    @property
+    def convergence_trackers_view(self) -> View | None:
+        """Get the convergence trackers view for this solution, if available."""
+        return next(
+            (v for v in self.views if v.type == models.ViewType.VIEW_TYPE_CONVERGENCE_TRACKERS),
+            None,
+        )
+
     def __str__(self) -> str:
         """Return formatted string representation of the solution."""
         lines = [

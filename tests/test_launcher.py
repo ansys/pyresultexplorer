@@ -426,7 +426,7 @@ class TestServerLaunchIntegration:
 
     def test_server_process_lifecycle(self, skip_if_no_native_launch):
         """Test actual server startup, running status, and graceful shutdown."""
-        config = ServerLaunchConfig(num_threads=2, ssl=False)
+        config = ServerLaunchConfig(num_threads=2, ssl=False, auth=False)
         process = ResultExplorerServerProcess(config)
 
         # Server should not be running initially

@@ -280,7 +280,7 @@ def test_mesh_viewport_metadata(rx, multiple_connections_solution):
     rx.delete_workspace(workspace)
 
 
-@pytest.mark.flaky(reruns=3, reruns_delay=1)
+@pytest.mark.flaky(reruns=1, reruns_delay=1)
 def test_mesh_viewport_named_selection_visibility(
     rx, cp_transient_solution, snapshot, snapshot_settings
 ):
@@ -580,7 +580,7 @@ def test_contact_trackers_viewport_metadata(rx, cp_transient_solution):
 
 
 @pytest.mark.images
-@pytest.mark.flaky(reruns=3, reruns_delay=1)
+@pytest.mark.flaky(reruns=1, reruns_delay=1)
 def test_camera_position_snapshots(rx, multiple_connections_solution, snapshot, snapshot_settings):
     sol = multiple_connections_solution
 
@@ -624,15 +624,15 @@ def test_camera_position_snapshots(rx, multiple_connections_solution, snapshot, 
     rx.delete_workspace(workspace)
 
 
-@pytest.mark.images
-@pytest.mark.flaky(reruns=3, reruns_delay=1)
+# @pytest.mark.images
+@pytest.mark.flaky(reruns=1, reruns_delay=1)
 def test_result_display_options_snapshots(
     rx, cp_transient_solution, snapshot, snapshot_settings_with_legend
 ):
     """Test snapshot comparisons for result display option changes."""
     sol = cp_transient_solution
 
-    view = next((v for v in sol.views if "Displacement" in v.name), None)
+    view = next((v for v in sol.plot_views if "Displacement" in v.name), None)
     assert view is not None
 
     # Enable all time steps so set_id can be changed freely
@@ -641,9 +641,12 @@ def test_result_display_options_snapshots(
     first_tf = time_frequencies[0]
     last_tf = time_frequencies[-1]
 
-    view.definition.all_sets = True
-    view.definition.last_set = False
-    sol.update_plot(view.definition)
+    plot_def = view.definition
+    plot_def.all_sets = True
+    plot_def.last_set = False
+    view = sol.update_plot(plot_def)
+    assert view.definition.all_sets is True
+    assert view.definition.last_set is False
 
     workspace = rx.create_workspace("Test Result Display Options")
     viewport = workspace.assign_view(view=view, wait=True)
