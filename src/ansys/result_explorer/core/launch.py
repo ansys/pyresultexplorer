@@ -257,7 +257,7 @@ def _wait_for_server(
             r = requests.get(url, timeout=1, verify=verify_ssl)
             log.debug(f"Server responded with status code {r.status_code}")
             return True
-        except requests.RequestException:
+        except (requests.RequestException, OSError):
             log.debug(f"Server not ready yet at {url}, retrying in {poll_interval} seconds...")
             time.sleep(poll_interval)
     return False
