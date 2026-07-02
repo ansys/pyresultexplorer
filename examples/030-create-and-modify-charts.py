@@ -22,7 +22,7 @@ Create and Modify Charts
 
 This example demonstrates how to create and work with charts in Result Explorer:
 
-- **Chart creation** using the native Python ``ChartDefinition`` and ``ChartResult``
+- **Chart creation** using the ``ChartDefinition`` and ``ChartResult``
   objects to define result series with filters and field selections.
 - **Multi-result charts** combining equivalent stress, temperature, and contact
   pressure results in a single chart.
@@ -31,29 +31,24 @@ This example demonstrates how to create and work with charts in Result Explorer:
 - **Chart updates** to add or modify result series in an existing chart.
 - **Snapshot capture** to save chart visualizations as images.
 
-This example uses a transient analysis with multiple time steps, which is
-well-suited for charts that plot results over time. Print the solution object
-to inspect available results and configurable chart types.
 """
 
 # %%
 # Import the Result Explorer dependencies.
-from ansys.result_explorer.core import launch_result_explorer
+from ansys.result_explorer.core import (
+    ChartDefinition,
+    ChartResult,
+    Field,
+    Filter,
+    ResultFieldName,
+    ResultType,
+    ShellPosition,
+    launch_result_explorer,
+)
 from ansys.result_explorer.core.examples import (
     ExampleKeys,
     get_example_file,
     get_example_snapshot_settings,
-)
-from ansys.result_explorer.core.objects.chart_definition import (
-    ChartDefinition,
-    ChartResult,
-    Filter,
-)
-from ansys.result_explorer.core.objects.plot_definition import (
-    Field,
-    ResultFieldName,
-    ResultType,
-    ShellPosition,
 )
 
 # %%
@@ -66,7 +61,7 @@ rx = launch_result_explorer()
 # Load Example Data
 # -----------------
 # Create a solution from a transient analysis result file with multiple
-# time steps — ideal for charts that plot how results evolve over time.
+# time steps.
 # Print the solution to inspect available results and configurable chart types.
 rst_path = get_example_file(ExampleKeys.RST_CP_TRANSIENT)
 

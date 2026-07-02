@@ -123,9 +123,9 @@ class _PlaywrightManager:
         with self._lock:
             if self._playwright is not None:
                 self._ref_count -= 1
-                log.info(f"Playwright ref count: {self._ref_count}")
+                log.debug(f"Playwright ref count: {self._ref_count}")
                 if self._ref_count <= 0 and not self._is_external:
-                    log.info("Stopping Playwright instance (singleton)")
+                    log.info("Stopping Playwright instance.")
                     self._playwright.stop()
                     self._playwright = None
                     self._ref_count = 0
@@ -194,6 +194,20 @@ def _find_result_explorer() -> Path:
         f"'{RX_SERVER_ENV_VAR}' (points to server directory) or "
         f"'{RX_DESKTOP_ENV_VAR}' (points to desktop app root) environment variable."
     )
+
+
+def _get_ca_cert_path() -> Path:
+    """Get the known CA certificate path for the local server."""
+    home = Path.home()
+    if sys.platform == "win32":
+        base_path = home / "AppData" / "Roaming"
+    elif sys.platform == "linux":
+        base_path = home / ".local" / "share"
+    elif sys.platform == "darwin":
+        base_path = home / "Library" / "Application Support"
+    else:
+        raise RuntimeError(f"Unsupported platform: {sys.platform}.")
+    return base_path / "Ansys" / "result-explorer" / "server" / "certificates" / "ca.crt"
 
 
 def _find_free_port(start_port: int = 5100) -> int:
@@ -365,7 +379,7 @@ class ResultExplorerServerProcess:
         self._grpc_port = config.grpc_port
         self._gateway_http_port = None
         self._gateway_grpc_port = None
-        self._ca_cert_path = None
+        self._ca_cert_path = str(_get_ca_cert_path()) if config.ssl else None
 
     def start(self) -> None:
         """Start the Result Explorer server.
@@ -410,8 +424,9 @@ class ResultExplorerServerProcess:
 
         # Wait for server to be ready
         server_url = self.url + "/api/v1"
+        verify_ssl = self._ca_cert_path or False
         log.info(f"Waiting for server to be ready at {server_url}...")
-        if not _wait_for_server(server_url):
+        if not _wait_for_server(server_url, verify_ssl=verify_ssl):
             self.stop()
             raise RuntimeError(f"Server did not become ready within timeout at {server_url}")
         log.info("Server is ready.")
@@ -423,8 +438,6 @@ class ResultExplorerServerProcess:
         protocol = "https" if self._config.ssl else "http"
         gateway_url = f"{protocol}://{DEFAULT_HOST}:{self._gateway_http_port}"
         log.debug(f"Waiting for gateway to be ready at {gateway_url}...")
-        # Use CA certificate if available for SSL verification
-        verify_ssl = self._ca_cert_path if self._ca_cert_path else False
         if not _wait_for_server(gateway_url, timeout=30.0, verify_ssl=verify_ssl):
             self.stop()
             raise RuntimeError(f"Gateway did not become ready within timeout at {gateway_url}")
@@ -443,8 +456,7 @@ class ResultExplorerServerProcess:
                 try:
                     shutdown_url = self.url + "/api/v1/shutdown"
                     log.debug(f"Sending shutdown request to {shutdown_url}")
-                    # Use CA certificate if available for SSL verification
-                    verify_ssl = self._ca_cert_path if self._ca_cert_path else False
+                    verify_ssl = self._ca_cert_path or False
                     requests.put(shutdown_url, timeout=2, verify=verify_ssl)
                     log.debug("Shutdown request sent, waiting for process to exit...")
                     try:
@@ -497,15 +509,14 @@ class ResultExplorerServerProcess:
         """Query the /api/v1 endpoint to get gateway port information."""
         api_url = self.url + "/api/v1"
         try:
-            response = requests.get(api_url, timeout=5, verify=False)
+            response = requests.get(api_url, timeout=5, verify=self._ca_cert_path or False)
             response.raise_for_status()
             data = response.json()
 
-            # Extract gateway info from response
+            # Extract gateway port info from response
             gateway_info = data.get("gateway_info", {})
             self._gateway_http_port = gateway_info.get("http_port")
             self._gateway_grpc_port = gateway_info.get("grpc_port")
-            self._ca_cert_path = gateway_info.get("ca_cert_path")
 
             if self._gateway_http_port is None or self._gateway_grpc_port is None:
                 raise RuntimeError("Missing gateway_info in server response")
