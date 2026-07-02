@@ -268,10 +268,16 @@ class TestServerLaunchConfig:
     """Tests for ServerLaunchConfig dataclass."""
 
     def test_build_args_no_ssl(self):
-        """Should include --no-ssl when ssl is False."""
-        config = ServerLaunchConfig(ssl=False)
+        """Should include --no-ssl when ssl is False and auth is False."""
+        config = ServerLaunchConfig(ssl=False, auth=False)
         args = config._build_args()
         assert "--no-ssl" in args
+
+    def test_build_args_ssl_with_auth(self):
+        """Should not include --no-ssl when ssl is False and auth is True."""
+        config = ServerLaunchConfig(ssl=False, auth=True)
+        args = config._build_args()
+        assert "--no-ssl" not in args
 
     def test_build_args_no_auth(self):
         """Should include --no-auth when auth is False."""
