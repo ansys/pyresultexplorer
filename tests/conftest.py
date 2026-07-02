@@ -172,7 +172,7 @@ def configure_playwright_singleton(request):
 
 @pytest.fixture(scope="session")
 def rx_server():
-    server_config = ServerLaunchConfig(num_threads=2)
+    server_config = ServerLaunchConfig(num_threads=2, ssl=False, auth=False)
 
     server_process = ResultExplorerServerProcess(server_config)
     server_process.start()
