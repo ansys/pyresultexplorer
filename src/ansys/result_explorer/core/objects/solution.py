@@ -22,6 +22,7 @@ from google.protobuf.json_format import MessageToDict, ParseDict
 
 from .. import models
 from .base import NamedBaseEntity, SubEntity
+from .chart_definition import ChartDefinition, chart_definition_to_proto, proto_to_chart_definition
 from .plot_definition import PlotDefinition, plot_definition_to_proto, proto_to_plot_definition
 
 
@@ -58,16 +59,16 @@ class ChartView(View):
     """Represents a chart view in a solution."""
 
     @property
-    def definition(self) -> models.ChartDefinition:
+    def definition(self) -> ChartDefinition:
         """Chart definition associated with this view."""
         chart_def_id = self._pb.id
-        chart_def = next((c for c in self.solution.charts if c.id == chart_def_id), None)
-        if chart_def is None:
+        proto_def = next((c for c in self.solution._pb.charts if c.id == chart_def_id), None)
+        if proto_def is None:
             raise RuntimeError(
                 f"Chart definition with ID {chart_def_id} "
                 f"not found in solution {self.solution.name}"
             )
-        return chart_def
+        return proto_to_chart_definition(proto_def)
 
 
 class MeshView(View):
@@ -145,23 +146,19 @@ class Solution(NamedBaseEntity[models.Solution]):
         )
         self._get()
 
-    def create_chart(self, definition: models.ChartDefinitionCreate) -> ChartView:
+    def create_chart(self, definition: ChartDefinition) -> ChartView:
         """Create a chart based on a chart definition."""
+        pb_def = chart_definition_to_proto(definition, models.ChartDefinitionCreate)
         pb_chart = self._client._solution_stub.CreateChartDefinition(
-            models.CreateChartDefinitionRequest(solution_id=self.id, chart_definition=definition)
+            models.CreateChartDefinitionRequest(solution_id=self.id, chart_definition=pb_def)
         )
         self._get()
         return self._get_chart_view(pb_chart.id)
 
-    def update_chart(
-        self, chart: models.ChartDefinitionCreate | models.ChartDefinition | ChartView
-    ) -> ChartView:
+    def update_chart(self, chart: ChartDefinition | ChartView) -> ChartView:
         """Update a chart based on a chart definition."""
-        chart_def = chart
-        if isinstance(chart, models.ChartDefinition):
-            chart_def = _clone_msg_to_compatible_type(chart, models.ChartDefinitionCreate)
-        elif isinstance(chart, ChartView):
-            chart_def = chart.definition
+        py_def = chart.definition if isinstance(chart, ChartView) else chart
+        chart_def = chart_definition_to_proto(py_def, models.ChartDefinitionCreate)
 
         pb_chart = self._client._solution_stub.UpdateChartDefinition(
             models.UpdateChartDefinitionRequest(
@@ -171,12 +168,12 @@ class Solution(NamedBaseEntity[models.Solution]):
         self._get()
         return self._get_chart_view(pb_chart.id)
 
-    def delete_chart(self, id: str | ChartView | models.ChartDefinition) -> None:
+    def delete_chart(self, id: str | ChartView | ChartDefinition) -> None:
         """Delete a chart by ID."""
         chart_id = id
         if isinstance(id, ChartView):
             chart_id = id.definition.id
-        elif isinstance(id, models.ChartDefinition):
+        elif isinstance(id, ChartDefinition):
             chart_id = id.id
 
         self._client._solution_stub.DeleteChartDefinition(
@@ -417,9 +414,9 @@ class Solution(NamedBaseEntity[models.Solution]):
         return list(self._pb.configurable_charts)
 
     @property
-    def charts(self) -> list[models.ChartDefinition]:
+    def charts(self) -> list[ChartDefinition]:
         """Chart definitions."""
-        return list(self._pb.charts)
+        return [proto_to_chart_definition(c) for c in self._pb.charts]
 
     @property
     def bodies(self) -> list[models.Body]:
