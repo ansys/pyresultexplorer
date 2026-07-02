@@ -18,7 +18,8 @@ import logging
 
 import pytest
 
-from ansys.result_explorer.core import models
+from ansys.result_explorer.core import Client, models
+from ansys.result_explorer.core.exceptions import ResultExplorerError
 from ansys.result_explorer.core.objects import Solution
 from ansys.result_explorer.core.objects.plot_definition import (
     Component,
@@ -166,7 +167,6 @@ def test_new_plot_added_to_views(multiple_connections_solution: Solution):
         last_set=True,
         all_sets=False,
         on_skin=True,
-        shell_position=ShellPosition.middle,
         fields=[Field(ResultFieldName.displacement, [Component.X, Component.Y, Component.Z])],
     )
     existing_view_ids = {v.id for v in sol.views}
@@ -183,6 +183,37 @@ def test_new_plot_added_to_views(multiple_connections_solution: Solution):
     view = next((v for v in sol.views if v.id == view.id), None)
     assert view is not None
     assert view.name == "Renamed plot"
+
+
+def test_new_plot_no_components(rx: Client, cp_transient_solution: Solution):
+    """Cover known issue with "total" fields that have no components."""
+
+    sol = cp_transient_solution
+
+    plot_def = PlotDefinition(
+        result_type=ResultType.displacement,
+        location=Location.nodal,
+        name="New plot",
+        last_set=True,
+        all_sets=False,
+        on_skin=True,
+        fields=[Field(ResultFieldName.total_displacement, components=None)],
+    )
+
+    with pytest.raises(ResultExplorerError, match="known issue"):
+        _ = sol.create_plot(plot_def)
+
+    # once the issue will be fixed, we can uncomment the following lines
+    # # assign view to a workspace and make sure it renders without error
+    # workspace = rx.create_workspace("New plot workspace")
+    # viewport = workspace.assign_view(view=view, wait=True)
+
+    # meta = viewport.metadata
+    # assert isinstance(meta, PlotViewportMetadata)
+    # assert meta.active_result.max == pytest.approx(1.187e-4, rel=1e-3)
+    # assert meta.active_result.min == 0.0
+
+    # rx.delete_workspace(workspace)
 
 
 def test_plot_using_python_plot_definition(multiple_connections_solution: Solution):

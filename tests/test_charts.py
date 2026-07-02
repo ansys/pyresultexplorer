@@ -19,6 +19,7 @@ import logging
 import pytest
 
 from ansys.result_explorer.core import models
+from ansys.result_explorer.core.exceptions import ResultExplorerError
 from ansys.result_explorer.core.objects import Solution
 from ansys.result_explorer.core.objects.chart_definition import (
     ChartDefinition,
@@ -174,6 +175,37 @@ def test_new_chart_added_to_views(multiple_connections_solution: Solution):
     view = next((v for v in sol.views if v.id == view.id), None)
     assert view is not None
     assert view.name == "Renamed chart"
+
+
+def test_chart_no_components(rx, cp_transient_solution: Solution):
+    """Cover known issue with "total" fields that have no components."""
+
+    sol = cp_transient_solution
+
+    chart_def = ChartDefinition(
+        name="Displacement & Stress Over Time",
+        all_sets=True,
+        results=[
+            ChartResult(
+                result_type=ResultType.displacement,
+                name="Max Total Displacement",
+                location="Nodal",
+                fields=[Field(ResultFieldName.total_displacement)],
+                filters=[Filter.max],
+            ),
+            ChartResult(
+                result_type=ResultType.stress,
+                name="Max Von Mises Stress",
+                location="Nodal",
+                fields=[Field(ResultFieldName.equivalent_von_mises_stress)],
+                filters=[Filter.max],
+                shell_position=ShellPosition.top,
+            ),
+        ],
+    )
+
+    with pytest.raises(ResultExplorerError, match="known issue"):
+        _ = sol.create_chart(chart_def)
 
 
 class TestChartDefinitionConversion:

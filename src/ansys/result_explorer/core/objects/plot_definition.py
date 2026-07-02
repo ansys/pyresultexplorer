@@ -21,6 +21,7 @@ from enum import Enum
 from typing import TypeVar
 
 from ansys.result_explorer.core import models
+from ansys.result_explorer.core.exceptions import ResultExplorerError
 
 _ProtoPlot = TypeVar("_ProtoPlot", models.PlotDefinition, models.PlotDefinitionCreate)
 
@@ -230,6 +231,11 @@ def plot_definition_to_proto(
         for field in plot_definition.fields:
             proto_field = proto_plot.fields.add()
             proto_field.name = field.name.value
+            if field.name.name.startswith("total_"):
+                raise ResultExplorerError(
+                    "PyResultExplorer is affected by a known issue when "
+                    "creating or modifying plots with total result fields."
+                )
             if field.components is not None:
                 proto_field.components.extend([c.value for c in field.components])
     if plot_definition.average_by_entity is not None:
