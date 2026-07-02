@@ -20,7 +20,7 @@ from pathlib import Path
 import pytest
 
 from ansys.result_explorer.core import models
-from ansys.result_explorer.core.objects import Solution
+from ansys.result_explorer.core.objects import ResultType, Solution
 
 log = logging.getLogger(__name__)
 
@@ -127,7 +127,7 @@ def test_solution_properties(rst_solution: Solution):
 
     # find stress plot
     stress_plot_def = next(
-        (p for p in sol.plots if p.result_type == models.ResultType.RESULT_TYPE_STRESS),
+        (p for p in sol.plots if p.result_type == ResultType.stress),
         None,
     )
     assert stress_plot_def is not None

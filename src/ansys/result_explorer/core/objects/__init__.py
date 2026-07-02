@@ -18,6 +18,15 @@
 
 from .base import BaseEntity, NamedBaseEntity
 from .camera_position import CameraPosition
+from .plot_definition import (
+    Component,
+    Field,
+    Location,
+    PlotDefinition,
+    ResultFieldName,
+    ResultType,
+    ShellPosition,
+)
 from .solution import ChartView, MeshView, PlotView, Solution, View
 from .viewport import (
     BaseChartDisplayOptions,
@@ -69,4 +78,9 @@ __all__ = [
     "Viewport",
     "Solution",
     "Workspace",
+    "PlotDefinition",
+    "ResultType",
+    "ShellPosition",
+    "ResultFieldName",
+    "Location",
 ]

@@ -34,7 +34,16 @@ timesteps for visualization.
 
 # %%
 # Import the Result Explorer dependencies.
-from ansys.result_explorer.core import launch_result_explorer, models
+from ansys.result_explorer.core import (
+    Component,
+    Field,
+    Location,
+    PlotDefinition,
+    ResultFieldName,
+    ResultType,
+    launch_result_explorer,
+    models,
+)
 from ansys.result_explorer.core.examples import (
     ExampleKeys,
     get_example_file,
@@ -108,11 +117,16 @@ print(f"Created named selections: {ns_1.name}, {ns_2.name}")
 # Create displacement and velocity plots using the named selections.
 existing_view_ids = {v.id for v in sol.views}
 plot_1 = sol.create_plot(
-    models.PlotDefinitionCreate(
+    PlotDefinition(
         name=f"Displacement - {ns_1.name} - set {set_id_1}",
-        result_type=models.ResultType.RESULT_TYPE_DISPLACEMENT,
-        location="Nodal",
-        fields=[models.Field(name="displacement", components=["X", "Y", "Z"])],
+        result_type=ResultType.displacement,
+        location=Location.nodal,
+        fields=[
+            Field(
+                name=ResultFieldName.displacement,
+                components=[Component.X, Component.Y, Component.Z],
+            )
+        ],
         named_selection_id=ns_1.id,
         set_ids=[set_id_1],
         all_sets=False,
@@ -122,11 +136,13 @@ plot_1 = sol.create_plot(
 
 existing_view_ids = {v.id for v in sol.views}
 plot_2 = sol.create_plot(
-    models.PlotDefinitionCreate(
+    PlotDefinition(
         name=f"Velocity - {ns_2.name} - set {set_id_2}",
-        result_type=models.ResultType.RESULT_TYPE_VELOCITY,
-        location="Nodal",
-        fields=[models.Field(name="velocity", components=["X", "Y", "Z"])],
+        result_type=ResultType.velocity,
+        location=Location.nodal,
+        fields=[
+            Field(name=ResultFieldName.velocity, components=[Component.X, Component.Y, Component.Z])
+        ],
         named_selection_id=ns_2.id,
         set_ids=[set_id_2],
         all_sets=False,

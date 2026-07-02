@@ -22,6 +22,7 @@ from google.protobuf.json_format import MessageToDict, ParseDict
 
 from .. import models
 from .base import NamedBaseEntity, SubEntity
+from .plot_definition import PlotDefinition, plot_definition_to_proto, proto_to_plot_definition
 
 
 class View(SubEntity[models.View, "Solution"]):
@@ -42,15 +43,15 @@ class PlotView(View):
     """Represents a plot view in a solution."""
 
     @property
-    def definition(self) -> models.PlotDefinition:
+    def definition(self) -> PlotDefinition:
         """Plot definition associated with this view."""
         plot_def_id = self._pb.id
-        plot_def = next((p for p in self.solution.plots if p.id == plot_def_id), None)
-        if plot_def is None:
+        proto_def = next((p for p in self.solution._pb.plots if p.id == plot_def_id), None)
+        if proto_def is None:
             raise RuntimeError(
                 f"Plot definition with ID {plot_def_id} not found in solution {self.solution.name}"
             )
-        return plot_def
+        return proto_to_plot_definition(proto_def)
 
 
 class ChartView(View):
@@ -109,23 +110,19 @@ class Solution(NamedBaseEntity[models.Solution]):
             f"No ChartView found for chart definition ID {chart_def_id} in solution {self.name}"
         )
 
-    def create_plot(self, definition: models.PlotDefinitionCreate) -> PlotView:
+    def create_plot(self, definition: PlotDefinition) -> PlotView:
         """Create a plot based on a plot definition."""
+        pb_def = plot_definition_to_proto(definition, models.PlotDefinitionCreate)
         pb_plot = self._client._solution_stub.CreatePlotDefinition(
-            models.CreatePlotDefinitionRequest(solution_id=self.id, plot_definition=definition)
+            models.CreatePlotDefinitionRequest(solution_id=self.id, plot_definition=pb_def)
         )
         self._get()
         return self._get_plot_view(pb_plot.id)
 
-    def update_plot(
-        self, plot: models.PlotDefinitionCreate | models.PlotDefinition | PlotView
-    ) -> PlotView:
+    def update_plot(self, plot: PlotDefinition | PlotView) -> PlotView:
         """Update a plot based on a plot definition."""
-        plot_def = plot
-        if isinstance(plot, models.PlotDefinition):
-            plot_def = _clone_msg_to_compatible_type(plot, models.PlotDefinitionCreate)
-        elif isinstance(plot, PlotView):
-            plot_def = plot.definition
+        py_def = plot.definition if isinstance(plot, PlotView) else plot
+        plot_def = plot_definition_to_proto(py_def, models.PlotDefinitionCreate)
 
         pb_plot = self._client._solution_stub.UpdatePlotDefinition(
             models.UpdatePlotDefinitionRequest(
@@ -135,12 +132,12 @@ class Solution(NamedBaseEntity[models.Solution]):
         self._get()
         return self._get_plot_view(pb_plot.id)
 
-    def delete_plot(self, id: str | PlotView | models.PlotDefinition) -> None:
+    def delete_plot(self, id: str | PlotView | PlotDefinition) -> None:
         """Delete a plot by ID."""
         plot_id = id
         if isinstance(id, PlotView):
             plot_id = id.definition.id
-        elif isinstance(id, models.PlotDefinition):
+        elif isinstance(id, PlotDefinition):
             plot_id = id.id
 
         self._client._solution_stub.DeletePlotDefinition(
@@ -406,9 +403,9 @@ class Solution(NamedBaseEntity[models.Solution]):
         return list(self._pb.configurable_plots)
 
     @property
-    def plots(self) -> list[models.PlotDefinition]:
+    def plots(self) -> list[PlotDefinition]:
         """Plot definitions."""
-        return list(self._pb.plots)
+        return [proto_to_plot_definition(p) for p in self._pb.plots]
 
     @property
     def configurable_charts(self) -> list[models.ConfigurableChart]:

@@ -17,10 +17,20 @@
 import logging
 
 import pytest
-from google.protobuf.json_format import MessageToDict
 
 from ansys.result_explorer.core import models
 from ansys.result_explorer.core.objects import Solution
+from ansys.result_explorer.core.objects.plot_definition import (
+    Component,
+    Field,
+    Location,
+    PlotDefinition,
+    ResultFieldName,
+    ResultType,
+    ShellPosition,
+    plot_definition_to_proto,
+    proto_to_plot_definition,
+)
 
 log = logging.getLogger(__name__)
 
@@ -31,17 +41,17 @@ def test_plot(multiple_connections_solution: Solution):
     sol = multiple_connections_solution
 
     # create a new plot
-    plot_def = models.PlotDefinitionCreate(
-        name="My stress plot",
-        result_type=models.ResultType.RESULT_TYPE_STRESS,
+    plot_def = PlotDefinition(
+        result_type=ResultType.stress,
         location="Nodal",
+        name="My stress plot",
         last_set=False,
         all_sets=True,
         on_skin=True,
-        shell_position=models.ShellPosition.SHELL_POSITION_MIDDLE,
+        shell_position=ShellPosition.middle,
         fields=[
-            models.Field(name="equivalent_von_mises_stress"),
-            models.Field(name="stress_tensor", components=["XX", "ZZ"]),
+            Field(ResultFieldName.equivalent_von_mises_stress),
+            Field(ResultFieldName.stress_tensor, [Component.XX, Component.ZZ]),
         ],
     )
 
@@ -50,10 +60,10 @@ def test_plot(multiple_connections_solution: Solution):
 
     assert plot_def.id is not None
     assert plot_def.name == "My stress plot"
-    assert plot_def.result_type == models.ResultType.RESULT_TYPE_STRESS
+    assert plot_def.result_type == ResultType.stress
     assert plot_def.on_skin is True
     assert plot_def.supports_monitoring is True
-    assert plot_def.shell_position == models.ShellPosition.SHELL_POSITION_MIDDLE
+    assert plot_def.shell_position == ShellPosition.middle
     assert plot_def.all_sets is True
     assert plot_def.last_set is False
 
@@ -95,13 +105,13 @@ def test_plot_view_no_definition(multiple_connections_solution: Solution):
     sol = multiple_connections_solution
 
     # create a new plot
-    plot_def = models.PlotDefinitionCreate(
+    plot_def = PlotDefinition(
+        result_type=ResultType.stress,
+        location=Location.nodal,
         name="My stress plot",
-        result_type=models.ResultType.RESULT_TYPE_STRESS,
-        location="Nodal",
-        shell_position=models.ShellPosition.SHELL_POSITION_MIDDLE,
+        shell_position=ShellPosition.middle,
         fields=[
-            models.Field(name="equivalent_von_mises_stress"),
+            Field(ResultFieldName.equivalent_von_mises_stress),
         ],
     )
 
@@ -127,24 +137,21 @@ def test_plot_with_default_result_type(multiple_connections_solution: Solution):
 
     sol = multiple_connections_solution
 
-    plot_def = models.PlotDefinitionCreate(
-        name="test plot",
-        result_type=models.ResultType.RESULT_TYPE_DISPLACEMENT,
+    plot_def = PlotDefinition(
+        result_type=ResultType.displacement,
         location="Nodal",
+        name="test plot",
         last_set=True,
         all_sets=False,
         on_skin=True,
-        shell_position=models.ShellPosition.SHELL_POSITION_MIDDLE,
-        fields=[models.Field(name="displacement")],
+        shell_position=ShellPosition.middle,
+        fields=[Field(ResultFieldName.displacement)],
     )
-
-    serialized_plot_def = MessageToDict(plot_def, preserving_proto_field_name=True)
-    assert "result_type" not in serialized_plot_def
 
     plot_def = sol.create_plot(plot_def).definition
 
     assert plot_def.id is not None
-    assert plot_def.result_type == models.ResultType.RESULT_TYPE_DISPLACEMENT
+    assert plot_def.result_type == ResultType.displacement
 
 
 def test_new_plot_added_to_views(multiple_connections_solution: Solution):
@@ -152,15 +159,15 @@ def test_new_plot_added_to_views(multiple_connections_solution: Solution):
 
     sol = multiple_connections_solution
 
-    plot_def = models.PlotDefinitionCreate(
+    plot_def = PlotDefinition(
+        result_type=ResultType.displacement,
+        location=Location.nodal,
         name="New plot",
-        result_type=models.ResultType.RESULT_TYPE_DISPLACEMENT,
-        location="Nodal",
         last_set=True,
         all_sets=False,
         on_skin=True,
-        shell_position=models.ShellPosition.SHELL_POSITION_MIDDLE,
-        fields=[models.Field(name="displacement", components=["X", "Y", "Z"])],
+        shell_position=ShellPosition.middle,
+        fields=[Field(ResultFieldName.displacement, [Component.X, Component.Y, Component.Z])],
     )
     existing_view_ids = {v.id for v in sol.views}
     plot_def = sol.create_plot(plot_def).definition
@@ -180,3 +187,233 @@ def test_new_plot_added_to_views(multiple_connections_solution: Solution):
     view = next((v for v in sol.views if v.id == view.id), None)
     assert view is not None
     assert view.name == "Renamed plot"
+
+
+def test_plot_using_python_plot_definition(multiple_connections_solution: Solution):
+    """Create, update and delete a plot using the native Python PlotDefinition."""
+    sol = multiple_connections_solution
+
+    py_def = PlotDefinition(
+        result_type=ResultType.stress,
+        location=Location.nodal,
+        name="Python stress plot",
+        fields=[Field(ResultFieldName.equivalent_von_mises_stress)],
+        shell_position=ShellPosition.middle,
+        all_sets=True,
+        last_set=False,
+    )
+
+    plot_view = sol.create_plot(py_def)
+    plot_def = plot_view.definition
+
+    assert plot_def.id is not None
+    assert plot_def.name == "Python stress plot"
+    assert plot_def.result_type == ResultType.stress
+    assert plot_def.shell_position == ShellPosition.middle
+
+    # update via Python PlotDefinition
+    py_def.id = plot_def.id
+    py_def.name = "Python stress plot (updated)"
+    updated_view = sol.update_plot(py_def)
+    assert updated_view.definition.name == "Python stress plot (updated)"
+
+    # delete via Python PlotDefinition
+    sol.delete_plot(py_def)
+    assert next((p for p in sol.plots if p.id == plot_def.id), None) is None
+
+
+class TestPlotDefinitionConversion:
+    """Check converting between PlotDefinition and its protobuf representation."""
+
+    def test_to_proto_create(self):
+        py_def = PlotDefinition(
+            result_type=ResultType.stress,
+            location=Location.nodal,
+            name="My stress plot",
+            fields=[
+                Field(ResultFieldName.equivalent_von_mises_stress),
+                Field(ResultFieldName.stress_tensor, [Component.XX, Component.ZZ]),
+            ],
+            shell_position=ShellPosition.middle,
+            all_sets=True,
+            last_set=False,
+            named_selection_id="ns-123",
+            set_ids=[1, 2, 3],
+            id="plot-456",
+        )
+
+        proto = plot_definition_to_proto(py_def, models.PlotDefinitionCreate)
+
+        assert proto.result_type == models.ResultType.RESULT_TYPE_STRESS
+        assert proto.location == "Nodal"
+        assert proto.name == "My stress plot"
+        assert proto.shell_position == models.ShellPosition.SHELL_POSITION_MIDDLE
+        assert proto.all_sets is True
+        assert proto.last_set is False
+        assert proto.named_selection_id == "ns-123"
+        assert list(proto.set_ids) == [1, 2, 3]
+        assert proto.id == "plot-456"
+        assert len(proto.fields) == 2
+        assert proto.fields[0].name == "equivalent_von_mises_stress"
+        assert proto.fields[1].name == "stress_tensor"
+        assert list(proto.fields[1].components) == ["XX", "ZZ"]
+
+    def test_to_proto_custom_options(self):
+        py_def = PlotDefinition(
+            result_type=ResultType.user_defined,
+            location="Nodal",
+            custom_options={"threshold": 1.5, "label": "peak", "count": 3, "active": True},
+        )
+
+        proto = plot_definition_to_proto(py_def, models.PlotDefinitionCreate)
+
+        assert proto.custom_options["threshold"].float == pytest.approx(1.5)
+        assert proto.custom_options["label"].string == "peak"
+        assert proto.custom_options["count"].int32 == 3
+        assert proto.custom_options["active"].bool is True
+
+    def test_from_proto_custom_options(self):
+        proto = models.PlotDefinitionCreate(
+            result_type=models.ResultType.RESULT_TYPE_USER_DEFINED,
+            location="Nodal",
+        )
+        proto.custom_options["threshold"].float = 1.5
+        proto.custom_options["label"].string = "peak"
+        proto.custom_options["count"].int32 = 3
+        proto.custom_options["active"].bool = True
+
+        py_def = proto_to_plot_definition(proto)
+
+        assert py_def.custom_options["threshold"] == pytest.approx(1.5)
+        assert py_def.custom_options["label"] == "peak"
+        assert py_def.custom_options["count"] == 3
+        assert py_def.custom_options["active"] is True
+
+    def test_round_trip_custom_options(self):
+        original = PlotDefinition(
+            result_type=ResultType.user_defined,
+            location="Nodal",
+            custom_options={"threshold": 2.5, "label": "top", "count": 7, "active": False},
+        )
+
+        proto = plot_definition_to_proto(original, models.PlotDefinitionCreate)
+        restored = proto_to_plot_definition(proto)
+
+        assert restored.custom_options["threshold"] == pytest.approx(2.5)
+        assert restored.custom_options["label"] == "top"
+        assert restored.custom_options["count"] == 7
+        assert restored.custom_options["active"] is False
+
+    def test_from_proto_create(self):
+        proto = models.PlotDefinitionCreate(
+            result_type=models.ResultType.RESULT_TYPE_VELOCITY,
+            location="Nodal",
+            name="velocity plot",
+            shell_position=models.ShellPosition.SHELL_POSITION_TOP,
+            all_sets=False,
+            last_set=True,
+            named_selection_id="ns-abc",
+            set_ids=[5],
+            fields=[models.Field(name="velocity", components=["X", "Y", "Z"])],
+        )
+
+        py_def = proto_to_plot_definition(proto)
+
+        assert py_def.result_type == ResultType.velocity
+        assert py_def.location == "Nodal"
+        assert py_def.name == "velocity plot"
+        assert py_def.shell_position == ShellPosition.top  # TOP=0 is proto default, maps to top
+        assert py_def.all_sets is False
+        assert py_def.last_set is True
+        assert py_def.named_selection_id == "ns-abc"
+        assert py_def.set_ids == [5]
+        assert py_def.supports_monitoring is None
+        assert len(py_def.fields) == 1
+        assert py_def.fields[0].name == ResultFieldName.velocity
+        assert py_def.fields[0].components == [Component.X, Component.Y, Component.Z]
+
+    def test_from_proto_definition(self):
+        proto = models.PlotDefinition(
+            id="plot-789",
+            result_type=models.ResultType.RESULT_TYPE_DISPLACEMENT,
+            location="Nodal",
+            name="displacement plot",
+            supports_monitoring=True,
+            creation_time="2026-01-01T00:00:00Z",
+            fields=[models.Field(name="total_displacement")],
+        )
+
+        py_def = proto_to_plot_definition(proto)
+
+        assert py_def.id == "plot-789"
+        assert py_def.result_type == ResultType.displacement
+        assert py_def.name == "displacement plot"
+        assert py_def.supports_monitoring is True
+        assert py_def.creation_time == "2026-01-01T00:00:00Z"
+        assert len(py_def.fields) == 1
+        assert py_def.fields[0].name == ResultFieldName.total_displacement
+        assert py_def.fields[0].components is None
+
+    def test_round_trip(self):
+        original = PlotDefinition(
+            result_type=ResultType.stress,
+            location="Nodal",
+            name="round-trip plot",
+            fields=[
+                Field(ResultFieldName.stress_tensor, [Component.XX, Component.YY, Component.ZZ]),
+            ],
+            shell_position=ShellPosition.bottom,
+            all_sets=False,
+            last_set=True,
+            named_selection_id="ns-rt",
+            set_ids=[2, 4],
+            on_skin=False,
+            include_displacement=True,
+            id="plot-rt",
+        )
+
+        proto = plot_definition_to_proto(original, models.PlotDefinitionCreate)
+        restored = proto_to_plot_definition(proto)
+
+        assert restored.result_type == original.result_type
+        assert restored.location == original.location
+        assert restored.name == original.name
+        assert restored.shell_position == original.shell_position
+        assert restored.all_sets == original.all_sets
+        assert restored.last_set == original.last_set
+        assert restored.named_selection_id == original.named_selection_id
+        assert restored.set_ids == original.set_ids
+        assert restored.on_skin == original.on_skin
+        assert restored.include_displacement == original.include_displacement
+        assert restored.id == original.id
+        assert len(restored.fields) == 1
+        assert restored.fields[0].name == ResultFieldName.stress_tensor
+        assert restored.fields[0].components == [Component.XX, Component.YY, Component.ZZ]
+
+    def test_to_proto_method(self):
+        py_def = PlotDefinition(
+            result_type=ResultType.velocity,
+            location="Nodal",
+            shell_position=ShellPosition.middle,
+        )
+
+        proto = py_def.to_proto(models.PlotDefinitionCreate)
+
+        assert proto.result_type == models.ResultType.RESULT_TYPE_VELOCITY
+        assert proto.shell_position == models.ShellPosition.SHELL_POSITION_MIDDLE
+
+    def test_from_proto_classmethod(self):
+        proto = models.PlotDefinition(
+            id="plot-cm",
+            result_type=models.ResultType.RESULT_TYPE_STRESS,
+            location="Elemental",
+            name="stress plot",
+            supports_monitoring=False,
+        )
+
+        py_def = PlotDefinition.from_proto(proto)
+
+        assert py_def.id == "plot-cm"
+        assert py_def.result_type == ResultType.stress
+        assert py_def.location == "Elemental"
+        assert py_def.supports_monitoring is False

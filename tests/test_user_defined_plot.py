@@ -21,7 +21,15 @@ from collections.abc import Generator
 
 import pytest
 
-from ansys.result_explorer.core import Client, ResultExplorerError, Solution, models
+from ansys.result_explorer.core import (
+    Client,
+    Location,
+    PlotDefinition,
+    ResultExplorerError,
+    ResultType,
+    ShellPosition,
+    Solution,
+)
 
 log = logging.getLogger(__name__)
 
@@ -97,14 +105,14 @@ def solution(rx: Client, rst_multiple_connections: str) -> Generator[Solution, N
 def test_create_above_threshold_plot(solution: Solution):
     """A user-defined plot using the above-threshold script can be created."""
     plot_view = solution.create_plot(
-        models.PlotDefinitionCreate(
-            name="Displacement Above Threshold",
-            result_type=models.ResultType.RESULT_TYPE_USER_DEFINED,
+        PlotDefinition(
+            result_type=ResultType.user_defined,
             location="unused",
+            name="Displacement Above Threshold",
             on_skin=False,
             all_sets=False,
             last_set=True,
-            shell_position=models.ShellPosition.SHELL_POSITION_TOP,
+            shell_position=ShellPosition.top,
             script=ABOVE_THRESHOLD_SCRIPT,
         )
     )
@@ -113,7 +121,7 @@ def test_create_above_threshold_plot(solution: Solution):
 
     assert plot_def.id is not None
     assert plot_def.name == "Displacement Above Threshold"
-    assert plot_def.result_type == models.ResultType.RESULT_TYPE_USER_DEFINED
+    assert plot_def.result_type == ResultType.user_defined
     assert plot_def.last_set is True
     assert plot_def.all_sets is False
 
@@ -121,10 +129,10 @@ def test_create_above_threshold_plot(solution: Solution):
 def test_above_threshold_plot_in_viewport(rx: Client, solution: Solution):
     """The above-threshold plot renders without error when assigned to a viewport."""
     plot_view = solution.create_plot(
-        models.PlotDefinitionCreate(
+        PlotDefinition(
+            result_type=ResultType.user_defined,
+            location=Location.nodal,
             name="Displacement Above Threshold",
-            result_type=models.ResultType.RESULT_TYPE_USER_DEFINED,
-            location="Nodal",
             on_skin=False,
             all_sets=False,
             last_set=True,
@@ -202,15 +210,15 @@ def get_custom_plot_data(
 def test_above_threshold_plot_custom_option_in_viewport(rx: Client, solution: Solution):
     """The percent_threshold custom option is passed through to the script and used."""
     plot_view = solution.create_plot(
-        models.PlotDefinitionCreate(
+        PlotDefinition(
+            result_type=ResultType.user_defined,
+            location=Location.nodal,
             name="Displacement Above Threshold (custom option)",
-            result_type=models.ResultType.RESULT_TYPE_USER_DEFINED,
-            location="Nodal",
             on_skin=False,
             all_sets=False,
             last_set=True,
             script=ABOVE_THRESHOLD_CUSTOM_OPTION_SCRIPT,
-            custom_options={"percent_threshold": models.CustomOptionsValue(float=75.0)},
+            custom_options={"percent_threshold": 75.0},
         )
     )
 
@@ -241,10 +249,10 @@ def get_custom_plot_data(
 def test_user_defined_plot_script_error_is_surfaced(rx: Client, solution: Solution):
     """When the user-defined script raises, the error should propagate to the caller."""
     plot_view = solution.create_plot(
-        models.PlotDefinitionCreate(
-            name="Failing User Defined Plot",
-            result_type=models.ResultType.RESULT_TYPE_USER_DEFINED,
+        PlotDefinition(
+            result_type=ResultType.user_defined,
             location="unused",
+            name="Failing User Defined Plot",
             on_skin=False,
             all_sets=False,
             last_set=True,
