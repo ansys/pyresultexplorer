@@ -180,3 +180,5 @@ viewport.save_snapshot(
 print("\nCharts in solution:")
 for c in sol.charts:
     print(f"  {c.name!r} — {len(c.results)} result series")
+
+rx.stop()
