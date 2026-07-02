@@ -79,7 +79,7 @@ print(f"Solution created: {sol}")
 # Assign a View to a Viewport
 # ----------------------------
 # Pick a 3-D view and assign it to the workspace viewport.
-views = sol.views
+views = sol.plot_views
 view = next((v for v in views if "Displacement" in v.name), None) or views[0]
 print(f"Using view: {view.name}")
 

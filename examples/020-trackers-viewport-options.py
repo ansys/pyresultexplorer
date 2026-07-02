@@ -43,7 +43,6 @@ from ansys.result_explorer.core.examples import (
     get_example_file,
     get_example_snapshot_settings,
 )
-from ansys.result_explorer.core.models import ViewType
 
 # %%
 # Launch Result Explorer
@@ -68,11 +67,8 @@ print(f"  Elements: {sol.n_elements}, Nodes: {sol.n_nodes}")
 # Find Tracker Views
 # -------------------
 # Locate convergence and contact trackers views in the solution.
-views = sol.views
-convergence_view = next(
-    (v for v in views if v.type == ViewType.VIEW_TYPE_CONVERGENCE_TRACKERS), None
-)
-contact_view = next((v for v in views if v.type == ViewType.VIEW_TYPE_CONTACT_TRACKERS), None)
+convergence_view = sol.convergence_trackers_view
+contact_view = sol.contact_trackers_view
 
 assert convergence_view is not None, "Convergence trackers view not found in solution"
 assert contact_view is not None, "Contact trackers view not found in solution"
