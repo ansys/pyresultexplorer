@@ -444,3 +444,23 @@ class TestPlotDefinitionConversion:
         assert py_def.result_type == ResultType.stress
         assert py_def.location == "Elemental"
         assert py_def.supports_monitoring is False
+
+    def test_result_type_enum_matches_proto(self):
+        """Verify that ResultType enum items match 100% with models.ResultType."""
+        # Check each Python ResultType has a corresponding proto constant
+        for py_result in ResultType:
+            proto_name = f"RESULT_TYPE_{py_result.name.upper()}"
+            assert proto_name in models.ResultType.DESCRIPTOR.values_by_name, (
+                f"Missing proto constant: {proto_name} for Python ResultType.{py_result.name}"
+            )
+
+        # Check each proto RESULT_TYPE_* constant has a Python equivalent
+        proto_values = models.ResultType.DESCRIPTOR.values_by_name.keys()
+        for proto_name in proto_values:
+            py_name = proto_name.removeprefix("RESULT_TYPE_").lower()
+            assert hasattr(ResultType, py_name), (
+                f"Missing Python ResultType.{py_name} for proto constant: {proto_name}"
+            )
+            py_result = getattr(ResultType, py_name)
+            # Verify the Python enum value is valid
+            assert isinstance(py_result, ResultType)
