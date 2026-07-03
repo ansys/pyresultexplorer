@@ -31,6 +31,7 @@ The solution object provides access to rich metadata about the loaded results, i
 -  Mesh info: number of nodes/elements, distance unit
 -  Time/frequency info: number of result sets, time/frequency values and unit
 -  Mesh entities info: named selections and bodies
+-  Available results for plots and charts
 
 
 Named selections
