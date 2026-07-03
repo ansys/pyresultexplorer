@@ -22,6 +22,8 @@ from google.protobuf.json_format import MessageToDict, ParseDict
 
 from .. import models
 from .base import NamedBaseEntity, SubEntity
+from .chart_definition import ChartDefinition, chart_definition_to_proto, proto_to_chart_definition
+from .plot_definition import PlotDefinition, plot_definition_to_proto, proto_to_plot_definition
 
 
 class View(SubEntity[models.View, "Solution"]):
@@ -42,31 +44,31 @@ class PlotView(View):
     """Represents a plot view in a solution."""
 
     @property
-    def definition(self) -> models.PlotDefinition:
+    def definition(self) -> PlotDefinition:
         """Plot definition associated with this view."""
         plot_def_id = self._pb.id
-        plot_def = next((p for p in self.solution.plots if p.id == plot_def_id), None)
-        if plot_def is None:
+        proto_def = next((p for p in self.solution._pb.plots if p.id == plot_def_id), None)
+        if proto_def is None:
             raise RuntimeError(
                 f"Plot definition with ID {plot_def_id} not found in solution {self.solution.name}"
             )
-        return plot_def
+        return proto_to_plot_definition(proto_def)
 
 
 class ChartView(View):
     """Represents a chart view in a solution."""
 
     @property
-    def definition(self) -> models.ChartDefinition:
+    def definition(self) -> ChartDefinition:
         """Chart definition associated with this view."""
         chart_def_id = self._pb.id
-        chart_def = next((c for c in self.solution.charts if c.id == chart_def_id), None)
-        if chart_def is None:
+        proto_def = next((c for c in self.solution._pb.charts if c.id == chart_def_id), None)
+        if proto_def is None:
             raise RuntimeError(
                 f"Chart definition with ID {chart_def_id} "
                 f"not found in solution {self.solution.name}"
             )
-        return chart_def
+        return proto_to_chart_definition(proto_def)
 
 
 class MeshView(View):
@@ -109,23 +111,19 @@ class Solution(NamedBaseEntity[models.Solution]):
             f"No ChartView found for chart definition ID {chart_def_id} in solution {self.name}"
         )
 
-    def create_plot(self, definition: models.PlotDefinitionCreate) -> PlotView:
+    def create_plot(self, definition: PlotDefinition) -> PlotView:
         """Create a plot based on a plot definition."""
+        pb_def = plot_definition_to_proto(definition, models.PlotDefinitionCreate)
         pb_plot = self._client._solution_stub.CreatePlotDefinition(
-            models.CreatePlotDefinitionRequest(solution_id=self.id, plot_definition=definition)
+            models.CreatePlotDefinitionRequest(solution_id=self.id, plot_definition=pb_def)
         )
         self._get()
         return self._get_plot_view(pb_plot.id)
 
-    def update_plot(
-        self, plot: models.PlotDefinitionCreate | models.PlotDefinition | PlotView
-    ) -> PlotView:
+    def update_plot(self, plot: PlotDefinition | PlotView) -> PlotView:
         """Update a plot based on a plot definition."""
-        plot_def = plot
-        if isinstance(plot, models.PlotDefinition):
-            plot_def = _clone_msg_to_compatible_type(plot, models.PlotDefinitionCreate)
-        elif isinstance(plot, PlotView):
-            plot_def = plot.definition
+        py_def = plot.definition if isinstance(plot, PlotView) else plot
+        plot_def = plot_definition_to_proto(py_def, models.PlotDefinitionCreate)
 
         pb_plot = self._client._solution_stub.UpdatePlotDefinition(
             models.UpdatePlotDefinitionRequest(
@@ -135,12 +133,12 @@ class Solution(NamedBaseEntity[models.Solution]):
         self._get()
         return self._get_plot_view(pb_plot.id)
 
-    def delete_plot(self, id: str | PlotView | models.PlotDefinition) -> None:
+    def delete_plot(self, id: str | PlotView | PlotDefinition) -> None:
         """Delete a plot by ID."""
         plot_id = id
         if isinstance(id, PlotView):
             plot_id = id.definition.id
-        elif isinstance(id, models.PlotDefinition):
+        elif isinstance(id, PlotDefinition):
             plot_id = id.id
 
         self._client._solution_stub.DeletePlotDefinition(
@@ -148,23 +146,19 @@ class Solution(NamedBaseEntity[models.Solution]):
         )
         self._get()
 
-    def create_chart(self, definition: models.ChartDefinitionCreate) -> ChartView:
+    def create_chart(self, definition: ChartDefinition) -> ChartView:
         """Create a chart based on a chart definition."""
+        pb_def = chart_definition_to_proto(definition, models.ChartDefinitionCreate)
         pb_chart = self._client._solution_stub.CreateChartDefinition(
-            models.CreateChartDefinitionRequest(solution_id=self.id, chart_definition=definition)
+            models.CreateChartDefinitionRequest(solution_id=self.id, chart_definition=pb_def)
         )
         self._get()
         return self._get_chart_view(pb_chart.id)
 
-    def update_chart(
-        self, chart: models.ChartDefinitionCreate | models.ChartDefinition | ChartView
-    ) -> ChartView:
+    def update_chart(self, chart: ChartDefinition | ChartView) -> ChartView:
         """Update a chart based on a chart definition."""
-        chart_def = chart
-        if isinstance(chart, models.ChartDefinition):
-            chart_def = _clone_msg_to_compatible_type(chart, models.ChartDefinitionCreate)
-        elif isinstance(chart, ChartView):
-            chart_def = chart.definition
+        py_def = chart.definition if isinstance(chart, ChartView) else chart
+        chart_def = chart_definition_to_proto(py_def, models.ChartDefinitionCreate)
 
         pb_chart = self._client._solution_stub.UpdateChartDefinition(
             models.UpdateChartDefinitionRequest(
@@ -174,12 +168,12 @@ class Solution(NamedBaseEntity[models.Solution]):
         self._get()
         return self._get_chart_view(pb_chart.id)
 
-    def delete_chart(self, id: str | ChartView | models.ChartDefinition) -> None:
+    def delete_chart(self, id: str | ChartView | ChartDefinition) -> None:
         """Delete a chart by ID."""
         chart_id = id
         if isinstance(id, ChartView):
             chart_id = id.definition.id
-        elif isinstance(id, models.ChartDefinition):
+        elif isinstance(id, ChartDefinition):
             chart_id = id.id
 
         self._client._solution_stub.DeleteChartDefinition(
@@ -406,9 +400,9 @@ class Solution(NamedBaseEntity[models.Solution]):
         return list(self._pb.configurable_plots)
 
     @property
-    def plots(self) -> list[models.PlotDefinition]:
+    def plots(self) -> list[PlotDefinition]:
         """Plot definitions."""
-        return list(self._pb.plots)
+        return [proto_to_plot_definition(p) for p in self._pb.plots]
 
     @property
     def configurable_charts(self) -> list[models.ConfigurableChart]:
@@ -420,9 +414,9 @@ class Solution(NamedBaseEntity[models.Solution]):
         return list(self._pb.configurable_charts)
 
     @property
-    def charts(self) -> list[models.ChartDefinition]:
+    def charts(self) -> list[ChartDefinition]:
         """Chart definitions."""
-        return list(self._pb.charts)
+        return [proto_to_chart_definition(c) for c in self._pb.charts]
 
     @property
     def bodies(self) -> list[models.Body]:
@@ -481,6 +475,44 @@ class Solution(NamedBaseEntity[models.Solution]):
             else:
                 views.append(View(v, self._client, parent=self))
         return views
+
+    @property
+    def mesh_view(self) -> MeshView:
+        """Get the mesh view for this solution."""
+        mesh_view = next((v for v in self.views if isinstance(v, MeshView)), None)
+        if mesh_view is None:
+            raise RuntimeError(f"No mesh view found in solution '{self.name}'")
+        return mesh_view
+
+    @property
+    def plot_views(self) -> list[PlotView]:
+        """Get all plot views for this solution."""
+        return [v for v in self.views if isinstance(v, PlotView)]
+
+    @property
+    def chart_views(self) -> list[ChartView]:
+        """Get all chart views for this solution."""
+        return [v for v in self.views if isinstance(v, ChartView)]
+
+    @property
+    def logs_view(self) -> View | None:
+        """Get the log view for this solution, if available."""
+        return next((v for v in self.views if v.type == models.ViewType.VIEW_TYPE_LOGS), None)
+
+    @property
+    def contact_trackers_view(self) -> View | None:
+        """Get the contact trackers view for this solution, if available."""
+        return next(
+            (v for v in self.views if v.type == models.ViewType.VIEW_TYPE_CONTACT_TRACKERS), None
+        )
+
+    @property
+    def convergence_trackers_view(self) -> View | None:
+        """Get the convergence trackers view for this solution, if available."""
+        return next(
+            (v for v in self.views if v.type == models.ViewType.VIEW_TYPE_CONVERGENCE_TRACKERS),
+            None,
+        )
 
     def __str__(self) -> str:
         """Return formatted string representation of the solution."""

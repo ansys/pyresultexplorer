@@ -37,11 +37,16 @@ maximum displacement.
 
 # %%
 # Import the Result Explorer dependencies.
-from ansys.result_explorer.core import launch_result_explorer, models
+from ansys.result_explorer.core import launch_result_explorer
 from ansys.result_explorer.core.examples import (
     ExampleKeys,
     get_example_file,
     get_example_snapshot_settings,
+)
+from ansys.result_explorer.core.objects.plot_definition import (
+    PlotDefinition,
+    ResultType,
+    ShellPosition,
 )
 
 # %%
@@ -219,16 +224,16 @@ print(f"Created solution: {sol.name}")
 # Create a user-defined plot using the DPF script with configurable
 # threshold filtering.
 ud_plot = sol.create_plot(
-    models.PlotDefinitionCreate(
-        name="Displacement Above Threshold",
-        result_type=models.ResultType.RESULT_TYPE_USER_DEFINED,
+    PlotDefinition(
+        result_type=ResultType.user_defined,
         location="unused",
+        name="Displacement Above Threshold",
         on_skin=False,
         all_sets=False,
         last_set=True,
-        shell_position=models.ShellPosition.SHELL_POSITION_TOP,
+        shell_position=ShellPosition.top,
         script=ABOVE_THRESHOLD_SCRIPT,
-        custom_options={"Percent Threshold": models.CustomOptionsValue(float=50.5)},
+        custom_options={"Percent Threshold": 50.5},
     )
 )
 

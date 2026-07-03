@@ -64,6 +64,7 @@ from ansys.api.result_explorer.v0.server_models_pb2 import (
     MeshGraphicsOptions,
     NamedSelection,
     NamedSelectionCreate,
+    NamedSelectionDefinition,
     NamedSelectionType,
     PlotDefinition,
     PlotDefinitionCreate,

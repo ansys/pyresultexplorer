@@ -31,6 +31,7 @@ The solution object provides access to rich metadata about the loaded results, i
 -  Mesh info: number of nodes/elements, distance unit
 -  Time/frequency info: number of result sets, time/frequency values and unit
 -  Mesh entities info: named selections and bodies
+-  Available results for plots and charts
 
 
 Named selections
@@ -123,8 +124,16 @@ The following example creates a displacement plot on a named selection at a spec
 
 .. code:: python
 
+    from ansys.result_explorer.core import (
+        Component,
+        Field,
+        Location,
+        PlotDefinition,
+        ResultFieldName,
+        ResultType,
+    )
     from ansys.result_explorer.core import models
-    
+
     # Create a named selection first (optional, but useful for filtering)
     ns = solution.create_named_selection(
         models.NamedSelectionCreate(
@@ -133,44 +142,53 @@ The following example creates a displacement plot on a named selection at a spec
             element_ids=[models.IdsScoping(range=models.Range(min=23, max=28))],
         )
     )
-    
-    # Create a plot view showing displacement on the named selection
+
+    # Create a plot view showing Y-displacement on the named selection
     plot_view = solution.create_plot(
-        models.PlotDefinitionCreate(
+        PlotDefinition(
             name="Displacement Y - Region of Interest",
-            result_type=models.ResultType.RESULT_TYPE_DISPLACEMENT,
-            location="Nodal",
-            fields=[models.Field(name="displacement", components=["Y",])],
+            result_type=ResultType.displacement,
+            location=Location.nodal,
+            fields=[Field(ResultFieldName.displacement, components=[Component.Y])],
             named_selection_id=ns.id,
-            set_ids=[5],  # Show results at timestep 5
+            set_ids=[5],  # Show results at time step 5
             all_sets=False,
             last_set=False,
         )
     )
-    
-    # Display the plot in a viewport
-    viewport = workspace.assign_view(view=plot, wait=True)
 
-Similarly, you can create a chart view. The following example creates a chart showing the maximum normal stress in the X direction over time:
+    # Display the plot in a viewport
+    viewport = workspace.assign_view(view=plot_view, wait=True)
+
+Similarly, you can create a chart view. The following example creates a chart showing
+the maximum normal stress in the X direction over all time steps:
 
 .. code:: python
 
-    # Create a chart view showing maximum normal stress in X direction over time
-    chart_def = models.ChartDefinitionCreate(
-        name="My chart",
-        user_defined=False,
-        all_sets=True,
-        results=[
-            models.ChartResult(
-                name="Stress",
-                result_type=models.ResultType.RESULT_TYPE_STRESS,
-                location="Nodal",
-                fields=[
-                    models.Field(name="stress_tensor", components=["XX"]),
-                ],
-                filters=[models.Filter.FILTER_MAX],
-            )
-        ],
+    from ansys.result_explorer.core import (
+        ChartDefinition,
+        ChartResult,
+        Component,
+        Field,
+        Filter,
+        Location,
+        ResultFieldName,
+        ResultType,
     )
 
-    chart_view = sol.create_chart(chart_def)
+    # Create a chart showing max normal stress in X direction over time
+    chart_view = solution.create_chart(
+        ChartDefinition(
+            name="Max Stress XX Over Time",
+            all_sets=True,
+            results=[
+                ChartResult(
+                    name="Max Stress XX",
+                    result_type=ResultType.stress,
+                    location=Location.nodal,
+                    fields=[Field(ResultFieldName.stress_tensor, components=[Component.XX])],
+                    filters=[Filter.max],
+                )
+            ],
+        )
+    )

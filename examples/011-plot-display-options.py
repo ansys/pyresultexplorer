@@ -49,7 +49,6 @@ from ansys.result_explorer.core.examples import (
     get_example_file,
     get_example_snapshot_settings,
 )
-from ansys.result_explorer.core.models import ViewType
 
 # %%
 # Launch Result Explorer
@@ -73,10 +72,8 @@ print(f"Created solution:\n{sol}")
 # Find and Configure a Plot View
 # --------------------------------
 # Locate the displacement view and configure it to show all time steps.
-views = sol.views
-disp_view: PlotView = next(
-    (v for v in views if v.type == ViewType.VIEW_TYPE_PLOT and "Displacement" in v.name), None
-)
+views = sol.plot_views
+disp_view: PlotView = next((v for v in views if "Displacement" in v.name), None)
 
 assert disp_view is not None, "Displacement view not found in solution"
 
