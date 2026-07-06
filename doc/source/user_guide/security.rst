@@ -18,7 +18,7 @@ Managed local instance
 
 When launching a managed local instance, the :meth:`launch_result_explorer <ansys.result_explorer.core.launch_result_explorer>` function performs these actions:
 
-1. Launches the Result Explorer server as a subprocess on the local machine, using SSL 
+1. Launches the Result Explorer server as a sub-process on the local machine, using SSL 
   (with self-signed certificates generated on the fly, unless otherwise provided)
   and token-based authentication. The token is unique to this instance and owned by the PyResultExplorer process.
 2. Opens the frontend in a local web browser (either the system default or through Playwright) to connect to the server,
@@ -35,7 +35,7 @@ Connecting to an existing instance
 
 When connecting to an existing Result Explorer instance (local or remote), you can grab the connection token from the Result Explorer GUI
 and pass it to the :meth:`Client.connect_with_token <ansys.result_explorer.core.Client.connect_with_token>` function.
-If the instance was launched with default settings, the connection will be secure by default, using TLS encryption and authentication, as described above.
+If the instance was launched with default settings, the connection is secure by default, using TLS encryption and authentication, as described in the preceding section.
 
 .. note:: In case of a remote instance using self-signed certificates, you may need to provide the Certificate Authority (CA) certificate to the client for proper TLS verification.
   You can do this by passing the CA certificate path to the :meth:`Client constructor <ansys.result_explorer.core.Client>` using the ``ca_cert_path`` parameter.
