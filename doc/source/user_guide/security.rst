@@ -18,15 +18,15 @@ Managed local instance
 
 When launching a managed local instance, the :meth:`launch_result_explorer <ansys.result_explorer.core.launch_result_explorer>` function performs these actions:
 
-1. Launches the Result Explorer server as a sub-process on the local machine, using SSL 
-  (with self-signed certificates generated on the fly, unless otherwise provided)
-  and token-based authentication. The token is unique to this instance and owned by the PyResultExplorer process.
+1. Launches the Result Explorer server as a sub-process on the local machine, using SSL
+   (with self-signed certificates generated on the fly, unless otherwise provided)
+   and token-based authentication. The token is unique to this instance and owned by the PyResultExplorer process.
 2. Opens the frontend in a local web browser (either the system default or through Playwright) to connect to the server,
-  registering the frontend instance using a Session ID.
-  The Session ID is unique to this frontend instance and owned by the PyResultExplorer process.
-3. Creates a :class:`Client <ansys.result_explorer.core.Client>` object that connects to the scripting gateway 
-  using a secure gRPC channel with TLS encryption and Session ID-based authentication.
-  The Session ID acts as a session-scoped bearer credential.
+   registering the frontend instance using a Session ID.
+   The Session ID is unique to this frontend instance and owned by the PyResultExplorer process.
+3. Creates a :class:`Client <ansys.result_explorer.core.Client>` object that connects to the scripting gateway
+   using a secure gRPC channel with TLS encryption and Session ID-based authentication.
+   The Session ID acts as a session-scoped bearer credential.
 4. Uses the PyResultExplorer client to authenticate the frontend against the server using the auth token.
 
 
