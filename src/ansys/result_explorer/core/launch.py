@@ -844,7 +844,7 @@ def launch_result_explorer(
 ) -> "Client":
     """Launch a Result Explorer instance and return a configured Client.
 
-    Convenience function to create, launch a Result Explorer instance, and return
+    Convenience function to launch a Result Explorer instance and return
     a Client configured with that instance's connection details. The instance
     lifecycle is tied to the client; when the client is destroyed, the instance
     will be stopped.
@@ -854,7 +854,7 @@ def launch_result_explorer(
     server_config : ServerLaunchConfig, optional
         Server configuration. If None, default configuration is used.
     web_config : WebLaunchConfig, optional
-        Web UI configuration. If None, no web UI is launched.
+        Web UI configuration. If None, default configuration is used.
 
     Returns
     -------
