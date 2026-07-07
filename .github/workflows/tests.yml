@@ -92,7 +92,7 @@ jobs:
           ghcr-token: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
           license-server: ${{ secrets.LICENSE_SERVER }}
           server-tag: '${{ inputs.rx-version }}-dpf-v2026.1.pre1'
-          web-tag: ${{ inputs.rx-version }}
+          web-tag: 'find-result-by-name'
           results-folder: '${{ github.workspace }}/tests/data'
 
       - uses: extractions/netrc@c3879108aae6b4ed5c4eb60854ae04f06d2f2f68 # v3.0.0
