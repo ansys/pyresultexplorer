@@ -27,9 +27,9 @@ Using the :class:`Client <ansys.result_explorer.core.Client>` object, you can li
 
 The :class:`Workspace <ansys.result_explorer.core.Workspace>` object allows you to:
 
-- manage the viewports within that workspace, including creating new viewports and assigning views to them.
-- enter full screen mode for a specific viewport to focus on a particular view.
-- set synchronization options to link viewports together
+- Manage the viewports within that workspace, including creating new viewports and assigning views to them.
+- Enter full screen mode for a specific viewport to focus on a particular view.
+- Set synchronization options to link viewports together.
 
 Managing viewports
 ==================
