@@ -9,8 +9,8 @@ providing guidance for secure usage of the library.
 Network security
 ================
 
-Result Explorer and PyResultExplorer follow a secure by default approach,
-ensuring that by default all communications between the client and application are encrypted and authenticated.
+Result Explorer and PyResultExplorer follow a secure-by-default approach.
+By default, all communication between the client and the application is encrypted and authenticated.
 Some differences exist between the managed local instance and a remote instance, which are described below.
 
 Managed local instance
