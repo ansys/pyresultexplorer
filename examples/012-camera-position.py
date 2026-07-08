@@ -36,15 +36,14 @@
 Control camera position and orientation
 ========================================
 
-This example demonstrates camera position functionality in PyResultExplorer:
+This example showcases various camera positioning and rotation techniques to
+navigate and view results from different angles:
 
 - **Axis-aligned camera positions** (top, bottom, front, back, left, right, isometric).
 - **Camera rotation** around world axes (X, Y, Z).
 - **Combined transformations** by chaining rotation operations.
 - **Viewport-level camera control** for visualization management.
 
-This example showcases various camera positioning and rotation techniques to
-navigate and view results from different angles.
 """
 
 # %%
