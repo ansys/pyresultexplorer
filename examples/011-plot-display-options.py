@@ -17,7 +17,7 @@
 """
 .. _plot_display_options_example:
 
-Customize Plot Display Options and Animate Results
+Customize plot display options and animate results
 ===================================================
 
 This example demonstrates how to configure plot display options and animate
@@ -57,7 +57,7 @@ from ansys.result_explorer.core.examples import (
 rx = launch_result_explorer()
 
 # %%
-# Load Example Data
+# Load example data
 # ------------------
 # Create a solution from the transient contact analysis data.
 rst_path = get_example_file(ExampleKeys.RST_CP_TRANSIENT)
@@ -69,7 +69,7 @@ sol = rx.create_solution(
 print(f"Created solution:\n{sol}")
 
 # %%
-# Find and Configure a Plot View
+# Find and configure a plot view
 # --------------------------------
 # Locate the displacement view and configure it to show all time steps.
 views = sol.plot_views
@@ -84,7 +84,7 @@ sol.update_plot(disp_view.definition)
 print(f"Found displacement view: {disp_view.name}")
 
 # %%
-# Create Workspace and Assign View
+# Create workspace and assign view
 # ----------------------------------
 # Create a workspace and assign the displacement view to a viewport.
 workspace = rx.create_workspace(name="Plot Viewports")
@@ -94,7 +94,7 @@ disp_viewport = workspace.viewports[0]
 disp_viewport = disp_viewport.set_view(disp_view, wait=True)
 
 # %%
-# Customize Display Options
+# Customize display options
 # ----------------------------
 # Configure plot display options including deformation scale and mesh edges.
 with disp_viewport.update_display_options() as disp_opts:
@@ -110,7 +110,7 @@ disp_viewport.save_snapshot(
 )
 
 # %%
-# Animate Through Time Steps
+# Animate through time steps
 # ----------------------------
 # Animate the displacement plot across all available time steps and save as a GIF.
 time_frequencies = sol.time_frequencies

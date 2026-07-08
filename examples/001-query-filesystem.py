@@ -17,7 +17,7 @@
 """
 .. _query_filesystem_example:
 
-Query the File System and Access Solution Data
+Query the file system and access solution data
 ===============================================
 
 This example demonstrates how to interact with Result Explorer's file system
@@ -50,7 +50,7 @@ rx = launch_result_explorer()
 rst_path = get_example_file(ExampleKeys.RST_CP_TRANSIENT)
 
 # %%
-# Query the File System
+# Query the file system
 # ---------------------
 # List the contents of the directory containing the result file.
 # Define a helper function to pretty-print the file system structure.
@@ -74,7 +74,7 @@ content = rx.ls(path=rst_path.parent, depth=0)
 pretty_print_fs_items(content)
 
 # %%
-# Create a Solution
+# Create a solution
 # -----------------
 # Create a solution from the result file. A solution is a container for result
 # data that allows you to query and visualize the simulation results.
@@ -84,7 +84,7 @@ solution = rx.create_solution(
 )
 
 # %%
-# Access Solver Output Through Solution
+# Access solver output through solution
 # ----------------------------------------
 # Retrieve solver text output files from the solution. In this case, we access
 # the ``file.gst`` file, which contains transient convergence information.

@@ -17,7 +17,7 @@
 """
 .. _create_plots_example:
 
-Create Plots on Named selections
+Create plots scoped to named selections
 =============================================
 
 This example demonstrates how to create named selections and use them to
@@ -57,13 +57,13 @@ from ansys.result_explorer.core.examples import (
 rx = launch_result_explorer()
 
 # %%
-# Locate Example Data
+# Locate example data
 # --------------------
 # Get the path to the example result file.
 rst_path = get_example_file(ExampleKeys.RST_CP_TRANSIENT)
 
 # %%
-# Create a Workspace and Solution
+# Create a workspace and solution
 # --------------------------------
 # Create a workspace and load a solution from the result file.
 workspace = rx.create_workspace(name="PyRX NS Plot Workspace")
@@ -76,7 +76,7 @@ sol = rx.create_solution(
 print(f"Created solution: {sol.name}")
 
 # %%
-# Identify Available Result Sets
+# Identify available result sets
 # --------------------------------
 # Verify the solution has multiple timesteps and extract the set IDs.
 if sol.n_sets < 2:
@@ -90,7 +90,7 @@ set_id_1, set_id_2 = set_ids[0], set_ids[1]
 print(f"Using timesteps (set IDs): {set_id_1}, {set_id_2}")
 
 # %%
-# Create Named Selections
+# Create named selections
 # ------------------------
 # Create named selections based on element IDs for filtering results.
 ns_1 = sol.create_named_selection(
@@ -112,7 +112,7 @@ ns_2 = sol.create_named_selection(
 print(f"Created named selections: {ns_1.name}, {ns_2.name}")
 
 # %%
-# Create Plot Definitions
+# Create plot definitions
 # -------------------------
 # Create displacement and velocity plots using the named selections.
 existing_view_ids = {v.id for v in sol.views}
@@ -151,7 +151,7 @@ plot_2 = sol.create_plot(
 )
 
 # %%
-# Assign Plots to Viewports
+# Assign plots to viewports
 # ---------------------------
 # Display the plots in side-by-side viewports for comparison.
 left_viewport = workspace.assign_view(view=plot_1, wait=True)

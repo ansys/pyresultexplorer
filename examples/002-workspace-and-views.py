@@ -17,7 +17,7 @@
 """
 .. _workspace_and_views_example:
 
-Workspaces, Solutions, and View Management
+Workspaces, solutions, and view management
 ===========================================
 
 This example demonstrates advanced PyResultExplorer functionality including:
@@ -55,14 +55,14 @@ from ansys.result_explorer.core.models import ViewportDirection
 rx = launch_result_explorer()
 
 # %%
-# Locate Example Data
+# Locate example data
 # --------------------
 # Get the path to the example result file. This file contains transient results
 # with multiple load cases for demonstration.
 rst_path = get_example_file(ExampleKeys.RST_MULTIPLE_CONNECTIONS)
 
 # %%
-# Manage Workspaces
+# Manage workspaces
 # ------------------
 # List existing workspaces and create a new one for this example.
 workspaces = rx.list_workspaces()
@@ -87,7 +87,7 @@ for vp in viewports:
     print(f" - {vp}")
 
 # %%
-# Create and Manage Solutions
+# Create and manage solutions
 # ----------------------------
 # Create a solution from the result file and list available views.
 sol_name = "PyRX Solution"
@@ -113,7 +113,7 @@ for v in views:
     print(f" - {v}")
 
 # %%
-# Assign a View to a Viewport
+# Assign a view to a viewport
 # ----------------------------
 # Find a displacement view and assign it to a viewport in the workspace.
 view = next((v for v in views if "Displacement" in v.name), None)
@@ -124,7 +124,7 @@ viewport = workspace.assign_view(view=view, wait=True)
 print(f"Assigned viewport: {viewport}")
 
 # %%
-# Capture and Save Snapshots
+# Capture and save snapshots
 # ---------------------------
 # Take a snapshot of the viewport and save it as a PNG file.
 viewport.save_snapshot(
@@ -133,7 +133,7 @@ viewport.save_snapshot(
 )
 
 # %%
-# Create a Viewport Grid Layout
+# Create a viewport grid layout
 # -------------------------------
 # Create a 2x2 grid by adding viewports in different directions.
 print("Creating 2 x 2 grid layout...")
@@ -154,7 +154,7 @@ bottom_right_viewport = workspace.create_viewport(
 )
 
 # %%
-# Configure Viewport Synchronization
+# Configure viewport synchronization
 # ------------------------------------
 # Set synchronization options so that camera, time steps, and color ranges
 # are shared across all viewports in the workspace.
@@ -162,7 +162,7 @@ print("Setting workspace sync options...")
 workspace.set_sync(camera=True, time_freq=True, legend=True)
 
 # %%
-# Fullscreen Display
+# Fullscreen display
 # -------------------
 # Set a viewport to fullscreen mode for focused viewing.
 print("Setting viewport to fullscreen...")
@@ -174,7 +174,7 @@ print("Exiting fullscreen...")
 workspace.exit_fullscreen()
 
 # %%
-# Modify Display Options
+# Modify display options
 # -----------------------
 # Customize viewport visualization properties using the context manager.
 # Toggle mesh edges and enable minimum/maximum labels.
@@ -184,7 +184,7 @@ with viewport.update_display_options() as opts:
     opts.show_min_max_labels = True
 
 # %%
-# Capture a Modified Snapshot
+# Capture a modified snapshot
 # ----------------------------
 # Take a new snapshot after modifying display options and save it as a separate file.
 top_left_viewport.save_snapshot(

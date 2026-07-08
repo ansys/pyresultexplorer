@@ -33,7 +33,7 @@
 """
 .. _camera_position_example:
 
-Control Camera Position and Orientation
+Control camera position and orientation
 ========================================
 
 This example demonstrates camera position functionality in PyResultExplorer:
@@ -58,7 +58,7 @@ from ansys.result_explorer.core.examples import (
 from ansys.result_explorer.core.objects import CameraPosition
 
 # %%
-# Launch Result Explorer and Load Data
+# Launch Result Explorer and load data
 # ------------------------------------
 # Start a Result Explorer instance and create a workspace with a solution.
 rx = launch_result_explorer()
@@ -76,7 +76,7 @@ sol = rx.create_solution(
 print(f"Solution created: {sol}")
 
 # %%
-# Assign a View to a Viewport
+# Assign a view to a viewport
 # ----------------------------
 # Pick a 3-D view and assign it to the workspace viewport.
 views = sol.plot_views
@@ -92,7 +92,7 @@ viewport.save_snapshot(
 )
 
 # %%
-# Preserve Initial Camera State
+# Preserve initial camera state
 # ------------------------------
 # Read the initial camera state to preserve zoom and translation when
 # applying preset orientations.
@@ -115,7 +115,7 @@ def apply_camera(label: str, cam: CameraPosition) -> None:
 
 
 # %%
-# Apply Axis-Aligned Preset Views
+# Apply axis-aligned preset views
 # --------------------------------
 # Set the camera to standard axis-aligned orientations.
 apply_camera("Top view", CameraPosition.top())
@@ -127,7 +127,7 @@ apply_camera("Right view", CameraPosition.right_view())
 apply_camera("Isometric view", CameraPosition.isometric())
 
 # %%
-# Apply Rotations Around World Axes
+# Apply rotations around world axes
 # -----------------------------------
 # Rotate the camera from an isometric base around each world axis.
 iso = CameraPosition.isometric()
@@ -137,7 +137,7 @@ apply_camera("Isometric + 45° around Y", iso.rotate_y(45))
 apply_camera("Isometric + 60° around Z", iso.rotate_z(60))
 
 # %%
-# Combine Multiple Rotations
+# Combine multiple rotations
 # ----------------------------
 # Chain multiple rotations to create complex camera orientations.
 apply_camera(

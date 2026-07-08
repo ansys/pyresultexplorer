@@ -17,7 +17,7 @@
 """
 .. _create_and_modify_charts_example:
 
-Create and Modify Charts
+Create and modify charts
 ========================
 
 This example demonstrates how to create and work with charts in Result Explorer:
@@ -58,7 +58,7 @@ from ansys.result_explorer.core.examples import (
 rx = launch_result_explorer()
 
 # %%
-# Load Example Data
+# Load example data
 # -----------------
 # Create a solution from a transient analysis result file with multiple
 # time steps.
@@ -74,12 +74,12 @@ print(f"  Time steps: {sol.n_sets}")
 print(sol)
 
 # %%
-# Create a Workspace
+# Create a workspace
 # -------------------
 workspace = rx.create_workspace(name="Chart Example Workspace")
 
 # %%
-# Create a Chart
+# Create a chart
 # ---------------
 # Build a chart that plots equivalent von Mises stress, temperature, and
 # contact pressure over all time steps.  ``Filter.max`` keeps only the
@@ -119,14 +119,14 @@ print(f"\nCreated chart view: '{chart.name}'")
 print(f"Chart definition id: {chart.definition.id}")
 
 # %%
-# Assign the Chart to a Viewport
+# Assign the chart to a viewport
 # --------------------------------
 # Assign the chart view to a viewport and wait for it to finish rendering.
 viewport = workspace.assign_view(view=chart, wait=True)
 print(f"\nViewport assigned: {viewport.id}")
 
 # %%
-# Inspect Chart Display Options
+# Inspect chart display options
 # ------------------------------
 # Read the available series and chart names provided by the server after
 # rendering, then print them so you can reference them by name.
@@ -137,14 +137,14 @@ print(f"Available charts: {opts.chart_names}")
 print(f"Active series:    {opts.active_series}")
 
 # %%
-# Configure Display Options
+# Configure display options
 # --------------------------
 # Enable the legend and show the data table beneath the chart.
 opts.show_legend = True
 opts.show_table = True
 
 # %%
-# Select Active Series
+# Select active series
 # ---------------------
 # Restrict the viewport to display only the stress series so temperature
 # and contact pressure are hidden.
@@ -158,7 +158,7 @@ viewport.save_snapshot(
 )
 
 # %%
-# Restore All Series
+# Restore all series
 # -------------------
 # Re-activate all available series.
 opts.active_series = opts.series_names[1:]
@@ -169,7 +169,7 @@ viewport.save_snapshot(
 )
 
 # %%
-# List Charts in the Solution
+# List charts in the solution
 # ----------------------------
 # ``sol.charts`` now returns a list of native ``ChartDefinition`` objects.
 print("\nCharts in solution:")
