@@ -17,7 +17,7 @@
 """
 .. _user_defined_plot_example:
 
-Create a User-Defined Plot with DPF Filtering
+Create a user-defined plot with DPF filtering
 ==============================================
 
 This example demonstrates how to create a user-defined plot that displays only
@@ -50,7 +50,7 @@ from ansys.result_explorer.core.objects.plot_definition import (
 )
 
 # %%
-# Define the DPF Server-Side Script
+# Define the DPF server-side script
 # ----------------------------------
 # This script is executed server-side by Result Explorer to compute the plot
 # data. It extracts displacement, computes the per-node displacement magnitude
@@ -205,7 +205,7 @@ def get_custom_plot_data(
 rx = launch_result_explorer()
 
 # %%
-# Create Workspace and Solution
+# Create workspace and solution
 # ------------------------------
 # Create a workspace and load a solution from the example data.
 rst_path = get_example_file(ExampleKeys.RST_MULTIPLE_CONNECTIONS)
@@ -219,7 +219,7 @@ sol = rx.create_solution(
 print(f"Created solution: {sol.name}")
 
 # %%
-# Create the User-Defined Plot
+# Create the user-defined plot
 # -----------------------------
 # Create a user-defined plot using the DPF script with configurable
 # threshold filtering.
@@ -240,7 +240,7 @@ ud_plot = sol.create_plot(
 print(f"Created user-defined above-threshold plot: '{ud_plot.name}'")
 
 # %%
-# Assign to Viewport and Configure Display
+# Assign to viewport and configure display
 # ------------------------------------------
 # Assign the user-defined plot to a viewport and configure display options.
 viewport = workspace.assign_view(view=ud_plot, wait=True)

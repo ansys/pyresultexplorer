@@ -17,7 +17,7 @@
 """
 .. _create_hps_solution_example:
 
-Create an HPS Solution
+Create an HPS solution
 ======================
 
 This example demonstrates how to interactively create an HPS solution by selecting

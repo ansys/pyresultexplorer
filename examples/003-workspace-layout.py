@@ -17,7 +17,7 @@
 """
 .. _workspace_layout_example:
 
-Create Workspace Grid Layouts
+Create workspace grid layouts
 ==========================================
 
 This example demonstrates how to create and manage workspace layouts with
@@ -50,7 +50,7 @@ sol = rx.create_solution(
 )
 
 # %%
-# Create Workspace Grid Layouts
+# Create workspace grid layouts
 # ------------------------------
 # Create workspaces with various grid configurations from 1x1 to 3x3 and
 # inspect the viewports in each layout.

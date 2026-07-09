@@ -17,7 +17,7 @@
 """
 .. _save_session_and_workspace_example:
 
-Save Sessions and Workspace Templates
+Save sessions and workspace templates
 ======================================
 
 This example demonstrates how to save Result Explorer sessions and workspace
@@ -48,7 +48,7 @@ from ansys.result_explorer.core.models import ViewType
 rx = launch_result_explorer()
 
 # %%
-# Create a Solution
+# Create a solution
 # ------------------
 # Load the transient structural analysis result file.
 rst_path = get_example_file(ExampleKeys.RST_CP_TRANSIENT)
@@ -60,7 +60,7 @@ sol = rx.create_solution(
 print(f"Created solution: {sol.name}")
 
 # %%
-# Retrieve Available Views
+# Retrieve available views
 # -------------------------
 # Get the available views from the solution for use in workspaces.
 views = sol.views
@@ -73,7 +73,7 @@ disp_view = next((v for v in views if "Displacement" in v.name), None)
 stress_view = next((v for v in views if "Stress" in v.name), None)
 
 # %%
-# Delete the Default Workspace
+# Delete the default workspace
 # ----------------------------
 # Remove the default "Workspace 1" that is created automatically.
 default_workspaces = [ws for ws in rx.list_workspaces() if ws.name == "Workspace 1"]
@@ -82,7 +82,7 @@ for ws in default_workspaces:
     print(f"Deleted default workspace: {ws.name}")
 
 # %%
-# Create First Workspace with Displacement View
+# Create first workspace with displacement view
 # -----------------------------------------------
 # Create a workspace and configure it with displacement visualization.
 workspace_1 = rx.create_workspace(name="Displacement Workspace")
@@ -97,7 +97,7 @@ else:
         viewport_1 = workspace_1.assign_view(view=views[0], wait=True)
 
 # %%
-# Create Second Workspace with Stress View
+# Create second workspace with stress view
 # ------------------------------------------
 # Create another workspace with a different view layout.
 workspace_2 = rx.create_workspace(name="Stress Workspace", rows=1, cols=2)
@@ -118,7 +118,7 @@ viewport_2.set_view(logs_view, wait=True)
 print(f"  Assigned view to second viewport: {logs_view.name}")
 
 # %%
-# Save Session and Workspace Templates
+# Save session and workspace templates
 # ----------------------------------------
 # Save the complete session and export each workspace as a template
 # to a temporary directory.

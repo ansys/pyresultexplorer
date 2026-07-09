@@ -17,7 +17,7 @@
 """
 .. _trackers_viewport_options_example:
 
-Work with Contact and Convergence Trackers
+Work with contact and convergence trackers
 ===========================================
 
 This example demonstrates how to work with tracker viewports in Result Explorer:
@@ -51,7 +51,7 @@ from ansys.result_explorer.core.examples import (
 rx = launch_result_explorer()
 
 # %%
-# Load Example Data
+# Load example data
 # ------------------
 # Create a solution from the transient contact analysis.
 rst_path = get_example_file(ExampleKeys.RST_CP_TRANSIENT)
@@ -64,7 +64,7 @@ print(f"Created solution: {sol.name}")
 print(f"  Elements: {sol.n_elements}, Nodes: {sol.n_nodes}")
 
 # %%
-# Find Tracker Views
+# Find tracker views
 # -------------------
 # Locate convergence and contact trackers views in the solution.
 convergence_view = sol.convergence_trackers_view
@@ -77,14 +77,14 @@ print(f"Found convergence trackers view: {convergence_view.name}")
 print(f"Found contact trackers view: {contact_view.name}")
 
 # %%
-# Create Workspace with Grid Layout
+# Create workspace with grid layout
 # -----------------------------------
 # Create a workspace with a 2x1 grid for tracker viewports.
 workspace = rx.create_workspace(name="Tracker Viewports", rows=2, cols=1)
 print(f"Created workspace with {len(workspace.viewport_ids)} viewports (2x1 grid)")
 
 # %%
-# Configure Convergence Trackers Viewport
+# Configure convergence trackers viewport
 # ----------------------------------------
 # Assign and configure the convergence trackers view.
 conv_viewport = workspace.viewports[0]
@@ -99,7 +99,7 @@ conv_viewport.save_snapshot(
 )
 
 # %%
-# Configure Contact Trackers Viewport
+# Configure contact trackers viewport
 # ------------------------------------
 # Assign and configure the contact trackers view with available options.
 contact_viewport = workspace.viewports[1]
@@ -129,7 +129,7 @@ contact_viewport.save_snapshot(
 )
 
 # %%
-# Set Display Options
+# Set display options
 # --------------------
 # Configure active series and display options for the contact viewport.
 contact_opts.active_series = ["Max. Normal Stiffness"]
