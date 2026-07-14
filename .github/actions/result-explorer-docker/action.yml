@@ -58,7 +58,7 @@ runs:
       # a release artifact and download it here
       uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       with:
-        repository: ansys/result-explorer
+        repository: ansys-internal/result-explorer
         token: ${{ inputs.token }}
         path: result-explorer
         persist-credentials: false
