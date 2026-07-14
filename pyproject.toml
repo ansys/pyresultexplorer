@@ -38,7 +38,7 @@ dev = [
     "pytest==9.1.1",
     "pytest-cov==7.1.0",
     "pytest-playwright>=0.8.0",
-    "syrupy>=5.3.4",
+    "syrupy>=5.5.1",
     "Pillow>=12.0.0",
     "pytest-rerunfailures==16.3",
 ]
