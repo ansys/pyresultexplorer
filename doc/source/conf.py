@@ -38,7 +38,7 @@ html_favicon = ansys_favicon
 
 # specify the location of your github repo
 html_theme_options = {
-    "github_url": "https://github.com/ansys-internal/pyresultexplorer",
+    "github_url": "https://github.com/ansys/pyresultexplorer",
     "show_prev_next": False,
     "show_breadcrumbs": True,
     "additional_breadcrumbs": [
@@ -208,7 +208,7 @@ master_doc = "index"
 
 # Keep these while the repository is private
 linkcheck_ignore = [
-    "https://github.com/ansys-internal/pyresultexplorer/*",
+    "https://github.com/ansys/pyresultexplorer/*",
     "https://pyresultexplorer.docs.pyansys.com/version/stable/*",
     "https://pypi.org/project/ansys-result-explorer-core",
 ]
@@ -217,5 +217,5 @@ linkcheck_ignore = [
 # available until the release is published.
 if switcher_version != "dev":
     linkcheck_ignore.append(
-        f"https://github.com/ansys-internal/pyresultexplorer/releases/tag/v{__version__}"
+        f"https://github.com/ansys/pyresultexplorer/releases/tag/v{__version__}"
     )

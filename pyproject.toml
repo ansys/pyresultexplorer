@@ -69,9 +69,9 @@ cache-dir = "./.uv_cache"
 ansys-api-result-explorer = { git = "https://github.com/ansys-internal/result-explorer.git", subdirectory = "api/python", rev = "23d2f627124fc1e9ea692e6918fa4bd5886017dd" }
 
 [project.urls]
-Source = "https://github.com/ansys-internal/pyresultexplorer"
-Tracker = "https://github.com/ansys-internal/pyresultexplorer/issues"
-Homepage = "https://github.com/ansys-internal/pyresultexplorer"
+Source = "https://github.com/ansys/pyresultexplorer"
+Tracker = "https://github.com/ansys/pyresultexplorer/issues"
+Homepage = "https://github.com/ansys/pyresultexplorer"
 
 [tool.ruff]
 line-length = 100
@@ -123,8 +123,8 @@ directory = "doc/changelog.d"
 filename = "doc/source/changelog.rst"
 start_string = ".. towncrier release notes start\n"
 template = "doc/changelog.d/changelog_template.jinja"
-title_format = "`{version} <https://github.com/ansys-internal/pyresultexplorer/releases/tag/v{version}>`_ - {project_date}"
-issue_format = "`#{issue} <https://github.com/ansys-internal/pyresultexplorer/pull/{issue}>`_"
+title_format = "`{version} <https://github.com/ansys/pyresultexplorer/releases/tag/v{version}>`_ - {project_date}"
+issue_format = "`#{issue} <https://github.com/ansys/pyresultexplorer/pull/{issue}>`_"
 
 [[tool.towncrier.type]]
 directory = "breaking"
