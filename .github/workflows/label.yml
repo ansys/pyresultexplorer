@@ -43,7 +43,7 @@ jobs:
 
     # Label based on modified files or branch name
     - name: "Label based on changed files"
-      uses: actions/labeler@f27b608878404679385c85cfa523b85ccb86e213 # v6.1.0
+      uses: actions/labeler@b8dd2d9be0f68b860e7dae5dae7d772984eacd6d # v6.2.0
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         sync-labels: true
@@ -77,7 +77,7 @@ jobs:
       pull-requests: write # Needed to create changelog fragment PR comments
     runs-on: ubuntu-latest
     steps:
-    - uses: ansys/actions/doc-changelog@v10
+    - uses: ansys/actions/doc-changelog@v10.3.4
       with:
         token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
         bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
