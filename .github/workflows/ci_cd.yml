@@ -37,7 +37,7 @@ jobs:
       contents: write # Required to push the CHANGELOG update commit, can be "read" once project is public
       pull-requests: write # Required to open the CHANGELOG update PR
     steps:
-      - uses: ansys/actions/doc-deploy-changelog@7419880d64bb0bba83f968ca803611df0b76faf0 # v10.3.4
+      - uses: ansys/actions/doc-deploy-changelog@84b6533ae76f5dde69a1df26c18682160a8121cf # v10.3.5
         with:
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
@@ -50,7 +50,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: ansys/actions/code-style@7419880d64bb0bba83f968ca803611df0b76faf0 # v10.3.4
+      - uses: ansys/actions/code-style@84b6533ae76f5dde69a1df26c18682160a8121cf # v10.3.5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -61,7 +61,7 @@ jobs:
       contents: read
     steps:
       - name: PyAnsys documentation style checks
-        uses: ansys/actions/doc-style@7419880d64bb0bba83f968ca803611df0b76faf0 # v10.3.4
+        uses: ansys/actions/doc-style@84b6533ae76f5dde69a1df26c18682160a8121cf # v10.3.5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -71,7 +71,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: ansys/actions/check-actions-security@7419880d64bb0bba83f968ca803611df0b76faf0 # v10.3.4
+      - uses: ansys/actions/check-actions-security@84b6533ae76f5dde69a1df26c18682160a8121cf # v10.3.5
         with:
           generate-summary: true
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -171,7 +171,7 @@ jobs:
           installation-path: ${{ env.RX_SERVER_INSTALLATION_PATH }}
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
 
-      - uses: ansys/actions/doc-build@7419880d64bb0bba83f968ca803611df0b76faf0 # v10.3.4
+      - uses: ansys/actions/doc-build@84b6533ae76f5dde69a1df26c18682160a8121cf # v10.3.5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           optional-dependencies-name: "playwright"
@@ -195,7 +195,7 @@ jobs:
           password: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
 
       - name: "Build library source and wheel artifacts"
-        uses: ansys/actions/build-library@7419880d64bb0bba83f968ca803611df0b76faf0 # v10.3.4
+        uses: ansys/actions/build-library@84b6533ae76f5dde69a1df26c18682160a8121cf # v10.3.5
         with:
           library-name: ${{ env.LIBRARY_NAME }}
 
@@ -207,7 +207,7 @@ jobs:
     needs: [doc-build, build-library, tests-docker, tests-native]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
-      - uses: ansys/actions/doc-deploy-dev@7419880d64bb0bba83f968ca803611df0b76faf0 # v10.3.4
+      - uses: ansys/actions/doc-deploy-dev@84b6533ae76f5dde69a1df26c18682160a8121cf # v10.3.5
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -222,7 +222,7 @@ jobs:
     needs: [doc-build, build-library, tests-docker, tests-native]
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     steps:
-      - uses: ansys/actions/doc-deploy-stable@7419880d64bb0bba83f968ca803611df0b76faf0 # v10.3.4
+      - uses: ansys/actions/doc-deploy-stable@84b6533ae76f5dde69a1df26c18682160a8121cf # v10.3.5
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -245,7 +245,7 @@ jobs:
           path: ${{ env.LIBRARY_NAME }}-artifacts
 
       - name: "Upload artifacts to PyPI using trusted publisher"
-        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # v1.14.0
+        uses: pypa/gh-action-pypi-publish@ba38be9e461d3875417946c167d0b5f3d385a247 # v1.14.1
         with:
           repository-url: "https://upload.pypi.org/legacy/"
           print-hash: true
@@ -253,7 +253,7 @@ jobs:
           skip-existing: false
 
       - name: Release to GitHub
-        uses: ansys/actions/release-github@7419880d64bb0bba83f968ca803611df0b76faf0 # v10.3.4
+        uses: ansys/actions/release-github@84b6533ae76f5dde69a1df26c18682160a8121cf # v10.3.5
         with:
           library-name: ${{ env.LIBRARY_NAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
