@@ -26,6 +26,9 @@ dependencies = [
 [project.scripts]
 pyrx-knowledge-generate = "ansys.result_explorer.knowledge.cli:main"
 
+[tool.uv.sources]
+ansys-result-explorer-core = { path = "..", editable = true }
+
 [tool.flit.module]
 name = "ansys.result_explorer.knowledge"
 
