@@ -20,6 +20,7 @@ env:
   MAIN_PYTHON_VERSION: '3.12'
   DOCUMENTATION_CNAME: 'fuzzy-adventure-gzkzk5l.pages.github.io'
   LIBRARY_NAME: 'ansys-result-explorer-core'
+  KNOWLEDGE_LIBRARY_NAME: 'ansys-result-explorer-knowledge'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -199,12 +200,59 @@ jobs:
         with:
           library-name: ${{ env.LIBRARY_NAME }}
 
+  build-knowledge-library:
+    name: "Build knowledge library"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: extractions/netrc@c3879108aae6b4ed5c4eb60854ae04f06d2f2f68 # v3.0.0
+        with:
+          machine: github.com
+          username: pyansys-ci-bot
+          password: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+
+      - name: "Install uv"
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          activate-environment: true
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          enable-cache: "false"
+
+      - name: "Install dependencies"
+        run: |
+          uv sync --group dev
+
+      - name: "Generate knowledge artifacts"
+        env:
+          PYTHONPATH: src:knowledge/src
+        run: |
+          uv run python -m ansys.result_explorer.knowledge.cli \
+            --repo-root . \
+            --output-dir knowledge/src/ansys/result_explorer/knowledge/data
+
+      - name: "Build knowledge source and wheel artifacts"
+        run: |
+          uv run --directory knowledge python -m pip install build
+          uv run --directory knowledge python -m build
+
+      - name: "Upload knowledge library artifacts"
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ env.KNOWLEDGE_LIBRARY_NAME }}-artifacts
+          path: knowledge/dist
+          retention-days: 7
+
   doc-deploy-dev:
     name: "Deploy development documentation"
     runs-on: ubuntu-latest
     permissions:
       contents: write # Required to deploy documentation to gh-pages
-    needs: [doc-build, build-library, tests-docker, tests-native]
+    needs: [doc-build, build-library, build-knowledge-library, tests-docker, tests-native]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
       - uses: ansys/actions/doc-deploy-dev@84b6533ae76f5dde69a1df26c18682160a8121cf # v10.3.5
@@ -219,7 +267,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write # Required to deploy documentation to gh-pages
-    needs: [doc-build, build-library, tests-docker, tests-native]
+    needs: [doc-build, build-library, build-knowledge-library, tests-docker, tests-native]
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     steps:
       - uses: ansys/actions/doc-deploy-stable@84b6533ae76f5dde69a1df26c18682160a8121cf # v10.3.5
@@ -232,7 +280,7 @@ jobs:
   release:
     name: Release project
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
-    needs: [build-library]
+    needs: [build-library, build-knowledge-library]
     runs-on: ubuntu-latest
     permissions:
       id-token: write  # Required for PyPI trusted publishing (OIDC)
@@ -242,14 +290,20 @@ jobs:
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: ${{ env.LIBRARY_NAME }}-artifacts
-          path: ${{ env.LIBRARY_NAME }}-artifacts
+          path: release-artifacts
+
+      - name: "Download the knowledge library artifacts from package step"
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: ${{ env.KNOWLEDGE_LIBRARY_NAME }}-artifacts
+          path: release-artifacts
 
       - name: "Upload artifacts to PyPI using trusted publisher"
         uses: pypa/gh-action-pypi-publish@ba38be9e461d3875417946c167d0b5f3d385a247 # v1.14.1
         with:
           repository-url: "https://upload.pypi.org/legacy/"
           print-hash: true
-          packages-dir: ${{ env.LIBRARY_NAME }}-artifacts
+          packages-dir: release-artifacts
           skip-existing: false
 
       - name: Release to GitHub

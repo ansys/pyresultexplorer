@@ -169,3 +169,10 @@ tests/__snapshots__/diffs/
 
 _autosummary
 _gallery_backreferences
+
+api_models.py
+generate_server_models.py
+
+# Generated knowledge artifacts (built in CI and shipped in wheel)
+knowledge/src/ansys/result_explorer/knowledge/data/*.json
+knowledge/src/ansys/result_explorer/knowledge/data/*.jsonl
