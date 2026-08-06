@@ -235,6 +235,13 @@ jobs:
             --repo-root . \
             --output-dir knowledge/src/ansys/result_explorer/knowledge/data
 
+      - name: "Validate generated knowledge artifacts"
+        run: |
+          test -s knowledge/src/ansys/result_explorer/knowledge/data/manifest.json
+          test -s knowledge/src/ansys/result_explorer/knowledge/data/api_index.jsonl
+          test -s knowledge/src/ansys/result_explorer/knowledge/data/examples_index.jsonl
+          test -s knowledge/src/ansys/result_explorer/knowledge/data/guide_index.jsonl
+
       - name: "Build knowledge source and wheel artifacts"
         run: |
           uv run --directory knowledge python -m pip install build

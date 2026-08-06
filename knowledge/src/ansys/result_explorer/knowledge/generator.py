@@ -56,6 +56,7 @@ def generate_knowledge_artifacts(repo_root: str | Path, output_dir: str | Path) 
 
     knowledge_version = _read_project_version(repo / "knowledge" / "pyproject.toml")
     core_version = _read_project_version(repo / "pyproject.toml")
+    _validate_version_coupling(knowledge_version=knowledge_version, core_version=core_version)
     source_commit = _read_git_commit(repo)
 
     api_records = sorted(_build_api_records(), key=lambda rec: rec.id)
@@ -280,6 +281,15 @@ def _read_project_version(pyproject_path: Path) -> str:
     with pyproject_path.open("rb") as stream:
         data = tomllib.load(stream)
     return str(data["project"]["version"])
+
+
+def _validate_version_coupling(*, knowledge_version: str, core_version: str) -> None:
+    """Validate strict version coupling between knowledge and core packages."""
+    if knowledge_version != core_version:
+        raise ValueError(
+            "Knowledge package version must match core package version exactly. "
+            f"knowledge={knowledge_version!r}, core={core_version!r}."
+        )
 
 
 def _read_git_commit(repo_root: Path) -> str:

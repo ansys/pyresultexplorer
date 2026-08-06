@@ -21,6 +21,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from ansys.result_explorer.knowledge import generator
 from ansys.result_explorer.knowledge.schema import KnowledgeRecord
 
@@ -103,3 +105,26 @@ version = "0.1.dev0"
     assert manifest_data["knowledge_version"] == "0.1.dev0"
     assert manifest_data["source_commit"] == "deadbeef"
     assert set(manifest_data["corpus_files"]) == {"api", "examples", "guide"}
+
+
+def test_generate_knowledge_artifacts_fails_on_version_mismatch(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    """Reject artifact generation when knowledge and core versions differ."""
+    repo_root = tmp_path / "repo"
+    (repo_root / "knowledge").mkdir(parents=True)
+
+    (repo_root / "pyproject.toml").write_text(
+        '[project]\nversion = "0.1.dev0"\n',
+        encoding="utf-8",
+    )
+    (repo_root / "knowledge" / "pyproject.toml").write_text(
+        '[project]\nversion = "0.2.dev0"\n',
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr(generator, "_read_git_commit", lambda _repo: "deadbeef")
+
+    with pytest.raises(ValueError, match="must match core package version exactly"):
+        generator.generate_knowledge_artifacts(repo_root=repo_root, output_dir=tmp_path / "out")

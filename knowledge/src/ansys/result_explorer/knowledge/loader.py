@@ -18,6 +18,7 @@
 
 from __future__ import annotations
 
+import importlib.metadata as importlib_metadata
 import json
 from dataclasses import dataclass
 from importlib import resources
@@ -92,6 +93,7 @@ def load_knowledge_store(data_dir: str | Path | None = None) -> KnowledgeStore:
 
     data_path = Path(str(data_dir))
     manifest = _read_manifest(data_path / "manifest.json")
+    _validate_manifest_versions(manifest)
 
     records_by_corpus: dict[str, list[KnowledgeRecord]] = {}
     for corpus, file_name in manifest.corpus_files.items():
@@ -117,6 +119,31 @@ def _read_jsonl_records(path: Path) -> list[KnowledgeRecord]:
         records.append(KnowledgeRecord(**json.loads(stripped)))
 
     return records
+
+
+def _validate_manifest_versions(manifest: KnowledgeManifest) -> None:
+    """Validate strict version compatibility for loaded artifact manifests."""
+    if manifest.knowledge_version != manifest.core_version:
+        raise ValueError(
+            "Knowledge artifact manifest has incompatible versions: "
+            f"knowledge_version={manifest.knowledge_version!r}, "
+            f"core_version={manifest.core_version!r}."
+        )
+
+    try:
+        installed_core_version = importlib_metadata.version("ansys-result-explorer-core")
+    except importlib_metadata.PackageNotFoundError as exc:
+        raise ValueError(
+            "ansys-result-explorer-core is not installed in this environment; "
+            "cannot validate knowledge artifact compatibility."
+        ) from exc
+
+    if installed_core_version != manifest.core_version:
+        raise ValueError(
+            "Knowledge artifact manifest is incompatible with installed core package. "
+            f"manifest_core={manifest.core_version!r}, "
+            f"installed_core={installed_core_version!r}."
+        )
 
 
 def _tokenize(text: str) -> set[str]:

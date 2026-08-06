@@ -21,6 +21,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
+from ansys.result_explorer.knowledge import loader
 from ansys.result_explorer.knowledge.loader import load_knowledge_store
 
 
@@ -71,3 +74,40 @@ def test_load_knowledge_store_and_search(tmp_path: Path) -> None:
 
     assert len(matches) == 1
     assert matches[0].id == "2"
+
+
+def test_load_knowledge_store_fails_on_manifest_mismatch(tmp_path: Path) -> None:
+    """Reject loading when manifest versions are internally inconsistent."""
+    manifest = {
+        "schema_version": "1",
+        "knowledge_version": "0.2.dev0",
+        "core_version": "0.1.dev0",
+        "source_commit": "abc",
+        "generated_at_utc": "2026-01-01T00:00:00+00:00",
+        "corpus_files": {},
+    }
+    (tmp_path / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="incompatible versions"):
+        load_knowledge_store(tmp_path)
+
+
+def test_load_knowledge_store_fails_on_installed_core_mismatch(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    """Reject loading when installed core version differs from manifest core version."""
+    manifest = {
+        "schema_version": "1",
+        "knowledge_version": "0.1.dev0",
+        "core_version": "0.1.dev0",
+        "source_commit": "abc",
+        "generated_at_utc": "2026-01-01T00:00:00+00:00",
+        "corpus_files": {},
+    }
+    (tmp_path / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+
+    monkeypatch.setattr(loader.importlib_metadata, "version", lambda _pkg: "9.9.dev0")
+
+    with pytest.raises(ValueError, match="incompatible with installed core package"):
+        load_knowledge_store(tmp_path)
