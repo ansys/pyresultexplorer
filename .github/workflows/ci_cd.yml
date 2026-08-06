@@ -244,8 +244,7 @@ jobs:
 
       - name: "Build knowledge source and wheel artifacts"
         run: |
-          uv run python -m pip install build
-          uv run python -m build knowledge
+          uv run --with build python -m build knowledge
 
       - name: "Upload knowledge library artifacts"
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
