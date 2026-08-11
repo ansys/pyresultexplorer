@@ -18,7 +18,7 @@ With PyResultExplorer you can:
 To install PyResultExplorer (temporarily, until it's not open-sourced):
 
 ```bash
-python -m pip install git+https://github.com/ansys-internal/pyresultexplorer
+python -m pip install git+https://github.com/ansys/pyresultexplorer
 ```
 
 ### For developers
@@ -28,7 +28,7 @@ Installing PyResultExplorer in developer mode allows you to modify the source an
 Start by cloning this repository:
 
 ```bash
-git clone https://github.com/ansys-internal/pyresultexplorer
+git clone https://github.com/ansys/pyresultexplorer
 ```
 
 Create a fresh-clean Python environment and activate it:
@@ -97,7 +97,7 @@ This project is licensed under the Apache 2.0 license agreement. See the [LICENS
 ## Resources
 
 - [PyResultExplorer documentation](https://fuzzy-adventure-gzkzk5l.pages.github.io/)
-- [Repository's Issues page](https://github.com/ansys-internal/pyresultexplorer/issues)
-- [Repository's Discussions page](https://github.com/ansys-internal/pyresultexplorer/discussions)
+- [Repository's Issues page](https://github.com/ansys/pyresultexplorer/issues)
+- [Repository's Discussions page](https://github.com/ansys/pyresultexplorer/discussions)
 
 For general PyAnsys questions, email [pyansys.core@ansys.com](mailto:pyansys.core@ansys.com).

@@ -53,6 +53,6 @@ Reporting vulnerabilities
 ==========================
 
 If you discover a security vulnerability in PyResultExplorer, please do not report it
-through GitHub issues. Instead, refer to the `SECURITY.md <https://github.com/ansys-internal/pyresultexplorer/blob/main/SECURITY.md>`_
+through GitHub issues. Instead, refer to the `SECURITY.md <https://github.com/ansys/pyresultexplorer/blob/main/SECURITY.md>`_
 file in the repository for instructions on how to report security issues to the
 PyAnsys Core team.

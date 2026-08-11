@@ -25,7 +25,7 @@ jobs:
       contents: read
       issues: write # Required to manage repository labels
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: micnncim/action-label-syncer@3abd5ab72fda571e69fffd97bd4e0033dd5f495c # v1.3.0
@@ -43,7 +43,7 @@ jobs:
 
     # Label based on modified files or branch name
     - name: "Label based on changed files"
-      uses: actions/labeler@f27b608878404679385c85cfa523b85ccb86e213 # v6.1.0
+      uses: actions/labeler@bf12e9b00b37c5c0ca2b87b79b2daf7891dbda13 # v7.0.0
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         sync-labels: true
@@ -62,12 +62,12 @@ jobs:
         issue-number: ${{ github.event.pull_request.number }}
         body: |
           Please add one of the following labels to add this contribution to the Release Notes :point_down:
-          - [bug](https://github.com/ansys-internal/pyresultexplorer/pulls?q=label%3Abug+)
-          - [documentation](https://github.com/ansys-internal/pyresultexplorer/pulls?q=label%3Adocumentation+)
-          - [enhancement](https://github.com/ansys-internal/pyresultexplorer/pulls?q=label%3Aenhancement+)
-          - [good first issue](https://github.com/ansys-internal/pyresultexplorer/pulls?q=label%3Agood+first+issue)
-          - [maintenance](https://github.com/ansys-internal/pyresultexplorer/pulls?q=label%3Amaintenance+)
-          - [release](https://github.com/ansys-internal/pyresultexplorer/pulls?q=label%3Arelease+)
+          - [bug](https://github.com/ansys/pyresultexplorer/pulls?q=label%3Abug+)
+          - [documentation](https://github.com/ansys/pyresultexplorer/pulls?q=label%3Adocumentation+)
+          - [enhancement](https://github.com/ansys/pyresultexplorer/pulls?q=label%3Aenhancement+)
+          - [good first issue](https://github.com/ansys/pyresultexplorer/pulls?q=label%3Agood+first+issue)
+          - [maintenance](https://github.com/ansys/pyresultexplorer/pulls?q=label%3Amaintenance+)
+          - [release](https://github.com/ansys/pyresultexplorer/pulls?q=label%3Arelease+)
 
   changelog-fragment:
     name: "Create changelog fragment"
@@ -77,7 +77,7 @@ jobs:
       pull-requests: write # Needed to create changelog fragment PR comments
     runs-on: ubuntu-latest
     steps:
-    - uses: ansys/actions/doc-changelog@v10
+    - uses: ansys/actions/doc-changelog@v10.3.6
       with:
         token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
         bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}

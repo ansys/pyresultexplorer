@@ -41,7 +41,7 @@ Until the project is open sourced, you can install ``pyresultexplorer`` directly
 
 .. code:: bash
 
-    python -m pip install git+https://github.com/ansys-internal/pyresultexplorer
+    python -m pip install git+https://github.com/ansys/pyresultexplorer
 
 
 Launch or connect to Result Explorer
@@ -106,12 +106,12 @@ The current version of PyResultExplorer is compatible with Ansys Result Explorer
 Report issues
 =============
 
-Use the `PyResultExplorer Issues <https://github.com/ansys-internal/pyresultexplorer/issues>`_
+Use the `PyResultExplorer Issues <https://github.com/ansys/pyresultexplorer/issues>`_
 page to report bugs and request new features. When possible, use the issue
 templates provided. If your issue does not fit into one of these templates,
 click the link for opening a blank issue.
 
-On the `PyResultExplorer Discussions <https://github.com/ansys-internal/pyresultexplorer/discussions>`_ page
+On the `PyResultExplorer Discussions <https://github.com/ansys/pyresultexplorer/discussions>`_ page
 or the `Discussions <https://discuss.ansys.com/>`_ page on the Ansys Developer portal,
 you can post questions, share ideas, and get community feedback.
 

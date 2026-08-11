@@ -9,11 +9,11 @@ inputs:
     required: true
 
   ghcr-username:
-    description: 'Username to access the ansys-internal github docker registry'
+    description: 'Username to access the ansys github docker registry'
     required: true
 
   ghcr-token:
-    description: 'Token to access the ansys-internal github docker registry'
+    description: 'Token to access the ansys github docker registry'
     required: true
 
   license-server:

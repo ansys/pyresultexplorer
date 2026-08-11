@@ -17,7 +17,7 @@ Installing PyResultExplorer in developer mode allows you to modify the source an
 
    .. code:: bash
 
-      git clone https://github.com/ansys-internal/pyresultexplorer
+      git clone https://github.com/ansys/pyresultexplorer
 
 #. Create a fresh-clean Python environment and activate it, `uv <https://pypi.org/project/uv/>`_ is recommended for this purpose:
 
