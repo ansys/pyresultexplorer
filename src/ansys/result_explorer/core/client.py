@@ -126,6 +126,7 @@ class Client:
         self._host = host
         self._grpc_port = grpc_port
         self._session_id = session_id
+        self._ca_cert_path = ca_cert_path
         self._instance = instance
         self._grpc_metadata = [("x-session-id", self._session_id)]
         if custom_headers:
@@ -304,6 +305,19 @@ class Client:
             ca_cert_path=ca_cert_path,
             insecure=(ca_cert_path is None),
         )
+
+    @property
+    def connection_token(self) -> str:
+        """Get a base64 encoded json object that contains the connection info."""
+        data = {
+            "host": self._host,
+            "grpcPort": self._grpc_port,
+            "sessionId": self._session_id,
+            "caCertPath": self._ca_cert_path,
+        }
+        json_string = json.dumps(data)
+        encoded_bytes = base64.b64encode(json_string.encode("utf-8"))
+        return encoded_bytes.decode("utf-8")
 
     def ls(
         self,

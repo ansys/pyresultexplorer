@@ -415,6 +415,7 @@ class ResultExplorerServerProcess:
         try:
             self._process = subprocess.Popen(
                 cmd,
+                stdin=subprocess.DEVNULL,
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
                 text=True,

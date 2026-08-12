@@ -26,6 +26,7 @@ from unittest.mock import Mock, patch
 import pytest
 import requests
 
+from ansys.result_explorer.core import Client
 from ansys.result_explorer.core.launch import (
     RX_DESKTOP_ENV_VAR,
     RX_SERVER_ENV_VAR,
@@ -602,3 +603,21 @@ class TestServerLaunchIntegration:
         # Stop both clients at the end
         client1.stop()
         client2.stop()
+
+    def test_connection_token_reconnect(self, skip_if_no_native_launch):
+
+        server_config = ServerLaunchConfig(num_threads=2, ssl=False)
+        web_config = WebLaunchConfig(browser_type=BrowserType.PLAYWRIGHT_CHROMIUM_HEADLESS)
+
+        client1 = launch_result_explorer(server_config, web_config)
+
+        assert client1.connection_token is not None
+
+        client2 = Client.connect_with_token(client1.connection_token)
+
+        assert client2.connection_token == client1.connection_token
+
+        num_ws = len(client1.list_workspaces())
+        assert num_ws > 0
+        client1.create_workspace("Workspace for Reconnect Test")
+        assert len(client2.list_workspaces()) == num_ws + 1
