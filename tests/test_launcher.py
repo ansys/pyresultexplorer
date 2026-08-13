@@ -621,3 +621,5 @@ class TestServerLaunchIntegration:
         assert num_ws > 0
         client1.create_workspace("Workspace for Reconnect Test")
         assert len(client2.list_workspaces()) == num_ws + 1
+
+        client1.stop()
