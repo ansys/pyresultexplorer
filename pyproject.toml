@@ -22,7 +22,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "ansys-api-result-explorer",
+    "ansys-api-result-explorer==0.1.1",
     "grpcio>=1.63.0",
     "protobuf",
     "python-slugify>=8.0.4",
@@ -34,13 +34,13 @@ playwright = ["playwright>=1.62.0"]
 
 [dependency-groups]
 dev = [
-    "pre-commit==4.6.1",
+    "pre-commit==4.6.2",
     "pytest==9.1.1",
     "pytest-cov==7.1.0",
-    "pytest-playwright>=0.8.0",
+    "pytest-playwright>=0.9.0",
     "syrupy>=5.3.4",
     "Pillow>=12.0.0",
-    "pytest-rerunfailures==16.3",
+    "pytest-rerunfailures==16.4",
 ]
 doc = [
     "ansys-sphinx-theme==1.9.0",
@@ -64,9 +64,6 @@ name = "ansys.result_explorer.core"
 [tool.uv]
 default-groups = ["dev"]
 cache-dir = "./.uv_cache"
-
-[tool.uv.sources]
-ansys-api-result-explorer = { git = "https://github.com/ansys-internal/result-explorer.git", subdirectory = "api/python", rev = "23d2f627124fc1e9ea692e6918fa4bd5886017dd" }
 
 [project.urls]
 Source = "https://github.com/ansys/pyresultexplorer"
