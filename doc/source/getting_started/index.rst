@@ -115,4 +115,4 @@ On the `PyResultExplorer Discussions <https://github.com/ansys/pyresultexplorer/
 or the `Discussions <https://discuss.ansys.com/>`_ page on the Ansys Developer portal,
 you can post questions, share ideas, and get community feedback.
 
-To reach the project support team, email `pyansys.core@ansys.com <pyansys.core@ansys.com>`_.
+To reach the project support team, email `pyansys-core@synopsys.com <pyansys-core@synopsys.com>`_.

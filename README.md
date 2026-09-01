@@ -100,4 +100,4 @@ This project is licensed under the Apache 2.0 license agreement. See the [LICENS
 - [Repository's Issues page](https://github.com/ansys/pyresultexplorer/issues)
 - [Repository's Discussions page](https://github.com/ansys/pyresultexplorer/discussions)
 
-For general PyAnsys questions, email [pyansys.core@ansys.com](mailto:pyansys.core@ansys.com).
+For general PyAnsys questions, email [pyansys-core@synopsys.com](mailto:pyansys-core@synopsys.com).
