@@ -19,16 +19,13 @@
 from __future__ import annotations
 
 import weakref
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ..client import Client
 
-PBType = TypeVar("PBType")
-ParentType = TypeVar("ParentType", bound="BaseEntity")
 
-
-class BaseEntity(Generic[PBType]):
+class BaseEntity[PBType]:
     """Base class for all domain objects wrapping protobuf messages."""
 
     def __init__(self, pb_obj: PBType, client: Client):
@@ -50,7 +47,7 @@ class BaseEntity(Generic[PBType]):
         return self._pb.id
 
 
-class NamedBaseEntity(BaseEntity[PBType]):
+class NamedBaseEntity[PBType](BaseEntity[PBType]):
     """Base class for entities that include a name field."""
 
     def __repr__(self) -> str:
@@ -70,7 +67,7 @@ class NamedBaseEntity(BaseEntity[PBType]):
         return self._pb.name if hasattr(self._pb, "name") else ""
 
 
-class SubEntity(NamedBaseEntity[PBType], Generic[PBType, ParentType]):
+class SubEntity[PBType, ParentType: BaseEntity](NamedBaseEntity[PBType]):
     """Base class for entities that are sub-entities of a parent entity."""
 
     def __init__(self, pb_obj: PBType, client: Client, parent: ParentType):
