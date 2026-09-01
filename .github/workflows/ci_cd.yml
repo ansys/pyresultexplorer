@@ -18,7 +18,7 @@ on:
 
 env:
   MAIN_PYTHON_VERSION: '3.12'
-  DOCUMENTATION_CNAME: 'fuzzy-adventure-gzkzk5l.pages.github.io'
+  DOCUMENTATION_CNAME: 'result-explorer.docs.pyansys.com'
   LIBRARY_NAME: 'ansys-result-explorer-core'
 
 concurrency:
