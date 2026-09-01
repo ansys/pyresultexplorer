@@ -55,7 +55,7 @@ The style checks take advantage of `pre-commit`. You can install it with `pre-co
 
 ## Basic usage
 
-The following code snippet shows how to launch a new Result Explorer instance, 
+The following code snippet shows how to launch a new Result Explorer instance,
 create a solution and load a displacement view.
 
 ```python

@@ -41,11 +41,11 @@ If the instance was launched with default settings, the connection is secure by 
   You can do this by passing the CA certificate path to the :meth:`Client constructor <ansys.result_explorer.core.Client>` using the ``ca_cert_path`` parameter.
 
 
-Library and third-party vulnerabilities 
+Library and third-party vulnerabilities
 =======================================
 
 PyResultExplorer is regularly scanned for security vulnerabilities using automated tools
-such as Bandit for code security analysis and Safety for dependency vulnerability checking. 
+such as Bandit for code security analysis and Safety for dependency vulnerability checking.
 These scans are integrated into the CI pipeline to ensure continuous security monitoring.
 
 

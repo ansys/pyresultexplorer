@@ -139,7 +139,7 @@ return_type
   Examples
   --------
   Create an instance and perform a basic operation.
-  
+
   >>> from mymodule import MyClass
   >>> obj = MyClass()
   >>> result = obj.do_something()
