@@ -126,7 +126,7 @@ jobs:
     with:
       deployment: docker
       update-snapshots: false
-      python-versions: ${{ github.event_name == 'pull_request' && '["3.12"]' || '["3.11", "3.12", "3.13", "3.14"]' }}
+      python-versions: ${{ github.event_name == 'pull_request' && '["3.12"]' || '["3.12", "3.13", "3.14"]' }}
       rx-version: 'v2026.7.0' # revert to dev after first release of PyRX
     secrets:
       PYANSYS_CI_BOT_TOKEN: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
@@ -142,7 +142,7 @@ jobs:
     with:
       deployment: native
       update-snapshots: ${{ github.event_name == 'workflow_dispatch' && inputs.update-snapshots || false }}
-      python-versions: ${{ github.event_name == 'pull_request' && '["3.12"]' || '["3.11", "3.12", "3.13", "3.14"]' }}
+      python-versions: ${{ github.event_name == 'pull_request' && '["3.12"]' || '["3.12", "3.13", "3.14"]' }}
       upload-coverage: true
       rx-version: 'v2026.7.0' # revert to dev after first release of PyRX
     secrets:

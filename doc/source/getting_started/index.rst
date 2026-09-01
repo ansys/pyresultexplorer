@@ -34,7 +34,7 @@ so that PyResultExplorer can locate it. You only need to set one:
 Install the package
 -------------------
 
-The latest ``ansys.result_explorer.core`` package supports Python 3.11 through Python 3.14 on Windows, Linux, and Mac OS.
+The latest ``ansys.result_explorer.core`` package supports Python 3.12 through Python 3.14 on Windows, Linux, and Mac OS.
 You should consider installing PyResultExplorer in a virtual environment.
 
 Until the project is open sourced, you can install ``pyresultexplorer`` directly from sources:
