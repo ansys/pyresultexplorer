@@ -37,7 +37,13 @@ Install the package
 The latest ``ansys.result_explorer.core`` package supports Python 3.12 through Python 3.14 on Windows, Linux, and Mac OS.
 You should consider installing PyResultExplorer in a virtual environment.
 
-Until the project is open sourced, you can install ``pyresultexplorer`` directly from sources:
+You can install ``ansys-result-explorer-core`` directly from sources:
+
+.. code:: bash
+
+    python -m pip install ansys-result-explorer-core
+
+If you want to install this project directly from the source, you can use the following command:
 
 .. code:: bash
 

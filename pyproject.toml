@@ -10,8 +10,8 @@ description = "Python interface to Ansys Result Explorer"
 readme = "README.md"
 license = "Apache-2.0"
 license-files = [ "LICENSE" ]
-maintainers = [ { name = "Synopsys, Inc. and ANSYS, Inc." } ]
-authors = [ { name = "Synopsys, Inc. and ANSYS, Inc." } ]
+maintainers = [ { name = "Synopsys, Inc. and ANSYS, Inc.", email = "pyansys-core@synopsys.com" } ]
+authors = [ { name = "Synopsys, Inc. and ANSYS, Inc.", email = "pyansys-core@synopsys.com" } ]
 requires-python = ">=3.12,<4.0"
 classifiers = [
   "Development Status :: 4 - Beta",

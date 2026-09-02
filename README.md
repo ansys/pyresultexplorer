@@ -15,10 +15,10 @@ With PyResultExplorer you can:
 
 ### For users
 
-To install PyResultExplorer (temporarily, until it's not open-sourced):
+To install PyResultExplorer:
 
 ```bash
-python -m pip install git+https://github.com/ansys/pyresultexplorer
+python -m pip install ansys-result-explorer-core
 ```
 
 ### For developers
@@ -96,7 +96,7 @@ This project is licensed under the Apache 2.0 license agreement. See the [LICENS
 
 ## Resources
 
-- [PyResultExplorer documentation](https://fuzzy-adventure-gzkzk5l.pages.github.io/)
+- [PyResultExplorer documentation](https://result-explorer.docs.pyansys.com/)
 - [Repository's Issues page](https://github.com/ansys/pyresultexplorer/issues)
 - [Repository's Discussions page](https://github.com/ansys/pyresultexplorer/discussions)
 
