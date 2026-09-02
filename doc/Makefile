@@ -28,4 +28,5 @@ clean:
 # Customized pdf for svg format images
 pdf:
 	@echo "No PDF documentation build available..."
-	touch $(BUILDDIR)/ansys-result-explorer-core.pdf
+	mkdir -p $(BUILDDIR)/latex
+	touch $(BUILDDIR)/latex/ansys-result-explorer-core.pdf
