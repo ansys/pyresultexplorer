@@ -256,6 +256,7 @@ jobs:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     needs: [doc-build, build-library, tests-docker, tests-native, smoke-tests, update-changelog]
     runs-on: ubuntu-latest
+    environment: release
     permissions:
       id-token: write  # Required for PyPI trusted publishing (OIDC)
       contents: write  # Required to publish the GitHub release for the tagged version
