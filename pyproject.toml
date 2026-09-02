@@ -5,7 +5,7 @@ requires = [ "flit-core>=4.0.2,<5" ]
 [project]
 # Check https://flit.readthedocs.io/en/latest/pyproject_toml.html for all available sections
 name = "ansys-result-explorer-core"
-version = "0.1.dev0"
+version = "0.2.dev0"
 description = "Python interface to Ansys Result Explorer"
 readme = "README.md"
 license = "Apache-2.0"
