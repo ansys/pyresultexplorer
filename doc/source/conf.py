@@ -19,8 +19,11 @@ from ansys.result_explorer.core import __version__
 
 SKIP_GALLERY = os.environ.get("PYRX_DOC_SKIP_GALLERY", "0").lower() in ("1", "true")
 
-# Suppress config cache warning for sphinx_gallery_conf (contains unpicklable function)
-suppress_warnings = ["config.cache"]
+# Suppress config cache warning for sphinx_gallery_conf (contains unpicklable function).
+# Also suppress ambiguous Python cross-reference warnings: several ``View`` subclasses
+# expose a same-named ``type`` attribute, which Sphinx cannot disambiguate when
+# resolving the builtin ``type`` annotation used elsewhere in the codebase.
+suppress_warnings = ["config.cache", "ref.python"]
 
 # Project information
 project = "ansys-result-explorer-core"
@@ -219,3 +222,24 @@ if switcher_version != "dev":
     linkcheck_ignore.append(
         f"https://github.com/ansys/pyresultexplorer/releases/tag/v{__version__}"
     )
+
+
+def _skip_inherited_str_members(app, what, name, obj, skip, options):
+    """Skip ``str`` members inherited unchanged by ``StrEnum`` classes.
+
+    Sphinx's autosummary documents every attribute returned by ``dir()``,
+    including builtin ``str`` methods (for example, ``maketrans``) inherited
+    by the project's ``StrEnum`` classes. Autodoc cannot format the signature
+    of some of these C-implemented methods, which turns into a build error
+    when warnings are treated as errors. Skip any member that is the exact
+    same object as its ``str`` counterpart, since it isn't overridden and
+    doesn't need to be documented here.
+    """
+    if getattr(str, name, None) is obj:
+        return True
+    return None
+
+
+def setup(app):
+    """Register Sphinx event hooks."""
+    app.connect("autodoc-skip-member", _skip_inherited_str_members)
