@@ -9,6 +9,65 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.1.1 <https://github.com/ansys/pyresultexplorer/releases/tag/v0.1.1>`_ - September 02, 2026
+=============================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Ci: adding release environment
+          - `#158 <https://github.com/ansys/pyresultexplorer/pull/158>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Fix: pdf build process needs path adaptation
+          - `#159 <https://github.com/ansys/pyresultexplorer/pull/159>`_
+
+
+  .. tab-item:: Documentation
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump the sphinx-dependencies group with 2 updates
+          - `#155 <https://github.com/ansys/pyresultexplorer/pull/155>`_
+
+        * - Chore: update CHANGELOG for v0.1.0
+          - `#157 <https://github.com/ansys/pyresultexplorer/pull/157>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump pytest-rerunfailures from 16.4 to 16.6 in the pytest-dependencies group
+          - `#154 <https://github.com/ansys/pyresultexplorer/pull/154>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump the actions-deps group with 2 updates
+          - `#156 <https://github.com/ansys/pyresultexplorer/pull/156>`_
+
+
 `0.1.0 <https://github.com/ansys/pyresultexplorer/releases/tag/v0.1.0>`_ - September 02, 2026
 =============================================================================================
 
