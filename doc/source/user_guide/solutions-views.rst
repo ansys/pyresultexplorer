@@ -1,7 +1,7 @@
 Solutions and views
 ###################
 
-When a solution is created, Result Explorer automatically creates predefined views. 
+When a solution is created, Result Explorer automatically creates predefined views.
 The available predefined views depend on the solution type and on the result data available in the solution files.
 
 Creating a solution
@@ -12,15 +12,15 @@ You create a :class:`Solution <ansys.result_explorer.core.Solution>` object usin
 .. code:: python
 
     from ansys.result_explorer.core import launch_result_explorer
-    
+
     rx = launch_result_explorer()
-    
+
     # Create a solution from a result file
     solution = rx.create_solution(
         name="My Solution",
         file_path="/path/to/result/file.rst"
     )
-    
+
     print(solution)
 
 
@@ -44,10 +44,10 @@ A solution can include named selections (groups of elements/nodes), which can be
     # List solver-defined named selections
     for ns in solution.solver_named_selections:
         print(f"- {ns}")
-    
+
     # List named selections created in Result Explorer
     for ns in solution.named_selections:
-        print(f"- {ns.name}: {ns.description}") 
+        print(f"- {ns.name}: {ns.description}")
 
 
 You can also create new named selections programmatically using the :meth:`Solution.create_named_selection() <ansys.result_explorer.core.Solution.create_named_selection>` method.
@@ -55,7 +55,7 @@ You can also create new named selections programmatically using the :meth:`Solut
 .. code:: python
 
     from ansys.result_explorer.core import models
-    
+
     # Create a named selection from a range of element IDs
     ns_range = solution.create_named_selection(
         models.NamedSelectionCreate(
@@ -64,7 +64,7 @@ You can also create new named selections programmatically using the :meth:`Solut
             element_ids=[models.IdsScoping(range=models.Range(min=23, max=28))],
         )
     )
-    
+
     # Create a named selection from specific element IDs
     ns_list = solution.create_named_selection(
         models.NamedSelectionCreate(
@@ -77,7 +77,7 @@ You can also create new named selections programmatically using the :meth:`Solut
 Views
 =====
 
-A view represents a specific analysis result that can be displayed in a viewport. Predefined views are created automatically when 
+A view represents a specific analysis result that can be displayed in a viewport. Predefined views are created automatically when
 a solution is loaded based on the available result data, but you can also create your own.
 
 Creating a view doesn't trigger any computation or result evaluation. It simply defines what data to display.
@@ -96,10 +96,10 @@ Predefined views are automatically created based on the solution's result data:
     views = solution.views
     for view in views:
         print(f"- {view.name} (type: {view.type})")
-    
+
     # Find a specific view by name
     displacement_view = next(
-        (v for v in views if "Displacement" in v.name), 
+        (v for v in views if "Displacement" in v.name),
         None
     )
 

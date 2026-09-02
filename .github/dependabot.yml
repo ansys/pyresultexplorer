@@ -1,12 +1,5 @@
 version: 2
 
-registries:
-  ansys-github:
-    type: git
-    url: https://github.com
-    username: x-access-token
-    password: ${{secrets.PYANSYS_CI_BOT_TOKEN}}
-
 updates:
   - package-ecosystem: "uv"
     registries: "*"
@@ -16,17 +9,14 @@ updates:
     labels:
       - "maintenance"
       - "dependencies"
-
     cooldown:
       include:
         - '*'
       default-days: 7
-
     groups:
       pytest-dependencies:
         patterns:
           - "pytest*"
-
       sphinx-dependencies:
         patterns:
           - "*sphinx*"
@@ -36,15 +26,26 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-
     cooldown:
       include:
         - '*'
       default-days: 7
-
     labels:
       - "maintenance"
     groups:
       actions-deps:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "pre-commit"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      include:
+        - '*'
+      default-days: 7
+    groups:
+      pre-commit-deps:
         patterns:
           - "*"

@@ -11,18 +11,18 @@ User guide
    workspace-viewports
    security
 
-This section walks you through the basics of how to interact with Result Explorer. 
+This section walks you through the basics of how to interact with Result Explorer.
 For more elaborate examples, see :doc:`/examples/index`. For more details on the PyResultExplorer API, see :doc:`/api/index`.
 
-The PyResultExplorer library is organized around the following core concepts based on the Result Explorer app structure: 
+The PyResultExplorer library is organized around the following core concepts based on the Result Explorer app structure:
 
-- **Instance**: Represents a running instance of the Result Explorer app. 
+- **Instance**: Represents a running instance of the Result Explorer app.
   An instance can manage multiple workspaces and solutions.
 
-- **Client**: The main entry point for interacting with the Result Explorer API. 
+- **Client**: The main entry point for interacting with the Result Explorer API.
   It provides methods to launch or connect to an instance, manage workspaces and solutions, and query results.
 
-- **Solution**: Represents a simulation solution loaded into Result Explorer. 
+- **Solution**: Represents a simulation solution loaded into Result Explorer.
   You can interact with the solution to access its metadata, create views, and visualize results.
 
 - **View**: A displayable item under a solution. Views can include mesh views, plots, charts, logs, convergence and contact tracker charts.

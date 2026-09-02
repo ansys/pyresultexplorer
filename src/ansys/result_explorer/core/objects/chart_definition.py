@@ -1,4 +1,4 @@
-# Copyright (C) 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 #
@@ -17,8 +17,7 @@
 """Chart definition objects."""
 
 from dataclasses import dataclass, field
-from enum import Enum
-from typing import TypeVar
+from enum import StrEnum
 
 from ansys.result_explorer.core import models
 from ansys.result_explorer.core.exceptions import ResultExplorerError
@@ -31,10 +30,8 @@ from .plot_definition import (
     _proto_field_to_field,
 )
 
-_ProtoChart = TypeVar("_ProtoChart", models.ChartDefinition, models.ChartDefinitionCreate)
 
-
-class Filter(str, Enum):
+class Filter(StrEnum):
     """Filter applied to a chart result series."""
 
     min = "min"
@@ -77,7 +74,9 @@ class ChartDefinition:
     id: str | None = None
     creation_time: str | None = None
 
-    def to_proto(self, proto_type: type[_ProtoChart]) -> _ProtoChart:
+    def to_proto[ProtoChart: (models.ChartDefinition, models.ChartDefinitionCreate)](
+        self, proto_type: type[ProtoChart]
+    ) -> ProtoChart:
         """Convert to a protobuf chart message."""
         return chart_definition_to_proto(self, proto_type)
 
@@ -164,9 +163,9 @@ def proto_to_chart_result(proto_cr: models.ChartResult) -> ChartResult:
     )
 
 
-def chart_definition_to_proto(
-    chart_definition: ChartDefinition, proto_type: type[_ProtoChart]
-) -> _ProtoChart:
+def chart_definition_to_proto[ProtoChart: (models.ChartDefinition, models.ChartDefinitionCreate)](
+    chart_definition: ChartDefinition, proto_type: type[ProtoChart]
+) -> ProtoChart:
     """Convert a ChartDefinition to a protobuf message."""
     proto_chart = proto_type()
     if chart_definition.name is not None:

@@ -36,7 +36,7 @@ a tool to explore and visualize structural simulation results.
         :link: user_guide/index
         :link-type: doc
 
-        Learn about core PyResultExplorer concepts, features, 
+        Learn about core PyResultExplorer concepts, features,
         and how to use them in the user guide.
 
     .. grid-item-card::  :fa:`book-bookmark` API reference

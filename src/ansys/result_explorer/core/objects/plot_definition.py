@@ -1,4 +1,4 @@
-# Copyright (C) 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 #
@@ -17,16 +17,13 @@
 """Plot definition objects."""
 
 from dataclasses import dataclass, field
-from enum import Enum
-from typing import TypeVar
+from enum import StrEnum
 
 from ansys.result_explorer.core import models
 from ansys.result_explorer.core.exceptions import ResultExplorerError
 
-_ProtoPlot = TypeVar("_ProtoPlot", models.PlotDefinition, models.PlotDefinitionCreate)
 
-
-class ResultType(str, Enum):
+class ResultType(StrEnum):
     """Result types for plots and charts in Result Explorer."""
 
     displacement = "displacement"
@@ -57,7 +54,7 @@ class ResultType(str, Enum):
     beam_results = "beam_results"
 
 
-class ResultFieldName(str, Enum):
+class ResultFieldName(StrEnum):
     """Field names for result types in Result Explorer."""
 
     total_displacement = "total_displacement"
@@ -136,7 +133,7 @@ class ResultFieldName(str, Enum):
     beam_shear_force_z = "beam_shear_force_z"
 
 
-class Component(str, Enum):
+class Component(StrEnum):
     """Components for result fields in Result Explorer."""
 
     X = "X"
@@ -153,7 +150,7 @@ class Component(str, Enum):
     XZ = "XZ"
 
 
-class Location(str, Enum):
+class Location(StrEnum):
     """Result locations for plots and charts in Result Explorer."""
 
     nodal = "Nodal"
@@ -168,7 +165,7 @@ class Field:
     components: list[Component] | None = None
 
 
-class ShellPosition(str, Enum):
+class ShellPosition(StrEnum):
     """Shell position."""
 
     top = "top"
@@ -202,7 +199,9 @@ class PlotDefinition:
     creation_time: str | None = None
     supports_monitoring: bool | None = None
 
-    def to_proto(self, proto_type: type[_ProtoPlot]) -> _ProtoPlot:
+    def to_proto[ProtoPlot: (models.PlotDefinition, models.PlotDefinitionCreate)](
+        self, proto_type: type[ProtoPlot]
+    ) -> ProtoPlot:
         """Convert to a protobuf plot message."""
         return plot_definition_to_proto(self, proto_type)
 
@@ -214,9 +213,9 @@ class PlotDefinition:
         return proto_to_plot_definition(proto_plot)
 
 
-def plot_definition_to_proto(
-    plot_definition: PlotDefinition, proto_type: type[_ProtoPlot]
-) -> _ProtoPlot:
+def plot_definition_to_proto[ProtoPlot: (models.PlotDefinition, models.PlotDefinitionCreate)](
+    plot_definition: PlotDefinition, proto_type: type[ProtoPlot]
+) -> ProtoPlot:
     """Convert a PlotDefinition to a protobuf message."""
     proto_plot = proto_type()
     proto_plot.result_type = getattr(

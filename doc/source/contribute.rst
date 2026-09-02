@@ -66,12 +66,12 @@ You can specify additional options to control the test execution, for example:
     pytest tests --launch-native --headed
 
     # To run against an already running instance
-    pytest tests --connection-token=<token>  
+    pytest tests --connection-token=<token>
 
 .. tip::
 
    To interactively debug tests in Visual Studio Code, you may need
-   to turn off the ``install_browser`` fixture, as it may interfere with the debugger. 
+   to turn off the ``install_browser`` fixture, as it may interfere with the debugger.
 
 Documentation
 =============
@@ -82,12 +82,12 @@ To build the documentation locally, navigate to the ``docs`` directory and run t
 
     # On Linux or macOS
     make html
-    
+
     # On Windows
     ./make.bat html
 
 You can set the environment variable ``PYRX_DOC_SKIP_GALLERY`` to ``1`` to skip building the gallery examples,
-which can take a long time to build. 
+which can take a long time to build.
 
 Note that to build the documentation examples you must have Result Explorer
 installed on your machine.

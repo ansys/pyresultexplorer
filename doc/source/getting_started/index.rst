@@ -16,7 +16,7 @@ Install Result Explorer
 To install Result Explorer, download the installer from the Ansys Customer Portal and
 follow the installation instructions provided in the Result Explorer User's Guide on the Ansys Help.
 
-You can install either the Desktop or Server version of Result Explorer. 
+You can install either the Desktop or Server version of Result Explorer.
 Both versions are compatible with PyResultExplorer.
 
 Configure the installation path
@@ -34,10 +34,16 @@ so that PyResultExplorer can locate it. You only need to set one:
 Install the package
 -------------------
 
-The latest ``ansys.result_explorer.core`` package supports Python 3.11 through Python 3.14 on Windows, Linux, and Mac OS.
+The latest ``ansys.result_explorer.core`` package supports Python 3.12 through Python 3.14 on Windows, Linux, and Mac OS.
 You should consider installing PyResultExplorer in a virtual environment.
 
-Until the project is open sourced, you can install ``pyresultexplorer`` directly from sources:
+You can install ``ansys-result-explorer-core`` directly from sources:
+
+.. code:: bash
+
+    python -m pip install ansys-result-explorer-core
+
+If you want to install this project directly from the source, you can use the following command:
 
 .. code:: bash
 
@@ -53,7 +59,7 @@ Choose the option that best fits your workflow.
 Connect to an existing instance
 -------------------------------
 
-If Result Explorer is already running (desktop app or remote server), grab the **Connection Token** 
+If Result Explorer is already running (desktop app or remote server), grab the **Connection Token**
 from the Result Explorer GUI and use it:
 
 .. code:: python
@@ -66,14 +72,14 @@ from the Result Explorer GUI and use it:
     # Now use the client to interact with Result Explorer
     solutions = rx.list_solutions()
 
-The token is a base64-encoded string that contains all connection details (host, port, session ID, etc.). 
+The token is a base64-encoded string that contains all connection details (host, port, session ID, etc.).
 This approach is ideal for connecting to remote servers or existing desktop instances.
 
 
 Launch a new instance
 ---------------------
 
-Use ``launch_result_explorer()`` to start a fresh Result Explorer session, with the GUI served in a browser window. 
+Use ``launch_result_explorer()`` to start a fresh Result Explorer session, with the GUI served in a browser window.
 You have the option to customize the server and web configurations:
 
 .. code:: python
@@ -115,4 +121,4 @@ On the `PyResultExplorer Discussions <https://github.com/ansys/pyresultexplorer/
 or the `Discussions <https://discuss.ansys.com/>`_ page on the Ansys Developer portal,
 you can post questions, share ideas, and get community feedback.
 
-To reach the project support team, email `pyansys.core@ansys.com <pyansys.core@ansys.com>`_.
+To reach the project support team, email `pyansys-core@synopsys.com <pyansys-core@synopsys.com>`_.

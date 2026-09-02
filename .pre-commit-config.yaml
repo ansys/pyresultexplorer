@@ -1,9 +1,9 @@
+exclude: ^tests/data/
+
 repos:
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-
-  # Ruff version.
-  rev: 0671d8ab202c4ac093b78433ae5baf74f3fc7246  # frozen: v0.15.15
+  rev: 1f1e8bf348ff38fc88619a38d3ca4d9c56abea49  # frozen: v0.16.5
   hooks:
     # Run the linter.
     - id: ruff-check
@@ -13,7 +13,7 @@ repos:
 
 # Add copyright statement to files
 - repo: https://github.com/ansys/pre-commit-hooks
-  rev: ad4e7598809ad98cde5aaf52d80040c7ac56e7cf  # frozen: v0.7.2
+  rev: 55c5b6a5439abd847613579c6924da750e8b78b2  # frozen: v0.8.0
   hooks:
   - id: add-license-headers
     args:
@@ -21,7 +21,7 @@ repos:
     - --custom_license=Apache-2.0
 
 - repo: https://github.com/codespell-project/codespell
-  rev: 2ccb47ff45ad361a21071a7eedda4c37e6ae8c5a  # frozen: v2.4.2
+  rev: 57b21406f092110c18776e39b0bda50d37c945c8  # frozen: v2.4.3
   hooks:
   - id: codespell
     exclude: >
@@ -34,10 +34,18 @@ repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c  # frozen: v6.0.0
   hooks:
-  - id: check-merge-conflict
-  - id: check-yaml
+    - id: check-merge-conflict
+    - id: debug-statements
+    - id: check-yaml
+    - id: trailing-whitespace
+
+- repo: https://github.com/tox-dev/pyproject-fmt
+  rev: 3b42b9776870badc9eaffdef9a4a0834b764d87c  # frozen: v2.29.3
+  hooks:
+    - id: pyproject-fmt
+      args: [--keep-full-version]
 
 - repo: https://github.com/python-jsonschema/check-jsonschema
-  rev: f805888065fdb6162e1f800e50bb9460cbd223d6  # frozen: 0.37.2
+  rev: c4654a7e007c9619a5eb63c39a456572a0fa1851  # frozen: 0.38.0
   hooks:
     - id: check-github-workflows

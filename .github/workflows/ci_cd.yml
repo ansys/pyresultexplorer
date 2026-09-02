@@ -18,7 +18,7 @@ on:
 
 env:
   MAIN_PYTHON_VERSION: '3.12'
-  DOCUMENTATION_CNAME: 'fuzzy-adventure-gzkzk5l.pages.github.io'
+  DOCUMENTATION_CNAME: 'result-explorer.docs.pyansys.com'
   LIBRARY_NAME: 'ansys-result-explorer-core'
 
 concurrency:
@@ -37,12 +37,11 @@ jobs:
       contents: write # Required to push the CHANGELOG update commit, can be "read" once project is public
       pull-requests: write # Required to open the CHANGELOG update PR
     steps:
-      - uses: ansys/actions/doc-deploy-changelog@0b23d99e6800f16337ff173fcfbfcc1251130e99 # v11.0.2
+      - uses: ansys/actions/doc-deploy-changelog@7e7af221736bc4d9fb84a2ab28f99518e9bca84c # v11.0.5
         with:
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
           bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
-
 
   code-style:
     name: "Code style"
@@ -50,7 +49,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: ansys/actions/code-style@0b23d99e6800f16337ff173fcfbfcc1251130e99 # v11.0.2
+      - uses: ansys/actions/code-style@7e7af221736bc4d9fb84a2ab28f99518e9bca84c # v11.0.5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -61,7 +60,7 @@ jobs:
       contents: read
     steps:
       - name: PyAnsys documentation style checks
-        uses: ansys/actions/doc-style@0b23d99e6800f16337ff173fcfbfcc1251130e99 # v11.0.2
+        uses: ansys/actions/doc-style@7e7af221736bc4d9fb84a2ab28f99518e9bca84c # v11.0.5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -71,11 +70,34 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: ansys/actions/check-actions-security@0b23d99e6800f16337ff173fcfbfcc1251130e99 # v11.0.2
+      - uses: ansys/actions/check-actions-security@7e7af221736bc4d9fb84a2ab28f99518e9bca84c # v11.0.5
         with:
           generate-summary: true
           token: ${{ secrets.GITHUB_TOKEN }}
           auditing-level: 'high'
+
+  smoke-tests:
+    name: Build and Smoke tests
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.12', '3.13', '3.14']
+        should-release:
+          - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
+        exclude:
+          - should-release: false
+            os: macos-latest
+    steps:
+      - name: Build wheelhouse and perform smoke test
+        uses: ansys/actions/build-wheelhouse@7e7af221736bc4d9fb84a2ab28f99518e9bca84c # v11.0.5
+        with:
+          library-name: ${{ env.LIBRARY_NAME }}
+          operating-system: ${{ matrix.os }}
+          python-version: ${{ matrix.python-version }}
 
   # Job should be activated once the repo becomes public.
   # vulnerabilities:
@@ -106,7 +128,7 @@ jobs:
     with:
       deployment: docker
       update-snapshots: false
-      python-versions: ${{ github.event_name == 'pull_request' && '["3.12"]' || '["3.11", "3.12", "3.13", "3.14"]' }}
+      python-versions: ${{ github.event_name == 'pull_request' && '["3.12"]' || '["3.12", "3.13", "3.14"]' }}
       rx-version: 'v2026.7.0' # revert to dev after first release of PyRX
     secrets:
       PYANSYS_CI_BOT_TOKEN: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
@@ -122,13 +144,13 @@ jobs:
     with:
       deployment: native
       update-snapshots: ${{ github.event_name == 'workflow_dispatch' && inputs.update-snapshots || false }}
-      python-versions: ${{ github.event_name == 'pull_request' && '["3.12"]' || '["3.11", "3.12", "3.13", "3.14"]' }}
+      python-versions: ${{ github.event_name == 'pull_request' && '["3.12"]' || '["3.12", "3.13", "3.14"]' }}
       upload-coverage: true
       rx-version: 'v2026.7.0' # revert to dev after first release of PyRX
     secrets:
       PYANSYS_CI_BOT_TOKEN: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
       LICENSE_SERVER: ${{ secrets.LICENSE_SERVER }}
-  
+
   # enable after first release of PyRX
   # backward-compatibility-tests:
   #   strategy:
@@ -171,7 +193,7 @@ jobs:
           installation-path: ${{ env.RX_SERVER_INSTALLATION_PATH }}
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
 
-      - uses: ansys/actions/doc-build@0b23d99e6800f16337ff173fcfbfcc1251130e99 # v11.0.2
+      - uses: ansys/actions/doc-build@7e7af221736bc4d9fb84a2ab28f99518e9bca84c # v11.0.5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           optional-dependencies-name: "playwright"
@@ -195,7 +217,7 @@ jobs:
           password: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
 
       - name: "Build library source and wheel artifacts"
-        uses: ansys/actions/build-library@0b23d99e6800f16337ff173fcfbfcc1251130e99 # v11.0.2
+        uses: ansys/actions/build-library@7e7af221736bc4d9fb84a2ab28f99518e9bca84c # v11.0.5
         with:
           library-name: ${{ env.LIBRARY_NAME }}
 
@@ -204,10 +226,10 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write # Required to deploy documentation to gh-pages
-    needs: [doc-build, build-library, tests-docker, tests-native]
+    needs: [doc-build, build-library, tests-docker, tests-native, smoke-tests]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
-      - uses: ansys/actions/doc-deploy-dev@0b23d99e6800f16337ff173fcfbfcc1251130e99 # v11.0.2
+      - uses: ansys/actions/doc-deploy-dev@7e7af221736bc4d9fb84a2ab28f99518e9bca84c # v11.0.5
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -219,10 +241,10 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write # Required to deploy documentation to gh-pages
-    needs: [doc-build, build-library, tests-docker, tests-native]
+    needs: [doc-build, build-library, tests-docker, tests-native, smoke-tests, update-changelog]
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     steps:
-      - uses: ansys/actions/doc-deploy-stable@0b23d99e6800f16337ff173fcfbfcc1251130e99 # v11.0.2
+      - uses: ansys/actions/doc-deploy-stable@7e7af221736bc4d9fb84a2ab28f99518e9bca84c # v11.0.5
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -232,7 +254,7 @@ jobs:
   release:
     name: Release project
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
-    needs: [build-library]
+    needs: [doc-build, build-library, tests-docker, tests-native, smoke-tests, update-changelog]
     runs-on: ubuntu-latest
     permissions:
       id-token: write  # Required for PyPI trusted publishing (OIDC)
@@ -253,7 +275,7 @@ jobs:
           skip-existing: false
 
       - name: Release to GitHub
-        uses: ansys/actions/release-github@0b23d99e6800f16337ff173fcfbfcc1251130e99 # v11.0.2
+        uses: ansys/actions/release-github@7e7af221736bc4d9fb84a2ab28f99518e9bca84c # v11.0.5
         with:
           library-name: ${{ env.LIBRARY_NAME }}
           token: ${{ secrets.GITHUB_TOKEN }}

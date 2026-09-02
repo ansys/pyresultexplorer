@@ -1,4 +1,4 @@
-# Copyright (C) 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 #
@@ -23,7 +23,7 @@ from collections.abc import Generator
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Generic, Literal, TypeVar, overload
+from typing import TYPE_CHECKING, Literal, overload
 
 from google.protobuf import struct_pb2
 from google.protobuf.json_format import MessageToDict, ParseDict
@@ -881,15 +881,12 @@ class LogsDisplayOptions(DisplayOptions):
         return cls(pb_obj, client, solution_id, viewport_id, viewport)
 
 
-TDisplayOptions = TypeVar("TDisplayOptions", bound=DisplayOptions)
-
-
 # ---------------------------------------------------------------------------
 # Viewport entity
 # ---------------------------------------------------------------------------
 
 
-class Viewport(BaseEntity[models.Viewport], Generic[TDisplayOptions]):
+class Viewport[TDisplayOptions: DisplayOptions](BaseEntity[models.Viewport]):
     """Represents a viewport in a workspace."""
 
     @property

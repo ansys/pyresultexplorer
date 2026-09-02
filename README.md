@@ -1,7 +1,7 @@
 # PyResultExplorer
 
 [![PyAnsys](https://img.shields.io/badge/Py-Ansys-ffc107.svg?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAABDklEQVQ4jWNgoDfg5+OQgMJ/0AqCqXGQMEBAwBEKQj5gGDjQsA80UeCDscxrD4YhGsgABEELnC5zAwAu6ACKQDAQzNBFwAAVdgFEAnfDiQAATyIBaAFgCbkAI5DQwAVGAYkAMA4gHgg2AC+AAgQIABggagAqyAD4AACkR7cEdcEBQOPjIvAEtRDoAbYLANQAZGsBEAFeBwCsAY0HgGCAAEQTaDj7xQABItJ+S3DsQAAAABJRU5ErkJggg==)](https://docs.pyansys.com/)
-[![Python](https://img.shields.io/badge/Python-3.11%2B-blue)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.12%2B-blue)](https://www.python.org/)
 [![Apache](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 
@@ -15,10 +15,10 @@ With PyResultExplorer you can:
 
 ### For users
 
-To install PyResultExplorer (temporarily, until it's not open-sourced):
+To install PyResultExplorer:
 
 ```bash
-python -m pip install git+https://github.com/ansys/pyresultexplorer
+python -m pip install ansys-result-explorer-core
 ```
 
 ### For developers
@@ -55,7 +55,7 @@ The style checks take advantage of `pre-commit`. You can install it with `pre-co
 
 ## Basic usage
 
-The following code snippet shows how to launch a new Result Explorer instance, 
+The following code snippet shows how to launch a new Result Explorer instance,
 create a solution and load a displacement view.
 
 ```python
@@ -96,8 +96,8 @@ This project is licensed under the Apache 2.0 license agreement. See the [LICENS
 
 ## Resources
 
-- [PyResultExplorer documentation](https://fuzzy-adventure-gzkzk5l.pages.github.io/)
+- [PyResultExplorer documentation](https://result-explorer.docs.pyansys.com/)
 - [Repository's Issues page](https://github.com/ansys/pyresultexplorer/issues)
 - [Repository's Discussions page](https://github.com/ansys/pyresultexplorer/discussions)
 
-For general PyAnsys questions, email [pyansys.core@ansys.com](mailto:pyansys.core@ansys.com).
+For general PyAnsys questions, email [pyansys-core@synopsys.com](mailto:pyansys-core@synopsys.com).
