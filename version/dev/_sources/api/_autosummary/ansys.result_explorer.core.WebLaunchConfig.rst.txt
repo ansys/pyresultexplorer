@@ -1,0 +1,29 @@
+﻿WebLaunchConfig
+===============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: WebLaunchConfig
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      WebLaunchConfig.browser_type
+   
+   

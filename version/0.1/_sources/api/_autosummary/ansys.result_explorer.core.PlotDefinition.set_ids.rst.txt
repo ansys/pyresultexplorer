@@ -1,0 +1,6 @@
+set\_ids
+========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: PlotDefinition.set_ids

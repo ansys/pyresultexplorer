@@ -1,0 +1,6 @@
+principal\_elastic\_strain\_3
+=============================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultFieldName.principal_elastic_strain_3

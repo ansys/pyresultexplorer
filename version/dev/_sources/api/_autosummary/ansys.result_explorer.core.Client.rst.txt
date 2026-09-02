@@ -1,0 +1,103 @@
+﻿Client
+======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: Client
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      Client.app_settings
+      
+      
+      Client.authenticate_result_provider
+      
+      
+      Client.connect_with_token
+      
+      
+      Client.create_hps_solution
+      
+      
+      Client.create_result_provider
+      
+      
+      Client.create_solution
+      
+      
+      Client.create_workspace
+      
+      
+      Client.delete_result_provider
+      
+      
+      Client.delete_solution
+      
+      
+      Client.delete_viewport
+      
+      
+      Client.delete_workspace
+      
+      
+      Client.get_solution
+      
+      
+      Client.get_workspace
+      
+      
+      Client.hps_ls
+      
+      
+      Client.import_workspace_from_template
+      
+      
+      Client.list_result_providers
+      
+      
+      Client.list_solutions
+      
+      
+      Client.list_workspaces
+      
+      
+      Client.ls
+      
+      
+      Client.open_session
+      
+      
+      Client.save_session
+      
+      
+      Client.stop
+      
+      
+      Client.update_app_settings
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Client.app_info
+      Client.connection_token
+      Client.default_result_provider
+      Client.instance
+      Client.web_session
+      Client.web_url
+   
+   

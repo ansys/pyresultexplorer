@@ -1,0 +1,173 @@
+﻿ShellPosition
+=============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: ShellPosition
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      ShellPosition.encode
+      
+      
+      ShellPosition.replace
+      
+      
+      ShellPosition.split
+      
+      
+      ShellPosition.rsplit
+      
+      
+      ShellPosition.join
+      
+      
+      ShellPosition.capitalize
+      
+      
+      ShellPosition.casefold
+      
+      
+      ShellPosition.title
+      
+      
+      ShellPosition.center
+      
+      
+      ShellPosition.count
+      
+      
+      ShellPosition.expandtabs
+      
+      
+      ShellPosition.find
+      
+      
+      ShellPosition.partition
+      
+      
+      ShellPosition.index
+      
+      
+      ShellPosition.ljust
+      
+      
+      ShellPosition.lower
+      
+      
+      ShellPosition.lstrip
+      
+      
+      ShellPosition.rfind
+      
+      
+      ShellPosition.rindex
+      
+      
+      ShellPosition.rjust
+      
+      
+      ShellPosition.rstrip
+      
+      
+      ShellPosition.rpartition
+      
+      
+      ShellPosition.splitlines
+      
+      
+      ShellPosition.strip
+      
+      
+      ShellPosition.swapcase
+      
+      
+      ShellPosition.translate
+      
+      
+      ShellPosition.upper
+      
+      
+      ShellPosition.startswith
+      
+      
+      ShellPosition.endswith
+      
+      
+      ShellPosition.removeprefix
+      
+      
+      ShellPosition.removesuffix
+      
+      
+      ShellPosition.isascii
+      
+      
+      ShellPosition.islower
+      
+      
+      ShellPosition.isupper
+      
+      
+      ShellPosition.istitle
+      
+      
+      ShellPosition.isspace
+      
+      
+      ShellPosition.isdecimal
+      
+      
+      ShellPosition.isdigit
+      
+      
+      ShellPosition.isnumeric
+      
+      
+      ShellPosition.isalpha
+      
+      
+      ShellPosition.isalnum
+      
+      
+      ShellPosition.isidentifier
+      
+      
+      ShellPosition.isprintable
+      
+      
+      ShellPosition.zfill
+      
+      
+      ShellPosition.format
+      
+      
+      ShellPosition.format_map
+      
+      
+      ShellPosition.maketrans
+      
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ShellPosition.top
+      ShellPosition.middle
+      ShellPosition.bottom
+      ShellPosition.all
+   
+   

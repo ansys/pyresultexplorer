@@ -1,0 +1,6 @@
+to\_proto
+=========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: PlotDefinition.to_proto

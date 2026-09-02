@@ -1,0 +1,6 @@
+strip
+=====
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Filter.strip

@@ -1,0 +1,6 @@
+rjust
+=====
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: ResultType.rjust

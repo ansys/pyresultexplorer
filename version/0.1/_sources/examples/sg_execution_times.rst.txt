@@ -1,0 +1,64 @@
+
+:orphan:
+
+.. _sphx_glr_examples_sg_execution_times:
+
+
+Computation times
+=================
+**03:45.459** total execution time for 10 files **from examples**:
+
+.. container::
+
+  .. raw:: html
+
+    <style scoped>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+    </style>
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script type="text/javascript" class="init">
+    $(document).ready( function () {
+        $('table.sg-datatable').DataTable({order: [[1, 'desc']]});
+    } );
+    </script>
+
+  .. list-table::
+   :header-rows: 1
+   :class: table table-striped sg-datatable
+
+   * - Example
+     - Time
+     - Mem (MB)
+   * - :ref:`sphx_glr_examples_011-plot-display-options.py` (``011-plot-display-options.py``)
+     - 00:33.600
+     - 0.0
+   * - :ref:`sphx_glr_examples_012-camera-position.py` (``012-camera-position.py``)
+     - 00:29.888
+     - 0.0
+   * - :ref:`sphx_glr_examples_001-query-filesystem.py` (``001-query-filesystem.py``)
+     - 00:23.014
+     - 0.0
+   * - :ref:`sphx_glr_examples_020-trackers-viewport-options.py` (``020-trackers-viewport-options.py``)
+     - 00:20.762
+     - 0.0
+   * - :ref:`sphx_glr_examples_002-workspace-and-views.py` (``002-workspace-and-views.py``)
+     - 00:20.442
+     - 0.0
+   * - :ref:`sphx_glr_examples_013-user-defined-plot.py` (``013-user-defined-plot.py``)
+     - 00:20.304
+     - 0.0
+   * - :ref:`sphx_glr_examples_010-create-plots-on-named-selections.py` (``010-create-plots-on-named-selections.py``)
+     - 00:20.220
+     - 0.0
+   * - :ref:`sphx_glr_examples_030-create-and-modify-charts.py` (``030-create-and-modify-charts.py``)
+     - 00:20.175
+     - 0.0
+   * - :ref:`sphx_glr_examples_050-save-session-and-workspace.py` (``050-save-session-and-workspace.py``)
+     - 00:19.670
+     - 0.0
+   * - :ref:`sphx_glr_examples_003-workspace-layout.py` (``003-workspace-layout.py``)
+     - 00:17.384
+     - 0.0

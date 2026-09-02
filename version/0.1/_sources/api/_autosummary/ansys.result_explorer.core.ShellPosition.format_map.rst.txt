@@ -1,0 +1,6 @@
+format\_map
+===========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: ShellPosition.format_map

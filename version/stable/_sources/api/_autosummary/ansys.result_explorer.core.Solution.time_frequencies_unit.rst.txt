@@ -1,0 +1,6 @@
+time\_frequencies\_unit
+=======================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.time_frequencies_unit

@@ -1,0 +1,6 @@
+﻿launch\_result\_explorer
+========================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autofunction:: launch_result_explorer

@@ -1,0 +1,6 @@
+isupper
+=======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: ShellPosition.isupper

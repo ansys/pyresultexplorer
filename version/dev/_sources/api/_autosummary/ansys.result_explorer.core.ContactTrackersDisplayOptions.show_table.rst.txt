@@ -1,0 +1,6 @@
+show\_table
+===========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ContactTrackersDisplayOptions.show_table

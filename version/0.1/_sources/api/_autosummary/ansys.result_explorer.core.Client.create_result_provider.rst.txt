@@ -1,0 +1,6 @@
+create\_result\_provider
+========================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Client.create_result_provider

@@ -1,0 +1,172 @@
+﻿BrowserType
+===========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: BrowserType
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      BrowserType.encode
+      
+      
+      BrowserType.replace
+      
+      
+      BrowserType.split
+      
+      
+      BrowserType.rsplit
+      
+      
+      BrowserType.join
+      
+      
+      BrowserType.capitalize
+      
+      
+      BrowserType.casefold
+      
+      
+      BrowserType.title
+      
+      
+      BrowserType.center
+      
+      
+      BrowserType.count
+      
+      
+      BrowserType.expandtabs
+      
+      
+      BrowserType.find
+      
+      
+      BrowserType.partition
+      
+      
+      BrowserType.index
+      
+      
+      BrowserType.ljust
+      
+      
+      BrowserType.lower
+      
+      
+      BrowserType.lstrip
+      
+      
+      BrowserType.rfind
+      
+      
+      BrowserType.rindex
+      
+      
+      BrowserType.rjust
+      
+      
+      BrowserType.rstrip
+      
+      
+      BrowserType.rpartition
+      
+      
+      BrowserType.splitlines
+      
+      
+      BrowserType.strip
+      
+      
+      BrowserType.swapcase
+      
+      
+      BrowserType.translate
+      
+      
+      BrowserType.upper
+      
+      
+      BrowserType.startswith
+      
+      
+      BrowserType.endswith
+      
+      
+      BrowserType.removeprefix
+      
+      
+      BrowserType.removesuffix
+      
+      
+      BrowserType.isascii
+      
+      
+      BrowserType.islower
+      
+      
+      BrowserType.isupper
+      
+      
+      BrowserType.istitle
+      
+      
+      BrowserType.isspace
+      
+      
+      BrowserType.isdecimal
+      
+      
+      BrowserType.isdigit
+      
+      
+      BrowserType.isnumeric
+      
+      
+      BrowserType.isalpha
+      
+      
+      BrowserType.isalnum
+      
+      
+      BrowserType.isidentifier
+      
+      
+      BrowserType.isprintable
+      
+      
+      BrowserType.zfill
+      
+      
+      BrowserType.format
+      
+      
+      BrowserType.format_map
+      
+      
+      BrowserType.maketrans
+      
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      BrowserType.SYSTEM_DEFAULT
+      BrowserType.PLAYWRIGHT_CHROMIUM
+      BrowserType.PLAYWRIGHT_CHROMIUM_HEADLESS
+   
+   

@@ -1,0 +1,35 @@
+﻿ResultExplorerWebSession
+========================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: ResultExplorerWebSession
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      ResultExplorerWebSession.close
+      
+      
+      ResultExplorerWebSession.launch
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ResultExplorerWebSession.playwright_page
+   
+   

@@ -1,0 +1,6 @@
+velocity
+========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultFieldName.velocity

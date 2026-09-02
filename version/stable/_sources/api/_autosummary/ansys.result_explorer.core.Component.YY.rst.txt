@@ -1,0 +1,6 @@
+YY
+==
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: Component.YY

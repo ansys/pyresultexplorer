@@ -1,0 +1,6 @@
+splitlines
+==========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: BrowserType.splitlines

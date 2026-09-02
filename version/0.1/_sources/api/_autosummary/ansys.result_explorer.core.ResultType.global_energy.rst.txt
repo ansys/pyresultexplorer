@@ -1,0 +1,6 @@
+global\_energy
+==============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultType.global_energy

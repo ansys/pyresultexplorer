@@ -1,0 +1,6 @@
+result\_provider\_name
+======================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: ResultExplorerInstance.result_provider_name

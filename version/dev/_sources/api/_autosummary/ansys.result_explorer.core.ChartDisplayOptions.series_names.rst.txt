@@ -1,0 +1,6 @@
+series\_names
+=============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: ChartDisplayOptions.series_names

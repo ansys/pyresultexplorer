@@ -1,0 +1,6 @@
+log\_level
+==========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ServerLaunchConfig.log_level

@@ -1,0 +1,6 @@
+bodies
+======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.bodies

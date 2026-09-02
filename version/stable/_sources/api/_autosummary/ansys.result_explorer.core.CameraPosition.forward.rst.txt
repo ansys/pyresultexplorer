@@ -1,0 +1,6 @@
+forward
+=======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: CameraPosition.forward

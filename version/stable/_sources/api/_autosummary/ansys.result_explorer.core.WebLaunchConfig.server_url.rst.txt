@@ -1,0 +1,6 @@
+server\_url
+===========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: WebLaunchConfig.server_url

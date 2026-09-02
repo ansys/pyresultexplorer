@@ -1,0 +1,1612 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>MeshDisplayOptions &#8212; PyResultExplorer</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/ansys-sphinx-theme.css?v=5ffe81b6" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/ansys-sphinx-theme.css?v=5ffe81b6" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=0790524f97105ba85085"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../../_static/documentation_options.js?v=38b66d78"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/_autosummary/ansys.result_explorer.core.MeshDisplayOptions';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.18.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://result-explorer.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.1';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="icon" href="../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="camera_position" href="ansys.result_explorer.core.MeshDisplayOptions.camera_position.html" />
+    <link rel="prev" title="ResultDisplayOptions" href="ansys.result_explorer.core.ResultDisplayOptions.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1.0" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  <link rel="canonical" href="https://result-explorer.docs.pyansys.com/version/stable/api/_autosummary/ansys.result_explorer.core.MeshDisplayOptions.html" />
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyResultExplorer - Home"/>
+    <img src="../../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyResultExplorer - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../index.html" title="PyResultExplorer home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../contribute.html">
+    Contribute
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+  
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyresultexplorer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    
+<!--
+  Announcement Version Loader
+  Dynamically loads the announcement.html content into the announcement_msg div.
+-->
+<div id="announcement_msg" aria-live="polite"></div>
+<script>
+  // Fetch and inject the announcement HTML content
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status} Announcement.html file not found, Please ignore this, if you are in dev/stable documentation`);
+      }
+      return response.text();
+    })
+    .then((text) => {
+      var msgDiv = document.getElementById("announcement_msg");
+      if (msgDiv) {
+        msgDiv.innerHTML = text;
+      }
+    })
+    .catch((error) => {
+      // Log only unexpected fetch errors
+      if (!(error.message && error.message.startsWith("HTTP error: 404"))) {
+        console.error(`Fetch problem: ${error.message} Announcement.html could not be loaded.`);
+      }
+    });
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../index.html" title="PyResultExplorer home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../contribute.html">
+    Contribute
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+  
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyresultexplorer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../instance.html">Instance management</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="ansys.result_explorer.core.launch_result_explorer.html">launch_result_explorer</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.ResultExplorerInstance.html">ResultExplorerInstance</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultExplorerInstance.launch.html">launch</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultExplorerInstance.stop.html">stop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultExplorerInstance.grpc_port.html">grpc_port</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultExplorerInstance.result_provider_name.html">result_provider_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultExplorerInstance.server_process.html">server_process</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultExplorerInstance.session_id.html">session_id</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultExplorerInstance.web_session.html">web_session</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultExplorerInstance.web_url.html">web_url</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.ServerLaunchConfig.html">ServerLaunchConfig</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ServerLaunchConfig.auth.html">auth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ServerLaunchConfig.grpc_port.html">grpc_port</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ServerLaunchConfig.log_level.html">log_level</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ServerLaunchConfig.num_threads.html">num_threads</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ServerLaunchConfig.port.html">port</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ServerLaunchConfig.ssl.html">ssl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ServerLaunchConfig.token.html">token</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.WebLaunchConfig.html">WebLaunchConfig</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.WebLaunchConfig.browser_type.html">browser_type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.WebLaunchConfig.server_url.html">server_url</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.html">BrowserType</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.encode.html">encode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.replace.html">replace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.split.html">split</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.rsplit.html">rsplit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.join.html">join</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.capitalize.html">capitalize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.casefold.html">casefold</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.title.html">title</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.center.html">center</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.count.html">count</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.expandtabs.html">expandtabs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.find.html">find</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.partition.html">partition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.index.html">index</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.ljust.html">ljust</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.lower.html">lower</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.lstrip.html">lstrip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.rfind.html">rfind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.rindex.html">rindex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.rjust.html">rjust</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.rstrip.html">rstrip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.rpartition.html">rpartition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.splitlines.html">splitlines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.strip.html">strip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.swapcase.html">swapcase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.translate.html">translate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.upper.html">upper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.startswith.html">startswith</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.endswith.html">endswith</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.removeprefix.html">removeprefix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.removesuffix.html">removesuffix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.isascii.html">isascii</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.islower.html">islower</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.isupper.html">isupper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.istitle.html">istitle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.isspace.html">isspace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.isdecimal.html">isdecimal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.isdigit.html">isdigit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.isnumeric.html">isnumeric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.isalpha.html">isalpha</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.isalnum.html">isalnum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.isidentifier.html">isidentifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.isprintable.html">isprintable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.zfill.html">zfill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.format.html">format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.format_map.html">format_map</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.maketrans.html">maketrans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.SYSTEM_DEFAULT.html">SYSTEM_DEFAULT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.PLAYWRIGHT_CHROMIUM.html">PLAYWRIGHT_CHROMIUM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.BrowserType.PLAYWRIGHT_CHROMIUM_HEADLESS.html">PLAYWRIGHT_CHROMIUM_HEADLESS</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.ResultExplorerServerProcess.html">ResultExplorerServerProcess</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultExplorerServerProcess.start.html">start</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultExplorerServerProcess.stop.html">stop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultExplorerServerProcess.ca_cert_path.html">ca_cert_path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultExplorerServerProcess.gateway_grpc_port.html">gateway_grpc_port</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultExplorerServerProcess.gateway_http_port.html">gateway_http_port</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultExplorerServerProcess.grpc_port.html">grpc_port</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultExplorerServerProcess.is_running.html">is_running</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultExplorerServerProcess.port.html">port</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultExplorerServerProcess.url.html">url</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.ResultExplorerWebSession.html">ResultExplorerWebSession</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultExplorerWebSession.close.html">close</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultExplorerWebSession.launch.html">launch</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultExplorerWebSession.playwright_page.html">playwright_page</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../client.html">Client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.Client.html">Client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.app_settings.html">app_settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.authenticate_result_provider.html">authenticate_result_provider</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.connect_with_token.html">connect_with_token</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.create_hps_solution.html">create_hps_solution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.create_result_provider.html">create_result_provider</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.create_solution.html">create_solution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.create_workspace.html">create_workspace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.delete_result_provider.html">delete_result_provider</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.delete_solution.html">delete_solution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.delete_viewport.html">delete_viewport</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.delete_workspace.html">delete_workspace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.get_solution.html">get_solution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.get_workspace.html">get_workspace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.hps_ls.html">hps_ls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.import_workspace_from_template.html">import_workspace_from_template</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.list_result_providers.html">list_result_providers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.list_solutions.html">list_solutions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.list_workspaces.html">list_workspaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.ls.html">ls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.open_session.html">open_session</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.save_session.html">save_session</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.stop.html">stop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.update_app_settings.html">update_app_settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.app_info.html">app_info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.connection_token.html">connection_token</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.default_result_provider.html">default_result_provider</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.instance.html">instance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.web_session.html">web_session</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Client.web_url.html">web_url</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../solution-views.html">Solution and views</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.Solution.html">Solution</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.create_chart.html">create_chart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.create_named_selection.html">create_named_selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.create_plot.html">create_plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.delete_chart.html">delete_chart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.delete_named_selection.html">delete_named_selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.delete_plot.html">delete_plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.get_solver_out_content.html">get_solver_out_content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.update_chart.html">update_chart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.update_named_selection.html">update_named_selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.update_plot.html">update_plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.analysis_type.html">analysis_type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.available_custom_selections.html">available_custom_selections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.available_mesh_properties.html">available_mesh_properties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.available_results.html">available_results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.available_trackers.html">available_trackers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.bodies.html">bodies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.cache_plot_data.html">cache_plot_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.chart_views.html">chart_views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.charts.html">charts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.configurable_charts.html">configurable_charts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.configurable_plots.html">configurable_plots</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.contact_trackers_view.html">contact_trackers_view</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.convergence_trackers_view.html">convergence_trackers_view</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.creation_time.html">creation_time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.description.html">description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.distance_unit.html">distance_unit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.element_groups.html">element_groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.errors.html">errors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.files.html">files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.id.html">id</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.live.html">live</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.logs_view.html">logs_view</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.mesh_options.html">mesh_options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.mesh_view.html">mesh_view</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.n_elements.html">n_elements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.n_nodes.html">n_nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.n_results.html">n_results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.n_sets.html">n_sets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.name.html">name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.named_selections.html">named_selections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.outdated.html">outdated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.physics_type.html">physics_type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.plot_views.html">plot_views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.plots.html">plots</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.ready.html">ready</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.result_provider.html">result_provider</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.solver_named_selections.html">solver_named_selections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.solver_text_outputs.html">solver_text_outputs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.solver_version.html">solver_version</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.time_frequencies.html">time_frequencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.time_frequencies_unit.html">time_frequencies_unit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.unit_system.html">unit_system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.unsupported_element_types.html">unsupported_element_types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.views.html">views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Solution.warnings.html">warnings</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.ResultType.html">ResultType</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.encode.html">encode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.replace.html">replace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.split.html">split</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.rsplit.html">rsplit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.join.html">join</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.capitalize.html">capitalize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.casefold.html">casefold</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.title.html">title</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.center.html">center</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.count.html">count</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.expandtabs.html">expandtabs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.find.html">find</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.partition.html">partition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.index.html">index</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.ljust.html">ljust</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.lower.html">lower</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.lstrip.html">lstrip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.rfind.html">rfind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.rindex.html">rindex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.rjust.html">rjust</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.rstrip.html">rstrip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.rpartition.html">rpartition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.splitlines.html">splitlines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.strip.html">strip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.swapcase.html">swapcase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.translate.html">translate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.upper.html">upper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.startswith.html">startswith</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.endswith.html">endswith</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.removeprefix.html">removeprefix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.removesuffix.html">removesuffix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.isascii.html">isascii</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.islower.html">islower</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.isupper.html">isupper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.istitle.html">istitle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.isspace.html">isspace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.isdecimal.html">isdecimal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.isdigit.html">isdigit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.isnumeric.html">isnumeric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.isalpha.html">isalpha</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.isalnum.html">isalnum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.isidentifier.html">isidentifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.isprintable.html">isprintable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.zfill.html">zfill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.format.html">format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.format_map.html">format_map</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.maketrans.html">maketrans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.displacement.html">displacement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.stress.html">stress</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.nodal_stress.html">nodal_stress</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.elastic_strain.html">elastic_strain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.nodal_elastic_strain.html">nodal_elastic_strain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.plastic_strain.html">plastic_strain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.nodal_plastic_strain.html">nodal_plastic_strain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.equivalent_nodal_plastic_strain.html">equivalent_nodal_plastic_strain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.temperature.html">temperature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.heat_flux.html">heat_flux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.equivalent_plastic_strain.html">equivalent_plastic_strain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.velocity.html">velocity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.acceleration.html">acceleration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.user_defined.html">user_defined</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.global_energy.html">global_energy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.contact.html">contact</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.failure.html">failure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.electric_potential.html">electric_potential</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.electric_field.html">electric_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.electric_flux_density.html">electric_flux_density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.newton_raphson_residual.html">newton_raphson_residual</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.structural_temperature.html">structural_temperature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.thermal_strain.html">thermal_strain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.strain_energy.html">strain_energy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.kinetic_energy.html">kinetic_energy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultType.beam_results.html">beam_results</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.Location.html">Location</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.encode.html">encode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.replace.html">replace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.split.html">split</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.rsplit.html">rsplit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.join.html">join</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.capitalize.html">capitalize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.casefold.html">casefold</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.title.html">title</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.center.html">center</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.count.html">count</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.expandtabs.html">expandtabs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.find.html">find</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.partition.html">partition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.index.html">index</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.ljust.html">ljust</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.lower.html">lower</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.lstrip.html">lstrip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.rfind.html">rfind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.rindex.html">rindex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.rjust.html">rjust</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.rstrip.html">rstrip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.rpartition.html">rpartition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.splitlines.html">splitlines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.strip.html">strip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.swapcase.html">swapcase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.translate.html">translate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.upper.html">upper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.startswith.html">startswith</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.endswith.html">endswith</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.removeprefix.html">removeprefix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.removesuffix.html">removesuffix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.isascii.html">isascii</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.islower.html">islower</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.isupper.html">isupper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.istitle.html">istitle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.isspace.html">isspace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.isdecimal.html">isdecimal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.isdigit.html">isdigit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.isnumeric.html">isnumeric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.isalpha.html">isalpha</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.isalnum.html">isalnum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.isidentifier.html">isidentifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.isprintable.html">isprintable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.zfill.html">zfill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.format.html">format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.format_map.html">format_map</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.maketrans.html">maketrans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.nodal.html">nodal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Location.elemental.html">elemental</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.html">ResultFieldName</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.encode.html">encode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.replace.html">replace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.split.html">split</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.rsplit.html">rsplit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.join.html">join</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.capitalize.html">capitalize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.casefold.html">casefold</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.title.html">title</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.center.html">center</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.count.html">count</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.expandtabs.html">expandtabs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.find.html">find</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.partition.html">partition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.index.html">index</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.ljust.html">ljust</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.lower.html">lower</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.lstrip.html">lstrip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.rfind.html">rfind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.rindex.html">rindex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.rjust.html">rjust</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.rstrip.html">rstrip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.rpartition.html">rpartition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.splitlines.html">splitlines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.strip.html">strip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.swapcase.html">swapcase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.translate.html">translate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.upper.html">upper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.startswith.html">startswith</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.endswith.html">endswith</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.removeprefix.html">removeprefix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.removesuffix.html">removesuffix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.isascii.html">isascii</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.islower.html">islower</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.isupper.html">isupper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.istitle.html">istitle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.isspace.html">isspace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.isdecimal.html">isdecimal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.isdigit.html">isdigit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.isnumeric.html">isnumeric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.isalpha.html">isalpha</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.isalnum.html">isalnum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.isidentifier.html">isidentifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.isprintable.html">isprintable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.zfill.html">zfill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.format.html">format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.format_map.html">format_map</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.maketrans.html">maketrans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.total_displacement.html">total_displacement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.displacement.html">displacement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.stress_tensor.html">stress_tensor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.stress_tensor_global.html">stress_tensor_global</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.stress_tensor_fiber.html">stress_tensor_fiber</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.equivalent_von_mises_stress.html">equivalent_von_mises_stress</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.principal_stress.html">principal_stress</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.principal_stress_1.html">principal_stress_1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.principal_stress_2.html">principal_stress_2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.principal_stress_3.html">principal_stress_3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.elastic_strain_tensor.html">elastic_strain_tensor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.elastic_strain_tensor_global.html">elastic_strain_tensor_global</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.elastic_strain_tensor_fiber.html">elastic_strain_tensor_fiber</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.equivalent_elastic_strain.html">equivalent_elastic_strain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.principal_elastic_strain.html">principal_elastic_strain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.principal_elastic_strain_1.html">principal_elastic_strain_1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.principal_elastic_strain_2.html">principal_elastic_strain_2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.principal_elastic_strain_3.html">principal_elastic_strain_3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.equivalent_plastic_strain.html">equivalent_plastic_strain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.temperature.html">temperature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.heat_flux.html">heat_flux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.total_heat_flux.html">total_heat_flux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.velocity.html">velocity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.total_velocity.html">total_velocity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.acceleration.html">acceleration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.total_acceleration.html">total_acceleration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.global_kinetic_energy.html">global_kinetic_energy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.global_internal_energy.html">global_internal_energy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.global_total_energy.html">global_total_energy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.global_hourglass_energy.html">global_hourglass_energy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.contact_status.html">contact_status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.contact_pressure.html">contact_pressure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.contact_penetration.html">contact_penetration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.contact_sliding_distance.html">contact_sliding_distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.contact_gap_distance.html">contact_gap_distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.contact_friction_stress.html">contact_friction_stress</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.contact_total_stress.html">contact_total_stress</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.contact_fluid_penetration_pressure.html">contact_fluid_penetration_pressure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.contact_surface_heat_flux.html">contact_surface_heat_flux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.failure.html">failure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.total_force.html">total_force</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.total_moment.html">total_moment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.electric_potential.html">electric_potential</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.electric_field.html">electric_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.total_electric_field.html">total_electric_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.electric_flux_density.html">electric_flux_density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.total_electric_flux_density.html">total_electric_flux_density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.structural_temperature.html">structural_temperature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.thermal_strain.html">thermal_strain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.strain_energy.html">strain_energy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.kinetic_energy.html">kinetic_energy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.beam_axial_force.html">beam_axial_force</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.beam_bending_moment_y.html">beam_bending_moment_y</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.beam_bending_moment_z.html">beam_bending_moment_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.beam_torsional_moment.html">beam_torsional_moment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.beam_axial_stress.html">beam_axial_stress</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.beam_axial_strain.html">beam_axial_strain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.beam_shear_force_y.html">beam_shear_force_y</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ResultFieldName.beam_shear_force_z.html">beam_shear_force_z</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.Field.html">Field</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Field.components.html">components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Field.name.html">name</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.Filter.html">Filter</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.encode.html">encode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.replace.html">replace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.split.html">split</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.rsplit.html">rsplit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.join.html">join</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.capitalize.html">capitalize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.casefold.html">casefold</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.title.html">title</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.center.html">center</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.count.html">count</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.expandtabs.html">expandtabs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.find.html">find</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.partition.html">partition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.index.html">index</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.ljust.html">ljust</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.lower.html">lower</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.lstrip.html">lstrip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.rfind.html">rfind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.rindex.html">rindex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.rjust.html">rjust</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.rstrip.html">rstrip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.rpartition.html">rpartition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.splitlines.html">splitlines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.strip.html">strip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.swapcase.html">swapcase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.translate.html">translate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.upper.html">upper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.startswith.html">startswith</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.endswith.html">endswith</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.removeprefix.html">removeprefix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.removesuffix.html">removesuffix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.isascii.html">isascii</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.islower.html">islower</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.isupper.html">isupper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.istitle.html">istitle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.isspace.html">isspace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.isdecimal.html">isdecimal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.isdigit.html">isdigit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.isnumeric.html">isnumeric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.isalpha.html">isalpha</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.isalnum.html">isalnum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.isidentifier.html">isidentifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.isprintable.html">isprintable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.zfill.html">zfill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.format.html">format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.format_map.html">format_map</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.maketrans.html">maketrans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.min.html">min</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.max.html">max</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Filter.average.html">average</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.html">ShellPosition</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.encode.html">encode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.replace.html">replace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.split.html">split</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.rsplit.html">rsplit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.join.html">join</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.capitalize.html">capitalize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.casefold.html">casefold</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.title.html">title</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.center.html">center</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.count.html">count</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.expandtabs.html">expandtabs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.find.html">find</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.partition.html">partition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.index.html">index</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.ljust.html">ljust</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.lower.html">lower</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.lstrip.html">lstrip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.rfind.html">rfind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.rindex.html">rindex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.rjust.html">rjust</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.rstrip.html">rstrip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.rpartition.html">rpartition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.splitlines.html">splitlines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.strip.html">strip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.swapcase.html">swapcase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.translate.html">translate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.upper.html">upper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.startswith.html">startswith</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.endswith.html">endswith</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.removeprefix.html">removeprefix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.removesuffix.html">removesuffix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.isascii.html">isascii</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.islower.html">islower</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.isupper.html">isupper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.istitle.html">istitle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.isspace.html">isspace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.isdecimal.html">isdecimal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.isdigit.html">isdigit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.isnumeric.html">isnumeric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.isalpha.html">isalpha</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.isalnum.html">isalnum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.isidentifier.html">isidentifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.isprintable.html">isprintable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.zfill.html">zfill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.format.html">format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.format_map.html">format_map</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.maketrans.html">maketrans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.top.html">top</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.middle.html">middle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.bottom.html">bottom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ShellPosition.all.html">all</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.Component.html">Component</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.encode.html">encode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.replace.html">replace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.split.html">split</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.rsplit.html">rsplit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.join.html">join</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.capitalize.html">capitalize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.casefold.html">casefold</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.title.html">title</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.center.html">center</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.count.html">count</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.expandtabs.html">expandtabs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.find.html">find</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.partition.html">partition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.index.html">index</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.ljust.html">ljust</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.lower.html">lower</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.lstrip.html">lstrip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.rfind.html">rfind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.rindex.html">rindex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.rjust.html">rjust</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.rstrip.html">rstrip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.rpartition.html">rpartition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.splitlines.html">splitlines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.strip.html">strip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.swapcase.html">swapcase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.translate.html">translate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.upper.html">upper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.startswith.html">startswith</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.endswith.html">endswith</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.removeprefix.html">removeprefix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.removesuffix.html">removesuffix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.isascii.html">isascii</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.islower.html">islower</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.isupper.html">isupper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.istitle.html">istitle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.isspace.html">isspace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.isdecimal.html">isdecimal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.isdigit.html">isdigit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.isnumeric.html">isnumeric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.isalpha.html">isalpha</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.isalnum.html">isalnum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.isidentifier.html">isidentifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.isprintable.html">isprintable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.zfill.html">zfill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.format.html">format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.format_map.html">format_map</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.maketrans.html">maketrans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.X.html">X</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.Y.html">Y</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.Z.html">Z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.P1.html">P1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.P2.html">P2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.P3.html">P3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.XX.html">XX</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.YY.html">YY</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.ZZ.html">ZZ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.XY.html">XY</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.YZ.html">YZ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Component.XZ.html">XZ</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.PlotDefinition.html">PlotDefinition</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDefinition.from_proto.html">from_proto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDefinition.to_proto.html">to_proto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDefinition.all_sets.html">all_sets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDefinition.as_linear.html">as_linear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDefinition.average_by_entity.html">average_by_entity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDefinition.creation_time.html">creation_time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDefinition.id.html">id</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDefinition.include_displacement.html">include_displacement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDefinition.last_set.html">last_set</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDefinition.mesh_scoping.html">mesh_scoping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDefinition.name.html">name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDefinition.named_selection_id.html">named_selection_id</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDefinition.on_skin.html">on_skin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDefinition.script.html">script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDefinition.set_ids.html">set_ids</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDefinition.shell_position.html">shell_position</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDefinition.supports_monitoring.html">supports_monitoring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDefinition.result_type.html">result_type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDefinition.location.html">location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDefinition.fields.html">fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDefinition.custom_options.html">custom_options</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.ChartResult.html">ChartResult</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartResult.average_by_entity.html">average_by_entity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartResult.filters.html">filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartResult.location.html">location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartResult.mesh_scoping.html">mesh_scoping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartResult.name.html">name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartResult.named_selection_id.html">named_selection_id</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartResult.on_skin.html">on_skin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartResult.shell_position.html">shell_position</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartResult.result_type.html">result_type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartResult.fields.html">fields</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.ChartDefinition.html">ChartDefinition</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartDefinition.from_proto.html">from_proto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartDefinition.to_proto.html">to_proto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartDefinition.all_sets.html">all_sets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartDefinition.chunk_size.html">chunk_size</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartDefinition.creation_time.html">creation_time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartDefinition.id.html">id</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartDefinition.mesh_scoping.html">mesh_scoping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartDefinition.named_selection_id.html">named_selection_id</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartDefinition.plotly_figure.html">plotly_figure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartDefinition.script.html">script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartDefinition.set_ids.html">set_ids</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartDefinition.supports_monitoring.html">supports_monitoring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartDefinition.user_defined.html">user_defined</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartDefinition.name.html">name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartDefinition.results.html">results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartDefinition.custom_options.html">custom_options</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.View.html">View</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.View.id.html">id</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.View.name.html">name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.View.parent.html">parent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.View.solution.html">solution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.View.type.html">type</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.MeshView.html">MeshView</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.MeshView.id.html">id</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.MeshView.name.html">name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.MeshView.options.html">options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.MeshView.parent.html">parent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.MeshView.solution.html">solution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.MeshView.type.html">type</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.PlotView.html">PlotView</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotView.definition.html">definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotView.id.html">id</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotView.name.html">name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotView.parent.html">parent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotView.solution.html">solution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotView.type.html">type</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.ChartView.html">ChartView</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartView.definition.html">definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartView.id.html">id</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartView.name.html">name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartView.parent.html">parent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartView.solution.html">solution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartView.type.html">type</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../workspace-viewports.html">Workspace and viewports</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.Workspace.html">Workspace</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Workspace.assign_view.html">assign_view</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Workspace.create_viewport.html">create_viewport</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Workspace.delete_viewport.html">delete_viewport</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Workspace.exit_fullscreen.html">exit_fullscreen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Workspace.export_as_template.html">export_as_template</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Workspace.import_from_template.html">import_from_template</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Workspace.set_fullscreen_viewport.html">set_fullscreen_viewport</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Workspace.set_sync.html">set_sync</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Workspace.fullscreen_viewport_id.html">fullscreen_viewport_id</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Workspace.id.html">id</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Workspace.name.html">name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Workspace.sync_camera.html">sync_camera</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Workspace.sync_legend.html">sync_legend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Workspace.sync_probe_entity.html">sync_probe_entity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Workspace.sync_probe_location.html">sync_probe_location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Workspace.sync_time_freq.html">sync_time_freq</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Workspace.viewport_ids.html">viewport_ids</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Workspace.viewports.html">viewports</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.Viewport.html">Viewport</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Viewport.hide.html">hide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Viewport.save_snapshot.html">save_snapshot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Viewport.set_size.html">set_size</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Viewport.set_view.html">set_view</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Viewport.show.html">show</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Viewport.take_snapshot.html">take_snapshot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Viewport.update_display_options.html">update_display_options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Viewport.display_options.html">display_options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Viewport.hidden.html">hidden</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Viewport.id.html">id</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Viewport.metadata.html">metadata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Viewport.ready.html">ready</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Viewport.size.html">size</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Viewport.solution_id.html">solution_id</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Viewport.view.html">view</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.Viewport.view_id.html">view_id</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.CameraPosition.html">CameraPosition</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.CameraPosition.back.html">back</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.CameraPosition.bottom.html">bottom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.CameraPosition.front.html">front</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.CameraPosition.isometric.html">isometric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.CameraPosition.left.html">left</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.CameraPosition.right_view.html">right_view</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.CameraPosition.rotate_x.html">rotate_x</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.CameraPosition.rotate_y.html">rotate_y</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.CameraPosition.rotate_z.html">rotate_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.CameraPosition.top.html">top</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.CameraPosition.with_translation.html">with_translation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.CameraPosition.with_zoom.html">with_zoom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.CameraPosition.forward.html">forward</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.CameraPosition.matrix.html">matrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.CameraPosition.right.html">right</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.CameraPosition.translation.html">translation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.CameraPosition.up.html">up</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.CameraPosition.zoom.html">zoom</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="ansys.result_explorer.core.ViewportMetadata.html">ViewportMetadata</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.ChartViewportMetadata.html">ChartViewportMetadata</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartViewportMetadata.chart_names.html">chart_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartViewportMetadata.series_names.html">series_names</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="ansys.result_explorer.core.MeshViewportMetadata.html">MeshViewportMetadata</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.PlotViewportMetadata.html">PlotViewportMetadata</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotViewportMetadata.active_result.html">active_result</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.ContactTrackersViewportMetadata.html">ContactTrackersViewportMetadata</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ContactTrackersViewportMetadata.contact_tracker_names.html">contact_tracker_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ContactTrackersViewportMetadata.series_names.html">series_names</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="ansys.result_explorer.core.ConvergenceTrackersViewportMetadata.html">ConvergenceTrackersViewportMetadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ansys.result_explorer.core.LogsViewportMetadata.html">LogsViewportMetadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ansys.result_explorer.core.DisplayOptions.html">DisplayOptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ansys.result_explorer.core.ResultDisplayOptions.html">ResultDisplayOptions</a></li>
+<li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">MeshDisplayOptions</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.MeshDisplayOptions.camera_position.html">camera_position</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.MeshDisplayOptions.expanded_groups.html">expanded_groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.MeshDisplayOptions.explode.html">explode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.MeshDisplayOptions.explode_direction.html">explode_direction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.MeshDisplayOptions.explode_scale_factor.html">explode_scale_factor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.MeshDisplayOptions.show_mesh_edges.html">show_mesh_edges</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.MeshDisplayOptions.visible_bodies.html">visible_bodies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.MeshDisplayOptions.visible_named_selection.html">visible_named_selection</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.PlotDisplayOptions.html">PlotDisplayOptions</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDisplayOptions.camera_position.html">camera_position</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDisplayOptions.expanded_groups.html">expanded_groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDisplayOptions.explode.html">explode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDisplayOptions.explode_direction.html">explode_direction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDisplayOptions.explode_scale_factor.html">explode_scale_factor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDisplayOptions.result_options.html">result_options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDisplayOptions.show_mesh_edges.html">show_mesh_edges</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDisplayOptions.show_min_max_labels.html">show_min_max_labels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.PlotDisplayOptions.visible_bodies.html">visible_bodies</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.ChartDisplayOptions.html">ChartDisplayOptions</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartDisplayOptions.active_charts.html">active_charts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartDisplayOptions.active_series.html">active_series</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartDisplayOptions.chart_names.html">chart_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartDisplayOptions.selected_x_axis.html">selected_x_axis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartDisplayOptions.series_names.html">series_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartDisplayOptions.show_legend.html">show_legend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartDisplayOptions.show_table.html">show_table</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ChartDisplayOptions.split_direction.html">split_direction</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.ContactTrackersDisplayOptions.html">ContactTrackersDisplayOptions</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ContactTrackersDisplayOptions.active_contact_trackers.html">active_contact_trackers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ContactTrackersDisplayOptions.active_series.html">active_series</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ContactTrackersDisplayOptions.contact_tracker_names.html">contact_tracker_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ContactTrackersDisplayOptions.series_names.html">series_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ContactTrackersDisplayOptions.show_legend.html">show_legend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ContactTrackersDisplayOptions.show_table.html">show_table</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ContactTrackersDisplayOptions.split_direction.html">split_direction</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.ConvergenceTrackersDisplayOptions.html">ConvergenceTrackersDisplayOptions</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.ConvergenceTrackersDisplayOptions.selected_tracker_name.html">selected_tracker_name</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ansys.result_explorer.core.LogsDisplayOptions.html">LogsDisplayOptions</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ansys.result_explorer.core.LogsDisplayOptions.log_path.html">log_path</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../exceptions.html">Exceptions</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="ansys.result_explorer.core.ResultExplorerError.html">ResultExplorerError</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../index.html" class="nav-link">API reference</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../workspace-viewports.html" class="nav-link">Workspace and viewports</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">MeshDisplayOptions</span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="meshdisplayoptions">
+<h1>MeshDisplayOptions<a class="headerlink" href="#meshdisplayoptions" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.result_explorer.core.MeshDisplayOptions">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.result_explorer.core.</span></span><span class="sig-name descname"><span class="pre">MeshDisplayOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pb_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ansys.result_explorer.core.Client.html#ansys.result_explorer.core.Client" title="ansys.result_explorer.core.Client"><span class="pre">Client</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">viewport_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">viewport</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.result_explorer.core.MeshDisplayOptions" title="Link to this definition">#</a></dt>
+<dd><p>Read/write display options for mesh viewports.</p>
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+</tbody>
+</table>
+</div>
+<p class="rubric">Attributes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="ansys.result_explorer.core.MeshDisplayOptions.camera_position.html#ansys.result_explorer.core.MeshDisplayOptions.camera_position" title="ansys.result_explorer.core.MeshDisplayOptions.camera_position"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MeshDisplayOptions.camera_position</span></code></a></p></td>
+<td><p>Current camera position, or None if not set.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ansys.result_explorer.core.MeshDisplayOptions.expanded_groups.html#ansys.result_explorer.core.MeshDisplayOptions.expanded_groups" title="ansys.result_explorer.core.MeshDisplayOptions.expanded_groups"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MeshDisplayOptions.expanded_groups</span></code></a></p></td>
+<td><p>List of expanded group.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ansys.result_explorer.core.MeshDisplayOptions.explode.html#ansys.result_explorer.core.MeshDisplayOptions.explode" title="ansys.result_explorer.core.MeshDisplayOptions.explode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MeshDisplayOptions.explode</span></code></a></p></td>
+<td><p>Whether to enable explode mode.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ansys.result_explorer.core.MeshDisplayOptions.explode_direction.html#ansys.result_explorer.core.MeshDisplayOptions.explode_direction" title="ansys.result_explorer.core.MeshDisplayOptions.explode_direction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MeshDisplayOptions.explode_direction</span></code></a></p></td>
+<td><p>Direction of explosion: <code class="docutils literal notranslate"><span class="pre">Radial</span></code>, <code class="docutils literal notranslate"><span class="pre">X</span></code>, <code class="docutils literal notranslate"><span class="pre">Y</span></code>, or <code class="docutils literal notranslate"><span class="pre">Z</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ansys.result_explorer.core.MeshDisplayOptions.explode_scale_factor.html#ansys.result_explorer.core.MeshDisplayOptions.explode_scale_factor" title="ansys.result_explorer.core.MeshDisplayOptions.explode_scale_factor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MeshDisplayOptions.explode_scale_factor</span></code></a></p></td>
+<td><p>Scale factor for explode visualization.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ansys.result_explorer.core.MeshDisplayOptions.show_mesh_edges.html#ansys.result_explorer.core.MeshDisplayOptions.show_mesh_edges" title="ansys.result_explorer.core.MeshDisplayOptions.show_mesh_edges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MeshDisplayOptions.show_mesh_edges</span></code></a></p></td>
+<td><p>Whether to display mesh edges.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ansys.result_explorer.core.MeshDisplayOptions.visible_bodies.html#ansys.result_explorer.core.MeshDisplayOptions.visible_bodies" title="ansys.result_explorer.core.MeshDisplayOptions.visible_bodies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MeshDisplayOptions.visible_bodies</span></code></a></p></td>
+<td><p>List of visible body IDs.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ansys.result_explorer.core.MeshDisplayOptions.visible_named_selection.html#ansys.result_explorer.core.MeshDisplayOptions.visible_named_selection" title="ansys.result_explorer.core.MeshDisplayOptions.visible_named_selection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MeshDisplayOptions.visible_named_selection</span></code></a></p></td>
+<td><p>Currently visible named selection in this viewport.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ansys.result_explorer.core.MeshDisplayOptions"><code class="docutils literal notranslate"><span class="pre">MeshDisplayOptions</span></code></a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/api/_autosummary/ansys.result_explorer.core.MeshDisplayOptions.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<!--
+  Theme Version Footer
+  Displays the Sphinx theme version and the last updated date.
+  Accessibility and semantic improvements included.
+-->
+<footer class="theme-version" aria-label="Theme version and last update">
+  <span>
+    
+      Built with the
+      <a href="https://sphinxdocs.ansys.com/version/stable/index.html" target="_blank" rel="noopener noreferrer">
+        Ansys Sphinx Theme
+      </a>
+      1.9.0.
+    
+  </span>
+  <br />
+  <span>Last updated on <time id="ast_build_date"></time></span>
+</footer>
+<script>
+  // Set the last updated date in a readable format
+  (function() {
+    var options = { day: "numeric", month: "long", year: "numeric" };
+    var ast_lastModifiedDate = new Date(document.lastModified);
+    var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+    var dateElem = document.getElementById("ast_build_date");
+    if (dateElem) {
+      dateElem.textContent = ast_build_date;
+    }
+  })();
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

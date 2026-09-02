@@ -1,0 +1,6 @@
+explode\_direction
+==================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: MeshDisplayOptions.explode_direction

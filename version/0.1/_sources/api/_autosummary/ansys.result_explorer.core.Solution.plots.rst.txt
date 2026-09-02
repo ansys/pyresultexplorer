@@ -1,0 +1,6 @@
+plots
+=====
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.plots

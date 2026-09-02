@@ -1,0 +1,6 @@
+displacement
+============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultType.displacement

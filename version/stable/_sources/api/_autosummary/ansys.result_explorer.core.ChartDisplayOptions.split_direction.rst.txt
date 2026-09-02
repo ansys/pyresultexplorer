@@ -1,0 +1,6 @@
+split\_direction
+================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ChartDisplayOptions.split_direction

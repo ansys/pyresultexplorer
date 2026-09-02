@@ -1,0 +1,172 @@
+﻿Filter
+======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: Filter
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Filter.encode
+      
+      
+      Filter.replace
+      
+      
+      Filter.split
+      
+      
+      Filter.rsplit
+      
+      
+      Filter.join
+      
+      
+      Filter.capitalize
+      
+      
+      Filter.casefold
+      
+      
+      Filter.title
+      
+      
+      Filter.center
+      
+      
+      Filter.count
+      
+      
+      Filter.expandtabs
+      
+      
+      Filter.find
+      
+      
+      Filter.partition
+      
+      
+      Filter.index
+      
+      
+      Filter.ljust
+      
+      
+      Filter.lower
+      
+      
+      Filter.lstrip
+      
+      
+      Filter.rfind
+      
+      
+      Filter.rindex
+      
+      
+      Filter.rjust
+      
+      
+      Filter.rstrip
+      
+      
+      Filter.rpartition
+      
+      
+      Filter.splitlines
+      
+      
+      Filter.strip
+      
+      
+      Filter.swapcase
+      
+      
+      Filter.translate
+      
+      
+      Filter.upper
+      
+      
+      Filter.startswith
+      
+      
+      Filter.endswith
+      
+      
+      Filter.removeprefix
+      
+      
+      Filter.removesuffix
+      
+      
+      Filter.isascii
+      
+      
+      Filter.islower
+      
+      
+      Filter.isupper
+      
+      
+      Filter.istitle
+      
+      
+      Filter.isspace
+      
+      
+      Filter.isdecimal
+      
+      
+      Filter.isdigit
+      
+      
+      Filter.isnumeric
+      
+      
+      Filter.isalpha
+      
+      
+      Filter.isalnum
+      
+      
+      Filter.isidentifier
+      
+      
+      Filter.isprintable
+      
+      
+      Filter.zfill
+      
+      
+      Filter.format
+      
+      
+      Filter.format_map
+      
+      
+      Filter.maketrans
+      
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Filter.min
+      Filter.max
+      Filter.average
+   
+   

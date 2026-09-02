@@ -1,0 +1,6 @@
+components
+==========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: Field.components

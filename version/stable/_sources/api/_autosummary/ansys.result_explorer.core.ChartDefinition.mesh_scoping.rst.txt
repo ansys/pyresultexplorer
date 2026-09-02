@@ -1,0 +1,6 @@
+mesh\_scoping
+=============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ChartDefinition.mesh_scoping

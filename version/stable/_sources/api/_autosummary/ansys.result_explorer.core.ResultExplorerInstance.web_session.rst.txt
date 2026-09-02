@@ -1,0 +1,6 @@
+web\_session
+============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: ResultExplorerInstance.web_session

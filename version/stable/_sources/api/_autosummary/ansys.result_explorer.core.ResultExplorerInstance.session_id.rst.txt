@@ -1,0 +1,6 @@
+session\_id
+===========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: ResultExplorerInstance.session_id

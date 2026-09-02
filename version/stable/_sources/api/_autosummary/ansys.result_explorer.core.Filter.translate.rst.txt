@@ -1,0 +1,6 @@
+translate
+=========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Filter.translate

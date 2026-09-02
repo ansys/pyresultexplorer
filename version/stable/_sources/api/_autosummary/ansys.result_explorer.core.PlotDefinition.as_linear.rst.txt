@@ -1,0 +1,6 @@
+as\_linear
+==========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: PlotDefinition.as_linear

@@ -1,0 +1,6 @@
+num\_threads
+============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ServerLaunchConfig.num_threads

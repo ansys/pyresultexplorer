@@ -1,0 +1,6 @@
+authenticate\_result\_provider
+==============================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Client.authenticate_result_provider

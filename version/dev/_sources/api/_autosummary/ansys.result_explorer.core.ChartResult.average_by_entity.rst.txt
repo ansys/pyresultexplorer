@@ -1,0 +1,6 @@
+average\_by\_entity
+===================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ChartResult.average_by_entity

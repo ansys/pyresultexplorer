@@ -1,0 +1,6 @@
+create\_hps\_solution
+=====================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Client.create_hps_solution

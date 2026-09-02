@@ -1,0 +1,6 @@
+total\_electric\_flux\_density
+==============================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultFieldName.total_electric_flux_density

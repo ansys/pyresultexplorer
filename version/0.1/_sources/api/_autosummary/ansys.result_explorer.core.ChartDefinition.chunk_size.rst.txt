@@ -1,0 +1,6 @@
+chunk\_size
+===========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ChartDefinition.chunk_size

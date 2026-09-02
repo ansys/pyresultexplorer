@@ -1,0 +1,53 @@
+﻿PlotDefinition
+==============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: PlotDefinition
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      PlotDefinition.from_proto
+      
+      
+      PlotDefinition.to_proto
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      PlotDefinition.all_sets
+      PlotDefinition.as_linear
+      PlotDefinition.average_by_entity
+      PlotDefinition.creation_time
+      PlotDefinition.id
+      PlotDefinition.include_displacement
+      PlotDefinition.last_set
+      PlotDefinition.mesh_scoping
+      PlotDefinition.name
+      PlotDefinition.named_selection_id
+      PlotDefinition.on_skin
+      PlotDefinition.script
+      PlotDefinition.set_ids
+      PlotDefinition.shell_position
+      PlotDefinition.supports_monitoring
+      PlotDefinition.result_type
+      PlotDefinition.location
+      PlotDefinition.fields
+      PlotDefinition.custom_options
+   
+   
