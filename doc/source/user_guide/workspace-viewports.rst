@@ -54,6 +54,70 @@ You can list all viewports in a workspace and assign views to them:
     # Or use the convenient shortcut to assign a view to the first viewport
     viewport = workspace.assign_view(view=displacement_view, wait=True)
 
+Describing the viewport layout
+------------------------------
+
+The :attr:`Workspace.layout <ansys.result_explorer.core.Workspace.layout>` attribute
+describes where each viewport is positioned. Every layout is described as a grid of
+rows and columns, and printing it shows a diagram of the current arrangement followed
+by a legend of viewport IDs:
+
+.. code-block:: python
+
+   print(workspace.layout)
+
+.. code-block:: text
+
+   +---------------------+---------------------+
+   | [0] r0c0            | [1] r0c1            |
+   |                     |                     |
+   |                     |                     |
+   |                     +---------------------+
+   |                     | [2] r1c1            |
+   |                     |                     |
+   |                     |                     |
+   +---------------------+---------------------+
+   [0] ad661e90-4bf1-4df2-9f03-4f12e28b381e (row 0, column 0, 2x1 cells)
+   [1] fb469094-bdc8-4037-89fe-b193be36666e (row 0, column 1, 1x1 cells)
+   [2] 2be6dda3-1889-44d2-bbfb-4c59f28fa548 (row 1, column 1, 1x1 cells)
+
+Viewports that are not part of a regular grid span several rows or columns.
+In the layout above, the first viewport spans both rows of the first column:
+
+.. code-block:: python
+
+   layout = workspace.layout
+
+   layout.grid_shape  # (2, 2)
+   layout.is_grid  # False
+
+   placement = layout.placement_of(viewport)
+   placement.row, placement.column  # (0, 0)
+   placement.row_span, placement.column_span  # (2, 1)
+
+Each :class:`ViewportPlacement <ansys.result_explorer.core.ViewportPlacement>` also
+reports the fraction of the workspace that the viewport covers through its ``x``,
+``y``, ``width``, and ``height`` attributes.
+
+Accessing viewports by grid position
+------------------------------------
+
+Use :meth:`Workspace.viewport_at <ansys.result_explorer.core.Workspace.viewport_at>`
+to access a viewport by its position. Rows are ordered from top to bottom and
+columns are ordered from left to right, and both indexes start at zero.
+A viewport that spans several cells is returned for each cell that it occupies.
+
+.. code-block:: python
+
+    workspace = rx.create_workspace(name="Grid Workspace", rows=2, cols=3)
+
+    # Assign a view to the lower-right viewport.
+    lower_right = workspace.viewport_at(row=1, column=2)
+    lower_right.set_view(displacement_view, wait=True)
+
+    # Get every viewport as rows of the grid.
+    grid = workspace.viewport_grid()
+
 Creating and deleting viewports
 -------------------------------
 
