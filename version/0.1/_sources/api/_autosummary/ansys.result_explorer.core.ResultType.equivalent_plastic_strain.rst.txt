@@ -1,0 +1,6 @@
+equivalent\_plastic\_strain
+===========================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultType.equivalent_plastic_strain

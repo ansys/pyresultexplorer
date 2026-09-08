@@ -1,0 +1,6 @@
+explode
+=======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: PlotDisplayOptions.explode

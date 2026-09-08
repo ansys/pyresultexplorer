@@ -1,0 +1,6 @@
+get\_solver\_out\_content
+=========================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Solution.get_solver_out_content

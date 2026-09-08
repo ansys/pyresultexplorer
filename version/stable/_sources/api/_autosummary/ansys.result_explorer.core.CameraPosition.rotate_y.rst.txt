@@ -1,0 +1,6 @@
+rotate\_y
+=========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: CameraPosition.rotate_y

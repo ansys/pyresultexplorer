@@ -1,0 +1,62 @@
+﻿Workspace
+=========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: Workspace
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      Workspace.assign_view
+      
+      
+      Workspace.create_viewport
+      
+      
+      Workspace.delete_viewport
+      
+      
+      Workspace.exit_fullscreen
+      
+      
+      Workspace.export_as_template
+      
+      
+      Workspace.import_from_template
+      
+      
+      Workspace.set_fullscreen_viewport
+      
+      
+      Workspace.set_sync
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Workspace.fullscreen_viewport_id
+      Workspace.id
+      Workspace.name
+      Workspace.sync_camera
+      Workspace.sync_legend
+      Workspace.sync_probe_entity
+      Workspace.sync_probe_location
+      Workspace.sync_time_freq
+      Workspace.viewport_ids
+      Workspace.viewports
+   
+   

@@ -1,0 +1,6 @@
+all
+===
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ShellPosition.all

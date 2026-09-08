@@ -1,0 +1,6 @@
+endswith
+========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: ResultFieldName.endswith

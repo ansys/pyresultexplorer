@@ -1,0 +1,6 @@
+top
+===
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ShellPosition.top

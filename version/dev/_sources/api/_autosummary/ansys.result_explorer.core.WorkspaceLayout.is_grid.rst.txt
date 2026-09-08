@@ -1,0 +1,6 @@
+is\_grid
+========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: WorkspaceLayout.is_grid

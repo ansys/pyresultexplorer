@@ -1,0 +1,6 @@
+failure
+=======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultType.failure

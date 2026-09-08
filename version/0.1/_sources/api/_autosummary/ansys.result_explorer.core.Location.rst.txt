@@ -1,0 +1,171 @@
+﻿Location
+========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: Location
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Location.encode
+      
+      
+      Location.replace
+      
+      
+      Location.split
+      
+      
+      Location.rsplit
+      
+      
+      Location.join
+      
+      
+      Location.capitalize
+      
+      
+      Location.casefold
+      
+      
+      Location.title
+      
+      
+      Location.center
+      
+      
+      Location.count
+      
+      
+      Location.expandtabs
+      
+      
+      Location.find
+      
+      
+      Location.partition
+      
+      
+      Location.index
+      
+      
+      Location.ljust
+      
+      
+      Location.lower
+      
+      
+      Location.lstrip
+      
+      
+      Location.rfind
+      
+      
+      Location.rindex
+      
+      
+      Location.rjust
+      
+      
+      Location.rstrip
+      
+      
+      Location.rpartition
+      
+      
+      Location.splitlines
+      
+      
+      Location.strip
+      
+      
+      Location.swapcase
+      
+      
+      Location.translate
+      
+      
+      Location.upper
+      
+      
+      Location.startswith
+      
+      
+      Location.endswith
+      
+      
+      Location.removeprefix
+      
+      
+      Location.removesuffix
+      
+      
+      Location.isascii
+      
+      
+      Location.islower
+      
+      
+      Location.isupper
+      
+      
+      Location.istitle
+      
+      
+      Location.isspace
+      
+      
+      Location.isdecimal
+      
+      
+      Location.isdigit
+      
+      
+      Location.isnumeric
+      
+      
+      Location.isalpha
+      
+      
+      Location.isalnum
+      
+      
+      Location.isidentifier
+      
+      
+      Location.isprintable
+      
+      
+      Location.zfill
+      
+      
+      Location.format
+      
+      
+      Location.format_map
+      
+      
+      Location.maketrans
+      
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Location.nodal
+      Location.elemental
+   
+   

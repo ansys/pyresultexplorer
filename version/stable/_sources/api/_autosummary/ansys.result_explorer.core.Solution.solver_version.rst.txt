@@ -1,0 +1,6 @@
+solver\_version
+===============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.solver_version

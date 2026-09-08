@@ -1,0 +1,33 @@
+﻿View
+====
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: View
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      View.id
+      View.name
+      View.parent
+      View.solution
+      View.type
+   
+   

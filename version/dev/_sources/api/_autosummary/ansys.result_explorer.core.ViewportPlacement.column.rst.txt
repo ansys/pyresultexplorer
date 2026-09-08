@@ -1,0 +1,6 @@
+column
+======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ViewportPlacement.column

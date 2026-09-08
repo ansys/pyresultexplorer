@@ -1,0 +1,6 @@
+find
+====
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Location.find

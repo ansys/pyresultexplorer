@@ -1,0 +1,34 @@
+﻿PlotView
+========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: PlotView
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      PlotView.definition
+      PlotView.id
+      PlotView.name
+      PlotView.parent
+      PlotView.solution
+      PlotView.type
+   
+   

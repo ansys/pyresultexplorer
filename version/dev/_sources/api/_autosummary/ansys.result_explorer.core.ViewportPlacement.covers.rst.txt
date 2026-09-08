@@ -1,0 +1,6 @@
+covers
+======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: ViewportPlacement.covers

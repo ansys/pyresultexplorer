@@ -1,0 +1,6 @@
+isnumeric
+=========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Component.isnumeric

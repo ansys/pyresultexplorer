@@ -1,0 +1,22 @@
+﻿ConvergenceTrackersViewportMetadata
+===================================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: ConvergenceTrackersViewportMetadata
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   

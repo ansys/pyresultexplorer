@@ -1,0 +1,6 @@
+beam\_shear\_force\_z
+=====================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultFieldName.beam_shear_force_z

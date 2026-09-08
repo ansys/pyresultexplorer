@@ -1,0 +1,6 @@
+available\_trackers
+===================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.available_trackers

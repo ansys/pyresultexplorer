@@ -1,0 +1,6 @@
+update\_named\_selection
+========================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Solution.update_named_selection

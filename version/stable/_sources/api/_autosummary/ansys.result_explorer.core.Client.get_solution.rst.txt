@@ -1,0 +1,6 @@
+get\_solution
+=============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Client.get_solution

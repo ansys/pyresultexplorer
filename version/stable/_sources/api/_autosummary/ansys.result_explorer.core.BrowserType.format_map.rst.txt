@@ -1,0 +1,6 @@
+format\_map
+===========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: BrowserType.format_map

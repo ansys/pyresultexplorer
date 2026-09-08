@@ -1,0 +1,1106 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Create workspace grid layouts &#8212; PyResultExplorer</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/ansys-sphinx-theme.css?v=cb878c6c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/ansys-sphinx-theme.css?v=cb878c6c" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=0790524f97105ba85085"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=0790524f97105ba85085" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../_static/documentation_options.js?v=3b1a31c5"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/003-workspace-layout';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.18.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://result-explorer.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="icon" href="../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Create plots scoped to named selections" href="010-create-plots-on-named-selections.html" />
+    <link rel="prev" title="Workspaces, solutions, and view management" href="002-workspace-and-views.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.2.dev0" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  <link rel="canonical" href="https://result-explorer.docs.pyansys.com/version/stable/examples/003-workspace-layout.html" />
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyResultExplorer - Home"/>
+    <img src="../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyResultExplorer - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html" title="PyResultExplorer home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../contribute.html">
+    Contribute
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../changelog.html">
+    Release notes
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+  
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyresultexplorer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+
+  
+
+
+
+
+
+
+
+
+
+<div class="ast-announcement-wrap" role="region" aria-label="Announcement" hidden>
+    <div class="ast-announcement info">
+        <span class="ast-announcement-icon" aria-hidden="true"></span>
+        <span class="ast-announcement-text" id="ast-announcement-text"></span>
+        <!-- djlint:off H021-->
+        <!-- for inline styles -->
+        <a class="ast-announcement-details-btn" id="ast-announcement-details-btn"
+           href=""
+           data-ast-url=""
+           aria-label="View notifications"
+           style="display:none">View</a>
+        <!-- djlint:on -->
+        <!-- djlint:off H023-->
+        <!-- use entity reference for &times; -->
+        <button class="ast-announcement-close" id="ast-announcement-close" aria-label="Close announcement">&times;</button>
+        <!-- djlint:on -->
+    </div>
+</div>
+
+<!-- Modal overlay -->
+<!-- djlint:off H023-->
+<!-- use entity reference for &times; -->
+<div class="ast-announcement-overlay" id="ast-announcement-overlay" role="dialog" aria-modal="true" aria-label="Announcement details">
+    <div class="ast-announcement-modal info">
+        <div class="ast-announcement-modal-body"
+             data-ast-items='[]'>
+        </div>
+        <button class="ast-announcement-modal-close" id="ast-announcement-modal-close" aria-label="Close">&times;</button>
+    </div>
+</div>
+<!-- djlint:on -->
+
+<script src="../_static/js/announcement_banner.js"
+        data-base-url="../"></script>
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html" title="PyResultExplorer home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contribute.html">
+    Contribute
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelog.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+  
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyresultexplorer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="001-query-filesystem.html">Query the file system and access solution data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="002-workspace-and-views.html">Workspaces, solutions, and view management</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Create workspace grid layouts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="010-create-plots-on-named-selections.html">Create plots scoped to named selections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="011-plot-display-options.html">Customize plot display options and animate results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="012-camera-position.html">Control camera position and orientation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="013-user-defined-plot.html">Create a user-defined plot with DPF filtering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="020-trackers-viewport-options.html">Work with contact and convergence trackers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="030-create-and-modify-charts.html">Create and modify charts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="050-save-session-and-workspace.html">Save sessions and workspace templates</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="index.html" class="nav-link">Examples</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Create workspace grid layouts</span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-examples-003-workspace-layout-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="create-workspace-grid-layouts">
+<span id="workspace-layout-example"></span><span id="sphx-glr-examples-003-workspace-layout-py"></span><h1>Create workspace grid layouts<a class="headerlink" href="#create-workspace-grid-layouts" title="Link to this heading">#</a></h1>
+<p>This example demonstrates how to create and manage workspace layouts with
+various grid configurations in PyResultExplorer:</p>
+<ul class="simple">
+<li><p><strong>Workspace creation</strong> with custom grid dimensions using rows and columns.</p></li>
+<li><p><strong>Grid layout configurations</strong> from 1x1 to 3x3 grid arrangements.</p></li>
+<li><p><strong>Layout descriptions</strong> showing where each viewport is positioned.</p></li>
+<li><p><strong>Viewport positions</strong> with row and column grid coordinates.</p></li>
+</ul>
+<p>This example showcases the flexibility of Result Explorer’s workspace layout
+system for organizing and visualizing multiple result sets simultaneously.</p>
+<p>Import the Result Explorer dependencies.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ansys.result_explorer.core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Component</span><span class="p">,</span>
+    <span class="n">Field</span><span class="p">,</span>
+    <span class="n">Location</span><span class="p">,</span>
+    <span class="n">PlotDefinition</span><span class="p">,</span>
+    <span class="n">ResultFieldName</span><span class="p">,</span>
+    <span class="n">ResultType</span><span class="p">,</span>
+    <span class="n">ViewportPlacement</span><span class="p">,</span>
+    <span class="n">launch_result_explorer</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.result_explorer.core.examples</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExampleKeys</span><span class="p">,</span> <span class="n">get_example_file</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.result_explorer.core.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ViewportDirection</span>
+</pre></div>
+</div>
+<section id="launch-result-explorer">
+<h2>Launch Result Explorer<a class="headerlink" href="#launch-result-explorer" title="Link to this heading">#</a></h2>
+<p>Start a Result Explorer instance for this example.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">rx</span> <span class="o">=</span> <span class="n">launch_result_explorer</span><span class="p">()</span>
+
+<span class="c1"># Create a solution</span>
+<span class="n">rst_path</span> <span class="o">=</span> <span class="n">get_example_file</span><span class="p">(</span><span class="n">ExampleKeys</span><span class="o">.</span><span class="n">RST_MULTIPLE_CONNECTIONS</span><span class="p">)</span>
+<span class="n">sol</span> <span class="o">=</span> <span class="n">rx</span><span class="o">.</span><span class="n">create_solution</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"Example Solution"</span><span class="p">,</span>
+    <span class="n">file_path</span><span class="o">=</span><span class="n">rst_path</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id1">
+<h2>Create workspace grid layouts<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>Create workspaces with various grid configurations from 1x1 to 3x3 and
+inspect the viewports in each layout.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
+        <span class="n">workspace</span> <span class="o">=</span> <span class="n">rx</span><span class="o">.</span><span class="n">create_workspace</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s2"> Grid Workspace"</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Created workspace: </span><span class="si">{</span><span class="n">workspace</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (id: </span><span class="si">{</span><span class="n">workspace</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+        <span class="n">viewports</span> <span class="o">=</span> <span class="n">workspace</span><span class="o">.</span><span class="n">viewports</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Viewport count: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">viewports</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">workspace</span><span class="o">.</span><span class="n">layout</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"-"</span> <span class="o">*</span> <span class="mi">40</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Created workspace: 1x1 Grid Workspace (id: ffd84abf-001b-4025-8ae5-cde52308bd9d)
+Viewport count: 1
++---------------------+
+| [0] r0c0            |
+|                     |
+|                     |
++---------------------+
+[0] ddf052fc-d672-4e77-b6e5-21df6bb394fb (row 0, column 0, 1x1 cells)
+----------------------------------------
+Created workspace: 2x1 Grid Workspace (id: 914914ff-5091-41dd-afcd-57c2473e8179)
+Viewport count: 2
++---------------------+---------------------+
+| [0] r0c0            | [1] r0c1            |
+|                     |                     |
+|                     |                     |
++---------------------+---------------------+
+[0] 98d14c92-12e6-4270-a21f-831c826540b8 (row 0, column 0, 1x1 cells)
+[1] 2359c980-3bdc-4109-b021-93aa8b2a785a (row 0, column 1, 1x1 cells)
+----------------------------------------
+Created workspace: 3x1 Grid Workspace (id: aeecd208-8047-4850-976c-dd22b4a8fc48)
+Viewport count: 3
++---------------------+---------------------+---------------------+
+| [0] r0c0            | [1] r0c1            | [2] r0c2            |
+|                     |                     |                     |
+|                     |                     |                     |
++---------------------+---------------------+---------------------+
+[0] 9d8faa9e-2894-4b05-8475-b0f5a597d383 (row 0, column 0, 1x1 cells)
+[1] df79bea7-77bd-4fa0-8232-30a1889b4fe9 (row 0, column 1, 1x1 cells)
+[2] dfc18abe-4434-47b3-ac08-16481a026d60 (row 0, column 2, 1x1 cells)
+----------------------------------------
+Created workspace: 1x2 Grid Workspace (id: 971d6562-28d9-4413-979d-b43136f10013)
+Viewport count: 2
++---------------------+
+| [0] r0c0            |
+|                     |
+|                     |
++---------------------+
+| [1] r1c0            |
+|                     |
+|                     |
++---------------------+
+[0] 5aea1ec9-245e-4192-987e-53fa18523118 (row 0, column 0, 1x1 cells)
+[1] 37b04e82-0f49-47dd-b56f-eb227ba664d5 (row 1, column 0, 1x1 cells)
+----------------------------------------
+Created workspace: 2x2 Grid Workspace (id: b1366a86-3a08-4a9c-931c-7c2e8bb234e3)
+Viewport count: 4
++---------------------+---------------------+
+| [0] r0c0            | [1] r0c1            |
+|                     |                     |
+|                     |                     |
++---------------------+---------------------+
+| [2] r1c0            | [3] r1c1            |
+|                     |                     |
+|                     |                     |
++---------------------+---------------------+
+[0] c279921e-9fad-4e27-b2a5-0dd3f47db3e9 (row 0, column 0, 1x1 cells)
+[1] f5b538bd-8e1b-4012-9266-92b5a43a2430 (row 0, column 1, 1x1 cells)
+[2] 64d953d7-9ae4-4e74-b8f8-cc7dd8646477 (row 1, column 0, 1x1 cells)
+[3] 852bc978-61da-4972-82e7-6741dc241f44 (row 1, column 1, 1x1 cells)
+----------------------------------------
+Created workspace: 3x2 Grid Workspace (id: 56076106-d730-49c0-a4af-ae1a925c3e3e)
+Viewport count: 6
++---------------------+---------------------+---------------------+
+| [0] r0c0            | [1] r0c1            | [2] r0c2            |
+|                     |                     |                     |
+|                     |                     |                     |
++---------------------+---------------------+---------------------+
+| [3] r1c0            | [4] r1c1            | [5] r1c2            |
+|                     |                     |                     |
+|                     |                     |                     |
++---------------------+---------------------+---------------------+
+[0] 3f620663-4abe-444b-a7c1-d3b1207d3d69 (row 0, column 0, 1x1 cells)
+[1] ccb94fe2-5e8e-45f4-9fa4-d074a488db27 (row 0, column 1, 1x1 cells)
+[2] af87e6ce-4584-4ee9-b442-f6b39ed072f0 (row 0, column 2, 1x1 cells)
+[3] 2aacfde9-833a-4b19-8a2f-0c6764e0bb4d (row 1, column 0, 1x1 cells)
+[4] c5adc4c9-0f7a-4fd7-b6f6-29bfe11ab9a0 (row 1, column 1, 1x1 cells)
+[5] 259a40bc-721a-4f7a-8488-f41a257916f0 (row 1, column 2, 1x1 cells)
+----------------------------------------
+Created workspace: 1x3 Grid Workspace (id: af488697-f8e1-48e4-8c0f-8a9189d71f1a)
+Viewport count: 3
++---------------------+
+| [0] r0c0            |
+|                     |
+|                     |
++---------------------+
+| [1] r1c0            |
+|                     |
+|                     |
++---------------------+
+| [2] r2c0            |
+|                     |
+|                     |
++---------------------+
+[0] 9fb9f656-edb1-496e-b13d-cd195cc8a69e (row 0, column 0, 1x1 cells)
+[1] 00cb929b-ec5f-4b1b-b363-7208ca2c0aaa (row 1, column 0, 1x1 cells)
+[2] 8ee85c70-c36e-41ba-a840-8ad1e0717f08 (row 2, column 0, 1x1 cells)
+----------------------------------------
+Created workspace: 2x3 Grid Workspace (id: 1d368d77-0b38-40fe-9e6e-7bbbe32489e8)
+Viewport count: 6
++---------------------+---------------------+
+| [0] r0c0            | [1] r0c1            |
+|                     |                     |
+|                     |                     |
++---------------------+---------------------+
+| [2] r1c0            | [3] r1c1            |
+|                     |                     |
+|                     |                     |
++---------------------+---------------------+
+| [4] r2c0            | [5] r2c1            |
+|                     |                     |
+|                     |                     |
++---------------------+---------------------+
+[0] faae627f-4d38-46ca-bcaa-dc188491b73e (row 0, column 0, 1x1 cells)
+[1] 88b45946-3842-4a5e-befc-119f054b7b14 (row 0, column 1, 1x1 cells)
+[2] 14ecb86a-3a3d-4f11-bbd9-c416b8b0ca10 (row 1, column 0, 1x1 cells)
+[3] 9bea4002-b0c3-436b-86d7-9d2d952a5302 (row 1, column 1, 1x1 cells)
+[4] c421c11a-eda6-4f28-998d-6beb68ed4cfe (row 2, column 0, 1x1 cells)
+[5] 4340f63e-5b36-4e20-bbc0-cdf3497deb4e (row 2, column 1, 1x1 cells)
+----------------------------------------
+Created workspace: 3x3 Grid Workspace (id: 8d234036-f905-4098-bdcf-d82e9e8c40f4)
+Viewport count: 9
++---------------------+---------------------+---------------------+
+| [0] r0c0            | [1] r0c1            | [2] r0c2            |
+|                     |                     |                     |
+|                     |                     |                     |
++---------------------+---------------------+---------------------+
+| [3] r1c0            | [4] r1c1            | [5] r1c2            |
+|                     |                     |                     |
+|                     |                     |                     |
++---------------------+---------------------+---------------------+
+| [6] r2c0            | [7] r2c1            | [8] r2c2            |
+|                     |                     |                     |
+|                     |                     |                     |
++---------------------+---------------------+---------------------+
+[0] 8a0eedc0-0603-4946-bcff-88ce4570eeb4 (row 0, column 0, 1x1 cells)
+[1] d2eb94cb-fc30-492b-b011-96267f162b63 (row 0, column 1, 1x1 cells)
+[2] ee51f381-e9d4-4605-af8e-035747f0ea58 (row 0, column 2, 1x1 cells)
+[3] 5bfb8995-128a-4c2f-859a-699b91fcf64a (row 1, column 0, 1x1 cells)
+[4] 37946c51-4602-4957-94e0-de90d288feb4 (row 1, column 1, 1x1 cells)
+[5] b8dcf601-7361-4c8f-afd9-3d8c4b6e1525 (row 1, column 2, 1x1 cells)
+[6] aa215889-4282-4576-af9d-87862ae59708 (row 2, column 0, 1x1 cells)
+[7] a64b40a2-8a3e-4eae-b2b1-c0083847e499 (row 2, column 1, 1x1 cells)
+[8] 71f2ac79-6253-417f-94f8-4aec9c1106d2 (row 2, column 2, 1x1 cells)
+----------------------------------------
+</pre></div>
+</div>
+</section>
+<section id="describe-where-the-viewports-are">
+<h2>Describe where the viewports are<a class="headerlink" href="#describe-where-the-viewports-are" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">workspace.layout</span></code> describes the arrangement as a grid of rows and
+columns. Printing it shows a diagram of the current positions.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">workspace</span> <span class="o">=</span> <span class="n">rx</span><span class="o">.</span><span class="n">create_workspace</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Comparison Workspace"</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">workspace</span><span class="o">.</span><span class="n">layout</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>+---------------------+---------------------+---------------------+
+| [0] r0c0            | [1] r0c1            | [2] r0c2            |
+|                     |                     |                     |
+|                     |                     |                     |
++---------------------+---------------------+---------------------+
+| [3] r1c0            | [4] r1c1            | [5] r1c2            |
+|                     |                     |                     |
+|                     |                     |                     |
++---------------------+---------------------+---------------------+
+[0] bb77d316-e939-490c-a04c-93309d088119 (row 0, column 0, 1x1 cells)
+[1] 1726fe8e-51f9-4a0a-80a0-17287af710ce (row 0, column 1, 1x1 cells)
+[2] e8974059-7016-4d79-b2e0-c5931695a0db (row 0, column 2, 1x1 cells)
+[3] 4f3b0d9a-74a3-4097-a72a-8d4f5b6fe6f5 (row 1, column 0, 1x1 cells)
+[4] 9d28a2fc-80e7-4bc5-8792-0a4158523956 (row 1, column 1, 1x1 cells)
+[5] daaddef5-842d-4117-9887-3c5be617e17b (row 1, column 2, 1x1 cells)
+</pre></div>
+</div>
+</section>
+<section id="assign-plots-by-grid-position">
+<h2>Assign plots by grid position<a class="headerlink" href="#assign-plots-by-grid-position" title="Link to this heading">#</a></h2>
+<p>Create a plot named after each grid position, then use <code class="docutils literal notranslate"><span class="pre">viewport_at()</span></code>
+to assign it to the matching viewport. Rows are ordered from top to bottom
+and columns from left to right.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_named_plot</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Create a displacement plot with the given name."""</span>
+    <span class="k">return</span> <span class="n">sol</span><span class="o">.</span><span class="n">create_plot</span><span class="p">(</span>
+        <span class="n">PlotDefinition</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">result_type</span><span class="o">=</span><span class="n">ResultType</span><span class="o">.</span><span class="n">displacement</span><span class="p">,</span>
+            <span class="n">location</span><span class="o">=</span><span class="n">Location</span><span class="o">.</span><span class="n">nodal</span><span class="p">,</span>
+            <span class="n">fields</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">Field</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">ResultFieldName</span><span class="o">.</span><span class="n">displacement</span><span class="p">,</span>
+                    <span class="n">components</span><span class="o">=</span><span class="p">[</span><span class="n">Component</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">Component</span><span class="o">.</span><span class="n">Y</span><span class="p">,</span> <span class="n">Component</span><span class="o">.</span><span class="n">Z</span><span class="p">],</span>
+                <span class="p">)</span>
+            <span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">workspace</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">grid_shape</span>
+<span class="k">for</span> <span class="n">row_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">column_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
+        <span class="n">plot_view</span> <span class="o">=</span> <span class="n">create_named_plot</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Row </span><span class="si">{</span><span class="n">row_index</span><span class="si">}</span><span class="s2">, Column </span><span class="si">{</span><span class="n">column_index</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">viewport</span> <span class="o">=</span> <span class="n">workspace</span><span class="o">.</span><span class="n">viewport_at</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row_index</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="n">column_index</span><span class="p">)</span>
+        <span class="n">viewport</span><span class="o">.</span><span class="n">set_view</span><span class="p">(</span><span class="n">plot_view</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Assigned </span><span class="si">{</span><span class="n">plot_view</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> to viewport </span><span class="si">{</span><span class="n">viewport</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Assigned Row 0, Column 0 to viewport bb77d316-e939-490c-a04c-93309d088119
+Assigned Row 0, Column 1 to viewport 1726fe8e-51f9-4a0a-80a0-17287af710ce
+Assigned Row 0, Column 2 to viewport e8974059-7016-4d79-b2e0-c5931695a0db
+Assigned Row 1, Column 0 to viewport 4f3b0d9a-74a3-4097-a72a-8d4f5b6fe6f5
+Assigned Row 1, Column 1 to viewport 9d28a2fc-80e7-4bc5-8792-0a4158523956
+Assigned Row 1, Column 2 to viewport daaddef5-842d-4117-9887-3c5be617e17b
+</pre></div>
+</div>
+</section>
+<section id="describe-a-layout-that-is-not-a-grid">
+<h2>Describe a layout that is not a grid<a class="headerlink" href="#describe-a-layout-that-is-not-a-grid" title="Link to this heading">#</a></h2>
+<p>Viewports can also be split freely. A viewport that is not part of a
+regular grid spans several rows or columns, which the layout reports
+through <code class="docutils literal notranslate"><span class="pre">row_span</span></code> and <code class="docutils literal notranslate"><span class="pre">column_span</span></code>.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">split_workspace</span> <span class="o">=</span> <span class="n">rx</span><span class="o">.</span><span class="n">create_workspace</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Split Workspace"</span><span class="p">)</span>
+<span class="n">left</span> <span class="o">=</span> <span class="n">split_workspace</span><span class="o">.</span><span class="n">viewports</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">right_top</span> <span class="o">=</span> <span class="n">split_workspace</span><span class="o">.</span><span class="n">create_viewport</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">ViewportDirection</span><span class="o">.</span><span class="n">VIEWPORT_DIRECTION_RIGHT</span><span class="p">)</span>
+<span class="n">split_workspace</span><span class="o">.</span><span class="n">create_viewport</span><span class="p">(</span><span class="n">right_top</span><span class="p">,</span> <span class="n">ViewportDirection</span><span class="o">.</span><span class="n">VIEWPORT_DIRECTION_BOTTOM</span><span class="p">)</span>
+
+<span class="n">layout</span> <span class="o">=</span> <span class="n">split_workspace</span><span class="o">.</span><span class="n">layout</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Grid shape: </span><span class="si">{</span><span class="n">layout</span><span class="o">.</span><span class="n">grid_shape</span><span class="si">}</span><span class="s2">, regular grid: </span><span class="si">{</span><span class="n">layout</span><span class="o">.</span><span class="n">is_grid</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="n">left_placement</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">placement_of</span><span class="p">(</span><span class="n">left</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The left viewport spans </span><span class="si">{</span><span class="n">left_placement</span><span class="o">.</span><span class="n">row_span</span><span class="si">}</span><span class="s2"> rows."</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>+---------------------+---------------------+
+| [0] r0c0            | [1] r0c1            |
+|                     |                     |
+|                     |                     |
+|                     +---------------------+
+|                     | [2] r1c1            |
+|                     |                     |
+|                     |                     |
++---------------------+---------------------+
+[0] 85a868e5-1a65-4cc3-8267-451c6a897205 (row 0, column 0, 2x1 cells)
+[1] a645f16f-5895-4418-9994-4f6752fcb36e (row 0, column 1, 1x1 cells)
+[2] 7e2ce43b-ac3f-422a-8d93-4307439f1305 (row 1, column 1, 1x1 cells)
+Grid shape: (2, 2), regular grid: False
+The left viewport spans 2 rows.
+</pre></div>
+</div>
+<p>Assign a view named after the cells that each viewport occupies, so that
+the reported positions can be checked against the application window.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">span_text</span><span class="p">(</span><span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">span</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Describe the cells occupied along one direction."""</span>
+    <span class="k">if</span> <span class="n">span</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s2">"</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">s </span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">span</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">position_name</span><span class="p">(</span><span class="n">placement</span><span class="p">:</span> <span class="n">ViewportPlacement</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Describe the position of a placement."""</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">span_text</span><span class="p">(</span><span class="s1">'Row'</span><span class="p">,</span><span class="w"> </span><span class="n">placement</span><span class="o">.</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">placement</span><span class="o">.</span><span class="n">row_span</span><span class="p">)</span><span class="si">}</span><span class="s2">, "</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">span_text</span><span class="p">(</span><span class="s1">'Column'</span><span class="p">,</span><span class="w"> </span><span class="n">placement</span><span class="o">.</span><span class="n">column</span><span class="p">,</span><span class="w"> </span><span class="n">placement</span><span class="o">.</span><span class="n">column_span</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
+    <span class="p">)</span>
+
+
+<span class="k">for</span> <span class="n">placement</span> <span class="ow">in</span> <span class="n">layout</span><span class="o">.</span><span class="n">placements</span><span class="p">:</span>
+    <span class="n">plot_view</span> <span class="o">=</span> <span class="n">create_named_plot</span><span class="p">(</span><span class="n">position_name</span><span class="p">(</span><span class="n">placement</span><span class="p">))</span>
+    <span class="n">placement</span><span class="o">.</span><span class="n">viewport</span><span class="o">.</span><span class="n">set_view</span><span class="p">(</span><span class="n">plot_view</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Assigned </span><span class="si">{</span><span class="n">plot_view</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> to viewport </span><span class="si">{</span><span class="n">placement</span><span class="o">.</span><span class="n">viewport</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="n">rx</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Assigned Rows 0-1, Column 0 to viewport 85a868e5-1a65-4cc3-8267-451c6a897205
+Assigned Row 0, Column 1 to viewport a645f16f-5895-4418-9994-4f6752fcb36e
+Assigned Row 1, Column 1 to viewport 7e2ce43b-ac3f-422a-8d93-4307439f1305
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 22.841 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-examples-003-workspace-layout-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/380534fc0b1d657f91bb1601341f592a/003-workspace-layout.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">003-workspace-layout.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/4504195e0cfd0261008540caae5226a2/003-workspace-layout.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">003-workspace-layout.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/e1f99c214c2551abe1c39f64f362a4ae/003-workspace-layout.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">003-workspace-layout.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#launch-result-explorer">Launch Result Explorer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Create workspace grid layouts</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#describe-where-the-viewports-are">Describe where the viewports are</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#assign-plots-by-grid-position">Assign plots by grid position</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#describe-a-layout-that-is-not-a-grid">Describe a layout that is not a grid</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../_sources/examples/003-workspace-layout.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=0790524f97105ba85085"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<!--
+  Theme Version Footer
+  Displays the Sphinx theme version and the last updated date.
+  Accessibility and semantic improvements included.
+-->
+<footer class="theme-version" aria-label="Theme version and last update">
+  <span>
+    
+      Built with the
+      <a href="https://sphinxdocs.ansys.com/version/stable/index.html" target="_blank" rel="noopener noreferrer">
+        Ansys Sphinx Theme
+      </a>
+      1.10.0.
+    
+  </span>
+  <br />
+  <span>Last updated on <time id="ast_build_date"></time></span>
+</footer>
+<script>
+  // Set the last updated date in a readable format
+  (function() {
+    var options = { day: "numeric", month: "long", year: "numeric" };
+    var ast_lastModifiedDate = new Date(document.lastModified);
+    var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+    var dateElem = document.getElementById("ast_build_date");
+    if (dateElem) {
+      dateElem.textContent = ast_build_date;
+    }
+  })();
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

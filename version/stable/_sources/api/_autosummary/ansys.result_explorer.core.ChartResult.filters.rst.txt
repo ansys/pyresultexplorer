@@ -1,0 +1,6 @@
+filters
+=======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ChartResult.filters

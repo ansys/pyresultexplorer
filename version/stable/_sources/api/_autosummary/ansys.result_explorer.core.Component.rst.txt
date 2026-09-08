@@ -1,0 +1,181 @@
+﻿Component
+=========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: Component
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Component.encode
+      
+      
+      Component.replace
+      
+      
+      Component.split
+      
+      
+      Component.rsplit
+      
+      
+      Component.join
+      
+      
+      Component.capitalize
+      
+      
+      Component.casefold
+      
+      
+      Component.title
+      
+      
+      Component.center
+      
+      
+      Component.count
+      
+      
+      Component.expandtabs
+      
+      
+      Component.find
+      
+      
+      Component.partition
+      
+      
+      Component.index
+      
+      
+      Component.ljust
+      
+      
+      Component.lower
+      
+      
+      Component.lstrip
+      
+      
+      Component.rfind
+      
+      
+      Component.rindex
+      
+      
+      Component.rjust
+      
+      
+      Component.rstrip
+      
+      
+      Component.rpartition
+      
+      
+      Component.splitlines
+      
+      
+      Component.strip
+      
+      
+      Component.swapcase
+      
+      
+      Component.translate
+      
+      
+      Component.upper
+      
+      
+      Component.startswith
+      
+      
+      Component.endswith
+      
+      
+      Component.removeprefix
+      
+      
+      Component.removesuffix
+      
+      
+      Component.isascii
+      
+      
+      Component.islower
+      
+      
+      Component.isupper
+      
+      
+      Component.istitle
+      
+      
+      Component.isspace
+      
+      
+      Component.isdecimal
+      
+      
+      Component.isdigit
+      
+      
+      Component.isnumeric
+      
+      
+      Component.isalpha
+      
+      
+      Component.isalnum
+      
+      
+      Component.isidentifier
+      
+      
+      Component.isprintable
+      
+      
+      Component.zfill
+      
+      
+      Component.format
+      
+      
+      Component.format_map
+      
+      
+      Component.maketrans
+      
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Component.X
+      Component.Y
+      Component.Z
+      Component.P1
+      Component.P2
+      Component.P3
+      Component.XX
+      Component.YY
+      Component.ZZ
+      Component.XY
+      Component.YZ
+      Component.XZ
+   
+   

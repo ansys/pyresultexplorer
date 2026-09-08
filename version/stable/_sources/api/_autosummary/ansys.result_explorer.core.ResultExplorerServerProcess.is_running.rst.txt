@@ -1,0 +1,6 @@
+is\_running
+===========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: ResultExplorerServerProcess.is_running

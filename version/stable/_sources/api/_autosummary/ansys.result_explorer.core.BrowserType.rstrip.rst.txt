@@ -1,0 +1,6 @@
+rstrip
+======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: BrowserType.rstrip

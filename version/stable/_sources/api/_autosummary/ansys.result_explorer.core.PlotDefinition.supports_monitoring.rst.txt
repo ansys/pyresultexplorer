@@ -1,0 +1,6 @@
+supports\_monitoring
+====================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: PlotDefinition.supports_monitoring

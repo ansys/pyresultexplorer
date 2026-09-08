@@ -1,0 +1,6 @@
+update\_display\_options
+========================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Viewport.update_display_options

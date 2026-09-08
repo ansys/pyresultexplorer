@@ -1,0 +1,6 @@
+app\_info
+=========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Client.app_info

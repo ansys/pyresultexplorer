@@ -1,0 +1,228 @@
+﻿ResultFieldName
+===============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: ResultFieldName
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      ResultFieldName.encode
+      
+      
+      ResultFieldName.replace
+      
+      
+      ResultFieldName.split
+      
+      
+      ResultFieldName.rsplit
+      
+      
+      ResultFieldName.join
+      
+      
+      ResultFieldName.capitalize
+      
+      
+      ResultFieldName.casefold
+      
+      
+      ResultFieldName.title
+      
+      
+      ResultFieldName.center
+      
+      
+      ResultFieldName.count
+      
+      
+      ResultFieldName.expandtabs
+      
+      
+      ResultFieldName.find
+      
+      
+      ResultFieldName.partition
+      
+      
+      ResultFieldName.index
+      
+      
+      ResultFieldName.ljust
+      
+      
+      ResultFieldName.lower
+      
+      
+      ResultFieldName.lstrip
+      
+      
+      ResultFieldName.rfind
+      
+      
+      ResultFieldName.rindex
+      
+      
+      ResultFieldName.rjust
+      
+      
+      ResultFieldName.rstrip
+      
+      
+      ResultFieldName.rpartition
+      
+      
+      ResultFieldName.splitlines
+      
+      
+      ResultFieldName.strip
+      
+      
+      ResultFieldName.swapcase
+      
+      
+      ResultFieldName.translate
+      
+      
+      ResultFieldName.upper
+      
+      
+      ResultFieldName.startswith
+      
+      
+      ResultFieldName.endswith
+      
+      
+      ResultFieldName.removeprefix
+      
+      
+      ResultFieldName.removesuffix
+      
+      
+      ResultFieldName.isascii
+      
+      
+      ResultFieldName.islower
+      
+      
+      ResultFieldName.isupper
+      
+      
+      ResultFieldName.istitle
+      
+      
+      ResultFieldName.isspace
+      
+      
+      ResultFieldName.isdecimal
+      
+      
+      ResultFieldName.isdigit
+      
+      
+      ResultFieldName.isnumeric
+      
+      
+      ResultFieldName.isalpha
+      
+      
+      ResultFieldName.isalnum
+      
+      
+      ResultFieldName.isidentifier
+      
+      
+      ResultFieldName.isprintable
+      
+      
+      ResultFieldName.zfill
+      
+      
+      ResultFieldName.format
+      
+      
+      ResultFieldName.format_map
+      
+      
+      ResultFieldName.maketrans
+      
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ResultFieldName.total_displacement
+      ResultFieldName.displacement
+      ResultFieldName.stress_tensor
+      ResultFieldName.stress_tensor_global
+      ResultFieldName.stress_tensor_fiber
+      ResultFieldName.equivalent_von_mises_stress
+      ResultFieldName.principal_stress
+      ResultFieldName.principal_stress_1
+      ResultFieldName.principal_stress_2
+      ResultFieldName.principal_stress_3
+      ResultFieldName.elastic_strain_tensor
+      ResultFieldName.elastic_strain_tensor_global
+      ResultFieldName.elastic_strain_tensor_fiber
+      ResultFieldName.equivalent_elastic_strain
+      ResultFieldName.principal_elastic_strain
+      ResultFieldName.principal_elastic_strain_1
+      ResultFieldName.principal_elastic_strain_2
+      ResultFieldName.principal_elastic_strain_3
+      ResultFieldName.equivalent_plastic_strain
+      ResultFieldName.temperature
+      ResultFieldName.heat_flux
+      ResultFieldName.total_heat_flux
+      ResultFieldName.velocity
+      ResultFieldName.total_velocity
+      ResultFieldName.acceleration
+      ResultFieldName.total_acceleration
+      ResultFieldName.global_kinetic_energy
+      ResultFieldName.global_internal_energy
+      ResultFieldName.global_total_energy
+      ResultFieldName.global_hourglass_energy
+      ResultFieldName.contact_status
+      ResultFieldName.contact_pressure
+      ResultFieldName.contact_penetration
+      ResultFieldName.contact_sliding_distance
+      ResultFieldName.contact_gap_distance
+      ResultFieldName.contact_friction_stress
+      ResultFieldName.contact_total_stress
+      ResultFieldName.contact_fluid_penetration_pressure
+      ResultFieldName.contact_surface_heat_flux
+      ResultFieldName.failure
+      ResultFieldName.total_force
+      ResultFieldName.total_moment
+      ResultFieldName.electric_potential
+      ResultFieldName.electric_field
+      ResultFieldName.total_electric_field
+      ResultFieldName.electric_flux_density
+      ResultFieldName.total_electric_flux_density
+      ResultFieldName.structural_temperature
+      ResultFieldName.thermal_strain
+      ResultFieldName.strain_energy
+      ResultFieldName.kinetic_energy
+      ResultFieldName.beam_axial_force
+      ResultFieldName.beam_bending_moment_y
+      ResultFieldName.beam_bending_moment_z
+      ResultFieldName.beam_torsional_moment
+      ResultFieldName.beam_axial_stress
+      ResultFieldName.beam_axial_strain
+      ResultFieldName.beam_shear_force_y
+      ResultFieldName.beam_shear_force_z
+   
+   

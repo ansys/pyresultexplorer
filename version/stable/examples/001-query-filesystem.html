@@ -1,0 +1,969 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Query the file system and access solution data &#8212; PyResultExplorer</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/ansys-sphinx-theme.css?v=5ffe81b6" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/ansys-sphinx-theme.css?v=5ffe81b6" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=0790524f97105ba85085"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=0790524f97105ba85085" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../_static/documentation_options.js?v=38b66d78"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/001-query-filesystem';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.18.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://result-explorer.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.1';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="icon" href="../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Workspaces, solutions, and view management" href="002-workspace-and-views.html" />
+    <link rel="prev" title="Examples" href="index.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1.0" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  <link rel="canonical" href="https://result-explorer.docs.pyansys.com/version/stable/examples/001-query-filesystem.html" />
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyResultExplorer - Home"/>
+    <img src="../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyResultExplorer - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html" title="PyResultExplorer home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../contribute.html">
+    Contribute
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../changelog.html">
+    Release notes
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+  
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyresultexplorer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    
+<!--
+  Announcement Version Loader
+  Dynamically loads the announcement.html content into the announcement_msg div.
+-->
+<div id="announcement_msg" aria-live="polite"></div>
+<script>
+  // Fetch and inject the announcement HTML content
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status} Announcement.html file not found, Please ignore this, if you are in dev/stable documentation`);
+      }
+      return response.text();
+    })
+    .then((text) => {
+      var msgDiv = document.getElementById("announcement_msg");
+      if (msgDiv) {
+        msgDiv.innerHTML = text;
+      }
+    })
+    .catch((error) => {
+      // Log only unexpected fetch errors
+      if (!(error.message && error.message.startsWith("HTTP error: 404"))) {
+        console.error(`Fetch problem: ${error.message} Announcement.html could not be loaded.`);
+      }
+    });
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html" title="PyResultExplorer home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contribute.html">
+    Contribute
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelog.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+  
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyresultexplorer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Query the file system and access solution data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="002-workspace-and-views.html">Workspaces, solutions, and view management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="003-workspace-layout.html">Create workspace grid layouts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="010-create-plots-on-named-selections.html">Create plots scoped to named selections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="011-plot-display-options.html">Customize plot display options and animate results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="012-camera-position.html">Control camera position and orientation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="013-user-defined-plot.html">Create a user-defined plot with DPF filtering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="020-trackers-viewport-options.html">Work with contact and convergence trackers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="030-create-and-modify-charts.html">Create and modify charts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="050-save-session-and-workspace.html">Save sessions and workspace templates</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="index.html" class="nav-link">Examples</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Query the file system and access solution data</span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-examples-001-query-filesystem-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="query-the-file-system-and-access-solution-data">
+<span id="query-filesystem-example"></span><span id="sphx-glr-examples-001-query-filesystem-py"></span><h1>Query the file system and access solution data<a class="headerlink" href="#query-the-file-system-and-access-solution-data" title="Link to this heading">#</a></h1>
+<p>This example demonstrates how to interact with Result Explorer’s file system
+and solution management capabilities:</p>
+<ul class="simple">
+<li><p><strong>File system queries</strong> allow you to browse and explore the directory structure
+of result data using the <code class="docutils literal notranslate"><span class="pre">rx.ls()</span></code> method.</p></li>
+<li><p><strong>Solution creation</strong> enables you to load result files and organize simulation
+data for analysis and visualization.</p></li>
+<li><p><strong>Solution data access</strong> provides methods to retrieve and examine solver output
+through the solution entity.</p></li>
+</ul>
+<p>This example uses transient structural analysis results for demonstration.</p>
+<section id="launch-result-explorer">
+<h2>Launch Result Explorer<a class="headerlink" href="#launch-result-explorer" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import dependencies.</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.result_explorer.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">launch_result_explorer</span><span class="p">,</span> <span class="n">models</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.result_explorer.core.examples</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExampleKeys</span><span class="p">,</span> <span class="n">get_example_file</span>
+
+<span class="c1"># Start a Result Explorer instance.</span>
+<span class="n">rx</span> <span class="o">=</span> <span class="n">launch_result_explorer</span><span class="p">()</span>
+
+<span class="c1"># Get the path to the example result file. This is a transient structural</span>
+<span class="c1"># analysis result in RST format.</span>
+<span class="n">rst_path</span> <span class="o">=</span> <span class="n">get_example_file</span><span class="p">(</span><span class="n">ExampleKeys</span><span class="o">.</span><span class="n">RST_CP_TRANSIENT</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="query-the-file-system">
+<h2>Query the file system<a class="headerlink" href="#query-the-file-system" title="Link to this heading">#</a></h2>
+<p>List the contents of the directory containing the result file.
+Define a helper function to pretty-print the file system structure.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">pretty_print_fs_items</span><span class="p">(</span><span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">FSItem</span><span class="p">],</span> <span class="n">indent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Pretty-print file system items with hierarchical formatting."""</span>
+    <span class="n">prefix</span> <span class="o">=</span> <span class="s2">" "</span> <span class="o">*</span> <span class="n">indent</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">is_file</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">- </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">- </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">/"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">content</span><span class="p">:</span>
+                <span class="n">pretty_print_fs_items</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">content</span><span class="p">),</span> <span class="n">indent</span><span class="o">=</span><span class="n">indent</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Query the directory at depth 0 to see the top-level contents.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">content</span> <span class="o">=</span> <span class="n">rx</span><span class="o">.</span><span class="n">ls</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">rst_path</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">pretty_print_fs_items</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>- file.rst
+- solve.out
+- file.nr001
+- file.nr002
+- file.nr003
+- ds.dat
+- file.cnd
+- file.err
+- file.gst
+</pre></div>
+</div>
+</section>
+<section id="create-a-solution">
+<h2>Create a solution<a class="headerlink" href="#create-a-solution" title="Link to this heading">#</a></h2>
+<p>Create a solution from the result file. A solution is a container for result
+data that allows you to query and visualize the simulation results.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">solution</span> <span class="o">=</span> <span class="n">rx</span><span class="o">.</span><span class="n">create_solution</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"Test Solution"</span><span class="p">,</span>
+    <span class="n">file_path</span><span class="o">=</span><span class="n">rst_path</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="access-solver-output-through-solution">
+<h2>Access solver output through solution<a class="headerlink" href="#access-solver-output-through-solution" title="Link to this heading">#</a></h2>
+<p>Retrieve solver text output files from the solution. In this case, we access
+the <code class="docutils literal notranslate"><span class="pre">file.gst</span></code> file, which contains transient convergence information.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">out_file</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">solution</span><span class="o">.</span><span class="n">solver_text_outputs</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"file.gst"</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">out_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"file.gst not found in solver text outputs"</span>
+</pre></div>
+</div>
+<p>Get the content of the solver output file through the solution entity.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gst_via_solution</span> <span class="o">=</span> <span class="n">solution</span><span class="o">.</span><span class="n">get_solver_out_content</span><span class="p">(</span><span class="n">out_file</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Content of file.gst accessed via solution entity:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">gst_via_solution</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Content of file.gst accessed via solution entity:
+&lt;SOLUTION&gt;
+&lt;LOADSTEPDATA&gt;
+&lt;HEADER&gt;
+ &lt;COLUMN ID="    1"&gt;Time&lt;/COLUMN&gt;
+ &lt;COLUMN ID="    2"&gt;Load Step&lt;/COLUMN&gt;
+ &lt;COLUMN ID="    3"&gt;Sub-step&lt;/COLUMN&gt;
+ &lt;COLUMN ID="    4"&gt;Cum Iter&lt;/COLUMN&gt;
+ &lt;COLUMN ID="    5"&gt;Time Incr&lt;/COLUMN&gt;
+ &lt;COLUMN ID="    6"&gt;Max DOF Incr&lt;/COLUMN&gt;
+ &lt;COLUMN ID="    7"&gt;Line Search Parameter&lt;/COLUMN&gt;
+ &lt;COLUMN ID="    8"&gt;Bisection&lt;/COLUMN&gt;
+ &lt;COLUMN ID="    9"&gt;F   CRIT&lt;/COLUMN&gt;
+ &lt;COLUMN ID="   10"&gt;F    L2 &lt;/COLUMN&gt;
+ &lt;COLUMN ID="   11"&gt;U   CRIT&lt;/COLUMN&gt;
+ &lt;COLUMN ID="   12"&gt;U    INF&lt;/COLUMN&gt;
+ &lt;COLUMN ID="   13"&gt;HEATCRIT&lt;/COLUMN&gt;
+ &lt;COLUMN ID="   14"&gt;HEAT L2 &lt;/COLUMN&gt;
+ &lt;COLUMN ID="   15"&gt;Remesh&lt;/COLUMN&gt;
+ &lt;COLUMN ID="   16"&gt;Max Resi F&lt;/COLUMN&gt;
+ &lt;COLUMN ID="   17"&gt;Node with Max DOF Incr&lt;/COLUMN&gt;
+ &lt;COLUMN ID="   18"&gt;DOF with Max DOF Incr&lt;/COLUMN&gt;
+ &lt;COLUMN ID="   19"&gt;Node with Max Resi F&lt;/COLUMN&gt;
+ &lt;COLUMN ID="   20"&gt;DOF with Max Resi F&lt;/COLUMN&gt;
+ &lt;COLUMN ID="   21"&gt;Max Resi M&lt;/COLUMN&gt;
+ &lt;COLUMN ID="   22"&gt;Node with Max Resi M&lt;/COLUMN&gt;
+ &lt;COLUMN ID="   23"&gt;DOF with Max Resi M&lt;/COLUMN&gt;
+ &lt;UNITS&gt;SI&lt;/UNITS&gt;
+&lt;/HEADER&gt;
+&lt;COLDATA&gt;
+   0.1000000E-01                1                1                1    0.1000000E-01   -0.1094655E-02     1.000000                    0     4.970145         469.7752        0.9374524E-06    0.1874905E-04    0.1000000E-08    0.3603156E-02                0     152.2518                  406             ROTZ               58             UY      0.2164587E-02              406             ROTX
+   0.1000000E-01                1                1                2    0.1000000E-01    0.1494214         1.000000                    0     6.821898         174.9828        0.4408049E-05    0.7048946E-04    0.3484557E-05    0.8124349E-01                0     42.38313                   10             TEMP              184             UY      0.2239570E-03              406             ROTZ
+   0.1000000E-01                1                1                3    0.1000000E-01     2.867285        0.7097818                    0     6.809655         66.69369        0.4408049E-05    0.1386080E-04    0.6321633E-04    0.6164697                    0     18.03269                   11             TEMP              191             UY      0.9755457E-04              406             ROTZ
+   0.1000000E-01                1                1                4    0.1000000E-01    0.1872366         1.000000                    0     6.789575         11.09541        0.4408049E-05    0.3330676E-05    0.6500546E-04    0.5577831E-01                0     2.922904                  174             TEMP              184             UY      0.2497148E-05              406             ROTZ
+   0.1000000E-01                1                1                5    0.1000000E-01    0.1934032         1.000000                    0     6.780026         1.717738        0.4408049E-05    0.9093170E-06    0.6880396E-04    0.1498178E-02                0    0.4947832                   13             TEMP              184             UY      0.2077878E-05              406             ROTZ
+   0.1000000E-01                1                1                6    0.1000000E-01    0.1919685E-01    0.9729317                    0     6.778329        0.3335502        0.4408049E-05    0.4891442E-07    0.6879172E-04    0.5684039E-03                0    0.9420631E-01              174             TEMP              184             UY      0.1410478E-06              406             ROTZ
+   0.1000000E-01                1                1                7    0.1000000E-01    0.1021373E-02    0.9500607                    0     7.966941        0.6868628E-01    0.4408049E-05    0.1235754E-07    0.6883337E-04    0.2561052E-04                0    0.1979690E-01               13             TEMP              184             UY      0.6580742E-07              406             ROTX
+   0.1457912E-01                1                2                8    0.4579120E-02    -1.199599        0.6591472                    0     9.389686         964.1622        0.4408049E-05    0.3176291E-05    0.1453602E-04    0.5264934E-01                0     502.6417                    9             TEMP               28             UX      0.1084059                  406             ROTZ
+   0.1457912E-01                1                2                9    0.4579120E-02    0.2533848         1.000000                    0     7.977154         7.270058        0.4408049E-05    0.1682059E-05    0.3362824E-04    0.3660691E-01                0     2.082779                   10             TEMP              156             UY      0.2257619E-04              406             ROTZ
+   0.1457912E-01                1                2               10    0.4579120E-02    0.4317575        0.8889296                    0     7.978318         2.264029        0.4408049E-05    0.3921952E-06    0.4805810E-04    0.2834234E-02                0    0.6493028                   55             TEMP              186             UX      0.5954664E-05              406             ROTZ
+   0.1457912E-01                1                2               11    0.4579120E-02   -0.3522663E-01     1.000000                    0     7.978165        0.4393754        0.4408049E-05    0.8929348E-07    0.4764940E-04    0.1220076E-02                0    0.1589052                   13             TEMP              186             UX      0.2125756E-05              406             ROTZ
+   0.1457912E-01                1                2               12    0.4579120E-02   -0.7616052E-02     1.000000                    0     7.977912        0.8845892E-01    0.4408049E-05    0.3333398E-07    0.4735300E-04    0.3199851E-03                0    0.3577992E-01               13             TEMP              186             UX      0.1818751E-06              406             ROTZ
+   0.1457912E-01                1                2               13    0.4579120E-02   -0.1370688E-02     1.000000                    0     7.977895        0.1982016E-01    0.4408049E-05    0.5110361E-08    0.4727336E-04    0.6156061E-04                0    0.7978296E-02               13             TEMP              186             UX      0.3988250E-07              406             ROTZ
+   0.1457912E-01                1                2               14    0.4579120E-02   -0.2332318E-03     1.000000                    0     7.977901        0.4783564E-02    0.4408049E-05    0.8857384E-09    0.4725951E-04    0.1499819E-04                0    0.1860165E-02              289             TEMP              361             UY      0.7752339E-08              406             ROTZ
+   0.1915824E-01                1                3               15    0.4579120E-02   -0.8016973        0.5674494                    0     10.22606         1225.500        0.4408049E-05    0.2644634E-05    0.1341358E-04    0.4724240E-01                0     637.8519                   11             TEMP               28             UX      0.1375051                  406             ROTZ
+   0.1915824E-01                1                3               16    0.4579120E-02    0.2435559         1.000000                    0     7.990169         5.022358        0.4408049E-05    0.1990777E-05    0.3095835E-04    0.4723352E-01                0     1.996017                   10             TEMP              370             UY      0.5186169E-05              406             ROTZ
+   0.1915824E-01                1                3               17    0.4579120E-02    0.4408738        0.9203075                    0     7.986850        0.8128954        0.4408049E-05    0.2805072E-06    0.4678095E-04    0.2184510E-02                0    0.3125466                   55             TEMP              366             UY      0.5283640E-06              406             ROTZ
+   0.1915824E-01                1                3               18    0.4579120E-02   -0.1088045E-01     1.000000                    0     7.985514        0.1874134        0.4408049E-05    0.5186630E-07    0.4687376E-04    0.7697515E-03                0    0.4983063E-01               10             TEMP              361             UX      0.6361781E-06              406             ROTZ
+   0.1915824E-01                1                3               19    0.4579120E-02   -0.7313267E-02     1.000000                    0     7.985447        0.4607336E-01    0.4408049E-05    0.8638302E-08    0.4660233E-04    0.1837132E-04                0    0.1671999E-01               53             TEMP              361             UX      0.2409534E-07              406             ROTZ
+   0.2415824E-01                1                4               20    0.5000000E-02   -0.7969403        0.5684385                    0     10.74604         1331.431        0.4408049E-05    0.2884280E-05    0.1331433E-04    0.5713782E-01                0     694.8922                   11             TEMP               28             UX      0.1497954                  406             ROTZ
+   0.2415824E-01                1                4               21    0.5000000E-02    0.2662405         1.000000                    0     7.991764         5.506972        0.4408049E-05    0.2169766E-05    0.3200436E-04    0.5541590E-01                0     2.231635                   10             TEMP              370             UY      0.4321065E-05              406             ROTZ
+   0.2415824E-01                1                4               22    0.5000000E-02    0.4674233        0.9244844                    0     7.990627        0.7481592        0.4408049E-05    0.3432351E-06    0.4892181E-04    0.1748142E-02                0    0.3046435                   55             TEMP              366             UY      0.5062487E-06              406             ROTZ
+   0.2415824E-01                1                4               23    0.5000000E-02   -0.1541338E-01     1.000000                    0     7.991079        0.1537782        0.4408049E-05    0.4833809E-07    0.4903560E-04    0.4476830E-03                0    0.4611485E-01               10             TEMP              366             UY      0.9721089E-06              406             ROTZ
+   0.2415824E-01                1                4               24    0.5000000E-02   -0.5897011E-02    0.8807011                    0     7.991157        0.4654104E-01    0.4408049E-05    0.4808839E-08    0.4888389E-04    0.6113016E-04                0    0.1318884E-01               10             TEMP              397             UY      0.1622841E-06              406             ROTZ
+   0.2415824E-01                1                4               25    0.5000000E-02    0.3047381E-03     1.000000                    0     7.991187        0.1104704E-01    0.4408049E-05    0.2022314E-08    0.4889130E-04    0.8286465E-05                0    0.3260656E-02               15             TEMP              397             UY      0.9494729E-08              406             ROTZ
+   0.2915824E-01                1                5               26    0.5000000E-02   -0.8212822        0.5594971                    0     10.85838         1358.993        0.4408049E-05    0.2833537E-05    0.1373977E-04    0.6279109E-01                0     709.2855                   55             TEMP               28             UX      0.1528950                  406             ROTZ
+   0.2915824E-01                1                5               27    0.5000000E-02    0.2572278         1.000000                    0     7.996518         5.757394        0.4408049E-05    0.2215270E-05    0.3345818E-04    0.5914627E-01                0     2.341098                   10             TEMP              370             UY      0.2907809E-05              406             ROTZ
+   0.2915824E-01                1                5               28    0.5000000E-02    0.4910656        0.9246843                    0     7.535487        0.7079667        0.4408049E-05    0.3368025E-06    0.5162780E-04    0.1417051E-02                0    0.2927204                   55             TEMP              366             UY      0.4409699E-06              406             ROTX
+   0.2915824E-01                1                5               29    0.5000000E-02   -0.1647882E-01     1.000000                    0     7.535457        0.1590833        0.4408049E-05    0.4480501E-07    0.5173779E-04    0.1574399E-03                0    0.4697373E-01               10             TEMP              366             UY      0.8871006E-06              406             ROTZ
+   0.2915824E-01                1                5               30    0.5000000E-02   -0.3671185E-02    0.8370934                    0     7.535433        0.6839269E-01    0.4408049E-05    0.5350442E-08    0.5171075E-04    0.1509339E-03                0    0.2055658E-01               10             TEMP              283             UY      0.2156257E-06              406             ROTZ
+   0.2915824E-01                1                5               31    0.5000000E-02    0.5383133E-03     1.000000                    0     7.535422        0.2530265E-01    0.4408049E-05    0.3794402E-08    0.5173725E-04    0.2923020E-04                0    0.8503447E-02               13             TEMP              283             UY      0.3654002E-07              406             ROTZ
+   0.3415824E-01                1                6               32    0.5000000E-02   -0.8487528        0.5509561                    0     10.87341         1380.642        0.4408049E-05    0.2783985E-05    0.1425511E-04    0.6714466E-01                0     723.0297                   55             TEMP               28             UX      0.2598731E-01              406             ROTX
+   0.3415824E-01                1                6               33    0.5000000E-02    0.2503617         1.000000                    0     7.539814         6.071986        0.4408049E-05    0.2254767E-05    0.3514994E-04    0.6136756E-01                0     2.396897                   10             TEMP              370             UY      0.2135626E-05              406             ROTZ
+   0.3415824E-01                1                6               34    0.5000000E-02    0.5104842        0.9176284                    0     7.539349        0.7829320        0.4408049E-05    0.3733075E-06    0.5416449E-04    0.1339074E-02                0    0.3089326                   11             TEMP              366             UY      0.1828967E-05              406             ROTZ
+   0.3415824E-01                1                6               35    0.5000000E-02   -0.1467333E-01     1.000000                    0     7.539031        0.1454595        0.4408049E-05    0.4727303E-07    0.5424081E-04    0.3820611E-03                0    0.5171222E-01               10             TEMP              366             UY      0.8572413E-06              406             ROTZ
+   0.3415824E-01                1                6               36    0.5000000E-02   -0.2624101E-02     1.000000                    0     7.538969        0.3642744E-01    0.4408049E-05    0.7522308E-08    0.5426168E-04    0.2500666E-03                0    0.9810782E-02               10             TEMP              366             UY      0.2448750E-07              406             ROTZ
+   0.3415824E-01                1                6               37    0.5000000E-02    0.1071133E-02     1.000000                    0     7.538964        0.8354884E-02    0.4408049E-05    0.1925197E-08    0.5432082E-04    0.2323660E-04                0    0.2132033E-02               14             TEMP              254             UY      0.1171826E-07              406             ROTX
+   0.3915824E-01                1                7               38    0.5000000E-02   -0.8747235        0.5441551                    0     10.96386         1401.541        0.4408049E-05    0.2743606E-05    0.1480218E-04    0.7005282E-01                0     733.9676                   11             TEMP               28             UX      0.2638072E-01              406             ROTX
+   0.3915824E-01                1                7               39    0.5000000E-02    0.2444759         1.000000                    0     7.542311         6.315566        0.4408049E-05    0.2286084E-05    0.3669838E-04    0.6229982E-01                0     2.397587                   10             TEMP              370             UY      0.2722012E-05              406             ROTZ
+   0.3915824E-01                1                7               40    0.5000000E-02    0.5233575        0.9126995                    0     7.382285        0.8138488        0.4408049E-05    0.4039227E-06    0.5629697E-04    0.1369410E-02                0    0.3314264                   11             TEMP              366             UY      0.7461582E-06              406             ROTX
+   0.3915824E-01                1                7               41    0.5000000E-02   -0.1294885E-01     1.000000                    0     7.381879        0.1385404        0.4408049E-05    0.4542362E-07    0.5634929E-04    0.6880103E-03                0    0.5428893E-01               10             TEMP              366             UY      0.5955653E-07              406             ROTX
+   0.3915824E-01                1                7               42    0.5000000E-02    0.2831352E-02     1.000000                    0     7.381812        0.3058416E-01    0.4408049E-05    0.6602125E-08    0.5647792E-04    0.2261364E-03                0    0.9727423E-02               15             TEMP              366             UY      0.2388374E-07              406             ROTX
+   0.3915824E-01                1                7               43    0.5000000E-02    0.1026391E-02     1.000000                    0     7.381805        0.6284756E-02    0.4408049E-05    0.1482068E-08    0.5652978E-04    0.3092436E-04                0    0.1776067E-02               14             TEMP              191             UX      0.2324532E-07              406             ROTX
+   0.4415824E-01                1                8               44    0.5000000E-02   -0.8944820        0.5391736                    0     10.88410         1418.783        0.4408049E-05    0.2713040E-05    0.1533361E-04    0.7124731E-01                0     741.9739                   11             TEMP               28             UX      0.2666732E-01              406             ROTX
+   0.4415824E-01                1                8               45    0.5000000E-02    0.2398967         1.000000                    0     7.384354         6.567987        0.4408049E-05    0.2313401E-05    0.3801729E-04    0.6213156E-01                0     2.349113                   10             TEMP              370             UY      0.1604246E-05              406             ROTX
+   0.4415824E-01                1                8               46    0.5000000E-02    0.5305813        0.9085710                    0     7.384170        0.8830039        0.4408049E-05    0.4443245E-06    0.5798155E-04    0.1422233E-02                0    0.3616158                    9             TEMP              366             UY      0.8723961E-06              406             ROTX
+   0.4415824E-01                1                8               47    0.5000000E-02   -0.1094032E-01     1.000000                    0     7.383777        0.1528342        0.4408049E-05    0.4560432E-07    0.5800925E-04    0.8613786E-03                0    0.5994474E-01               10             TEMP              366             UY      0.1951918E-07              406             ROTX
+   0.4415824E-01                1                8               48    0.5000000E-02    0.3716060E-02     1.000000                    0     7.383729        0.3138939E-01    0.4408049E-05    0.6334826E-08    0.5820119E-04    0.2141099E-03                0    0.1042376E-01               14             TEMP              366             UY      0.3714749E-07              406             ROTX
+   0.4415824E-01                1                8               49    0.5000000E-02    0.9678001E-03     1.000000                    0     7.383723        0.6689948E-02    0.4408049E-05    0.1565622E-08    0.5824867E-04    0.3785429E-04                0    0.1832951E-02               14             TEMP              366             UY      0.3236858E-07              406             ROTX
+   0.4915824E-01                1                9               50    0.5000000E-02   -0.9076364        0.5358162                    0     10.92956         1429.108        0.4408049E-05    0.2691713E-05    0.1581127E-04    0.7114017E-01                0     747.3638                   11             TEMP               28             UX      0.2686036E-01              406             ROTX
+   0.4915824E-01                1                9               51    0.5000000E-02    0.2360668         1.000000                    0     7.385633         6.819151        0.4408049E-05    0.2332767E-05    0.3904821E-04    0.6123856E-01                0     2.265642                   10             TEMP              370             UY      0.1700054E-05              406             ROTX
+   0.4915824E-01                1                9               52    0.5000000E-02    0.5333902        0.9060527                    0     6.884241        0.9385043        0.4408049E-05    0.4842019E-06    0.5924295E-04    0.1463809E-02                0    0.3900279                    9             TEMP              366             UY      0.2111233E-05              406             ROTX
+   0.4915824E-01                1                9               53    0.5000000E-02   -0.9078936E-02     1.000000                    0     6.883852        0.1670411        0.4408049E-05    0.4492686E-07    0.5925063E-04    0.9566551E-03                0    0.6554696E-01               10             TEMP              366             UY      0.6748942E-07              406             ROTX
+   0.4915824E-01                1                9               54    0.5000000E-02    0.4734912E-02     1.000000                    0     6.883808        0.3099913E-01    0.4408049E-05    0.7644517E-08    0.5949266E-04    0.1885637E-03                0    0.1081571E-01               14             TEMP              366             UY      0.4548848E-07              406             ROTX
+   0.4915824E-01                1                9               55    0.5000000E-02    0.8738367E-03     1.000000                    0     6.883799        0.6931307E-02    0.4408049E-05    0.1592146E-08    0.5953325E-04    0.4115944E-04                0    0.1951639E-02               14             TEMP              366             UY      0.4076750E-07              406             ROTX
+   0.5415824E-01                1               10               56    0.5000000E-02   -0.9146779        0.5336974                    0     10.61325         1439.529        0.4408049E-05    0.2677564E-05    0.1621655E-04    0.7004205E-01                0     750.7589                   11             TEMP               28             UX      0.8092361E-01              406             ROTX
+   0.5415824E-01                1               10               57    0.5000000E-02    0.2328244         1.000000                    0     6.885349         7.112716        0.4408049E-05    0.2345356E-05    0.3981341E-04    0.6012298E-01                0     2.182940                   10             TEMP              370             UY      0.2860545E-05              406             ROTX
+   0.5415824E-01                1               10               58    0.5000000E-02    0.5360055        0.9024138                    0     6.885390         1.006041        0.4408049E-05    0.5193512E-06    0.6020312E-04    0.1488863E-02                0    0.4142688                    9             TEMP              366             UY      0.2453894E-05              406             ROTX
+   0.5415824E-01                1               10               59    0.5000000E-02    0.8275808E-02     1.000000                    0     6.884978        0.1799077        0.4408049E-05    0.4396256E-07    0.6019729E-04    0.8207078E-03                0    0.6876928E-01               57             TEMP              366             UY      0.7130730E-08              406             ROTX
+   0.5415824E-01                1               10               60    0.5000000E-02    0.4995614E-02     1.000000                    0     6.884922        0.3096657E-01    0.4408049E-05    0.9114433E-08    0.6042870E-04    0.1556729E-03                0    0.1089343E-01               14             TEMP              366             UY      0.7653127E-07              406             ROTX
+   0.5415824E-01                1               10               61    0.5000000E-02    0.7946028E-03     1.000000                    0     6.884910        0.7029176E-02    0.4408049E-05    0.1575417E-08    0.6046273E-04    0.3679396E-04                0    0.1956734E-02               14             TEMP              366             UY      0.5826786E-07              406             ROTX
+   0.5915824E-01                1               11               62    0.5000000E-02   -0.9165849        0.5324751                    0     10.63052         1443.291        0.4408049E-05    0.2668721E-05    0.1654622E-04    0.6825411E-01                0     752.7105                   11             TEMP               28             UX      0.8113191E-01              406             ROTX
+   0.5915824E-01                1               11               63    0.5000000E-02    0.2300133         1.000000                    0     6.886186         7.384453        0.4408049E-05    0.2353638E-05    0.4035238E-04    0.5837912E-01                0     2.204340                   10             TEMP              155             UY      0.3206045E-05              406             ROTX
+   0.5915824E-01                1               11               64    0.5000000E-02    0.5334682        0.9021539                    0     6.886380         1.022738        0.4408049E-05    0.5439118E-06    0.6084939E-04    0.1506769E-02                0    0.4295884                    9             TEMP              366             UY      0.2626308E-05              406             ROTX
+   0.5915824E-01                1               11               65    0.5000000E-02    0.8463295E-02     1.000000                    0     6.885865        0.1946285        0.4408049E-05    0.4414986E-07    0.6083188E-04    0.8402606E-03                0    0.7305317E-01               57             TEMP              366             UY      0.4059511E-06              406             ROTX
+   0.5915824E-01                1               11               66    0.5000000E-02    0.5486161E-02     1.000000                    0     6.885787        0.3104529E-01    0.4408049E-05    0.1119196E-07    0.6108956E-04    0.1108469E-03                0    0.1089810E-01               14             TEMP              366             UY      0.8727453E-07              406             ROTX
+   0.5915824E-01                1               11               67    0.5000000E-02    0.6401070E-03     1.000000                    0     6.885768        0.8242067E-02    0.4408049E-05    0.1890097E-08    0.6111203E-04    0.3321221E-04                0    0.2074155E-02               14             TEMP              252             UX      0.3089087E-07              406             ROTX
+   0.6415824E-01                1               12               68    0.5000000E-02   -0.9143751        0.5318628                    0     10.63928         1445.171        0.4408049E-05    0.2663630E-05    0.1680502E-04    0.6603460E-01                0     753.6804                   11             TEMP               28             UX      0.8123396E-01              406             ROTX
+   0.6415824E-01                1               12               69    0.5000000E-02    0.2284547         1.000000                    0     6.886908         7.699492        0.4408049E-05    0.2358228E-05    0.4071005E-04    0.5649741E-01                0     2.448399                   62             TEMP              155             UY      0.3361137E-05              406             ROTX
+   0.6415824E-01                1               12               70    0.5000000E-02    0.5305910        0.9016865                    0     6.887240         1.043826        0.4408049E-05    0.5632431E-06    0.6130348E-04    0.1535841E-02                0    0.4336637                    9             TEMP              366             UY      0.2892159E-05              406             ROTX
+   0.6415824E-01                1               12               71    0.5000000E-02   -0.8792999E-02    0.9930305                    0     6.886615        0.2016931        0.4408049E-05    0.5348145E-07    0.6127870E-04    0.7220075E-03                0    0.5558768E-01               58             TEMP              368             UY      0.2675344E-06              406             ROTX
+   0.6415824E-01                1               12               72    0.5000000E-02    0.5474730E-02     1.000000                    0     6.886507        0.3202310E-01    0.4408049E-05    0.1178456E-07    0.6152343E-04    0.1215627E-03                0    0.8958036E-02               14             TEMP              191             UY      0.2332077E-06              406             ROTX
+   0.6415824E-01                1               12               73    0.5000000E-02    0.6942811E-03     1.000000                    0     6.886478        0.1091895E-01    0.4408049E-05    0.2270650E-08    0.6155036E-04    0.4077305E-04                0    0.3112141E-02               14             TEMP              191             UY      0.1803805E-06              406             ROTX
+   0.6915824E-01                1               13               74    0.5000000E-02   -0.9089313        0.5321876                    0     10.63502         1444.160        0.4408049E-05    0.2665249E-05    0.1701708E-04    0.6346007E-01                0     753.1417                   11             TEMP               28             UX      0.8117290E-01              406             ROTX
+   0.6915824E-01                1               13               75    0.5000000E-02    0.2312229         1.000000                    0     6.887658         8.118218        0.4408049E-05    0.2357641E-05    0.4091737E-04    0.5352693E-01                0     2.623468                   13             TEMP              155             UY      0.3370474E-05              406             ROTX
+   0.6915824E-01                1               13               76    0.5000000E-02    0.5222502        0.9058651                    0     6.887820         1.168995        0.4408049E-05    0.9590176E-06    0.6148908E-04    0.1941018E-02                0    0.5079778                    9             TEMP              366             UY      0.2933476E-05              406             ROTX
+   0.6915824E-01                1               13               77    0.5000000E-02   -0.9088199E-02     1.000000                    0     6.887213        0.5236836        0.4408049E-05    0.6011691E-07    0.6145892E-04    0.1054297E-02                0    0.2288309                   58             TEMP              185             UY      0.5593298E-06              406             ROTX
+   0.6915824E-01                1               13               78    0.5000000E-02    0.6417981E-02     1.000000                    0     6.887117        0.9161730E-01    0.4408049E-05    0.1528596E-07    0.6179115E-04    0.1202217E-03                0    0.3980574E-01               13             TEMP              185             UY      0.3573538E-06              406             ROTX
+   0.6915824E-01                1               13               79    0.5000000E-02    0.9664810E-03     1.000000                    0     6.887087        0.2625149E-01    0.4408049E-05    0.2345631E-08    0.6180667E-04    0.4976169E-04                0    0.1142142E-01               10             TEMP              185             UY      0.1958784E-06              406             ROTX
+   0.7415824E-01                1               14               80    0.5000000E-02   -0.9007840        0.5314198                    0     10.64592         1446.528        0.4408049E-05    0.2662393E-05    0.1713830E-04    0.6101852E-01                0     754.3611                   11             TEMP               28             UX      0.8130123E-01              406             ROTX
+   0.7415824E-01                1               14               81    0.5000000E-02    0.2368519         1.000000                    0     6.887887         8.325520        0.4408049E-05    0.2365227E-05    0.4107652E-04    0.5180409E-01                0     2.800288                   13             TEMP              155             UY      0.3995803E-05              406             ROTX
+   0.7415824E-01                1               14               82    0.5000000E-02    0.5184808        0.9042695                    0     6.888450         1.149201        0.4408049E-05    0.5653330E-06    0.6167948E-04    0.1748993E-02                0    0.4533481                    9             TEMP              366             UY      0.2427482E-05              406             ROTX
+   0.7415824E-01                1               14               83    0.5000000E-02   -0.1169997E-01     1.000000                    0     6.887818        0.5491673        0.4408049E-05    0.1016272E-06    0.6164742E-04    0.8034016E-03                0    0.2296306                  368             TEMP              185             UY      0.1040112E-05              406             ROTX
+   0.7415824E-01                1               14               84    0.5000000E-02    0.8124584E-02     1.000000                    0     6.887698        0.9942068E-01    0.4408049E-05    0.1691957E-07    0.6196372E-04    0.1035045E-03                0    0.4080062E-01               14             TEMP              185             UY      0.6157647E-06              406             ROTX
+   0.7415824E-01                1               14               85    0.5000000E-02    0.1188941E-02     1.000000                    0     6.887665        0.2786487E-01    0.4408049E-05    0.3505096E-08    0.6198203E-04    0.4604506E-04                0    0.1156107E-01               14             TEMP              185             UY      0.3910782E-06              406             ROTX
+   0.7915824E-01                1               15               86    0.5000000E-02   -0.8906852        0.5315156                    0     10.64478         1446.222        0.4408049E-05    0.2662494E-05    0.1724045E-04    0.5849795E-01                0     754.1917                   11             TEMP               28             UX      0.8127864E-01              406             ROTX
+   0.7915824E-01                1               15               87    0.5000000E-02    0.2363721         1.000000                    0     6.888510         8.640017        0.4408049E-05    0.2365417E-05    0.4112103E-04    0.4973143E-01                0     3.009134                   13             TEMP              155             UY      0.3726396E-05              406             ROTX
+   0.7915824E-01                1               15               88    0.5000000E-02    0.5147268        0.9048280                    0     6.888985         1.151333        0.4408049E-05    0.5756028E-06    0.6184172E-04    0.1852773E-02                0    0.4183538                    9             TEMP              366             UY      0.1839617E-05              406             ROTX
+   0.7915824E-01                1               15               89    0.5000000E-02   -0.1129028E-01     1.000000                    0     6.888360        0.5567261        0.4408049E-05    0.9949389E-07    0.6180927E-04    0.6476043E-03                0    0.2418223                  368             TEMP              185             UY      0.1132473E-05              406             ROTX
+   0.7915824E-01                1               15               90    0.5000000E-02    0.7474628E-02     1.000000                    0     6.888262        0.1004683        0.4408049E-05    0.1623795E-07    0.6208332E-04    0.9288507E-04                0    0.4374430E-01               14             TEMP              185             UY      0.6469489E-06              406             ROTX
+&lt;/COLDATA&gt;
+&lt;/LOADSTEPDATA&gt;
+&lt;/SOLUTION&gt;
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 23.014 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-examples-001-query-filesystem-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/d0650c0efc535db374044f7162a8ff92/001-query-filesystem.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">001-query-filesystem.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/77cd4174d9beb1db5c2e0eebb852f096/001-query-filesystem.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">001-query-filesystem.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/8ae5b11df43f90121cb341f2b10f5c38/001-query-filesystem.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">001-query-filesystem.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#launch-result-explorer">Launch Result Explorer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#query-the-file-system">Query the file system</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-solution">Create a solution</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#access-solver-output-through-solution">Access solver output through solution</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../_sources/examples/001-query-filesystem.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=0790524f97105ba85085"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<!--
+  Theme Version Footer
+  Displays the Sphinx theme version and the last updated date.
+  Accessibility and semantic improvements included.
+-->
+<footer class="theme-version" aria-label="Theme version and last update">
+  <span>
+    
+      Built with the
+      <a href="https://sphinxdocs.ansys.com/version/stable/index.html" target="_blank" rel="noopener noreferrer">
+        Ansys Sphinx Theme
+      </a>
+      1.9.0.
+    
+  </span>
+  <br />
+  <span>Last updated on <time id="ast_build_date"></time></span>
+</footer>
+<script>
+  // Set the last updated date in a readable format
+  (function() {
+    var options = { day: "numeric", month: "long", year: "numeric" };
+    var ast_lastModifiedDate = new Date(document.lastModified);
+    var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+    var dateElem = document.getElementById("ast_build_date");
+    if (dateElem) {
+      dateElem.textContent = ast_build_date;
+    }
+  })();
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

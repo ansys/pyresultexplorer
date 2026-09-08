@@ -1,0 +1,40 @@
+﻿ResultExplorerInstance
+======================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: ResultExplorerInstance
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      ResultExplorerInstance.launch
+      
+      
+      ResultExplorerInstance.stop
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ResultExplorerInstance.grpc_port
+      ResultExplorerInstance.result_provider_name
+      ResultExplorerInstance.server_process
+      ResultExplorerInstance.session_id
+      ResultExplorerInstance.web_session
+      ResultExplorerInstance.web_url
+   
+   

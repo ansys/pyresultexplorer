@@ -1,0 +1,6 @@
+istitle
+=======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Location.istitle

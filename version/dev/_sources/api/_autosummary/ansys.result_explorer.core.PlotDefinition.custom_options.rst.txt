@@ -1,0 +1,6 @@
+custom\_options
+===============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: PlotDefinition.custom_options

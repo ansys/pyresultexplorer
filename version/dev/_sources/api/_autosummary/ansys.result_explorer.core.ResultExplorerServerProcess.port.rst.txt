@@ -1,0 +1,6 @@
+port
+====
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: ResultExplorerServerProcess.port

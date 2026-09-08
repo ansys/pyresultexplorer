@@ -1,0 +1,6 @@
+ljust
+=====
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Location.ljust

@@ -1,0 +1,6 @@
+convergence\_trackers\_view
+===========================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.convergence_trackers_view

@@ -1,0 +1,6 @@
+solution
+========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: MeshView.solution

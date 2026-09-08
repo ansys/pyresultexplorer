@@ -1,0 +1,6 @@
+show\_legend
+============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ChartDisplayOptions.show_legend

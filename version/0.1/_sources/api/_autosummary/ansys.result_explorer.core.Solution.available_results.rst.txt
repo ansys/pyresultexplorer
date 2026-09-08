@@ -1,0 +1,6 @@
+available\_results
+==================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.available_results

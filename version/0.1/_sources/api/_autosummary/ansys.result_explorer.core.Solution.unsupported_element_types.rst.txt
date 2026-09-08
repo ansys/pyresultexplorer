@@ -1,0 +1,6 @@
+unsupported\_element\_types
+===========================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.unsupported_element_types
