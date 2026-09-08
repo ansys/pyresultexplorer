@@ -141,6 +141,66 @@ def test_viewport_size(rx):
     rx.delete_workspace(workspace_1x3)
 
 
+def test_grid_layout(rx):
+    """Test layout description of a regular grid of viewports."""
+    workspace = rx.create_workspace("Test Grid Layout", rows=2, cols=3)
+
+    layout = workspace.layout
+    assert layout.grid_shape == (2, 3)
+    assert layout.is_grid is True
+
+    grid = workspace.viewport_grid()
+    assert [len(row) for row in grid] == [3, 3]
+
+    # every cell holds a different viewport
+    grid_ids = [viewport.id for row in grid for viewport in row]
+    assert sorted(grid_ids) == sorted(workspace.viewport_ids)
+
+    assert workspace.viewport_at(row=1, column=2).id == grid[1][2].id
+
+    # each viewport covers the fraction of the workspace matching its cell
+    for row_index, row in enumerate(grid):
+        for column_index, viewport in enumerate(row):
+            placement = layout.placement_of(viewport)
+            assert (placement.row, placement.column) == (row_index, column_index)
+            assert (placement.row_span, placement.column_span) == (1, 1)
+            assert placement.x == pytest.approx(column_index / 3)
+            assert placement.width == pytest.approx(1 / 3)
+            assert placement.y == pytest.approx(row_index / 2)
+            assert placement.height == pytest.approx(1 / 2)
+
+    with pytest.raises(IndexError, match="No viewport at row"):
+        workspace.viewport_at(row=2, column=0)
+
+    rx.delete_workspace(workspace)
+
+
+def test_non_grid_layout(rx):
+    """Test layout description of a viewport arrangement that is not a grid."""
+    workspace = rx.create_workspace("Test Split Layout")
+    left = workspace.viewports[0]
+    right_top = workspace.create_viewport(left, ViewportDirection.VIEWPORT_DIRECTION_RIGHT)
+    right_bottom = workspace.create_viewport(right_top, ViewportDirection.VIEWPORT_DIRECTION_BOTTOM)
+
+    layout = workspace.layout
+    assert layout.grid_shape == (2, 2)
+    assert layout.is_grid is False
+
+    # the left viewport spans both rows of the first column
+    left_placement = layout.placement_of(left)
+    assert (left_placement.row, left_placement.column) == (0, 0)
+    assert (left_placement.row_span, left_placement.column_span) == (2, 1)
+
+    assert layout.viewport_at(0, 0).id == left.id
+    assert layout.viewport_at(1, 0).id == left.id
+    assert layout.viewport_at(0, 1).id == right_top.id
+    assert layout.viewport_at(1, 1).id == right_bottom.id
+
+    assert left.id in layout.describe()
+
+    rx.delete_workspace(workspace)
+
+
 def test_viewport_hidden(rx):
     """Test viewport hidden, hide, and show."""
     workspace = rx.create_workspace("Test Viewport Hidden", rows=1, cols=2)

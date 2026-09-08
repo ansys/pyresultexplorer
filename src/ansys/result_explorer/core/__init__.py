@@ -67,5 +67,7 @@ from .objects import (
     View,
     Viewport,
     ViewportMetadata,
+    ViewportPlacement,
     Workspace,
+    WorkspaceLayout,
 )

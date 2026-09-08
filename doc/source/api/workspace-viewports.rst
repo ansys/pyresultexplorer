@@ -7,6 +7,8 @@ Workspace and viewports
    :toctree: _autosummary
 
    Workspace
+   WorkspaceLayout
+   ViewportPlacement
    Viewport
    CameraPosition
    ViewportMetadata
