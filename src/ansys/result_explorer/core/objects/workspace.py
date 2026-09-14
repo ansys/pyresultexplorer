@@ -23,6 +23,7 @@ from typing import TYPE_CHECKING
 
 from .. import models
 from .base import NamedBaseEntity
+from .layout import WorkspaceLayout, _build_layout
 from .viewport import Viewport
 
 if TYPE_CHECKING:
@@ -99,7 +100,69 @@ class Workspace(NamedBaseEntity[models.Workspace]):
         vp_response = self._client._workspace_stub.ListViewports(models.ResourceId(id=self.id))
         return [Viewport(v, self._client) for v in vp_response.viewports]
 
-    def create_viewport(self, viewport: Viewport, direction, size: float = None) -> Viewport:
+    @property
+    def layout(self) -> WorkspaceLayout:
+        """Arrangement of the viewports in this workspace.
+
+        Examples
+        --------
+        Print where each viewport is positioned.
+
+        >>> print(workspace.layout)
+
+        """
+        return _build_layout(self)
+
+    def viewport_grid(self) -> list[list[Viewport]]:
+        """Return viewports as a grid of rows and columns.
+
+        A viewport that spans several cells appears once per cell that
+        it occupies.
+
+        Returns
+        -------
+        list[list[Viewport]]
+            Viewports grouped by row, from top to bottom and left to right.
+
+        Examples
+        --------
+        Get the viewport in the lower-right corner.
+
+        >>> grid = workspace.viewport_grid()
+        >>> lower_right = grid[-1][-1]
+
+        """
+        layout = self.layout
+        rows, cols = layout.grid_shape
+        return [[layout.viewport_at(row, col) for col in range(cols)] for row in range(rows)]
+
+    def viewport_at(self, row: int, column: int) -> Viewport:
+        """Return the viewport at a grid position.
+
+        Parameters
+        ----------
+        row : int
+            Zero-based row index, from top to bottom.
+        column : int
+            Zero-based column index, from left to right.
+
+        Returns
+        -------
+        Viewport
+            Viewport occupying the requested cell.
+
+        Examples
+        --------
+        Get the viewport in the second row of the third column.
+
+        >>> viewport = workspace.viewport_at(row=1, column=2)
+
+        """
+        return self.layout.viewport_at(row, column)
+
+    def create_viewport(
+        self, viewport: Viewport, direction: models.ViewportDirection, size: float | None = None
+    ) -> Viewport:
         """Create a new viewport as a child of the given viewport."""
         req = models.CreateViewportRequest(
             workspace_id=self.id,

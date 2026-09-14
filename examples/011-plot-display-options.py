@@ -77,9 +77,13 @@ disp_view: PlotView = next((v for v in views if "Displacement" in v.name), None)
 
 assert disp_view is not None, "Displacement view not found in solution"
 
-disp_view.definition.all_sets = True
-disp_view.definition.last_set = False
-sol.update_plot(disp_view.definition)
+plot_definition = disp_view.definition
+plot_definition.all_sets = True
+plot_definition.last_set = False
+
+disp_view = sol.update_plot(plot_definition)
+assert disp_view.definition.all_sets is True
+assert disp_view.definition.last_set is False
 
 print(f"Found displacement view: {disp_view.name}")
 

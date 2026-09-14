@@ -412,6 +412,11 @@ class ResultExplorerServerProcess:
         cmd = [str(exe_path)] + args
         log.info(f"Executing: {' '.join(cmd)}")
 
+        # Drop IPython/Jupyter-injected env var (MPLBACKEND=matplotlib_inline)
+        # that breaks the server's own bundled Matplotlib when launched from a notebook kernel.
+        env = os.environ.copy()
+        env.pop("MPLBACKEND", None)
+
         try:
             self._process = subprocess.Popen(
                 cmd,
@@ -419,6 +424,7 @@ class ResultExplorerServerProcess:
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
                 text=True,
+                env=env,
             )
         except FileNotFoundError as e:
             raise RuntimeError(f"Failed to start server: {e}") from e

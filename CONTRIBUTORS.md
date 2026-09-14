@@ -1,6 +1,6 @@
 # Contributors
 
-## Project Lead or Owner
+## Project Lead
 
 * [Federico Negri](https://github.com/FedericoNegri)
 
