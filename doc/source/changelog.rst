@@ -9,6 +9,62 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.1.2 <https://github.com/ansys/pyresultexplorer/releases/tag/v0.1.2>`_ - September 14, 2026
+=============================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Workspace layout helpers
+          - `#163 <https://github.com/ansys/pyresultexplorer/pull/163>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Fix starting the server in a jupyter notebook
+          - `#166 <https://github.com/ansys/pyresultexplorer/pull/166>`_
+
+
+  .. tab-item:: Documentation
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Chore: update CHANGELOG for v0.1.1
+          - `#160 <https://github.com/ansys/pyresultexplorer/pull/160>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Chore: bump dev version
+          - `#161 <https://github.com/ansys/pyresultexplorer/pull/161>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Docs: Update \`\`CONTRIBUTORS.md\`\` with the latest contributors
+          - `#162 <https://github.com/ansys/pyresultexplorer/pull/162>`_
+
+
 `0.1.1 <https://github.com/ansys/pyresultexplorer/releases/tag/v0.1.1>`_ - September 02, 2026
 =============================================================================================
 
