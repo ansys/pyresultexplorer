@@ -1,0 +1,6 @@
+total\_moment
+=============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultFieldName.total_moment

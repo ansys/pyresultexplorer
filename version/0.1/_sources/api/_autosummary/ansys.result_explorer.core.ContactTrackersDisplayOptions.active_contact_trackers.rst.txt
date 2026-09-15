@@ -1,0 +1,6 @@
+active\_contact\_trackers
+=========================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: ContactTrackersDisplayOptions.active_contact_trackers

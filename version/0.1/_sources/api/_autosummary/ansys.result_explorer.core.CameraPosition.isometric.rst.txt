@@ -1,0 +1,6 @@
+isometric
+=========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: CameraPosition.isometric

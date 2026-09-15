@@ -1,0 +1,6 @@
+cache\_plot\_data
+=================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.cache_plot_data

@@ -1,0 +1,6 @@
+result\_options
+===============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: PlotDisplayOptions.result_options

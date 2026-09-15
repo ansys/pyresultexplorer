@@ -1,0 +1,6 @@
+layout
+======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Workspace.layout

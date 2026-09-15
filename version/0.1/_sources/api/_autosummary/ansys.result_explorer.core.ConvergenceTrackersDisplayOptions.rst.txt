@@ -1,0 +1,29 @@
+﻿ConvergenceTrackersDisplayOptions
+=================================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: ConvergenceTrackersDisplayOptions
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ConvergenceTrackersDisplayOptions.selected_tracker_name
+   
+   

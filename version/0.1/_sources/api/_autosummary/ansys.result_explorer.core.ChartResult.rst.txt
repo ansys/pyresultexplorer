@@ -1,0 +1,33 @@
+﻿ChartResult
+===========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: ChartResult
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ChartResult.average_by_entity
+      ChartResult.on_skin
+      ChartResult.shell_position
+      ChartResult.result_type
+      ChartResult.fields
+   
+   

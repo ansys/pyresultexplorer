@@ -1,0 +1,30 @@
+﻿ChartViewportMetadata
+=====================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: ChartViewportMetadata
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ChartViewportMetadata.chart_names
+      ChartViewportMetadata.series_names
+   
+   

@@ -1,0 +1,6 @@
+n\_sets
+=======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.n_sets
