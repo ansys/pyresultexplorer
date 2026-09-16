@@ -68,7 +68,7 @@ print(f"Using view: {view.name}")
 
 print("Assigning view to viewport...")
 viewport = workspace.assign_view(view=view, wait=True)
-viewport.display_options.show_mesh_edges = True
+viewport.settings.show_mesh = True
 print(f"Viewport ready: {viewport}")
 viewport.save_snapshot(
     file_path="012-camera-position-initial.png", settings=get_example_snapshot_settings()
@@ -79,7 +79,7 @@ viewport.save_snapshot(
 # ------------------------------
 # Read the initial camera state to preserve zoom and translation when
 # applying preset orientations.
-initial_cam = viewport.display_options.camera_position
+initial_cam = viewport.settings.camera_position
 initial_zoom = initial_cam.zoom if initial_cam is not None else 1.0
 initial_translation = initial_cam.translation if initial_cam is not None else (0.0, 0.0, 0.0)
 print(f"Initial zoom={initial_zoom}, translation={initial_translation}")
@@ -89,7 +89,7 @@ def apply_camera(label: str, cam: CameraPosition) -> None:
     """Apply a camera position and print the result."""
     print(f"\n--- {label} ---")
     cam = cam.with_zoom(initial_zoom).with_translation(*initial_translation)
-    opts = viewport.display_options
+    opts = viewport.settings
     opts.camera_position = cam
     viewport.save_snapshot(
         file_path=f"012-camera-position-{label.replace(' ', '-').lower()}.png",

@@ -142,58 +142,80 @@ You can create new viewports by splitting existing ones in different directions:
     # Delete a viewport
     workspace.delete_viewport(right_viewport)
 
-Customizing viewport display options
+Customizing viewport settings
 ------------------------------------
 
-Each viewport has display options that you can customize independently:
+Each viewport has settings that you can customize independently:
 
 .. code-block:: python
 
-    # Access display options for a viewport
-    opts = viewport.display_options
+    # Access settings for a viewport
+    opts = viewport.settings
 
     # For plot viewports, customize visualization settings
-    opts.show_mesh_edges = True
+    opts.show_mesh = True
     opts.show_min_max_labels = True
 
     # Set deformation scale and component
-    opts.result_options.deformation_scale = 2.0
-    opts.result_options.component_name = "X"
+    opts.result_settings.deformation_scale = 2.0
+    opts.result_settings.component_name = "X"
 
     # Batch multiple changes efficiently
-    with viewport.update_display_options() as opts:
-        opts.show_mesh_edges = True
+    with viewport.update_settings() as opts:
+        opts.show_mesh = True
         opts.explode = True
-        opts.result_options.deformation_scale = 3.0
+        opts.result_settings.deformation_scale = 3.0
 
-Display options are specific to the type of view being displayed in the viewport.
-For example, plot viewports have options for showing mesh edges and min/max labels,
-while chart viewports have options for hiding/showing the legend and data table.
+Settings are the actual values you want to display or configure.
+Setting options are the available/allowed values for those settings, which are determined
+dynamically by the server based on the loaded result data.
+For example, ``viewport.setting_options.get("componentNames")`` returns the component names
+available in the result, while ``viewport.settings.result_settings.component_name`` is the
+currently active component.
+
+Discovering available values
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Before setting a value, you can check what options are available:
+
+.. code-block:: python
+
+    # Discover available components for the current result
+    available_components = viewport.setting_options.get("componentNames", [])
+    print(f"Available: {available_components}")
+
+    # Discover available series in a chart
+    available_series = viewport.setting_options.get("seriesNames", [])
+    print(f"Available series: {available_series}")
+
+    # Set to a valid value
+    if "Z" in available_components:
+        viewport.settings.result_settings.component_name = "Z"
 
 
-Direct commit vs. batch update of display options
+Direct commit vs. batch update of viewport settings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-When you assign a display option directly
-(for example, ``opts.show_mesh_edges = True``), it immediately commits the change
-to the app. For multiple changes, use the :meth:`viewport.update_display_options() <ansys.result_explorer.core.Viewport.update_display_options>`
+When you assign a setting directly
+(for example, ``opts.show_mesh = True``), it immediately commits the change
+to the app. For multiple changes, use the :meth:`viewport.update_settings() <ansys.result_explorer.core.Viewport.update_settings>`
 context manager to batch all updates into a single API call, which is more
 efficient:
 
 .. code-block:: python
 
     # Inefficient: 3 API calls
-    opts = viewport.display_options
-    opts.show_mesh_edges = True        # API call 1
+    opts = viewport.settings
+    opts.show_mesh = True              # API call 1
     opts.explode = True                # API call 2
-    opts.result_options.set_id = 3     # API call 3
+    opts.result_settings.set_id = 3    # API call 3
 
     # Efficient: 1 API call
-    with viewport.update_display_options() as opts:
-        opts.show_mesh_edges = True
+    with viewport.update_settings() as opts:
+        opts.show_mesh = True
         opts.explode = True
-        opts.result_options.set_id = 3
+        opts.result_settings.set_id = 3
 
 
 Saving viewport snapshots

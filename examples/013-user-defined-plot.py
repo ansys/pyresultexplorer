@@ -27,7 +27,7 @@ displacement in the model:
 - **Server-side DPF scripting** to define custom plot data computation.
 - **User-defined plots** with configurable custom options for filtering.
 - **Threshold filtering** using DPF operators to filter by displacement magnitude.
-- **Viewport visualization** of user-defined plot results with display options.
+- **Viewport settings** for user-defined plot results including mesh and label visibility.
 
 The example creates a user-defined plot that uses a DPF ``high_pass`` operator
 to filter out nodes whose displacement magnitude falls below the threshold,
@@ -240,13 +240,13 @@ ud_plot = sol.create_plot(
 print(f"Created user-defined above-threshold plot: '{ud_plot.name}'")
 
 # %%
-# Assign to viewport and configure display
-# ------------------------------------------
-# Assign the user-defined plot to a viewport and configure display options.
+# Assign to viewport and configure settings
+# -------------------------------------------
+# Assign the user-defined plot to a viewport and configure viewport settings.
 viewport = workspace.assign_view(view=ud_plot, wait=True)
 
-with viewport.update_display_options() as opts:
-    opts.show_mesh_edges = True
+with viewport.update_settings() as opts:
+    opts.show_mesh = True
     opts.show_min_max_labels = True
 
 viewport.save_snapshot(

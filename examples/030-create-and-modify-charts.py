@@ -26,7 +26,7 @@ This example demonstrates how to create and work with charts in Result Explorer:
   objects to define result series with filters and field selections.
 - **Multi-result charts** combining equivalent stress, temperature, and contact
   pressure results in a single chart.
-- **Chart display options** to control legend visibility, table display, and
+- **Chart viewport settings** to control legend visibility, table display, and
   active series selection.
 - **Chart updates** to add or modify result series in an existing chart.
 - **Snapshot capture** to save chart visualizations as images.
@@ -126,19 +126,19 @@ viewport = workspace.assign_view(view=chart, wait=True)
 print(f"\nViewport assigned: {viewport.id}")
 
 # %%
-# Inspect chart display options
-# ------------------------------
-# Read the available series and chart names provided by the server after
-# rendering, then print them so you can reference them by name.
-opts = viewport.display_options
+# Inspect available options and current settings
+# ------------------------------------------------
+# Read the available series and chart names from setting_options, and read
+# current values from settings.
+opts = viewport.settings
 
 print(f"\nAvailable series: {opts.series_names}")
 print(f"Available charts: {opts.chart_names}")
 print(f"Active series:    {opts.active_series}")
 
 # %%
-# Configure display options
-# --------------------------
+# Customize viewport settings
+# ----------------------------
 # Enable the legend and show the data table beneath the chart.
 opts.show_legend = True
 opts.show_table = True

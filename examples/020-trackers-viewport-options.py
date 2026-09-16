@@ -26,7 +26,7 @@ This example demonstrates how to work with tracker viewports in Result Explorer:
 - **Contact trackers** to visualize and analyze contact behavior in transient simulations.
 - **Tracker viewport metadata** to read and display properties of tracker visualizations.
 - **Active series configuration** for contact trackers to select specific analysis types.
-- **Display options** to customize tracker visualization (legend, table, split direction).
+- **Viewport settings** to customize tracker visualization (legend, table, split direction).
 
 This example uses a transient contact analysis result with convergence and
 contact tracking data.
@@ -90,7 +90,7 @@ print(f"Created workspace with {len(workspace.viewport_ids)} viewports (2x1 grid
 conv_viewport = workspace.viewports[0]
 conv_viewport.set_view(convergence_view, wait=True)
 
-conv_opts = conv_viewport.display_options
+conv_opts = conv_viewport.settings
 print("\nConfiguring convergence trackers viewport:")
 print(f"  Selected tracker: {conv_opts.selected_tracker_name}")
 
@@ -115,7 +115,7 @@ for tracker in trackers:
     print(f"    - {tracker}")
 
 # Configure active trackers
-contact_opts = contact_viewport.display_options
+contact_opts = contact_viewport.settings
 contact_opts.active_contact_trackers = trackers
 
 # Show available series
@@ -129,13 +129,13 @@ contact_viewport.save_snapshot(
 )
 
 # %%
-# Set display options
-# --------------------
-# Configure active series and display options for the contact viewport.
+# Configure viewport settings
+# ----------------------------
+# Configure active series and other settings for the contact viewport.
 contact_opts.active_series = ["Max. Normal Stiffness"]
 print(f"\n  Active series set to: {contact_opts.active_series}")
 
-with contact_viewport.update_display_options() as contact_opts:
+with contact_viewport.update_settings() as contact_opts:
     contact_opts.show_legend = True
     contact_opts.show_table = True
     contact_opts.split_direction = "horizontal"

@@ -26,7 +26,7 @@ This example demonstrates advanced PyResultExplorer functionality including:
 - **Solution management** to load and work with result data.
 - **View assignment** to display specific analysis results in viewports.
 - **Viewport layouts** by creating multiple viewports in grid configurations.
-- **Display options** to customize visualization properties like mesh edges and labels.
+- **Viewport settings** to customize visualization properties like mesh edges and labels.
 - **Snapshots** to capture and save viewport visualizations as images.
 - **Synchronization** of camera, time steps, and color ranges across viewports.
 
@@ -174,19 +174,19 @@ print("Exiting fullscreen...")
 workspace.exit_fullscreen()
 
 # %%
-# Modify display options
-# -----------------------
-# Customize viewport visualization properties using the context manager.
+# Customize viewport settings
+# ----------------------------
+# Customize visualization properties using the ``update_settings()`` context manager.
 # Toggle mesh edges and enable minimum/maximum labels.
-print("Modifying view display options...")
-with viewport.update_display_options() as opts:
-    opts.show_mesh_edges = not opts.show_mesh_edges
+print("Customizing viewport settings...")
+with viewport.update_settings() as opts:
+    opts.show_mesh = not opts.show_mesh
     opts.show_min_max_labels = True
 
 # %%
 # Capture a modified snapshot
 # ----------------------------
-# Take a new snapshot after modifying display options and save it as a separate file.
+# Take a new snapshot after modifying viewport settings and save it as a separate file.
 top_left_viewport.save_snapshot(
     file_path=slugify(sol_name + " - " + view.name) + "-modified.png",
     settings=get_example_snapshot_settings(),
