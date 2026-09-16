@@ -26,9 +26,16 @@ from ansys.result_explorer.core import (
     LogsViewportMetadata,
     MeshViewportMetadata,
     PlotViewportMetadata,
+    models,
 )
 from ansys.result_explorer.core.models import ViewportDirection, ViewType
-from ansys.result_explorer.core.objects.viewport import PlotDisplayOptions, ResultDisplayOptions
+from ansys.result_explorer.core.objects.viewport import (
+    PlotDisplayOptions,
+    ResultDisplayOptions,
+    Viewport,
+    _dict_to_settings,
+    _settings_to_dict,
+)
 
 log = logging.getLogger(__name__)
 
@@ -60,7 +67,7 @@ def test_viewports(rx, multiple_connections_solution):
     opts.show_min_max_labels = not opts.show_min_max_labels
 
     assert viewport.display_options.show_mesh_edges == opts.show_mesh_edges
-    assert viewport._pb.metadata["showMeshEdges"] == opts.show_mesh_edges
+    assert _settings_to_dict(viewport._pb.settings)["showMesh"] == opts.show_mesh_edges
 
     # take snapshot
     snapshot_data = viewport.take_snapshot()
@@ -95,6 +102,79 @@ def test_viewports(rx, multiple_connections_solution):
     # get workspace and verify deletion
     workspace = rx.get_workspace(workspace.id)
     assert len(workspace.viewport_ids) == 1
+
+
+def test_viewport_settings_round_trip():
+    settings = {
+        "leftClickMode": "Probe Node",
+        "timeFrequencySetId": 1,
+        "showMesh": False,
+        "shownBodies": ["1", "4"],
+        "cameraPosition": {"matrix": [1.0] * 16},
+        "transparentBodies": None,
+    }
+
+    round_tripped = _settings_to_dict(_dict_to_settings(settings))
+
+    assert round_tripped == {**settings, "transparentBodies": []}
+
+
+def test_viewport_setting_options():
+    viewport = Viewport(
+        models.Viewport(
+            id="viewport-1",
+            setting_options=_dict_to_settings(
+                {
+                    "leftClickMode": [
+                        "Select Bodies",
+                        "Probe Node",
+                        "Probe Element",
+                        "Toggle Transparent",
+                    ],
+                    "timeFrequencySetId": ["1", "2"],
+                    "componentName": ["Magnitude", "X", "Y", "Z"],
+                }
+            ),
+        ),
+        client=None,
+    )
+
+    assert viewport.setting_options["leftClickMode"] == [
+        "Select Bodies",
+        "Probe Node",
+        "Probe Element",
+        "Toggle Transparent",
+    ]
+    assert viewport.setting_options["timeFrequencySetId"] == ["1", "2"]
+    assert viewport.setting_options["componentName"] == ["Magnitude", "X", "Y", "Z"]
+
+
+def test_plot_display_options_from_raw_settings_with_empty_values():
+    settings = _dict_to_settings(
+        {
+            "shownBodies": [],
+            "expandedGroups": [],
+            "deformationScale": None,
+            "timeFrequencySetId": 1,
+            "componentName": "Magnitude",
+            "legendMin": 0,
+            "legendMax": 0.00011873363109771162,
+            "legendUseGlobalMinMax": True,
+            "result": "displacement",
+        }
+    )
+    settings.append(
+        models.SettingOption(key="transparencyLevel", value=models.SettingValue(string_value=""))
+    )
+
+    opts = PlotDisplayOptions._from_pb(settings, client=None)
+
+    assert opts.visible_bodies == []
+    assert opts.expanded_groups == []
+    assert opts.result_options.deformation_scale is None
+    assert opts.result_options.set_id == 1
+    assert opts.result_options.component_name == "Magnitude"
+    assert opts.result_options.legend_range == (0.0, 0.00011873363109771162)
 
 
 def test_viewport_size(rx):
@@ -719,10 +799,11 @@ def test_result_display_options_snapshots(
     _ = viewport.take_snapshot(settings=snapshot_settings_with_legend)
 
     # Different component indices produce visually distinct color distributions
-    for name, component_index in [("component_x", 0), ("component_y", 1), ("component_z", 2)]:
+    for name, component_name in [("component_x", "X"), ("component_y", "Y"), ("component_z", "Z")]:
         with viewport.update_display_options() as opts:
-            opts.result_options.component_index = component_index
+            opts.result_options.component_name = component_name
             opts.result_options.legend_range = None  # reset legend range to auto for new component
+        assert opts.result_options.component_name == component_name
         snapshot_data = viewport.take_snapshot(settings=snapshot_settings_with_legend)
         assert snapshot_data == snapshot(name=name)
 
@@ -730,8 +811,8 @@ def test_result_display_options_snapshots(
 
     opts = viewport.display_options
     assert isinstance(opts, PlotDisplayOptions)
-    opts.result_options = ResultDisplayOptions(component_index=-1)
-    assert viewport.display_options.result_options.component_index == -1
+    opts.result_options = ResultDisplayOptions(component_name="Magnitude")
+    assert viewport.display_options.result_options.component_name == "Magnitude"
 
     # Deformation scale changes the shape of the deformed mesh
     for name, scale in [("deformation_1x", 1.0), ("deformation_5x", 5.0)]:
@@ -763,6 +844,9 @@ def test_result_display_options_snapshots(
         use_global_min_max=False,
         legend_range=(0.0, 5e-5),
     )
+
+    assert viewport.display_options.result_options.legend_range[0] == 0.0
+    assert viewport.display_options.result_options.legend_range[1] == 5e-5
 
     assert snapshot(name="legend_range_fixed") == viewport.take_snapshot(
         settings=snapshot_settings_with_legend
@@ -825,10 +909,6 @@ def test_visible_bodies_option(rx, multiple_connections_solution, snapshot, snap
     # image comparison
     snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
     assert snapshot_data == snapshot(name="initial")
-
-    import time
-
-    time.sleep(5)
 
     bodies = sol.bodies
     solid186_body_ids = []

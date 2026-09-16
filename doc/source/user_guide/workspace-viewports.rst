@@ -158,7 +158,7 @@ Each viewport has display options that you can customize independently:
 
     # Set deformation scale and component
     opts.result_options.deformation_scale = 2.0
-    opts.result_options.component_index = 0
+    opts.result_options.component_name = "X"
 
     # Batch multiple changes efficiently
     with viewport.update_display_options() as opts:

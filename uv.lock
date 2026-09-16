@@ -25,15 +25,11 @@ wheels = [
 
 [[package]]
 name = "ansys-api-result-explorer"
-version = "0.1.1"
-source = { registry = "https://pypi.org/simple" }
+version = "0.1.0"
+source = { git = "https://github.com/ansys/ansys-api-result-explorer?rev=e213e3d456f903e89253c3992432a7a38eb15e12#e213e3d456f903e89253c3992432a7a38eb15e12" }
 dependencies = [
     { name = "grpcio" },
     { name = "protobuf" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/bb/a0/c3a039b5d1de936c332fecbe629252b554bdef0c0db0bbd348c812619b2d/ansys_api_result_explorer-0.1.1.tar.gz", hash = "sha256:159d5c7165d892b913a1af464fead06532dabfec816f4496c36f14435d64c2ac", size = 58956, upload-time = "2026-09-01T10:38:04.819Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/93/32/84c476b84f610c8c2acbc716c86b14fd67405edb90cc63fd02a134ba649b/ansys_api_result_explorer-0.1.1-py3-none-any.whl", hash = "sha256:320adc460d1da16f82fccee45c9bc1e4f0908813e5804858875c3bb81f5eb0af", size = 72027, upload-time = "2026-09-01T10:38:03.512Z" },
 ]
 
 [[package]]
@@ -81,7 +77,7 @@ examples = [
 
 [package.metadata]
 requires-dist = [
-    { name = "ansys-api-result-explorer", specifier = "==0.1.1" },
+    { name = "ansys-api-result-explorer", git = "https://github.com/ansys/ansys-api-result-explorer?rev=e213e3d456f903e89253c3992432a7a38eb15e12" },
     { name = "grpcio", specifier = ">=1.63.0" },
     { name = "playwright", marker = "extra == 'playwright'", specifier = ">=1.62.0" },
     { name = "protobuf" },

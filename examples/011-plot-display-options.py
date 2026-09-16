@@ -103,7 +103,7 @@ disp_viewport = disp_viewport.set_view(disp_view, wait=True)
 # Configure plot display options including deformation scale and mesh edges.
 with disp_viewport.update_display_options() as disp_opts:
     disp_opts.result_options.use_global_min_max = True
-    disp_opts.result_options.component_index = 0
+    disp_opts.result_options.component_name = "X"
     disp_opts.result_options.deformation_scale = 2
     disp_opts.result_options.legend_range = None  # auto-range based on current component values
     disp_opts.show_mesh_edges = True
