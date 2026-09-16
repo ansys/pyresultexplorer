@@ -20,18 +20,28 @@ import pytest
 
 from ansys.result_explorer.core import (
     CameraPosition,
-    ChartViewportMetadata,
-    ContactTrackersViewportMetadata,
-    ConvergenceTrackersViewportMetadata,
-    LogsViewportMetadata,
-    MeshViewportMetadata,
+    ChartViewportSettingOptions,
+    ChartViewportSettings,
+    ContactTrackersViewportSettingOptions,
+    ContactTrackersViewportSettings,
+    ConvergenceTrackersViewportSettingOptions,
+    ConvergenceTrackersViewportSettings,
+    LogsViewportSettingOptions,
+    LogsViewportSettings,
+    MeshViewportSettingOptions,
+    MeshViewportSettings,
     PlotViewportMetadata,
+    PlotViewportSettingOptions,
+    ThreeDViewportSettingOptions,
+    ThreeDViewportSettings,
+    ViewportSettingOptions,
+    ViewportSettings,
     models,
 )
 from ansys.result_explorer.core.models import ViewportDirection, ViewType
 from ansys.result_explorer.core.objects.viewport import (
-    PlotDisplayOptions,
-    ResultDisplayOptions,
+    PlotResultSettings,
+    PlotViewportSettings,
     Viewport,
     _dict_to_settings,
     _settings_to_dict,
@@ -61,13 +71,13 @@ def test_viewports(rx, multiple_connections_solution):
     viewports = workspace.viewports
     assert len(viewports) >= 1
 
-    # modify display options
-    opts = viewport.display_options
-    opts.show_mesh_edges = not opts.show_mesh_edges
+    # modify settings
+    opts = viewport.settings
+    opts.show_mesh = not opts.show_mesh
     opts.show_min_max_labels = not opts.show_min_max_labels
 
-    assert viewport.display_options.show_mesh_edges == opts.show_mesh_edges
-    assert _settings_to_dict(viewport._pb.settings)["showMesh"] == opts.show_mesh_edges
+    assert viewport.settings.show_mesh == opts.show_mesh
+    assert _settings_to_dict(viewport._pb.settings)["showMesh"] == opts.show_mesh
 
     # take snapshot
     snapshot_data = viewport.take_snapshot()
@@ -139,6 +149,7 @@ def test_viewport_setting_options():
         client=None,
     )
 
+    assert isinstance(viewport.setting_options, ViewportSettingOptions)
     assert viewport.setting_options["leftClickMode"] == [
         "Select Bodies",
         "Probe Node",
@@ -149,7 +160,75 @@ def test_viewport_setting_options():
     assert viewport.setting_options["componentName"] == ["Magnitude", "X", "Y", "Z"]
 
 
-def test_plot_display_options_from_raw_settings_with_empty_values():
+def test_plot_viewport_setting_options():
+    setting_options = PlotViewportSettingOptions(
+        _dict_to_settings(
+            {
+                "componentName": ["Magnitude", "X", "Y", "Z"],
+                "timeFrequencySetId": ["1", "2"],
+                "legendColorMap": ["Rainbow", "Turbo"],
+            }
+        )
+    )
+
+    assert setting_options.component_names == ["Magnitude", "X", "Y", "Z"]
+    assert setting_options.time_frequency_set_ids == ["1", "2"]
+    assert setting_options.color_maps == ["Rainbow", "Turbo"]
+
+
+def test_viewport_settings_and_options_types():
+    three_d_settings = ThreeDViewportSettings._from_pb(
+        _dict_to_settings({"showMesh": True}), client=None
+    )
+    mesh_settings = MeshViewportSettings._from_pb(
+        _dict_to_settings({"shownNamedSelectionId": "selection-1"}), client=None
+    )
+    chart_settings = ChartViewportSettings._from_pb(
+        _dict_to_settings({"showChart": True, "showLegend": True}), client=None
+    )
+    contact_settings = ContactTrackersViewportSettings._from_pb(
+        _dict_to_settings({"chartSelectionMode": "chartBodies"}), client=None
+    )
+    convergence_settings = ConvergenceTrackersViewportSettings._from_pb(
+        _dict_to_settings({"tracker": "Force Convergence"}), client=None
+    )
+    logs_settings = LogsViewportSettings._from_pb(
+        _dict_to_settings({"logFile": "solve.out"}), client=None
+    )
+
+    assert three_d_settings.show_mesh is True
+    assert mesh_settings.visible_named_selection == "selection-1"
+    assert chart_settings.show_chart is True
+    assert contact_settings.selection_mode == "chartBodies"
+    assert convergence_settings.selected_tracker_name == "Force Convergence"
+    assert logs_settings.log_path == "solve.out"
+
+    assert ThreeDViewportSettingOptions(
+        _dict_to_settings({"leftClickMode": ["Select Bodies"]})
+    ).left_click_modes == ["Select Bodies"]
+    assert MeshViewportSettingOptions(_dict_to_settings({})).get("shownNamedSelectionId") is None
+    assert ChartViewportSettingOptions(
+        _dict_to_settings({"xAxisSeries": ["Time"]})
+    ).x_axis_series == ["Time"]
+    assert ContactTrackersViewportSettingOptions(
+        _dict_to_settings({"chartSelectionMode": ["chartBodies"]})
+    ).selection_modes == ["chartBodies"]
+    assert ConvergenceTrackersViewportSettingOptions(
+        _dict_to_settings({"tracker": ["Force"]})
+    ).tracker_names == ["Force"]
+    assert LogsViewportSettingOptions(_dict_to_settings({"logFile": ["solve.out"]})).log_files == [
+        "solve.out"
+    ]
+
+
+def test_unassigned_viewport_uses_generic_settings():
+    viewport = Viewport(models.Viewport(id="viewport-1"), client=None)
+
+    assert isinstance(viewport.settings, ViewportSettings)
+    assert isinstance(viewport.metadata, object)
+
+
+def test_plot_viewport_settings_from_raw_settings_with_empty_values():
     settings = _dict_to_settings(
         {
             "shownBodies": [],
@@ -167,14 +246,33 @@ def test_plot_display_options_from_raw_settings_with_empty_values():
         models.SettingOption(key="transparencyLevel", value=models.SettingValue(string_value=""))
     )
 
-    opts = PlotDisplayOptions._from_pb(settings, client=None)
+    opts = PlotViewportSettings._from_pb(settings, client=None)
 
     assert opts.visible_bodies == []
     assert opts.expanded_groups == []
-    assert opts.result_options.deformation_scale is None
-    assert opts.result_options.set_id == 1
-    assert opts.result_options.component_name == "Magnitude"
-    assert opts.result_options.legend_range == (0.0, 0.00011873363109771162)
+    assert opts.result_settings.deformation_scale is None
+    assert opts.result_settings.set_id == 1
+    assert opts.result_settings.component_name == "Magnitude"
+    assert opts.result_settings.legend_range == (0.0, 0.00011873363109771162)
+
+
+def test_plot_viewport_settings_from_raw_settings():
+    settings = PlotViewportSettings._from_pb(
+        _dict_to_settings(
+            {
+                "showMesh": True,
+                "showMinMaxLabels": False,
+                "result": "displacement",
+                "componentName": "X",
+            }
+        ),
+        client=None,
+    )
+
+    assert settings.show_mesh is True
+    assert settings.show_min_max_labels is False
+    assert settings.result_settings.result == "displacement"
+    assert settings.result_settings.component_name == "X"
 
 
 def test_viewport_size(rx):
@@ -328,30 +426,30 @@ def test_plot_viewport_metadata(rx, multiple_connections_solution):
     meta = viewport.metadata
     log.info("plot metadata: %s", meta)
 
-    # Test show_mesh_edges via display options
-    opts = viewport.display_options
-    original_mesh_edges = opts.show_mesh_edges
-    opts.show_mesh_edges = not original_mesh_edges
-    assert viewport.display_options.show_mesh_edges == (not original_mesh_edges)
+    # Test show_mesh via settings
+    opts = viewport.settings
+    original_show_mesh = opts.show_mesh
+    opts.show_mesh = not original_show_mesh
+    assert viewport.settings.show_mesh == (not original_show_mesh)
 
-    # Test show_min_max_labels via display options
-    opts = viewport.display_options
+    # Test show_min_max_labels via settings
+    opts = viewport.settings
     original_min_max = opts.show_min_max_labels
     opts.show_min_max_labels = not original_min_max
-    assert viewport.display_options.show_min_max_labels == (not original_min_max)
+    assert viewport.settings.show_min_max_labels == (not original_min_max)
 
-    # Test deformation_scale via result_options
-    assert viewport.display_options.result_options.deformation_scale == 1.0
-    opts = viewport.display_options
-    opts.result_options.deformation_scale = 2.5
-    assert viewport.display_options.result_options.deformation_scale == 2.5
+    # Test deformation_scale via result_settings
+    assert viewport.settings.result_settings.deformation_scale == 1.0
+    opts = viewport.settings
+    opts.result_settings.deformation_scale = 2.5
+    assert viewport.settings.result_settings.deformation_scale == 2.5
 
     # Cleanup
     rx.delete_workspace(workspace)
 
 
-def test_logs_viewport_metadata(rx, cp_transient_solution):
-    """Test LogsViewportMetadata."""
+def test_logs_viewport_settings(rx, cp_transient_solution):
+    """Test LogsViewportSettings."""
 
     # Create workspace
     workspace = rx.create_workspace("Test Logs Metadata")
@@ -362,22 +460,22 @@ def test_logs_viewport_metadata(rx, cp_transient_solution):
     assert logs_view is not None
 
     viewport = workspace.assign_view(view=logs_view, wait=True)
-    meta = viewport.metadata
-    log.info("logs metadata: %s", meta)
+    settings = viewport.settings
+    log.info("logs settings: %s", settings)
 
-    assert meta is not None
-    assert isinstance(meta, LogsViewportMetadata)
+    assert settings is not None
+    assert isinstance(settings, LogsViewportSettings)
 
-    assert "cp_trans" in viewport.display_options.log_path
-    assert viewport.display_options.log_path.endswith("solve.out")
+    assert "cp_trans" in viewport.settings.log_path
+    assert viewport.settings.log_path.endswith("solve.out")
 
-    opts = viewport.display_options
+    opts = viewport.settings
     opts.log_path = opts.log_path.replace("solve.out", "file.err")
-    assert viewport.display_options.log_path.endswith("file.err")
+    assert viewport.settings.log_path.endswith("file.err")
 
 
-def test_mesh_viewport_metadata(rx, multiple_connections_solution):
-    """Test MeshViewportMetadata properties."""
+def test_mesh_viewport_settings(rx, multiple_connections_solution):
+    """Test MeshViewportSettings properties."""
     sol = multiple_connections_solution
 
     # Find a mesh view from the solution
@@ -389,32 +487,32 @@ def test_mesh_viewport_metadata(rx, multiple_connections_solution):
     workspace = rx.create_workspace("Test Mesh Metadata")
     viewport = workspace.assign_view(view=mesh_view, wait=True)
 
-    log.info("mesh metadata: %s", viewport.metadata)
+    log.info("mesh settings: %s", viewport.settings)
 
     # Test explode property
-    opts = viewport.display_options
+    opts = viewport.settings
     original_explode = opts.explode
     opts.explode = not original_explode
-    assert viewport.display_options.explode == (not original_explode)
+    assert viewport.settings.explode == (not original_explode)
 
     # Test explode_scale_factor property
-    with viewport.update_display_options() as opts:
+    with viewport.update_settings() as opts:
         opts.explode_scale_factor = 1.5
-    assert viewport.display_options.explode_scale_factor == 1.5
+    assert viewport.settings.explode_scale_factor == 1.5
 
     # Test explode_direction property
-    opts = viewport.display_options
+    opts = viewport.settings
     opts.explode_direction = "Radial"
-    assert viewport.display_options.explode_direction == "Radial"
+    assert viewport.settings.explode_direction == "Radial"
 
-    with viewport.update_display_options() as opts:
+    with viewport.update_settings() as opts:
         opts.explode_direction = "X"
-    assert viewport.display_options.explode_direction == "X"
+    assert viewport.settings.explode_direction == "X"
 
     # Test expanded_groups property
-    opts = viewport.display_options
+    opts = viewport.settings
     opts.expanded_groups = ["group1", "group2"]
-    assert viewport.display_options.expanded_groups == ["group1", "group2"]
+    assert viewport.settings.expanded_groups == ["group1", "group2"]
 
     # Cleanup
     rx.delete_workspace(workspace)
@@ -436,15 +534,15 @@ def test_mesh_viewport_named_selection_visibility(
     workspace = rx.create_workspace("Test Mesh Metadata Visibility")
     viewport = workspace.assign_view(view=mesh_view, wait=True)
 
-    assert isinstance(viewport.metadata, MeshViewportMetadata)
-    log.info("mesh metadata: %s", viewport.metadata)
+    assert isinstance(viewport.settings, MeshViewportSettings)
+    log.info("mesh settings: %s", viewport.settings)
 
     # Test named selection visibility by id
     ns_contact = next((ns for ns in sol.named_selections if "CONTACT" in ns.name), None)
-    with viewport.update_display_options() as opts:
+    with viewport.update_settings() as opts:
         opts.visible_named_selection = ns_contact.id
         opts.show_mesh_edges = True
-    assert viewport.display_options.visible_named_selection == ns_contact.id
+    assert viewport.settings.visible_named_selection == ns_contact.id
 
     _ = viewport.take_snapshot(settings=snapshot_settings)
     snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
@@ -452,24 +550,24 @@ def test_mesh_viewport_named_selection_visibility(
 
     # Test named selection visibility by object
     ns_eppl = next((ns for ns in sol.named_selections if "ND001_EPPL_ELEMENTS" in ns.name), None)
-    opts = viewport.display_options
+    opts = viewport.settings
     opts.visible_named_selection = ns_eppl
-    assert viewport.display_options.visible_named_selection == ns_eppl.id
+    assert viewport.settings.visible_named_selection == ns_eppl.id
 
     assert viewport.ready is True
     snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
     assert snapshot_data == snapshot(name="ND001_EPPL_ELEMENTS")
 
     # Test named selection visibility by name
-    with viewport.update_display_options() as opts:
+    with viewport.update_settings() as opts:
         opts.visible_named_selection = "LEFT1"
     ns_left = next((ns for ns in sol.named_selections if "LEFT1" in ns.name), None)
-    assert viewport.display_options.visible_named_selection == ns_left.id
+    assert viewport.settings.visible_named_selection == ns_left.id
 
     snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
     assert snapshot_data == snapshot(name="LEFT1")
 
-    opts = viewport.display_options
+    opts = viewport.settings
     # test exception for invalid named selection
     with pytest.raises(ValueError, match="INVALID_NS"):
         opts.visible_named_selection = "INVALID_NS"
@@ -494,23 +592,28 @@ def test_chart_viewport_metadata(rx, cp_transient_solution):
 
     viewport = workspace.assign_view(view=chart_view, wait=True)
 
-    meta = viewport.metadata
-    opts = viewport.display_options
+    settings = viewport.settings
 
-    log.info("chart metadata: %s", meta)
+    assert settings is not None
+    assert isinstance(settings, ChartViewportSettings)
 
-    assert meta is not None
-    assert isinstance(meta, ChartViewportMetadata)
+    log.info("Viewport settings: %s", viewport._pb.settings)
+
+    setting_options = viewport.setting_options
+    assert setting_options is not None
+    assert isinstance(setting_options, ChartViewportSettingOptions)
+
+    log.info("Viewport setting options: %s", viewport._pb.setting_options)
 
     # Test chart_names property (read-only, from metadata)
-    chart_names = meta.chart_names
+    chart_names = setting_options.active_charts
     assert isinstance(chart_names, list)
     assert len(chart_names) >= 1
     assert "Min/Max Displacement Over Time" in chart_names
     log.info("Available charts: %s", chart_names)
 
     # Test active_charts property (from display options)
-    active_charts = opts.active_charts
+    active_charts = settings.active_charts
     assert isinstance(active_charts, list)
     assert len(active_charts) > 0
     assert all(c in chart_names for c in active_charts)
@@ -518,7 +621,7 @@ def test_chart_viewport_metadata(rx, cp_transient_solution):
     log.info("Active charts: %s", active_charts)
 
     # Test series_names property (read-only, from metadata)
-    series_names = meta.series_names
+    series_names = setting_options.series_names
     assert isinstance(series_names, list)
     assert len(series_names) >= 4
     expected_series = [
@@ -532,7 +635,7 @@ def test_chart_viewport_metadata(rx, cp_transient_solution):
     log.info("Available series: %s", series_names)
 
     # Test active_series property (from display options)
-    active_series = opts.active_series
+    active_series = settings.active_series
     assert isinstance(active_series, list)
     assert len(active_series) == 3  # Should have 3 active series
     expected_active = [
@@ -544,73 +647,73 @@ def test_chart_viewport_metadata(rx, cp_transient_solution):
     log.info("Active series: %s", active_series)
 
     # Test selected_x_axis property (from display options)
-    assert isinstance(opts.selected_x_axis, str)
-    assert opts.selected_x_axis == "Time/Frequency"
-    log.info("Selected X-axis: %s", opts.selected_x_axis)
+    assert isinstance(settings.selected_x_axis, str)
+    assert settings.selected_x_axis == "Time/Frequency"
+    log.info("Selected X-axis: %s", settings.selected_x_axis)
 
     # Test show_legend property (from display options)
-    assert isinstance(opts.show_legend, bool)
-    assert opts.show_legend is True
-    log.info("Show legend: %s", opts.show_legend)
+    assert isinstance(settings.show_legend, bool)
+    assert settings.show_legend is True
+    log.info("Show legend: %s", settings.show_legend)
 
     # Test show_table property (from display options)
-    assert isinstance(opts.show_table, bool)
-    assert opts.show_table is False
-    log.info("Show table: %s", opts.show_table)
+    assert isinstance(settings.show_table, bool)
+    assert settings.show_table is False
+    log.info("Show table: %s", settings.show_table)
 
     # Test split_direction property (from display options)
-    assert opts.split_direction == "vertical"
-    log.info("Split direction: %s", opts.split_direction)
+    assert settings.split_direction == "vertical"
+    log.info("Split direction: %s", settings.split_direction)
 
     # Test modifying active_series
     if len(series_names) >= 2:
         new_series = [series_names[0], series_names[1]]
-        with viewport.update_display_options() as opts:
+        with viewport.update_settings() as opts:
             opts.active_series = new_series
-        assert viewport.display_options.active_series == new_series
+        assert viewport.settings.active_series == new_series
 
     # Test modifying active_charts
     if len(chart_names) >= 1:
-        with viewport.update_display_options() as opts:
+        with viewport.update_settings() as opts:
             opts.active_charts = [chart_names[0]]
-        assert viewport.display_options.active_charts == [chart_names[0]]
+        assert viewport.settings.active_charts == [chart_names[0]]
 
     # Test toggling legend visibility
-    opts = viewport.display_options
+    opts = viewport.settings
     opts.show_legend = False
-    assert viewport.display_options.show_legend is False
+    assert viewport.settings.show_legend is False
 
-    opts = viewport.display_options
+    opts = viewport.settings
     opts.show_legend = True
-    assert viewport.display_options.show_legend is True
+    assert viewport.settings.show_legend is True
 
     # Test toggling table visibility
-    opts = viewport.display_options
+    opts = viewport.settings
     opts.show_table = True
-    assert viewport.display_options.show_table is True
+    assert viewport.settings.show_table is True
 
-    opts = viewport.display_options
+    opts = viewport.settings
     opts.show_table = False
-    assert viewport.display_options.show_table is False
+    assert viewport.settings.show_table is False
 
     # Test split_direction
-    opts = viewport.display_options
+    opts = viewport.settings
     opts.split_direction = "horizontal"
-    assert viewport.display_options.split_direction == "horizontal"
+    assert viewport.settings.split_direction == "horizontal"
 
-    opts = viewport.display_options
+    opts = viewport.settings
     opts.split_direction = "vertical"
-    assert viewport.display_options.split_direction == "vertical"
+    assert viewport.settings.split_direction == "vertical"
 
     # Cleanup
     rx.delete_workspace(workspace)
 
 
-def test_convergence_trackers_viewport_metadata(rx, cp_transient_solution):
-    """Test ConvergenceTrackersViewportMetadata."""
+def test_convergence_trackers_viewport_settings(rx, cp_transient_solution):
+    """Test ConvergenceTrackersViewportSettings."""
 
     # Create workspace
-    workspace = rx.create_workspace("Test Convergence Trackers Metadata")
+    workspace = rx.create_workspace("Test Convergence Trackers Settings")
 
     # find a convergence trackers view from the solution
     views = cp_transient_solution.views
@@ -618,24 +721,24 @@ def test_convergence_trackers_viewport_metadata(rx, cp_transient_solution):
     assert conv_view is not None
 
     viewport = workspace.assign_view(view=conv_view, wait=True)
-    meta = viewport.metadata
-    log.info("convergence trackers metadata: %s", meta)
+    settings = viewport.settings
+    log.info("convergence trackers settings: %s", settings)
 
-    assert meta is not None
-    assert isinstance(meta, ConvergenceTrackersViewportMetadata)
+    assert settings is not None
+    assert isinstance(settings, ConvergenceTrackersViewportSettings)
 
-    assert viewport.display_options.selected_tracker_name == "Force Convergence"
+    assert settings.selected_tracker_name == "Force Convergence"
 
-    with viewport.update_display_options() as opts:
+    with viewport.update_settings() as opts:
         opts.selected_tracker_name = "Displacement Convergence"
-    assert viewport.display_options.selected_tracker_name == "Displacement Convergence"
+    assert viewport.settings.selected_tracker_name == "Displacement Convergence"
 
 
-def test_contact_trackers_viewport_metadata(rx, cp_transient_solution):
-    """Test ContactTrackersViewportMetadata."""
+def test_contact_trackers_viewport_settings(rx, cp_transient_solution):
+    """Test ContactTrackersViewportSettings."""
 
     # Create workspace
-    workspace = rx.create_workspace("Test Contact Trackers Metadata")
+    workspace = rx.create_workspace("Test Contact Trackers Settings")
 
     # find a contact trackers view from the solution
     views = cp_transient_solution.views
@@ -644,22 +747,26 @@ def test_contact_trackers_viewport_metadata(rx, cp_transient_solution):
 
     viewport = workspace.assign_view(view=contact_view, wait=True)
 
-    meta = viewport.metadata
-    log.info("contact trackers metadata: %s", meta)
+    settings = viewport.settings
+    log.info("contact trackers settings: %s", settings)
 
-    assert meta is not None
-    assert isinstance(meta, ContactTrackersViewportMetadata)
+    assert settings is not None
+    assert isinstance(settings, ContactTrackersViewportSettings)
 
-    opts = viewport.display_options
+    setting_options = viewport.setting_options
+    log.info("contact trackers setting options: %s", setting_options)
 
-    # Test inherited chart display options
-    assert isinstance(opts.show_legend, bool)
-    assert isinstance(opts.show_table, bool)
-    assert opts.split_direction in ["horizontal", "vertical"]
+    assert setting_options is not None
+    assert isinstance(setting_options, ContactTrackersViewportSettingOptions)
+
+    # Test inherited chart settings
+    assert isinstance(settings.show_legend, bool)
+    assert isinstance(settings.show_table, bool)
+    assert settings.split_direction in ["horizontal", "vertical"]
 
     # Test series_names property (read-only, from metadata)
-    assert isinstance(meta.series_names, list)
-    assert len(meta.series_names) > 0
+    assert isinstance(setting_options.active_series, list)
+    assert len(setting_options.active_series) > 0
 
     # Check specific expected series names from contact tracking
     expected_series = [
@@ -668,26 +775,26 @@ def test_contact_trackers_viewport_metadata(rx, cp_transient_solution):
         "Max. Friction Stress",
     ]
     for expected in expected_series:
-        assert expected in meta.series_names, f"Expected series '{expected}' not found"
+        assert expected in setting_options.active_series, f"Expected series '{expected}' not found"
 
-    log.info("Available series: %s", meta.series_names[:5])  # Log first 5
+    log.info("Available series: %s", setting_options.active_series[:5])  # Log first 5
 
     # Test active_series property (from display options)
-    active_series = opts.active_series
+    active_series = settings.active_series
     assert isinstance(active_series, list)
     assert len(active_series) > 0
-    assert all(s in meta.series_names for s in active_series)
+    assert all(s in setting_options.active_series for s in active_series)
     log.info("Active series: %s", active_series)
 
     # Test toggling active series
-    if len(meta.series_names) >= 2:
-        new_series = [meta.series_names[0], meta.series_names[1]]
-        opts = viewport.display_options
-        opts.active_series = new_series
-        assert viewport.display_options.active_series == new_series
+    if len(setting_options.active_series) >= 2:
+        new_series = [setting_options.active_series[0], setting_options.active_series[1]]
+        settings = viewport.settings
+        settings.active_series = new_series
+        assert viewport.settings.active_series == new_series
 
     # Test contact tracker names (read-only, from metadata)
-    contact_trackers = meta.contact_tracker_names
+    contact_trackers = setting_options.active_contact_trackers
     assert isinstance(contact_trackers, list)
     assert len(contact_trackers) >= 2, "Expected at least 2 contact tracker pairs"
 
@@ -699,21 +806,21 @@ def test_contact_trackers_viewport_metadata(rx, cp_transient_solution):
     log.info("Contact trackers: %s", contact_trackers)
 
     # Test toggling legend visibility
-    original_legend = opts.show_legend
-    opts = viewport.display_options
-    opts.show_legend = not original_legend
-    assert viewport.display_options.show_legend == (not original_legend)
+    original_legend = settings.show_legend
+    settings = viewport.settings
+    settings.show_legend = not original_legend
+    assert viewport.settings.show_legend == (not original_legend)
 
     # Test toggling table visibility
-    original_table = viewport.display_options.show_table
-    opts = viewport.display_options
+    original_table = viewport.settings.show_table
+    opts = viewport.settings
     opts.show_table = not original_table
-    assert viewport.display_options.show_table == (not original_table)
+    assert viewport.settings.show_table == (not original_table)
 
     # Test split direction
-    opts = viewport.display_options
+    opts = viewport.settings
     opts.split_direction = "horizontal"
-    assert viewport.display_options.split_direction == "horizontal"
+    assert viewport.settings.split_direction == "horizontal"
 
     # Cleanup
     rx.delete_workspace(workspace)
@@ -734,7 +841,7 @@ def test_camera_position_snapshots(rx, multiple_connections_solution, snapshot, 
     viewport = workspace.assign_view(view=view, wait=True)
 
     # Get initial camera zoom/translation to preserve them
-    initial_cam = viewport.display_options.camera_position
+    initial_cam = viewport.settings.camera_position
     initial_zoom = initial_cam.zoom if initial_cam is not None else 1.0
     initial_translation = initial_cam.translation if initial_cam is not None else (0.0, 0.0, 0.0)
 
@@ -750,7 +857,7 @@ def test_camera_position_snapshots(rx, multiple_connections_solution, snapshot, 
     _ = viewport.take_snapshot(settings=snapshot_settings)
     for name, cam in camera_tests.items():
         # Apply camera with preserved zoom/translation
-        opts = viewport.display_options
+        opts = viewport.settings
         opts.camera_position = cam.with_zoom(initial_zoom).with_translation(*initial_translation)
 
         # Take snapshot with clean settings
@@ -764,8 +871,8 @@ def test_camera_position_snapshots(rx, multiple_connections_solution, snapshot, 
     rx.delete_workspace(workspace)
 
 
-@pytest.mark.images
-@pytest.mark.flaky(reruns=1, reruns_delay=1)
+# @pytest.mark.images
+# @pytest.mark.flaky(reruns=1, reruns_delay=1)
 def test_result_display_options_snapshots(
     rx, cp_transient_solution, snapshot, snapshot_settings_with_legend
 ):
@@ -791,42 +898,42 @@ def test_result_display_options_snapshots(
     workspace = rx.create_workspace("Test Result Display Options")
     viewport = workspace.assign_view(view=view, wait=True)
 
-    opts = viewport.display_options
-    assert isinstance(opts, PlotDisplayOptions)
+    opts = viewport.settings
+    assert isinstance(opts, PlotViewportSettings)
 
-    opts.result_options = ResultDisplayOptions(set_id=last_tf.set_id)
+    opts.result_settings = PlotResultSettings(set_id=last_tf.set_id)
 
     _ = viewport.take_snapshot(settings=snapshot_settings_with_legend)
 
     # Different component indices produce visually distinct color distributions
     for name, component_name in [("component_x", "X"), ("component_y", "Y"), ("component_z", "Z")]:
-        with viewport.update_display_options() as opts:
-            opts.result_options.component_name = component_name
-            opts.result_options.legend_range = None  # reset legend range to auto for new component
-        assert opts.result_options.component_name == component_name
+        with viewport.update_settings() as opts:
+            opts.result_settings.component_name = component_name
+            opts.result_settings.legend_range = None  # reset legend range to auto for new component
+        assert opts.result_settings.component_name == component_name
         snapshot_data = viewport.take_snapshot(settings=snapshot_settings_with_legend)
         assert snapshot_data == snapshot(name=name)
 
     # reset some options for further tests
 
-    opts = viewport.display_options
-    assert isinstance(opts, PlotDisplayOptions)
-    opts.result_options = ResultDisplayOptions(component_name="Magnitude")
-    assert viewport.display_options.result_options.component_name == "Magnitude"
+    opts = viewport.settings
+    assert isinstance(opts, PlotViewportSettings)
+    opts.result_settings = PlotResultSettings(component_name="Magnitude")
+    assert viewport.settings.result_settings.component_name == "Magnitude"
 
     # Deformation scale changes the shape of the deformed mesh
     for name, scale in [("deformation_1x", 1.0), ("deformation_5x", 5.0)]:
-        with viewport.update_display_options() as opts:
-            opts.result_options.deformation_scale = scale
+        with viewport.update_settings() as opts:
+            opts.result_settings.deformation_scale = scale
         snapshot_data = viewport.take_snapshot(settings=snapshot_settings_with_legend)
         assert snapshot_data == snapshot(name=name)
 
     # reset some options for further tests
-    opts = viewport.display_options
-    opts.result_options.deformation_scale = 1
+    opts = viewport.settings
+    opts.result_settings.deformation_scale = 1
 
     # use_global_min_max affects how the legend range is computed
-    opts.result_options = ResultDisplayOptions(
+    opts.result_settings = PlotResultSettings(
         set_id=first_tf.set_id,
         deformation_scale=1.0,
         use_global_min_max=False,
@@ -837,16 +944,16 @@ def test_result_display_options_snapshots(
     )
 
     # legend_range pins the color scale to a fixed interval
-    opts = viewport.display_options
-    opts.result_options = ResultDisplayOptions(
+    opts = viewport.settings
+    opts.result_settings = PlotResultSettings(
         set_id=last_tf.set_id,
         deformation_scale=1.0,
         use_global_min_max=False,
         legend_range=(0.0, 5e-5),
     )
 
-    assert viewport.display_options.result_options.legend_range[0] == 0.0
-    assert viewport.display_options.result_options.legend_range[1] == 5e-5
+    assert viewport.settings.result_settings.legend_range[0] == 0.0
+    assert viewport.settings.result_settings.legend_range[1] == 5e-5
 
     assert snapshot(name="legend_range_fixed") == viewport.take_snapshot(
         settings=snapshot_settings_with_legend
@@ -917,9 +1024,9 @@ def test_visible_bodies_option(rx, multiple_connections_solution, snapshot, snap
             solid186_body_ids.append(body.id)
 
     # Test visible_bodies property
-    opts = viewport.display_options
+    opts = viewport.settings
     opts.visible_bodies = solid186_body_ids
-    assert viewport.display_options.visible_bodies == solid186_body_ids
+    assert viewport.settings.visible_bodies == solid186_body_ids
 
     # image comparison
     snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
