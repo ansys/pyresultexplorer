@@ -1010,30 +1010,6 @@ class ChartViewportSettings(BaseChartViewportSettings):
         return []
 
     @property
-    def active_charts(self) -> list[str]:
-        """List of currently active charts."""
-        if "activeCharts" in self._pb_obj:
-            return list(self._pb_obj["activeCharts"])
-        return []
-
-    @active_charts.setter
-    def active_charts(self, names: list[str]) -> None:
-        """Set the active charts.
-
-        Parameters
-        ----------
-        names : list[str]
-            List of chart names to make active.
-
-        """
-        for name in names:
-            if name not in self.chart_names:
-                raise ValueError(f"Invalid chart name: {name}")
-        self._pb_obj["activeCharts"] = names
-        self._mark_dirty("activeCharts")
-        self._apply()
-
-    @property
     def selected_x_axis(self) -> str:
         """Name of the currently selected x-axis series."""
         if "xAxisSeries" in self._pb_obj:
@@ -1249,10 +1225,7 @@ class BaseChartViewportSettingOptions(ViewportSettingOptions):
 class ChartViewportSettingOptions(BaseChartViewportSettingOptions):
     """Provides available values for chart viewport settings."""
 
-    @property
-    def active_charts(self) -> list[str]:
-        """Available active charts."""
-        return self.get("activeCharts", [])
+    pass
 
 
 class ContactTrackersViewportSettingOptions(BaseChartViewportSettingOptions):

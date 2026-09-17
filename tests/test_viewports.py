@@ -576,10 +576,10 @@ def test_mesh_viewport_named_selection_visibility(
     rx.delete_workspace(workspace)
 
 
-def test_chart_viewport_metadata(rx, cp_transient_solution):
-    """Test ChartViewportMetadata."""
+def test_chart_viewport_settings(rx, cp_transient_solution):
+    """Test ChartViewportSettings."""
     # Create workspace
-    workspace = rx.create_workspace("Test Chart Metadata")
+    workspace = rx.create_workspace("Test Chart Settings")
 
     # Get any viewport for chart metadata testing
     viewports = workspace.viewports
@@ -605,23 +605,14 @@ def test_chart_viewport_metadata(rx, cp_transient_solution):
 
     log.info("Viewport setting options: %s", viewport._pb.setting_options)
 
-    # Test chart_names property (read-only, from metadata)
-    chart_names = setting_options.active_charts
-    assert isinstance(chart_names, list)
-    assert len(chart_names) >= 1
-    assert "Min/Max Displacement Over Time" in chart_names
-    log.info("Available charts: %s", chart_names)
+    # Test setting_options doesn't have an active_charts property
+    assert not hasattr(setting_options, "active_charts")
 
-    # Test active_charts property (from display options)
-    active_charts = settings.active_charts
-    assert isinstance(active_charts, list)
-    assert len(active_charts) > 0
-    assert all(c in chart_names for c in active_charts)
-    assert "Min/Max Displacement Over Time" in active_charts
-    log.info("Active charts: %s", active_charts)
+    # Test settings doesn't have an active_charts property
+    assert not hasattr(settings, "active_charts")
 
     # Test series_names property (read-only, from metadata)
-    series_names = setting_options.series_names
+    series_names = setting_options.active_series
     assert isinstance(series_names, list)
     assert len(series_names) >= 4
     expected_series = [
@@ -671,12 +662,6 @@ def test_chart_viewport_metadata(rx, cp_transient_solution):
         with viewport.update_settings() as opts:
             opts.active_series = new_series
         assert viewport.settings.active_series == new_series
-
-    # Test modifying active_charts
-    if len(chart_names) >= 1:
-        with viewport.update_settings() as opts:
-            opts.active_charts = [chart_names[0]]
-        assert viewport.settings.active_charts == [chart_names[0]]
 
     # Test toggling legend visibility
     opts = viewport.settings

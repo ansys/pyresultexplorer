@@ -119,7 +119,7 @@ contact_opts = contact_viewport.settings
 contact_opts.active_contact_trackers = trackers
 
 # Show available series
-series = contact_meta.series_names
+series = contact_meta.active_series
 print(f"  Available data series: {len(series)}")
 for s in series:
     print(f"    - {s}")
