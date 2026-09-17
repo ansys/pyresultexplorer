@@ -133,7 +133,7 @@ contact_viewport.save_snapshot(
 # ----------------------------
 # Configure active series and other settings for the contact viewport.
 contact_opts.active_series = ["Max. Normal Stiffness"]
-print(f"\n  Active series set to: {contact_opts.active_series}")
+print(f"\n  Active series set to: {contact_opts.active_series.value}")
 
 with contact_viewport.update_settings() as contact_opts:
     contact_opts.show_legend = True

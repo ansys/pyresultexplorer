@@ -145,7 +145,12 @@ You can create new viewports by splitting existing ones in different directions:
 Customizing viewport settings
 ------------------------------------
 
-Each viewport has settings that you can customize independently:
+Each viewport has settings that you can customize independently. Every
+setting is exposed as a single attribute on
+:attr:`Viewport.settings <ansys.result_explorer.core.Viewport.settings>`.
+The attribute behaves like its underlying value (a string, number, list, or
+boolean) while also carrying the values that the server currently allows
+for it:
 
 .. code-block:: python
 
@@ -157,40 +162,45 @@ Each viewport has settings that you can customize independently:
     opts.show_min_max_labels = True
 
     # Set deformation scale and component
-    opts.result_settings.deformation_scale = 2.0
-    opts.result_settings.component_name = "X"
+    opts.deformation_scale = 2.0
+    opts.component_name = "X"
 
     # Batch multiple changes efficiently
     with viewport.update_settings() as opts:
         opts.show_mesh_edges = True
         opts.explode = True
-        opts.result_settings.deformation_scale = 3.0
+        opts.deformation_scale = 3.0
 
-Settings are the actual values you want to display or configure.
-Setting options are the available/allowed values for those settings, which are determined
-dynamically by the server based on the loaded result data.
-For example, ``viewport.setting_options.get("componentNames")`` returns the component names
-available in the result, while ``viewport.settings.result_settings.component_name`` is the
-currently active component.
+Every setting value also exposes an ``options`` attribute: the list of
+values that the app currently allows for that setting, or ``None`` if the
+setting has no discrete choices.
+
+.. code-block:: python
+
+    opts.component_name  # "X" -- usable directly as a string
+    opts.component_name.options  # ["Magnitude", "X", "Y", "Z"]
+
+    opts.explode_scale_factor.options  # None -- no discrete choices
 
 Discovering available values
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Before setting a value, you can check what options are available:
+Before setting a value, check what the server currently allows through the
+``options`` attribute of the corresponding setting:
 
 .. code-block:: python
 
     # Discover available components for the current result
-    available_components = viewport.setting_options.get("componentNames", [])
+    available_components = viewport.settings.component_name.options or []
     print(f"Available: {available_components}")
 
     # Discover available series in a chart
-    available_series = viewport.setting_options.get("seriesNames", [])
+    available_series = viewport.settings.active_series.options or []
     print(f"Available series: {available_series}")
 
     # Set to a valid value
     if "Z" in available_components:
-        viewport.settings.result_settings.component_name = "Z"
+        viewport.settings.component_name = "Z"
 
 
 Direct commit vs. batch update of viewport settings
@@ -207,15 +217,15 @@ efficient:
 
     # Inefficient: 3 API calls
     opts = viewport.settings
-    opts.show_mesh_edges = True              # API call 1
-    opts.explode = True                # API call 2
-    opts.result_settings.set_id = 3    # API call 3
+    opts.show_mesh_edges = True   # API call 1
+    opts.explode = True           # API call 2
+    opts.set_id = 3               # API call 3
 
     # Efficient: 1 API call
     with viewport.update_settings() as opts:
         opts.show_mesh_edges = True
         opts.explode = True
-        opts.result_settings.set_id = 3
+        opts.set_id = 3
 
 
 Saving viewport snapshots

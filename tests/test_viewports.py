@@ -242,7 +242,7 @@ def test_plot_viewport_settings_from_raw_settings_with_empty_values():
 
     assert opts.visible_bodies == []
     assert opts.expanded_groups == []
-    assert opts.deformation_scale.value is None
+    assert opts.deformation_scale is None
     assert opts.set_id == 1
     assert opts.component_name == "Magnitude"
     assert opts.legend_range == (0.0, 0.00011873363109771162)

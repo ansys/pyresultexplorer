@@ -248,10 +248,13 @@ def _wrap_setting_value(value: Any, options: list[Any] | None) -> Any:
 
     The result stays usable as the original type wherever possible (for
     example, a wrapped string still supports string methods and equality).
-    ``bool`` and ``None`` can't be subclassed, so they get a small dedicated
-    wrapper instead.
+    ``bool`` can't be subclassed, so it gets a small dedicated wrapper
+    instead. An unset (``None``) value is returned as-is so ``is None``
+    checks on optional settings keep working.
     """
-    if value is None or isinstance(value, bool):
+    if value is None:
+        return None
+    if isinstance(value, bool):
         return _OpaqueSettingValue(value, options)
     try:
         # Mixin listed first so its __repr__/__str__ take priority over the

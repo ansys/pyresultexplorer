@@ -128,13 +128,13 @@ print(f"\nViewport assigned: {viewport.id}")
 # %%
 # Inspect available options and current settings
 # ------------------------------------------------
-# Read the available series and chart names from setting_options, and read
-# current values from settings.
+# Read current values from settings. Wrapped values also expose their
+# available choices via ``.options`` (for example, ``opts.active_series.options``).
 opts = viewport.settings
 
 print(f"\nAvailable series: {opts.series_names}")
 print(f"Available charts: {opts.chart_names}")
-print(f"Active series:    {opts.active_series}")
+print(f"Active series:    {opts.active_series.value}")
 
 # %%
 # Customize viewport settings
@@ -150,7 +150,7 @@ opts.show_table = True
 # and contact pressure are hidden.
 if opts.series_names:
     opts.active_series = opts.series_names[1:2]
-    print(f"\nActive series (stress only): {opts.active_series}")
+    print(f"\nActive series (stress only): {opts.active_series.value}")
 
 viewport.save_snapshot(
     file_path="030-chart-stress-only.png",
