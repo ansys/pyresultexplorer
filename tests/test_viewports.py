@@ -31,6 +31,15 @@ from ansys.result_explorer.core import (
     models,
 )
 from ansys.result_explorer.core.models import ViewportDirection, ViewType
+from ansys.result_explorer.core.objects import (
+    Component,
+    Field,
+    Location,
+    PlotDefinition,
+    ResultFieldName,
+    ResultType,
+    ShellPosition,
+)
 from ansys.result_explorer.core.objects.viewport import (
     PlotViewportSettings,
     Viewport,
@@ -402,8 +411,8 @@ def test_viewport_hidden(rx):
     rx.delete_workspace(workspace)
 
 
-def test_plot_viewport_metadata(rx, multiple_connections_solution):
-    """Test PlotViewportMetadata properties."""
+def test_plot_viewport_settings(rx, multiple_connections_solution):
+    """Test PlotViewportSettings properties."""
     sol = multiple_connections_solution
 
     # Find a displacement view (typically a plot view)
@@ -412,11 +421,8 @@ def test_plot_viewport_metadata(rx, multiple_connections_solution):
     assert view is not None
 
     # Create workspace and assign view
-    workspace = rx.create_workspace("Test Plot Metadata")
+    workspace = rx.create_workspace("Test Plot Viewport Settings")
     viewport = workspace.assign_view(view=view, wait=True)
-
-    meta = viewport.metadata
-    log.info("plot metadata: %s", meta)
 
     # Test show_mesh via settings
     opts = viewport.settings
@@ -444,7 +450,7 @@ def test_logs_viewport_settings(rx, cp_transient_solution):
     """Test LogsViewportSettings."""
 
     # Create workspace
-    workspace = rx.create_workspace("Test Logs Metadata")
+    workspace = rx.create_workspace("Test Logs Settings")
 
     # find a logs view from the solution
     views = cp_transient_solution.views
@@ -476,7 +482,7 @@ def test_mesh_viewport_settings(rx, multiple_connections_solution):
     assert mesh_view is not None
 
     # Create workspace and assign mesh view
-    workspace = rx.create_workspace("Test Mesh Metadata")
+    workspace = rx.create_workspace("Test Mesh Settings")
     viewport = workspace.assign_view(view=mesh_view, wait=True)
 
     log.info("mesh settings: %s", viewport.settings)
@@ -514,7 +520,7 @@ def test_mesh_viewport_settings(rx, multiple_connections_solution):
 def test_mesh_viewport_named_selection_visibility(
     rx, cp_transient_solution, snapshot, snapshot_settings
 ):
-    """Test named selection visibility in MeshViewportMetadata."""
+    """Test named selection visibility in MeshViewportSettings."""
     sol = cp_transient_solution
 
     # Find a mesh view from the solution
@@ -523,7 +529,7 @@ def test_mesh_viewport_named_selection_visibility(
     assert mesh_view is not None
 
     # Create workspace and assign mesh view
-    workspace = rx.create_workspace("Test Mesh Metadata Visibility")
+    workspace = rx.create_workspace("Test Mesh Settings Visibility")
     viewport = workspace.assign_view(view=mesh_view, wait=True)
 
     assert isinstance(viewport.settings, MeshViewportSettings)
@@ -573,7 +579,7 @@ def test_chart_viewport_settings(rx, cp_transient_solution):
     # Create workspace
     workspace = rx.create_workspace("Test Chart Settings")
 
-    # Get any viewport for chart metadata testing
+    # Get any viewport for chart settings testing
     viewports = workspace.viewports
     assert len(viewports) > 0
 
@@ -595,7 +601,7 @@ def test_chart_viewport_settings(rx, cp_transient_solution):
     # Test settings doesn't have an active_charts property
     assert not hasattr(settings, "active_charts")
 
-    # Test series_names property (read-only, from metadata)
+    # Test series_names property (read-only)
     series_names = settings.active_series.options
     assert isinstance(series_names, list)
     assert len(series_names) >= 4
@@ -727,7 +733,7 @@ def test_contact_trackers_viewport_settings(rx, cp_transient_solution):
     assert isinstance(settings.show_table.value, bool)
     assert settings.split_direction in ["horizontal", "vertical"]
 
-    # Test series_names property (read-only, from metadata)
+    # Test series_names property (read-only)
     assert isinstance(settings.active_series.options, list)
     assert len(settings.active_series.options) > 0
 
@@ -756,7 +762,7 @@ def test_contact_trackers_viewport_settings(rx, cp_transient_solution):
         settings.active_series = new_series
         assert viewport.settings.active_series == new_series
 
-    # Test contact tracker names (read-only, from metadata)
+    # Test contact tracker names (read-only)
     contact_trackers = settings.active_contact_trackers.options
     assert isinstance(contact_trackers, list)
     assert len(contact_trackers) >= 2, "Expected at least 2 contact tracker pairs"
@@ -992,6 +998,87 @@ def test_visible_bodies_option(rx, multiple_connections_solution, snapshot, snap
     # image comparison
     snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
     assert snapshot_data == snapshot(name="SOLID186_bodies")
+
+    # Cleanup
+    rx.delete_workspace(workspace)
+
+
+def test_plot_viewport_result_metadata(rx, cp_transient_solution):
+    """Test plot viewport result metadata."""
+
+    sol = cp_transient_solution
+
+    # create a plot with stress and including displacement
+    plot_def = PlotDefinition(
+        result_type=ResultType.stress,
+        location=Location.nodal,
+        name="Stress with disp plot",
+        shell_position=ShellPosition.middle,
+        fields=[
+            Field(ResultFieldName.equivalent_von_mises_stress),
+            Field(ResultFieldName.stress_tensor, [Component.XX, Component.ZZ]),
+        ],
+        include_displacement=True,
+        last_set=False,
+        all_sets=True,
+    )
+
+    plot_view = sol.create_plot(plot_def)
+
+    # Create workspace and assign plot view
+    workspace = rx.create_workspace("Test Plot Viewport Metadata")
+    viewport = workspace.assign_view(view=plot_view, wait=True)
+
+    assert isinstance(viewport.metadata, PlotViewportMetadata)
+
+    assert viewport.metadata.active_result is not None
+
+    results_metadata = viewport.metadata.results
+
+    assert len(results_metadata) == 3
+    assert len(viewport.metadata.available_results) == 3
+
+    log.info(f"available results: {viewport.metadata.available_results}")
+
+    eqv_stress_metadata = next((r for r in results_metadata if "equivalent" in r.name), None)
+    assert eqv_stress_metadata is not None
+
+    assert len(eqv_stress_metadata.sets) == 15
+    assert eqv_stress_metadata.num_components == 1
+    assert eqv_stress_metadata.global_component_extremes[0].min.value == pytest.approx(
+        8.422e5, rel=1e-3
+    )
+    assert eqv_stress_metadata.global_component_extremes[0].max.value == pytest.approx(
+        2.083e9, rel=1e-3
+    )
+
+    stress_metadata = next((r for r in results_metadata if "tensor" in r.name), None)
+    assert stress_metadata is not None
+
+    assert len(stress_metadata.sets) == 15
+    assert stress_metadata.num_components == 2
+
+    stress_set_7 = next((s for s in stress_metadata.sets if s.set_id == 7), None)
+    assert stress_set_7 is not None
+    assert stress_set_7.component_extremes[0].min.value == pytest.approx(-6.866e8, rel=1e-3)
+    assert stress_set_7.component_extremes[0].max.value == pytest.approx(6.257e7, rel=1e-3)
+    assert stress_set_7.component_extremes[0].max.entity_id == 180
+
+    # change the active result using viewport settings and verify the change
+    with viewport.update_settings() as settings:
+        assert isinstance(settings, PlotViewportSettings)
+        settings.result = "displacement"
+        settings.set_id = 12
+        settings.component_name = "Z"
+
+    active_res = viewport.metadata.active_result
+    assert active_res.set_id == 12
+    assert active_res.component_name == "Z"
+    assert active_res.unit == "m"
+    assert active_res.time_frequency == pytest.approx(0.06416, rel=1e-3)
+    assert active_res.min.value == pytest.approx(-2.844e-5, rel=1e-3)
+    assert active_res.max.value == pytest.approx(2.847e-5, rel=1e-3)
+    assert active_res.max.entity_id == 393
 
     # Cleanup
     rx.delete_workspace(workspace)

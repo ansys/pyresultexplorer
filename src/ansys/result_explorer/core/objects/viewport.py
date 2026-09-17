@@ -18,6 +18,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 import json
 from collections.abc import Generator
 from contextlib import contextmanager
@@ -373,20 +374,6 @@ class ViewportMetadata:
         return json.dumps(MessageToDict(self._pb_obj), indent=2)
 
 
-class LegendSettings:
-    """Read-only legend display settings for a plot result.
-
-    Controls colors, range, and discretization.
-    """
-
-    use_global_min_max: bool = PbPropertyReadOnly("useGlobalMinMax")
-    range: list[float] = PbPropertyReadOnly("range")
-
-    def __init__(self, pb_obj):
-        """Initialize legend settings wrapper."""
-        self._pb_obj = pb_obj
-
-
 @dataclass(frozen=True)
 class ResultExtreme:
     """Minimum or maximum extreme of a plot result."""
@@ -428,118 +415,218 @@ class ResultExtreme:
         )
 
 
+@dataclass(frozen=True)
+class ResultExtremes:
+    """Read-only min/max extremes."""
+
+    min: ResultExtreme | None
+    """Minimum extreme of the result set."""
+    max: ResultExtreme | None
+    """Maximum extreme of the result set."""
+
+    @classmethod
+    def _from_pb(cls, pb_obj) -> ResultExtremes:
+        """Build from a protobuf struct object."""
+        return cls(
+            min=ResultExtreme._from_pb(pb_obj[0]) if len(pb_obj) > 0 else None,
+            max=ResultExtreme._from_pb(pb_obj[1]) if len(pb_obj) > 1 else None,
+        )
+
+
+@dataclass(frozen=True)
 class ActiveResult:
-    """Read-only active result currently displayed in a plot viewport."""
+    """Read-only metadata for the active result in a plot viewport."""
 
-    result_name: str = PbPropertyReadOnly("resultName")
-    time_set_index: int = PbPropertyReadOnly("timeSetIndex")
-    component_name: str = PbPropertyReadOnly("componentName")
-    type: str = PbPropertyReadOnly("type")
-    result_index: int = PbPropertyReadOnly("resultIndex")
-    set_id: int = PbPropertyReadOnly("setId")
-    data_array_name: str = PbPropertyReadOnly("dataArrayName")
-    range: list[float] = PbPropertyReadOnly("range")
+    result_name: str
+    """Name of the result."""
 
-    def __init__(self, pb_obj):
-        """Initialize active result wrapper."""
-        self._pb_obj = pb_obj
+    component_name: str
+    """Name of the component."""
 
-    @property
-    def legend(self) -> LegendSettings:
-        """Legend settings for this result."""
-        return LegendSettings(self._pb_obj["legend"])
+    id: str
+    """Identifier for the result set."""
 
-    @property
-    def _extremes(self) -> list[ResultExtreme]:
-        """Min/max extremes of the result."""
-        if "extremes" not in self._pb_obj:
-            return []
-        return [ResultExtreme._from_pb(e) for e in self._pb_obj["extremes"]]
+    set_id: int
+    """Set number."""
 
-    @property
-    def min(self) -> ResultExtreme | None:
-        """Minimum extreme of the result, or None if not available."""
-        extremes = self._extremes
-        if not extremes:
-            return None
-        return min(extremes, key=lambda e: e.value)
+    unit: str
+    """Result unit."""
 
-    @property
-    def max(self) -> ResultExtreme | None:
-        """Maximum extreme of the result, or None if not available."""
-        extremes = self._extremes
-        if not extremes:
-            return None
-        return max(extremes, key=lambda e: e.value)
+    time_frequency: float
+    """Time or frequency associated with the result set."""
+
+    min: ResultExtreme
+    """Minimum extreme of the result set."""
+
+    max: ResultExtreme
+    """Maximum extreme of the result set."""
+
+    def __str__(self) -> str:
+        """Return a string representation of the active result."""
+        s = "\n"
+        s += json.dumps(dataclasses.asdict(self), indent=2)
+        s += "\n"
+        return s
+
+
+@dataclass(frozen=True)
+class ResultSetMetadata:
+    """Read-only result set metadata for a plot view."""
+
+    id: str
+    """Identifier for the result set."""
+
+    set_id: int
+    """Set number."""
+
+    time_frequency: float
+    """Time or frequency associated with the result set."""
+
+    component_extremes: list[ResultExtremes]
+    """Min/max extremes for each component in the result set."""
+
+    magnitude_extremes: list[ResultExtremes]
+    """Min/max extremes for the magnitude of the result set."""
+
+    @classmethod
+    def _from_pb(cls, pb_obj) -> ResultSetMetadata:
+        """Build from a protobuf struct object."""
+        return cls(
+            id=pb_obj["id"],
+            set_id=int(pb_obj["setId"]),
+            time_frequency=float(pb_obj["timeFrequency"]),
+            component_extremes=[ResultExtremes._from_pb(e) for e in pb_obj["componentExtremes"]],
+            magnitude_extremes=ResultExtremes._from_pb(pb_obj["magnitudeExtremes"]),
+        )
+
+    def __str__(self) -> str:
+        """Return a string representation of the result set metadata."""
+        s = "\n"
+        s += json.dumps(dataclasses.asdict(self), indent=2)
+        s += "\n"
+        return s
+
+    def __repr__(self) -> str:
+        """Return a string representation of the result set metadata."""
+        return self.__str__()
+
+
+@dataclass(frozen=True)
+class ResultMetadata:
+    """Read-only result metadata for a plot view."""
+
+    name: str
+    """Result name."""
+    type: str
+    """Result type."""
+    unit: str
+    """Result unit."""
+    num_components: int
+    """Number of components in the result."""
+    component_names: list[str]
+    """Names of the components in the result."""
+    sets: list[ResultSetMetadata]
+    """List of result sets associated with the result."""
+    global_component_extremes: list[ResultExtremes]
+    """Global (over all result sets) min/max extremes for each component in the result."""
+    global_magnitude_extremes: list[ResultExtremes]
+    """Global (over all result sets) min/max extremes for the magnitude of the result."""
+
+    @classmethod
+    def _from_pb(cls, pb_obj) -> ResultMetadata:
+        """Build from a protobuf struct object."""
+        return cls(
+            name=pb_obj["name"],
+            type=pb_obj["type"],
+            unit=pb_obj["unit"],
+            num_components=int(pb_obj["components"]),
+            component_names=list(pb_obj["componentNames"]),
+            sets=[ResultSetMetadata._from_pb(s) for s in pb_obj["sets"]],
+            global_component_extremes=[
+                ResultExtremes._from_pb(e) for e in pb_obj["componentExtremes"]
+            ],
+            global_magnitude_extremes=ResultExtremes._from_pb(pb_obj["magnitudeExtremes"]),
+        )
+
+    def __str__(self) -> str:
+        """Return a string representation of the result metadata."""
+        s = "\n"
+        s += json.dumps(dataclasses.asdict(self), indent=2)
+        s += "\n"
+        return s
+
+    def __repr__(self) -> str:
+        """Return a string representation of the result metadata."""
+        return self.__str__()
 
 
 class PlotViewportMetadata(ViewportMetadata):
     """Read-only metadata specific to plot viewports."""
 
     @property
+    def results(self) -> list[ResultMetadata]:
+        """List of results metadata available in this plot view."""
+        if "resultMetadata" not in self._pb_obj:
+            return []
+        return [ResultMetadata._from_pb(r) for r in self._pb_obj["resultMetadata"]]
+
+    @property
+    def available_results(self) -> list[str]:
+        """List of available result names in this plot view."""
+        if "resultMetadata" not in self._pb_obj:
+            return []
+        return [r["name"] for r in self._pb_obj["resultMetadata"]]
+
+    @property
     def active_result(self) -> ActiveResult | None:
         """Active result currently displayed, or None if not set."""
-        if "activeResult" not in self._pb_obj:
-            return self._active_result_from_result_metadata()
-        return ActiveResult(self._pb_obj["activeResult"])
+        return self._active_result_from_results_metadata()
 
-    def _active_result_from_result_metadata(self) -> ActiveResult | None:
+    def _active_result_from_results_metadata(self) -> ActiveResult | None:
         """Build the active result from result metadata and settings."""
         if "resultMetadata" not in self._pb_obj:
             return None
 
-        result_metadata = MessageToDict(self._pb_obj)["resultMetadata"]
+        results_metadata = self.results
         result_name = self._settings.get("result")
-        result_index = 0
-        result_data = None
-        for index, candidate in enumerate(result_metadata):
-            if result_name is None or candidate.get("name") == result_name:
-                result_index = index
+        result_data: ResultMetadata | None = None
+        for _, candidate in enumerate(results_metadata):
+            if result_name is None or candidate.name == result_name:
                 result_data = candidate
                 break
         if result_data is None:
             return None
 
         set_id = self._settings.get("timeFrequencySetId")
-        component_name = self._settings.get("componentName", "Magnitude")
-        component_names = result_data.get("componentNames", [])
-        extremes_source = result_data
-        extremes_key = "magnitudeExtremes"
-        if component_name != "Magnitude":
-            component_extremes = extremes_source.get("componentExtremes")
-            if component_name not in component_names or component_extremes is None:
-                extremes = []
-            else:
-                extremes = component_extremes[component_names.index(component_name)]
-        else:
-            extremes = extremes_source.get(extremes_key, [])
+        if set_id is None:
+            raise ValueError("timeFrequencySetId is not set in viewport settings.")
+        set_id = int(set_id)
 
-        legend_range = self._legend_range(extremes)
-        legend = {"useGlobalMinMax": self._settings.get("legendUseGlobalMinMax")}
-        if legend_range is not None:
-            legend["range"] = legend_range
+        component_name = self._settings.get("componentName", "Magnitude")
+        # find result set
+        result_set = next((s for s in result_data.sets if s.set_id == set_id), None)
+        if result_set is None:
+            raise ValueError(f"Result set with ID {set_id} not found in result metadata.")
+
+        component_index = next(
+            (i for i, name in enumerate(result_data.component_names) if name == component_name),
+            None,
+        )
+        if component_index is None:
+            raise ValueError(f"Component '{component_name}' not found in result metadata.")
+
+        extremes = result_set.component_extremes[component_index]
 
         return ActiveResult(
-            {
-                "resultName": result_data.get("name"),
-                "type": result_data.get("type"),
-                "resultIndex": result_index,
-                "setId": int(set_id) if set_id is not None else None,
-                "componentName": component_name,
-                "dataArrayName": result_data.get("name"),
-                "range": legend_range if legend_range is not None else [],
-                "legend": legend,
-                "extremes": extremes,
-            }
+            result_name=result_data.name,
+            id=result_set.id,
+            set_id=set_id,
+            unit=result_data.unit,
+            time_frequency=result_set.time_frequency,
+            component_name=component_name,
+            min=extremes.min,
+            max=extremes.max,
         )
-
-    @staticmethod
-    def _legend_range(extremes) -> list[float] | None:
-        """Build the scalar range from min/max extremes."""
-        values = [extreme.get("value", 0.0) for extreme in extremes]
-        if not values:
-            return None
-        return [min(values), max(values)]
 
 
 # ---------------------------------------------------------------------------
