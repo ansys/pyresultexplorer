@@ -68,7 +68,7 @@ print(f"Using view: {view.name}")
 
 print("Assigning view to viewport...")
 viewport = workspace.assign_view(view=view, wait=True)
-viewport.settings.show_mesh = True
+viewport.settings.show_mesh_edges = True
 print(f"Viewport ready: {viewport}")
 viewport.save_snapshot(
     file_path="012-camera-position-initial.png", settings=get_example_snapshot_settings()

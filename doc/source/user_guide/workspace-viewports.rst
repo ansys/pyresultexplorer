@@ -153,7 +153,7 @@ Each viewport has settings that you can customize independently:
     opts = viewport.settings
 
     # For plot viewports, customize visualization settings
-    opts.show_mesh = True
+    opts.show_mesh_edges = True
     opts.show_min_max_labels = True
 
     # Set deformation scale and component
@@ -162,7 +162,7 @@ Each viewport has settings that you can customize independently:
 
     # Batch multiple changes efficiently
     with viewport.update_settings() as opts:
-        opts.show_mesh = True
+        opts.show_mesh_edges = True
         opts.explode = True
         opts.result_settings.deformation_scale = 3.0
 
@@ -198,7 +198,7 @@ Direct commit vs. batch update of viewport settings
 
 
 When you assign a setting directly
-(for example, ``opts.show_mesh = True``), it immediately commits the change
+(for example, ``opts.show_mesh_edges = True``), it immediately commits the change
 to the app. For multiple changes, use the :meth:`viewport.update_settings() <ansys.result_explorer.core.Viewport.update_settings>`
 context manager to batch all updates into a single API call, which is more
 efficient:
@@ -207,13 +207,13 @@ efficient:
 
     # Inefficient: 3 API calls
     opts = viewport.settings
-    opts.show_mesh = True              # API call 1
+    opts.show_mesh_edges = True              # API call 1
     opts.explode = True                # API call 2
     opts.result_settings.set_id = 3    # API call 3
 
     # Efficient: 1 API call
     with viewport.update_settings() as opts:
-        opts.show_mesh = True
+        opts.show_mesh_edges = True
         opts.explode = True
         opts.result_settings.set_id = 3
 

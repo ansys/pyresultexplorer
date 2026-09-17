@@ -246,7 +246,7 @@ print(f"Created user-defined above-threshold plot: '{ud_plot.name}'")
 viewport = workspace.assign_view(view=ud_plot, wait=True)
 
 with viewport.update_settings() as opts:
-    opts.show_mesh = True
+    opts.show_mesh_edges = True
     opts.show_min_max_labels = True
 
 viewport.save_snapshot(

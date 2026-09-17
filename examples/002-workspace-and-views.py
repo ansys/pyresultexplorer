@@ -180,7 +180,7 @@ workspace.exit_fullscreen()
 # Toggle mesh edges and enable minimum/maximum labels.
 print("Customizing viewport settings...")
 with viewport.update_settings() as opts:
-    opts.show_mesh = not opts.show_mesh
+    opts.show_mesh_edges = not opts.show_mesh_edges
     opts.show_min_max_labels = True
 
 # %%

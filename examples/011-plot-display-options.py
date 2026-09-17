@@ -106,7 +106,7 @@ with disp_viewport.update_settings() as disp_opts:
     disp_opts.result_settings.component_name = "X"
     disp_opts.result_settings.deformation_scale = 2
     disp_opts.result_settings.legend_range = None  # auto-range based on current component values
-    disp_opts.show_mesh = True
+    disp_opts.show_mesh_edges = True
 
 # Save thumbnail image
 disp_viewport.save_snapshot(
