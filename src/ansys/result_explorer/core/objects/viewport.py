@@ -563,7 +563,7 @@ class ViewportSettings:
         Parameters
         ----------
         pb_obj : dict-like
-            Protobuf Struct for metadata.
+            Protobuf Struct for settings.
         client : Client
             gRPC client for server communication.
         solution_id : str, optional
@@ -579,7 +579,6 @@ class ViewportSettings:
         self._solution_id = solution_id
         self._viewport_id = viewport_id
         self._viewport = viewport
-        self._metadata = None
         self._setting_options: dict[str, Any] = {}
         self._batch_mode = False
 
@@ -1161,6 +1160,13 @@ class Viewport[TSettings: ViewportSettings](BaseEntity[models.Viewport]):
             return self._build_settings(LogsViewportSettings, pb_obj)
 
         return self._build_settings(ViewportSettings, pb_obj)
+
+    @property
+    def display_options(self):
+        """Removed. Use ``viewport.settings`` instead."""
+        raise AttributeError(
+            "Viewport.display_options has been removed. Use viewport.settings instead."
+        )
 
     def _build_settings(self, settings_type, pb_obj) -> ViewportSettings:
         """Build typed settings and attach associated read-only data."""
