@@ -297,8 +297,6 @@ class PbProperty:
     def __set__(self, obj, value):
         """Set property value on nested protobuf object and apply to server."""
         self._set_nested(obj._pb_obj, self.key, _unwrap_setting_value(value))
-        if hasattr(obj, "_mark_dirty"):
-            obj._mark_dirty(self.key)
         if hasattr(obj, "_apply"):
             obj._apply()
 
@@ -580,13 +578,7 @@ class ViewportSettings:
         self._viewport = viewport
         self._metadata = None
         self._setting_options: dict[str, Any] = {}
-        self._dirty_keys: set[str] = set()
         self._batch_mode = False
-        self._dirty = False
-
-    def _mark_dirty(self, key: str) -> None:
-        """Mark a setting as changed."""
-        self._dirty_keys.add(_root_setting_key(key))
 
     def _wrap(self, key: str, value: Any) -> Any:
         """Wrap a raw value together with its available options, if known."""
@@ -601,11 +593,7 @@ class ViewportSettings:
             The settings for ``UpdateViewportRequest.settings``.
 
         """
-        settings = (
-            {key: self._pb_obj[key] for key in self._dirty_keys if key in self._pb_obj}
-            if self._dirty_keys
-            else self._pb_obj
-        )
+        settings = self._pb_obj
         return _dict_to_settings(settings)
 
     def _apply(self) -> None:
@@ -616,15 +604,12 @@ class ViewportSettings:
                 "Obtain settings via viewport.settings."
             )
         if self._batch_mode:
-            self._dirty = True
             return
-        self._dirty = False
         req = models.UpdateViewportRequest(
             viewport_id=self._viewport_id,
             settings=self._to_pb(),
             wait=True,
         )
-        self._dirty_keys.clear()
         updated_viewport = self._client._workspace_stub.UpdateViewport(req)
         if self._viewport is not None:
             self._viewport._pb = updated_viewport
@@ -675,7 +660,6 @@ class ThreeDViewportSettings(ViewportSettings):
         """Set the camera position."""
         value = _unwrap_setting_value(value)
         self._pb_obj["cameraPosition"] = {"matrix": value.matrix}
-        self._mark_dirty("cameraPosition")
         self._apply()
 
     @property
@@ -722,7 +706,6 @@ class MeshViewportSettings(ThreeDViewportSettings):
         value = _unwrap_setting_value(value)
         if value is None:
             self._pb_obj["shownNamedSelectionId"] = None
-            self._mark_dirty("shownNamedSelectionId")
             return
 
         solution = self._client.get_solution(self._solution_id)
@@ -741,7 +724,6 @@ class MeshViewportSettings(ThreeDViewportSettings):
             raise ValueError(f"No named selection with id or name '{value}' found in solution.")
 
         self._pb_obj["shownNamedSelectionId"] = ns.id
-        self._mark_dirty("shownNamedSelectionId")
         self._apply()
 
     @classmethod
@@ -774,7 +756,6 @@ class PlotViewportSettings(ThreeDViewportSettings):
         value = _unwrap_setting_value(value)
         if value is not None:
             self._pb_obj["result"] = value
-        self._mark_dirty("result")
         self._apply()
 
     @property
@@ -789,7 +770,6 @@ class PlotViewportSettings(ThreeDViewportSettings):
         value = _unwrap_setting_value(value)
         if value is not None:
             self._pb_obj["timeFrequencySetId"] = value
-        self._mark_dirty("timeFrequencySetId")
         self._apply()
 
     @property
@@ -804,7 +784,6 @@ class PlotViewportSettings(ThreeDViewportSettings):
         value = _unwrap_setting_value(value)
         if value is not None:
             self._pb_obj["componentName"] = value
-        self._mark_dirty("componentName")
         self._apply()
 
     @property
@@ -819,7 +798,6 @@ class PlotViewportSettings(ThreeDViewportSettings):
         value = _unwrap_setting_value(value)
         if value is not None:
             self._pb_obj["deformationScale"] = value
-        self._mark_dirty("deformationScale")
         self._apply()
 
     @property
@@ -834,7 +812,6 @@ class PlotViewportSettings(ThreeDViewportSettings):
         value = _unwrap_setting_value(value)
         if value is not None:
             self._pb_obj["legendUseGlobalMinMax"] = value
-        self._mark_dirty("legendUseGlobalMinMax")
         self._apply()
 
     @property
@@ -859,8 +836,6 @@ class PlotViewportSettings(ThreeDViewportSettings):
         else:
             self._pb_obj["legendMin"] = value[0]
             self._pb_obj["legendMax"] = value[1]
-        self._mark_dirty("legendMin")
-        self._mark_dirty("legendMax")
         self._apply()
 
     @property
@@ -904,7 +879,6 @@ class BaseChartViewportSettings(ViewportSettings):
     def split_direction(self, value: Literal["horizontal", "vertical"]) -> None:
         """Set the chart table split direction."""
         self._pb_obj["tablePosition"] = _unwrap_setting_value(value)
-        self._mark_dirty("tablePosition")
         self._apply()
 
     @property
@@ -937,7 +911,6 @@ class BaseChartViewportSettings(ViewportSettings):
             if name not in self.series_names:
                 raise ValueError(f"Invalid series name: {name}")
         self._pb_obj["activeSeries"] = names
-        self._mark_dirty("activeSeries")
         self._apply()
 
     @classmethod
@@ -990,7 +963,6 @@ class ChartViewportSettings(BaseChartViewportSettings):
         if name not in self.series_names:
             raise ValueError(f"Invalid x-axis name: {name}")
         self._pb_obj["xAxisSeries"] = name
-        self._mark_dirty("xAxisSeries")
         self._apply()
 
     @classmethod
@@ -1046,7 +1018,6 @@ class ContactTrackersViewportSettings(BaseChartViewportSettings):
             if name not in self.contact_tracker_names:
                 raise ValueError(f"Invalid contact tracker name: {name}")
         self._pb_obj["activeCharts"] = names
-        self._mark_dirty("activeCharts")
         self._apply()
 
     @classmethod
@@ -1094,7 +1065,6 @@ class LogsViewportSettings(ViewportSettings):
     def log_path(self, value: str) -> None:
         """Set the currently displayed log file."""
         self._pb_obj["logFile"] = _unwrap_setting_value(value)
-        self._mark_dirty("logFile")
         self._apply()
 
     @classmethod
@@ -1204,8 +1174,7 @@ class Viewport[TSettings: ViewportSettings](BaseEntity[models.Viewport]):
             yield opts
         finally:
             opts._batch_mode = False
-            if opts._dirty:
-                opts._apply()
+            opts._apply()
 
     @property
     def size(self) -> float:
