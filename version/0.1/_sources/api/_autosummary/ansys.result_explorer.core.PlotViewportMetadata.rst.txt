@@ -1,0 +1,29 @@
+﻿PlotViewportMetadata
+====================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: PlotViewportMetadata
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      PlotViewportMetadata.active_result
+   
+   

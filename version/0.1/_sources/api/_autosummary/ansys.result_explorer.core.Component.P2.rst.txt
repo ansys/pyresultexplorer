@@ -1,0 +1,6 @@
+P2
+==
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: Component.P2

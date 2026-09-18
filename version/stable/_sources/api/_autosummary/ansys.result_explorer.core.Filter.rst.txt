@@ -1,0 +1,31 @@
+﻿Filter
+======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: Filter
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Filter.min
+      Filter.max
+      Filter.average
+   
+   

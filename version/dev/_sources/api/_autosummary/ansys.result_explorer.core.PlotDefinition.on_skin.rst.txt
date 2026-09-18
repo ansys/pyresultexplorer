@@ -1,0 +1,6 @@
+on\_skin
+========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: PlotDefinition.on_skin

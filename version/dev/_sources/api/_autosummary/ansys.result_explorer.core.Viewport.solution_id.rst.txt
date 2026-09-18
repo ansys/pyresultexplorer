@@ -1,0 +1,6 @@
+solution\_id
+============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Viewport.solution_id

@@ -1,0 +1,35 @@
+﻿ContactTrackersDisplayOptions
+=============================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: ContactTrackersDisplayOptions
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ContactTrackersDisplayOptions.active_contact_trackers
+      ContactTrackersDisplayOptions.active_series
+      ContactTrackersDisplayOptions.contact_tracker_names
+      ContactTrackersDisplayOptions.series_names
+      ContactTrackersDisplayOptions.show_legend
+      ContactTrackersDisplayOptions.show_table
+      ContactTrackersDisplayOptions.split_direction
+   
+   

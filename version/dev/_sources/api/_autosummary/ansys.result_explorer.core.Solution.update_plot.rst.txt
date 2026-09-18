@@ -1,0 +1,6 @@
+update\_plot
+============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Solution.update_plot

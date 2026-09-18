@@ -1,0 +1,6 @@
+translation
+===========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: CameraPosition.translation

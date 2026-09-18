@@ -1,0 +1,6 @@
+physics\_type
+=============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.physics_type

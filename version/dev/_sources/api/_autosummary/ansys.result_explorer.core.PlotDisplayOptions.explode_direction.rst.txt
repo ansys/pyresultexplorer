@@ -1,0 +1,6 @@
+explode\_direction
+==================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: PlotDisplayOptions.explode_direction

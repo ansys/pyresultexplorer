@@ -1,0 +1,6 @@
+shell\_position
+===============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: PlotDefinition.shell_position

@@ -1,0 +1,6 @@
+parent
+======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: PlotView.parent
