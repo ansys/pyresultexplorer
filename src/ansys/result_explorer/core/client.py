@@ -181,6 +181,14 @@ class Client:
 
         self._app_info: models.AppInfo | None = None
 
+        self._check_compatibility()
+
+    def _check_compatibility(self) -> None:
+        """Check the compatibility of the client with the server."""
+        version = self.app_info.version
+        if version == "2026.7.0":
+            raise ResultExplorerError("Incompatible Result Explorer version detected: 2026.7.0.")
+
     def __del__(self):
         """Clean up resources when client is destroyed."""
         try:
