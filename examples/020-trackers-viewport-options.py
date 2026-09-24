@@ -35,7 +35,7 @@ contact tracking data.
 # %%
 # Import the Result Explorer dependencies.
 from ansys.result_explorer.core import (
-    ContactTrackersViewportMetadata,
+    ContactTrackersViewportSettings,
     launch_result_explorer,
 )
 from ansys.result_explorer.core.examples import (
@@ -105,11 +105,11 @@ conv_viewport.save_snapshot(
 contact_viewport = workspace.viewports[1]
 contact_viewport.set_view(contact_view, wait=True)
 
-contact_meta: ContactTrackersViewportMetadata = contact_viewport.metadata
+contact_settings: ContactTrackersViewportSettings = contact_viewport.settings
 print("\nConfiguring contact trackers viewport:")
 
 # Show available trackers
-trackers = contact_meta.contact_tracker_names
+trackers = contact_settings.contact_tracker_names
 print(f"  Available contact trackers: {len(trackers)}")
 for tracker in trackers:
     print(f"    - {tracker}")
@@ -119,7 +119,7 @@ contact_opts = contact_viewport.settings
 contact_opts.active_contact_trackers = trackers
 
 # Show available series
-series = contact_meta.active_series
+series = contact_settings.active_series
 print(f"  Available data series: {len(series)}")
 for s in series:
     print(f"    - {s}")
