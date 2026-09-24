@@ -44,6 +44,17 @@ jobs:
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
           bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
 
+  workflow-config:
+    name: "Resolve workflow configuration"
+    runs-on: ubuntu-latest
+    permissions: {}
+    # `env` isn't available in jobs.<job_id>.with of reusable workflow calls,
+    # so expose it as a job output (needs.* is available there) instead.
+    outputs:
+      rx-target-version: ${{ env.RX_TARGET_VERSION }}
+    steps:
+      - run: echo "Resolved RX target version ${{ env.RX_TARGET_VERSION }}"
+
   code-style:
     name: "Code style"
     runs-on: ubuntu-latest
@@ -130,7 +141,7 @@ jobs:
   #     deployment: docker
   #     update-snapshots: false
   #     python-versions: ${{ github.event_name == 'pull_request' && '["3.12"]' || '["3.12", "3.13", "3.14"]' }}
-  #     rx-version: ${{ env.RX_TARGET_VERSION }} # revert to dev after first release of PyRX
+  #     rx-version: ${{ needs.workflow-config.outputs.rx-target-version }} # revert to dev after first release of PyRX
   #   secrets:
   #     PYANSYS_CI_BOT_TOKEN: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
   #     PYANSYS_CI_BOT_USERNAME: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
@@ -140,6 +151,7 @@ jobs:
   tests-native:
     name: "Tests Native"
     uses: ./.github/workflows/tests.yml
+    needs: [workflow-config]
     permissions:
       contents: read
     with:
@@ -147,7 +159,7 @@ jobs:
       update-snapshots: ${{ github.event_name == 'workflow_dispatch' && inputs.update-snapshots || false }}
       python-versions: ${{ github.event_name == 'pull_request' && '["3.12"]' || '["3.12", "3.13", "3.14"]' }}
       upload-coverage: true
-      rx-version: ${{ env.RX_TARGET_VERSION }}
+      rx-version: ${{ needs.workflow-config.outputs.rx-target-version }}
     secrets:
       PYANSYS_CI_BOT_TOKEN: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
       LICENSE_SERVER: ${{ secrets.LICENSE_SERVER }}
