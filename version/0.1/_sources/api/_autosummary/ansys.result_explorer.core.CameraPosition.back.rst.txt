@@ -1,0 +1,6 @@
+back
+====
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: CameraPosition.back

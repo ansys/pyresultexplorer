@@ -1,0 +1,40 @@
+﻿WorkspaceLayout
+===============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: WorkspaceLayout
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      WorkspaceLayout.describe
+      
+      
+      WorkspaceLayout.placement_of
+      
+      
+      WorkspaceLayout.viewport_at
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      WorkspaceLayout.grid_shape
+      WorkspaceLayout.is_grid
+      WorkspaceLayout.placements
+   
+   

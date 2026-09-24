@@ -1,0 +1,6 @@
+hps\_ls
+=======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Client.hps_ls

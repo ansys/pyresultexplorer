@@ -1,0 +1,6 @@
+total\_heat\_flux
+=================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultFieldName.total_heat_flux

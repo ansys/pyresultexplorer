@@ -1,0 +1,6 @@
+create\_viewport
+================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Workspace.create_viewport

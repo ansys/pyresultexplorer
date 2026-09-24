@@ -1,0 +1,36 @@
+﻿ChartDisplayOptions
+===================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: ChartDisplayOptions
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ChartDisplayOptions.active_charts
+      ChartDisplayOptions.active_series
+      ChartDisplayOptions.chart_names
+      ChartDisplayOptions.selected_x_axis
+      ChartDisplayOptions.series_names
+      ChartDisplayOptions.show_legend
+      ChartDisplayOptions.show_table
+      ChartDisplayOptions.split_direction
+   
+   

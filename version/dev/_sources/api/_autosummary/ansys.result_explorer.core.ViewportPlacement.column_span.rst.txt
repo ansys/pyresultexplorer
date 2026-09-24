@@ -1,0 +1,6 @@
+column\_span
+============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ViewportPlacement.column_span

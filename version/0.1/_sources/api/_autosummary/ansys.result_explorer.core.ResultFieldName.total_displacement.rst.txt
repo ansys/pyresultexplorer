@@ -1,0 +1,6 @@
+total\_displacement
+===================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultFieldName.total_displacement
