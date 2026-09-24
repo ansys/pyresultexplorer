@@ -82,7 +82,7 @@ by a legend of viewport IDs:
    [2] 2be6dda3-1889-44d2-bbfb-4c59f28fa548 (row 1, column 1, 1x1 cells)
 
 Viewports that are not part of a regular grid span several rows or columns.
-In the layout above, the first viewport spans both rows of the first column:
+In the preceding layout, the first viewport spans both rows of the first column:
 
 .. code-block:: python
 

@@ -1,5 +1,6 @@
 ANSYS
 [Aa]nsys
+boolean
 isort
 Makefile
 py
