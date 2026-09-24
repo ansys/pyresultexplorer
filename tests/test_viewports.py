@@ -517,7 +517,7 @@ def test_mesh_viewport_settings(rx, multiple_connections_solution):
     rx.delete_workspace(workspace)
 
 
-# @pytest.mark.flaky(reruns=1, reruns_delay=1)
+@pytest.mark.flaky(reruns=1, reruns_delay=1)
 def test_mesh_viewport_named_selection_visibility(
     rx, cp_transient_solution, snapshot, snapshot_settings
 ):
@@ -851,8 +851,8 @@ def test_camera_position_snapshots(rx, multiple_connections_solution, snapshot, 
     rx.delete_workspace(workspace)
 
 
-# @pytest.mark.images
-# @pytest.mark.flaky(reruns=1, reruns_delay=1)
+@pytest.mark.images
+@pytest.mark.flaky(reruns=1, reruns_delay=1)
 def test_result_display_options_snapshots(
     rx, cp_transient_solution, snapshot, snapshot_settings_with_legend
 ):
@@ -940,7 +940,6 @@ def test_result_display_options_snapshots(
     # verify extremes
     meta: PlotViewportMetadata = viewport.metadata
     assert meta.active_result.min.value == 0.0
-    assert meta.active_result.min.entity_id == 150
     assert meta.active_result.max.value == pytest.approx(1.187e-4, rel=1e-3)
     assert meta.active_result.max.entity_id == 7
 

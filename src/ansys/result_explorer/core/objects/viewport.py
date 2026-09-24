@@ -608,14 +608,17 @@ class PlotViewportMetadata(ViewportMetadata):
         if result_set is None:
             raise ValueError(f"Result set with ID {set_id} not found in result metadata.")
 
-        component_index = next(
-            (i for i, name in enumerate(result_data.component_names) if name == component_name),
-            None,
-        )
-        if component_index is None:
-            raise ValueError(f"Component '{component_name}' not found in result metadata.")
+        if component_name.lower() == "magnitude":
+            extremes = result_set.magnitude_extremes
+        else:
+            component_index = next(
+                (i for i, name in enumerate(result_data.component_names) if name == component_name),
+                None,
+            )
+            if component_index is None:
+                raise ValueError(f"Component '{component_name}' not found in result metadata.")
 
-        extremes = result_set.component_extremes[component_index]
+            extremes = result_set.component_extremes[component_index]
 
         return ActiveResult(
             result_name=result_data.name,
