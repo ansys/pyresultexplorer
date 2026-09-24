@@ -189,7 +189,7 @@ jobs:
         id: install-rx
         uses: ansys/pyresultexplorer/.github/actions/result-explorer-server@main # zizmor: ignore[unpinned-uses]
         with:
-          version: 'latest-dev'
+          version: 'v2026.7.0'
           installation-path: ${{ env.RX_SERVER_INSTALLATION_PATH }}
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
 
