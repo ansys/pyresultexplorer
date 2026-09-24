@@ -18,13 +18,15 @@
 
 from __future__ import annotations
 
+import dataclasses
 import json
 from collections.abc import Generator
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Literal, overload
+from typing import TYPE_CHECKING, Any, Literal, overload
 
+from ansys.api.result_explorer.v0 import base_pb2
 from google.protobuf import struct_pb2
 from google.protobuf.json_format import MessageToDict, ParseDict
 
@@ -37,10 +39,251 @@ if TYPE_CHECKING:
     from .solution import ChartView, MeshView, PlotView, View
 
 
+# ---------------------------------------------------------------------------
+# Utils
+# ---------------------------------------------------------------------------
+
+
+_BOOL_SETTING_KEYS = {
+    "explodeActive",
+    "legendUseGlobalMinMax",
+    "showLegend",
+    "showMesh",
+    "showMinMaxLabels",
+    "showTable",
+    "showUnsetResults",
+}
+_LIST_SETTING_KEYS = {
+    "activeChartIndices",
+    "activeCharts",
+    "activeSeriesIndices",
+    "activeSeries",
+    "chartNames",
+    "expandedGroups",
+    "selectedBodies",
+    "seriesNames",
+    "shownBodies",
+    "transparentBodies",
+}
+_NUMBER_SETTING_KEYS = {
+    "deformationScale",
+    "explodeScale",
+    "legendMax",
+    "legendMin",
+    "selectedXAxisIndex",
+    "timeFrequencySetId",
+    "transparencyLevel",
+}
+
+
+def _setting_value_to_python(value: models.SettingValue) -> Any:
+    """Convert a viewport setting value to a Python value."""
+    kind = value.WhichOneof("kind")
+    if kind is None:
+        return None
+    if kind == "string_value":
+        return value.string_value
+    if kind == "number_value":
+        return value.number_value
+    if kind == "bool_value":
+        return value.bool_value
+    if kind == "object_value":
+        return MessageToDict(value.object_value)
+    if kind == "string_list_value":
+        return list(value.string_list_value.values)
+    if kind == "number_list_value":
+        return list(value.number_list_value.values)
+    if kind == "bool_list_value":
+        return list(value.bool_list_value.values)
+    if kind == "object_list_value":
+        return MessageToDict(value.object_list_value)
+    raise ValueError(f"Unsupported viewport setting value kind: {kind}")
+
+
+def _settings_to_dict(settings) -> dict[str, Any]:
+    """Convert viewport settings to a Python dictionary."""
+    return {
+        setting.key: _normalize_setting_value(
+            setting.key,
+            _setting_value_to_python(setting.value) if setting.HasField("value") else None,
+        )
+        for setting in settings
+    }
+
+
+def _normalize_setting_value(key: str, value: Any) -> Any:
+    """Normalize ambiguous empty setting values from the server."""
+    if value not in ("", None):
+        return value
+    if key in _LIST_SETTING_KEYS:
+        return []
+    if key in _BOOL_SETTING_KEYS:
+        return False
+    if key in _NUMBER_SETTING_KEYS:
+        return None
+    return value
+
+
+def _python_to_setting_value(value: Any) -> models.SettingValue:
+    """Convert a Python value to a viewport setting value."""
+    if isinstance(value, bool):
+        return models.SettingValue(bool_value=value)
+    if isinstance(value, str):
+        return models.SettingValue(string_value=value)
+    if isinstance(value, int | float):
+        return models.SettingValue(number_value=float(value))
+    if isinstance(value, struct_pb2.Struct):
+        return models.SettingValue(object_value=value)
+    if isinstance(value, dict):
+        struct_value = struct_pb2.Struct()
+        ParseDict(value, struct_value)
+        return models.SettingValue(object_value=struct_value)
+    if isinstance(value, list | tuple):
+        values = list(value)
+        if values and all(isinstance(item, bool) for item in values):
+            return models.SettingValue(bool_list_value=base_pb2.BoolList(values=values))
+        if values and all(isinstance(item, int | float) for item in values):
+            return models.SettingValue(
+                number_list_value=base_pb2.NumberList(values=[float(item) for item in values])
+            )
+        if values and all(isinstance(item, dict) for item in values):
+            list_value = struct_pb2.ListValue()
+            ParseDict(values, list_value)
+            return models.SettingValue(object_list_value=list_value)
+        return models.SettingValue(
+            string_list_value=base_pb2.StringList(values=[str(item) for item in values])
+        )
+    raise TypeError(f"Unsupported viewport setting value type: {type(value).__name__}")
+
+
+def _dict_to_settings(settings: dict[str, Any]) -> list[models.SettingOption]:
+    """Convert a Python dictionary to viewport setting options."""
+    setting_options = []
+    for key, value in settings.items():
+        if value is None:
+            setting_options.append(models.SettingOption(key=key))
+        else:
+            setting_options.append(
+                models.SettingOption(key=key, value=_python_to_setting_value(value))
+            )
+    return setting_options
+
+
+def _value_or_none(settings: dict[str, Any], key: str) -> Any:
+    """Return a setting value, treating empty strings as unset."""
+    value = settings.get(key)
+    return None if value == "" else value
+
+
+def _root_setting_key(key: str) -> str:
+    """Return the top-level setting key for a nested setting path."""
+    return key.split(".", 1)[0]
+
+
+class _SettingValueMixin:
+    """Adds ``.value``/``.options`` to a value that stays usable as its own type."""
+
+    _value: Any
+    _options: list[Any] | None
+
+    @property
+    def value(self) -> Any:
+        """Current value of the setting."""
+        return self._value
+
+    @property
+    def options(self) -> list[Any] | None:
+        """Available values for the setting, or None if unconstrained."""
+        return self._options
+
+    def __repr__(self) -> str:
+        if self._options is None:
+            return repr(self._value)
+        return f"{self._value!r} (options: {self._options!r})"
+
+    def __str__(self) -> str:
+        if self._options is None:
+            return str(self._value)
+        return f"{self._value} (options: {self._options})"
+
+
+class _OpaqueSettingValue:
+    """Value/options pair for setting values whose type cannot be subclassed."""
+
+    def __init__(self, value: Any, options: list[Any] | None):
+        self._value = value
+        self._options = options
+
+    @property
+    def value(self) -> Any:
+        """Current value of the setting."""
+        return self._value
+
+    @property
+    def options(self) -> list[Any] | None:
+        """Available values for the setting, or None if unconstrained."""
+        return self._options
+
+    def __bool__(self) -> bool:
+        return bool(self._value)
+
+    def __eq__(self, other: object) -> bool:
+        return self._value == (other.value if isinstance(other, _OpaqueSettingValue) else other)
+
+    def __hash__(self) -> int:
+        return hash(self._value)
+
+    def __repr__(self) -> str:
+        if self._options is None:
+            return repr(self._value)
+        return f"{self._value!r} (options: {self._options!r})"
+
+    def __str__(self) -> str:
+        if self._options is None:
+            return str(self._value)
+        return f"{self._value} (options: {self._options})"
+
+
+def _wrap_setting_value(value: Any, options: list[Any] | None) -> Any:
+    """Wrap a raw setting value so it also exposes ``.value``/``.options``.
+
+    The result stays usable as the original type wherever possible (for
+    example, a wrapped string still supports string methods and equality).
+    ``bool`` can't be subclassed, so it gets a small dedicated wrapper
+    instead. An unset (``None``) value is returned as-is so ``is None``
+    checks on optional settings keep working.
+    """
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return _OpaqueSettingValue(value, options)
+    try:
+        # Mixin listed first so its __repr__/__str__ take priority over the
+        # base type's (built-in types like str/int define their own).
+        cls = type(f"{type(value).__name__}Setting", (_SettingValueMixin, type(value)), {})
+        try:
+            wrapped = cls(value)
+        except TypeError:
+            wrapped = object.__new__(cls)
+            wrapped.__dict__.update(getattr(value, "__dict__", {}))
+    except TypeError:
+        return _OpaqueSettingValue(value, options)
+    wrapped._value = value
+    wrapped._options = options
+    return wrapped
+
+
+def _unwrap_setting_value(value: Any) -> Any:
+    """Return the raw value from a wrapped setting, passing through otherwise."""
+    if isinstance(value, _SettingValueMixin | _OpaqueSettingValue):
+        return value.value
+    return value
+
+
 class PbProperty:
     """Descriptor for accessing nested protobuf object properties.
 
-    Supports dot-notation for nested keys (e.g., "explodeSettings.active").
+    Supports dot-notation for nested keys (e.g., "cameraPosition.matrix").
     Auto-commits to server when property is set.
     """
 
@@ -52,11 +295,12 @@ class PbProperty:
         """Get property value from nested protobuf object."""
         if obj is None:
             return self
-        return self._get_nested(obj._pb_obj, self.key)
+        value = self._get_nested(obj._pb_obj, self.key)
+        return obj._wrap(self.key, value)
 
     def __set__(self, obj, value):
         """Set property value on nested protobuf object and apply to server."""
-        self._set_nested(obj._pb_obj, self.key, value)
+        self._set_nested(obj._pb_obj, self.key, _unwrap_setting_value(value))
         if hasattr(obj, "_apply"):
             obj._apply()
 
@@ -100,38 +344,34 @@ class PbPropertyReadOnly:
         )
 
 
+# ---------------------------------------------------------------------------
+# Viewport metadata classes (readonly)
+# ---------------------------------------------------------------------------
+
+
 class ViewportMetadata:
     """Read-only wrapper for viewport metadata."""
 
-    def __init__(self, pb_obj: models.Viewport, client: Client, solution_id: str | None = None):
+    def __init__(
+        self,
+        pb_obj: struct_pb2.Struct,
+        client: Client,
+        solution_id: str | None = None,
+        settings=None,
+        setting_options=None,
+    ):
         """Initialize viewport metadata wrapper."""
         self._pb_obj = pb_obj
         self._client = client
         self._solution_id = solution_id
+        self._settings = _settings_to_dict(settings) if settings is not None else {}
+        self._setting_options = (
+            _settings_to_dict(setting_options) if setting_options is not None else {}
+        )
 
     def __str__(self):
         """Return metadata as formatted JSON string."""
         return json.dumps(MessageToDict(self._pb_obj), indent=2)
-
-
-class MeshViewportMetadata(ViewportMetadata):
-    """Read-only metadata specific to mesh viewports."""
-
-    pass
-
-
-class LegendSettings:
-    """Read-only legend display settings for a plot result.
-
-    Controls colors, range, and discretization.
-    """
-
-    use_global_min_max: bool = PbPropertyReadOnly("useGlobalMinMax")
-    range: list[float] = PbPropertyReadOnly("range")
-
-    def __init__(self, pb_obj):
-        """Initialize legend settings wrapper."""
-        self._pb_obj = pb_obj
 
 
 @dataclass(frozen=True)
@@ -175,257 +415,230 @@ class ResultExtreme:
         )
 
 
+@dataclass(frozen=True)
+class ResultExtremes:
+    """Read-only min/max extremes."""
+
+    min: ResultExtreme | None
+    """Minimum extreme of the result set."""
+    max: ResultExtreme | None
+    """Maximum extreme of the result set."""
+
+    @classmethod
+    def _from_pb(cls, pb_obj) -> ResultExtremes:
+        """Build from a protobuf struct object."""
+        return cls(
+            min=ResultExtreme._from_pb(pb_obj[0]) if len(pb_obj) > 0 else None,
+            max=ResultExtreme._from_pb(pb_obj[1]) if len(pb_obj) > 1 else None,
+        )
+
+
+@dataclass(frozen=True)
 class ActiveResult:
-    """Read-only active result currently displayed in a plot viewport."""
+    """Read-only metadata for the active result in a plot viewport."""
 
-    result_name: str = PbPropertyReadOnly("resultName")
-    time_set_index: int = PbPropertyReadOnly("timeSetIndex")
-    component_index: int = PbPropertyReadOnly("componentIndex")
-    type: str = PbPropertyReadOnly("type")
-    result_index: int = PbPropertyReadOnly("resultIndex")
-    set_id: int = PbPropertyReadOnly("setId")
-    data_array_name: str = PbPropertyReadOnly("dataArrayName")
-    range: list[float] = PbPropertyReadOnly("range")
+    result_name: str
+    """Name of the result."""
 
-    def __init__(self, pb_obj):
-        """Initialize active result wrapper."""
-        self._pb_obj = pb_obj
+    component_name: str
+    """Name of the component."""
 
-    @property
-    def legend(self) -> LegendSettings:
-        """Legend settings for this result."""
-        return LegendSettings(self._pb_obj["legend"])
+    id: str
+    """Identifier for the result set."""
 
-    @property
-    def _extremes(self) -> list[ResultExtreme]:
-        """Min/max extremes of the result."""
-        if "extremes" not in self._pb_obj:
-            return []
-        return [ResultExtreme._from_pb(e) for e in self._pb_obj["extremes"]]
+    set_id: int
+    """Set number."""
 
-    @property
-    def min(self) -> ResultExtreme | None:
-        """Minimum extreme of the result, or None if not available."""
-        extremes = self._extremes
-        if not extremes:
-            return None
-        return min(extremes, key=lambda e: e.value)
+    unit: str
+    """Result unit."""
 
-    @property
-    def max(self) -> ResultExtreme | None:
-        """Maximum extreme of the result, or None if not available."""
-        extremes = self._extremes
-        if not extremes:
-            return None
-        return max(extremes, key=lambda e: e.value)
+    time_frequency: float
+    """Time or frequency associated with the result set."""
+
+    min: ResultExtreme
+    """Minimum extreme of the result set."""
+
+    max: ResultExtreme
+    """Maximum extreme of the result set."""
+
+    def __str__(self) -> str:
+        """Return a string representation of the active result."""
+        s = "\n"
+        s += json.dumps(dataclasses.asdict(self), indent=2)
+        s += "\n"
+        return s
+
+
+@dataclass(frozen=True)
+class ResultSetMetadata:
+    """Read-only result set metadata for a plot view."""
+
+    id: str
+    """Identifier for the result set."""
+
+    set_id: int
+    """Set number."""
+
+    time_frequency: float
+    """Time or frequency associated with the result set."""
+
+    component_extremes: list[ResultExtremes]
+    """Min/max extremes for each component in the result set."""
+
+    magnitude_extremes: list[ResultExtremes]
+    """Min/max extremes for the magnitude of the result set."""
+
+    @classmethod
+    def _from_pb(cls, pb_obj) -> ResultSetMetadata:
+        """Build from a protobuf struct object."""
+        return cls(
+            id=pb_obj["id"],
+            set_id=int(pb_obj["setId"]),
+            time_frequency=float(pb_obj["timeFrequency"]),
+            component_extremes=[ResultExtremes._from_pb(e) for e in pb_obj["componentExtremes"]],
+            magnitude_extremes=ResultExtremes._from_pb(pb_obj["magnitudeExtremes"]),
+        )
+
+    def __str__(self) -> str:
+        """Return a string representation of the result set metadata."""
+        s = "\n"
+        s += json.dumps(dataclasses.asdict(self), indent=2)
+        s += "\n"
+        return s
+
+    def __repr__(self) -> str:
+        """Return a string representation of the result set metadata."""
+        return self.__str__()
+
+
+@dataclass(frozen=True)
+class ResultMetadata:
+    """Read-only result metadata for a plot view."""
+
+    name: str
+    """Result name."""
+    type: str
+    """Result type."""
+    unit: str
+    """Result unit."""
+    num_components: int
+    """Number of components in the result."""
+    component_names: list[str]
+    """Names of the components in the result."""
+    sets: list[ResultSetMetadata]
+    """List of result sets associated with the result."""
+    global_component_extremes: list[ResultExtremes]
+    """Global (over all result sets) min/max extremes for each component in the result."""
+    global_magnitude_extremes: list[ResultExtremes]
+    """Global (over all result sets) min/max extremes for the magnitude of the result."""
+
+    @classmethod
+    def _from_pb(cls, pb_obj) -> ResultMetadata:
+        """Build from a protobuf struct object."""
+        return cls(
+            name=pb_obj["name"],
+            type=pb_obj["type"],
+            unit=pb_obj["unit"],
+            num_components=int(pb_obj["components"]),
+            component_names=list(pb_obj["componentNames"]),
+            sets=[ResultSetMetadata._from_pb(s) for s in pb_obj["sets"]],
+            global_component_extremes=[
+                ResultExtremes._from_pb(e) for e in pb_obj["componentExtremes"]
+            ],
+            global_magnitude_extremes=ResultExtremes._from_pb(pb_obj["magnitudeExtremes"]),
+        )
+
+    def __str__(self) -> str:
+        """Return a string representation of the result metadata."""
+        s = "\n"
+        s += json.dumps(dataclasses.asdict(self), indent=2)
+        s += "\n"
+        return s
+
+    def __repr__(self) -> str:
+        """Return a string representation of the result metadata."""
+        return self.__str__()
 
 
 class PlotViewportMetadata(ViewportMetadata):
     """Read-only metadata specific to plot viewports."""
 
     @property
+    def results(self) -> list[ResultMetadata]:
+        """List of results metadata available in this plot view."""
+        if "resultMetadata" not in self._pb_obj:
+            return []
+        return [ResultMetadata._from_pb(r) for r in self._pb_obj["resultMetadata"]]
+
+    @property
+    def available_results(self) -> list[str]:
+        """List of available result names in this plot view."""
+        if "resultMetadata" not in self._pb_obj:
+            return []
+        return [r["name"] for r in self._pb_obj["resultMetadata"]]
+
+    @property
     def active_result(self) -> ActiveResult | None:
         """Active result currently displayed, or None if not set."""
-        if "activeResult" not in self._pb_obj:
+        return self._active_result_from_results_metadata()
+
+    def _active_result_from_results_metadata(self) -> ActiveResult | None:
+        """Build the active result from result metadata and settings."""
+        if "resultMetadata" not in self._pb_obj:
             return None
-        return ActiveResult(self._pb_obj["activeResult"])
 
+        results_metadata = self.results
+        result_name = self._settings.get("result")
+        result_data: ResultMetadata | None = None
+        for _, candidate in enumerate(results_metadata):
+            if result_name is None or candidate.name == result_name:
+                result_data = candidate
+                break
+        if result_data is None:
+            return None
 
-class BaseChartViewportMetadata(ViewportMetadata):
-    """Read-only metadata specific to base chart viewports."""
+        set_id = self._settings.get("timeFrequencySetId")
+        if set_id is None:
+            raise ValueError("timeFrequencySetId is not set in viewport settings.")
+        set_id = int(set_id)
 
-    @property
-    def series_names(self) -> list[str]:
-        """List of all available series names."""
-        return [s.string_value for s in self._pb_obj["displayOptions"]["seriesNames"].values]
+        component_name = self._settings.get("componentName", "Magnitude")
+        # find result set
+        result_set = next((s for s in result_data.sets if s.set_id == set_id), None)
+        if result_set is None:
+            raise ValueError(f"Result set with ID {set_id} not found in result metadata.")
 
+        if component_name.lower() == "magnitude":
+            extremes = result_set.magnitude_extremes
+        else:
+            component_index = next(
+                (i for i, name in enumerate(result_data.component_names) if name == component_name),
+                None,
+            )
+            if component_index is None:
+                raise ValueError(f"Component '{component_name}' not found in result metadata.")
 
-class ChartViewportMetadata(BaseChartViewportMetadata):
-    """Read-only metadata specific to chart viewports."""
+            extremes = result_set.component_extremes[component_index]
 
-    @property
-    def chart_names(self) -> list[str]:
-        """List of all available chart names."""
-        return [s.string_value for s in self._pb_obj["displayOptions"]["chartNames"].values]
-
-
-class ContactTrackersViewportMetadata(BaseChartViewportMetadata):
-    """Read-only metadata specific to contact trackers viewports."""
-
-    @property
-    def contact_tracker_names(self) -> list[str]:
-        """List of all available contact tracker names."""
-        return [s.string_value for s in self._pb_obj["displayOptions"]["chartNames"].values]
-
-
-class ConvergenceTrackersViewportMetadata(ViewportMetadata):
-    """Read-only metadata specific to convergence trackers viewports."""
-
-    pass
-
-
-class LogsViewportMetadata(ViewportMetadata):
-    """Read-only metadata specific to logs viewports."""
-
-    pass
-
-
-# ---------------------------------------------------------------------------
-# PlotDisplayOptions dataclass
-# ---------------------------------------------------------------------------
-
-
-class ResultDisplayOptions:
-    """Result-specific display options for plot viewports.
-
-    These are sent to the application via the
-    ``UpdateViewportRequest.display_options`` field.
-    Changes to properties on this object auto-commit to the application.
-
-    Parameters
-    ----------
-    result : str, optional
-        Result name to display.
-    set_id : int, optional
-        Actual set ID (from ``TimeFrequency.set_id``), not an index.
-    component_index : int, optional
-        Component index for the result.
-    deformation_scale : float, optional
-        Deformation scale factor.
-    legend_range : tuple of float, optional
-        Custom legend range as ``(min, max)``.
-    use_global_min_max : bool, optional
-        Whether to use the global min/max for the legend range.
-
-    Examples
-    --------
-    >>> from ansys.result_explorer.core import ResultDisplayOptions
-    >>> opts = ResultDisplayOptions(component_index=2, deformation_scale=3.0)
-
-    """
-
-    def __init__(
-        self,
-        result: str | None = None,
-        set_id: int | None = None,
-        component_index: int | None = None,
-        deformation_scale: float | None = None,
-        legend_range: tuple[float, float] | None = None,
-        use_global_min_max: bool | None = None,
-        _viewport_id: str | None = None,
-        _client: Client | None = None,
-        _viewport=None,
-    ):
-        """Initialize result display options."""
-        self._viewport_id = None
-        self._client = None
-        self._viewport = _viewport
-        self._batch_mode = False
-        self._dirty = False
-        self.result = result
-        self.set_id = set_id
-        self.component_index = component_index
-        self.deformation_scale = deformation_scale
-        self.legend_range = legend_range
-        self.use_global_min_max = use_global_min_max
-        # Set last — after this, future assignments will auto-apply
-        self._viewport_id = _viewport_id
-        self._client = _client
-
-    def __setattr__(self, name: str, value) -> None:
-        """Set attribute and apply to server on change."""
-        object.__setattr__(self, name, value)
-        # Only auto-apply if attribute is not internal (_viewport_id, _client)
-        # and both viewport_id and client are set
-        if not name.startswith("_") and self._viewport_id is not None and self._client is not None:
-            self._apply()
-
-    @classmethod
-    def _from_pb(
-        cls,
-        pb_obj,
-        _viewport_id: str | None = None,
-        _client: Client | None = None,
-        _viewport=None,
-    ) -> ResultDisplayOptions:
-        """Build from active result and deformation_scale in metadata Struct."""
-        if "activeResult" not in pb_obj:
-            return cls(_viewport_id=_viewport_id, _client=_client, _viewport=_viewport)
-
-        ar = pb_obj["activeResult"]
-        legend = ar["legend"] if "legend" in ar else {}
-        raw_range = legend["range"] if "range" in legend else None
-        legend_range = None
-        if raw_range is not None and len(raw_range) == 2:
-            legend_range = (float(raw_range[0]), float(raw_range[1]))
-
-        return cls(
-            result=ar["resultName"] if "resultName" in ar else None,
-            set_id=int(ar["setId"]) if "setId" in ar else None,
-            component_index=int(ar["componentIndex"]) if "componentIndex" in ar else None,
-            deformation_scale=(
-                float(pb_obj["deformationScale"]) if "deformationScale" in pb_obj else None
-            ),
-            legend_range=legend_range,
-            use_global_min_max=(
-                bool(legend["useGlobalMinMax"]) if "useGlobalMinMax" in legend else None
-            ),
-            _viewport_id=_viewport_id,
-            _client=_client,
-            _viewport=_viewport,
+        return ActiveResult(
+            result_name=result_data.name,
+            id=result_set.id,
+            set_id=set_id,
+            unit=result_data.unit,
+            time_frequency=result_set.time_frequency,
+            component_name=component_name,
+            min=extremes.min,
+            max=extremes.max,
         )
 
-    def _to_pb(self) -> struct_pb2.Struct:
-        """Serialize to a protobuf Struct (only non-None fields).
-
-        Returns
-        -------
-        google.protobuf.struct_pb2.Struct
-            Struct for ``UpdateViewportRequest.display_options``.
-
-        """
-        d: dict = {}
-        if self.result is not None:
-            d["result"] = self.result
-        if self.set_id is not None:
-            d["setId"] = self.set_id
-        if self.component_index is not None:
-            d["componentIndex"] = self.component_index
-        if self.deformation_scale is not None:
-            d["deformationScale"] = self.deformation_scale
-        if self.legend_range is not None:
-            d["legendRange"] = list(self.legend_range)
-        if self.use_global_min_max is not None:
-            d["useGlobalMinMax"] = self.use_global_min_max
-        s = struct_pb2.Struct()
-        ParseDict(d, s)
-        return s
-
-    def _apply(self) -> None:
-        """Apply result options to the application."""
-        if self._viewport_id is None or self._client is None:
-            return
-        if self._batch_mode:
-            object.__setattr__(self, "_dirty", True)
-            return
-        object.__setattr__(self, "_dirty", False)
-        req = models.UpdateViewportRequest(
-            viewport_id=self._viewport_id,
-            display_options=self._to_pb(),
-            wait=True,
-        )
-        updated_viewport = self._client._workspace_stub.UpdateViewport(req)
-        if self._viewport is not None:
-            self._viewport._pb = updated_viewport
-
 
 # ---------------------------------------------------------------------------
-# Viewport display options classes (read/write)
+# Viewport settings classes (read/write)
 # ---------------------------------------------------------------------------
 
 
-class DisplayOptions:
-    """Read/write wrapper for viewport display options."""
+class ViewportSettings:
+    """Manages editable viewport settings."""
 
     def __init__(
         self,
@@ -435,55 +648,58 @@ class DisplayOptions:
         viewport_id: str | None = None,
         viewport=None,
     ):
-        """Initialize viewport display options wrapper.
+        """Initialize viewport settings wrapper.
 
         Parameters
         ----------
         pb_obj : dict-like
-            Protobuf Struct for metadata.
+            Protobuf Struct for settings.
         client : Client
             gRPC client for server communication.
         solution_id : str, optional
             Solution ID for this viewport.
         viewport_id : str, optional
-            Viewport ID for this display options instance.
+            Viewport ID for this settings instance.
         viewport : Viewport, optional
             Parent viewport reference for state updates after auto-commit.
 
         """
-        self._pb_obj = pb_obj
+        self._pb_obj = _settings_to_dict(pb_obj) if not isinstance(pb_obj, dict) else pb_obj
         self._client = client
         self._solution_id = solution_id
         self._viewport_id = viewport_id
         self._viewport = viewport
+        self._setting_options: dict[str, Any] = {}
         self._batch_mode = False
-        self._dirty = False
 
-    def _to_pb(self):
-        """Return the underlying protobuf Struct for metadata updates.
+    def _wrap(self, key: str, value: Any) -> Any:
+        """Wrap a raw value together with its available options, if known."""
+        return _wrap_setting_value(value, self._setting_options.get(_root_setting_key(key)))
+
+    def _to_pb(self) -> list[models.SettingOption]:
+        """Return setting options for viewport updates.
 
         Returns
         -------
-        google.protobuf.struct_pb2.Struct
-            The metadata Struct for ``UpdateViewportRequest.metadata``.
+        list[SettingOption]
+            The settings for ``UpdateViewportRequest.settings``.
 
         """
-        return self._pb_obj
+        settings = self._pb_obj
+        return _dict_to_settings(settings)
 
     def _apply(self) -> None:
         """Apply changes to this viewport via gRPC."""
         if self._viewport_id is None:
             raise ValueError(
-                "Cannot apply display options: viewport_id is not set. "
-                "Obtain options via viewport.display_options property."
+                "Cannot apply settings: viewport_id is not set. "
+                "Obtain settings via viewport.settings."
             )
         if self._batch_mode:
-            self._dirty = True
             return
-        self._dirty = False
         req = models.UpdateViewportRequest(
             viewport_id=self._viewport_id,
-            metadata=self._to_pb(),
+            settings=self._to_pb(),
             wait=True,
         )
         updated_viewport = self._client._workspace_stub.UpdateViewport(req)
@@ -498,25 +714,25 @@ class DisplayOptions:
         solution_id: str | None = None,
         viewport_id: str | None = None,
         viewport=None,
-    ) -> DisplayOptions:
+    ) -> ViewportSettings:
         """Build from a metadata Struct."""
         return cls(pb_obj, client, solution_id, viewport_id, viewport)
 
     def __str__(self):
-        """Return display options as formatted JSON string."""
-        return json.dumps(MessageToDict(self._pb_obj), indent=2)
+        """Return viewport settings as formatted JSON string."""
+        return json.dumps(self._pb_obj, indent=2)
 
 
-class ThreeDDisplayOptions(DisplayOptions):
-    """Read/write display options for 3D viewports."""
+class ThreeDViewportSettings(ViewportSettings):
+    """Manages editable settings for 3D viewports."""
 
-    show_mesh_edges: bool = PbProperty("showMeshEdges")
-    """Whether to display mesh edges."""
-    explode: bool = PbProperty("explodeSettings.active")
+    show_mesh_edges: bool = PbProperty("showMesh")
+    """Whether to display the mesh edges."""
+    explode: bool = PbProperty("explodeActive")
     """Whether to enable explode mode."""
-    explode_scale_factor: float = PbProperty("explodeSettings.scaleFactor")
+    explode_scale_factor: float = PbProperty("explodeScale")
     """Scale factor for explode visualization."""
-    explode_direction: Literal["Radial", "X", "Y", "Z"] = PbProperty("explodeSettings.direction")
+    explode_direction: Literal["Radial", "X", "Y", "Z"] = PbProperty("explodeDirection")
     """Direction of explosion: ``Radial``, ``X``, ``Y``, or ``Z``."""
     expanded_groups: list[str] = PbProperty("expandedGroups")
     """List of expanded group."""
@@ -524,18 +740,27 @@ class ThreeDDisplayOptions(DisplayOptions):
     """List of visible body IDs."""
 
     @property
-    def camera_position(self) -> CameraPosition | None:
+    def camera_position(self) -> Any:
         """Current camera position, or None if not set."""
         if "cameraPosition" not in self._pb_obj:
-            return None
+            return self._wrap("cameraPosition", None)
         raw = self._pb_obj["cameraPosition"]
-        return CameraPosition(list(raw["matrix"]))
+        return self._wrap("cameraPosition", CameraPosition(list(raw["matrix"])))
 
     @camera_position.setter
     def camera_position(self, value: CameraPosition) -> None:
         """Set the camera position."""
+        value = _unwrap_setting_value(value)
         self._pb_obj["cameraPosition"] = {"matrix": value.matrix}
         self._apply()
+
+    @property
+    def left_click_modes(self) -> list[str]:
+        """Available left-click interaction modes.
+
+        TODO: no writable "active mode" setting exists yet.
+        """
+        return self._setting_options.get("leftClickMode", [])
 
     @classmethod
     def _from_pb(
@@ -545,18 +770,18 @@ class ThreeDDisplayOptions(DisplayOptions):
         solution_id: str | None = None,
         viewport_id: str | None = None,
         viewport=None,
-    ) -> ThreeDDisplayOptions:
+    ) -> ThreeDViewportSettings:
         """Build from a metadata Struct."""
         return cls(pb_obj, client, solution_id, viewport_id, viewport)
 
 
-class MeshDisplayOptions(ThreeDDisplayOptions):
-    """Read/write display options for mesh viewports."""
+class MeshViewportSettings(ThreeDViewportSettings):
+    """Manages editable settings for mesh viewports."""
 
     @property
-    def visible_named_selection(self) -> str | None:
+    def visible_named_selection(self) -> Any:
         """Currently visible named selection in this viewport."""
-        return self._pb_obj["shownNamedSelection"]
+        return self._wrap("shownNamedSelectionId", self._pb_obj["shownNamedSelectionId"])
 
     @visible_named_selection.setter
     def visible_named_selection(self, value: str | models.NamedSelection | None) -> None:
@@ -570,8 +795,10 @@ class MeshDisplayOptions(ThreeDDisplayOptions):
             selection will be shown.
 
         """
+        value = _unwrap_setting_value(value)
         if value is None:
-            self._pb_obj["shownNamedSelection"] = None
+            self._pb_obj["shownNamedSelectionId"] = ""
+            self._apply()
             return
 
         solution = self._client.get_solution(self._solution_id)
@@ -581,15 +808,15 @@ class MeshDisplayOptions(ThreeDDisplayOptions):
             ns = value
 
         if ns is None:
-            ns = next((ns for ns in solution.named_selections if ns.id == value), None)
+            ns = next((x for x in solution.named_selections if x.id == value), None)
 
         if ns is None:
-            ns = next((ns for ns in solution.named_selections if ns.name == value), None)
+            ns = next((x for x in solution.named_selections if x.name == value), None)
 
         if ns is None:
             raise ValueError(f"No named selection with id or name '{value}' found in solution.")
 
-        self._pb_obj["shownNamedSelection"] = ns.id
+        self._pb_obj["shownNamedSelectionId"] = ns.id
         self._apply()
 
     @classmethod
@@ -600,62 +827,117 @@ class MeshDisplayOptions(ThreeDDisplayOptions):
         solution_id: str | None = None,
         viewport_id: str | None = None,
         viewport=None,
-    ) -> MeshDisplayOptions:
+    ) -> MeshViewportSettings:
         """Build from a metadata Struct."""
         return cls(pb_obj, client, solution_id, viewport_id, viewport)
 
 
-class PlotDisplayOptions(ThreeDDisplayOptions):
-    """Read/write display options for plot viewports.
-
-    The ``result_options`` field holds result-specific options
-    such as the active result, component, and deformation scale.
-    """
+class PlotViewportSettings(ThreeDViewportSettings):
+    """Manages editable settings for plot viewports."""
 
     show_min_max_labels: bool = PbProperty("showMinMaxLabels")
     """Whether to display min/max labels on the plot."""
 
-    def __init__(
-        self,
-        pb_obj,
-        client: Client,
-        solution_id: str | None = None,
-        viewport_id: str | None = None,
-        viewport=None,
-        result_options: ResultDisplayOptions | None = None,
-    ):
-        """Initialize plot viewport display options."""
-        super().__init__(pb_obj, client, solution_id, viewport_id, viewport)
-        self._result_options = result_options
+    @property
+    def result(self) -> Any:
+        """Name of the result currently displayed."""
+        return self._wrap("result", _value_or_none(self._pb_obj, "result"))
+
+    @result.setter
+    def result(self, value: str | None) -> None:
+        """Set the result to display."""
+        value = _unwrap_setting_value(value)
+        if value is not None:
+            self._pb_obj["result"] = value
+        self._apply()
 
     @property
-    def result_options(self) -> ResultDisplayOptions:
-        """Result-specific display options wrapper."""
-        if self._result_options is None:
-            self._result_options = ResultDisplayOptions._from_pb(
-                self._pb_obj,
-                _viewport_id=self._viewport_id,
-                _client=self._client,
-                _viewport=self._viewport,
-            )
-        return self._result_options
+    def set_id(self) -> Any:
+        """Actual time/frequency set ID (not an index)."""
+        value = _value_or_none(self._pb_obj, "timeFrequencySetId")
+        return self._wrap("timeFrequencySetId", int(value) if value is not None else None)
 
-    @result_options.setter
-    def result_options(self, value: ResultDisplayOptions) -> None:
-        """Set result options and apply to server."""
-        value._viewport_id = self._viewport_id
-        value._client = self._client
-        value._viewport = self._viewport
-        self._result_options = value
-        if self._viewport_id is not None and self._client is not None:
-            req = models.UpdateViewportRequest(
-                viewport_id=self._viewport_id,
-                display_options=self._result_options._to_pb(),
-                wait=True,
-            )
-            updated_viewport = self._client._workspace_stub.UpdateViewport(req)
-            if self._viewport is not None:
-                self._viewport._pb = updated_viewport
+    @set_id.setter
+    def set_id(self, value: int | None) -> None:
+        """Set the active time/frequency set ID."""
+        value = _unwrap_setting_value(value)
+        if value is not None:
+            self._pb_obj["timeFrequencySetId"] = value
+        self._apply()
+
+    @property
+    def component_name(self) -> Any:
+        """Component name for the active result, such as ``"X"`` or ``"Magnitude"``."""
+        value = _value_or_none(self._pb_obj, "componentName")
+        return self._wrap("componentName", value if value is not None else "Magnitude")
+
+    @component_name.setter
+    def component_name(self, value: str) -> None:
+        """Set the active result component."""
+        value = _unwrap_setting_value(value)
+        if value is not None:
+            self._pb_obj["componentName"] = value
+        self._apply()
+
+    @property
+    def deformation_scale(self) -> Any:
+        """Deformation scale factor."""
+        value = _value_or_none(self._pb_obj, "deformationScale")
+        return self._wrap("deformationScale", float(value) if value is not None else None)
+
+    @deformation_scale.setter
+    def deformation_scale(self, value: float | None) -> None:
+        """Set the deformation scale factor."""
+        value = _unwrap_setting_value(value)
+        if value is not None:
+            self._pb_obj["deformationScale"] = value
+        self._apply()
+
+    @property
+    def use_global_min_max(self) -> Any:
+        """Whether to use the global min/max for the legend range."""
+        value = _value_or_none(self._pb_obj, "legendUseGlobalMinMax")
+        return self._wrap("legendUseGlobalMinMax", value)
+
+    @use_global_min_max.setter
+    def use_global_min_max(self, value: bool | None) -> None:
+        """Set whether to use the global min/max for the legend range."""
+        value = _unwrap_setting_value(value)
+        if value is not None:
+            self._pb_obj["legendUseGlobalMinMax"] = value
+        self._apply()
+
+    @property
+    def legend_range(self) -> Any:
+        """Custom legend range as ``(min, max)``, or None for auto-range."""
+        legend_min = _value_or_none(self._pb_obj, "legendMin")
+        legend_max = _value_or_none(self._pb_obj, "legendMax")
+        value = (
+            (float(legend_min), float(legend_max))
+            if legend_min is not None and legend_max is not None
+            else None
+        )
+        return self._wrap("legendMin", value)
+
+    @legend_range.setter
+    def legend_range(self, value: tuple[float, float] | None) -> None:
+        """Set the legend range, or None to restore auto-range."""
+        value = _unwrap_setting_value(value)
+        if value is None:
+            self._pb_obj.pop("legendMin", None)
+            self._pb_obj.pop("legendMax", None)
+        else:
+            self._pb_obj["legendMin"] = value[0]
+            self._pb_obj["legendMax"] = value[1]
+        self._apply()
+
+    @property
+    def color_maps(self) -> list[str]:
+        """Available legend color maps.
+
+        TODO: no writable color-map setting exists yet.
+        """
+        return self._setting_options.get("legendColorMap", [])
 
     @classmethod
     def _from_pb(
@@ -665,43 +947,47 @@ class PlotDisplayOptions(ThreeDDisplayOptions):
         solution_id: str | None = None,
         viewport_id: str | None = None,
         viewport=None,
-    ) -> PlotDisplayOptions:
-        """Build from a metadata Struct, populating result_options."""
-        return cls(
-            pb_obj,
-            client,
-            solution_id,
-            viewport_id,
-            viewport,
-            result_options=ResultDisplayOptions._from_pb(
-                pb_obj,
-                _viewport_id=viewport_id,
-                _client=client,
-                _viewport=viewport,
-            ),
-        )
+    ) -> PlotViewportSettings:
+        """Build from a metadata Struct."""
+        return cls(pb_obj, client, solution_id, viewport_id, viewport)
 
 
-class BaseChartDisplayOptions(DisplayOptions):
-    """Read/write display options for base chart viewports."""
+class BaseChartViewportSettings(ViewportSettings):
+    """Manages editable settings for chart viewports."""
 
-    show_legend: bool = PbProperty("displayOptions.showLegend")
+    show_legend: bool = PbProperty("showLegend")
     """Whether to display the legend."""
-    show_table: bool = PbProperty("displayOptions.showTable")
+    show_table: bool = PbProperty("showTable")
     """Whether to display the data table."""
-    split_direction: Literal["horizontal", "vertical"] = PbProperty("displayOptions.splitDirection")
-    """Direction to split chart and table: ``horizontal`` or ``vertical``."""
+
+    @property
+    def split_direction(self) -> Any:
+        """Direction to split chart and table: ``horizontal`` or ``vertical``."""
+        value = self._pb_obj.get("tablePosition", self._pb_obj.get("splitDirection"))
+        if value is None:
+            value = "vertical"
+        return self._wrap("tablePosition", value)
+
+    @split_direction.setter
+    def split_direction(self, value: Literal["horizontal", "vertical"]) -> None:
+        """Set the chart table split direction."""
+        self._pb_obj["tablePosition"] = _unwrap_setting_value(value)
+        self._apply()
 
     @property
     def series_names(self) -> list[str]:
         """List of all available series names."""
-        return [s.string_value for s in self._pb_obj["displayOptions"]["seriesNames"].values]
+        if "activeSeries" in self._setting_options:
+            return list(self._setting_options["activeSeries"])
+        if "seriesNames" in self._pb_obj:
+            return list(self._pb_obj["seriesNames"])
+        return []
 
     @property
-    def active_series(self) -> list[str]:
+    def active_series(self) -> Any:
         """List of currently active series."""
-        indices = self._pb_obj["displayOptions"]["activeSeriesIndices"]
-        return [self.series_names[int(idx)] for idx in indices]
+        value = list(self._pb_obj["activeSeries"]) if "activeSeries" in self._pb_obj else []
+        return _wrap_setting_value(value, self.series_names)
 
     @active_series.setter
     def active_series(self, names: list[str]) -> None:
@@ -713,11 +999,11 @@ class BaseChartDisplayOptions(DisplayOptions):
             List of series names to make active.
 
         """
+        names = _unwrap_setting_value(names)
         for name in names:
             if name not in self.series_names:
                 raise ValueError(f"Invalid series name: {name}")
-        indices = [self.series_names.index(name) for name in names]
-        self._pb_obj["displayOptions"]["activeSeriesIndices"] = indices
+        self._pb_obj["activeSeries"] = names
         self._apply()
 
     @classmethod
@@ -728,47 +1014,33 @@ class BaseChartDisplayOptions(DisplayOptions):
         solution_id: str | None = None,
         viewport_id: str | None = None,
         viewport=None,
-    ) -> BaseChartDisplayOptions:
+    ) -> BaseChartViewportSettings:
         """Build from a metadata Struct."""
         return cls(pb_obj, client, solution_id, viewport_id, viewport)
 
 
-class ChartDisplayOptions(BaseChartDisplayOptions):
-    """Read/write display options for chart viewports."""
+class ChartViewportSettings(BaseChartViewportSettings):
+    """Read/write settings for chart viewports."""
+
+    show_chart: bool = PbProperty("showChart")
+    """Whether to display the chart."""
 
     @property
     def chart_names(self) -> list[str]:
         """List of all available chart names."""
-        return [s.string_value for s in self._pb_obj["displayOptions"]["chartNames"].values]
+        if "activeCharts" in self._setting_options:
+            return list(self._setting_options["activeCharts"])
+        if "activeCharts" in self._pb_obj:
+            return list(self._pb_obj["activeCharts"])
+        if "chartNames" in self._pb_obj:
+            return list(self._pb_obj["chartNames"])
+        return []
 
     @property
-    def active_charts(self) -> list[str]:
-        """List of currently active charts."""
-        indices = self._pb_obj["displayOptions"]["activeChartIndices"]
-        return [self.chart_names[int(idx)] for idx in indices]
-
-    @active_charts.setter
-    def active_charts(self, names: list[str]) -> None:
-        """Set the active charts.
-
-        Parameters
-        ----------
-        names : list[str]
-            List of chart names to make active.
-
-        """
-        for name in names:
-            if name not in self.chart_names:
-                raise ValueError(f"Invalid chart name: {name}")
-        indices = [self.chart_names.index(name) for name in names]
-        self._pb_obj["displayOptions"]["activeChartIndices"] = indices
-        self._apply()
-
-    @property
-    def selected_x_axis(self) -> str:
+    def selected_x_axis(self) -> Any:
         """Name of the currently selected x-axis series."""
-        idx = int(self._pb_obj["displayOptions"]["selectedXAxisIndex"])
-        return self.series_names[idx]
+        value = self._pb_obj.get("xAxisSeries", "")
+        return _wrap_setting_value(value, self.series_names)
 
     @selected_x_axis.setter
     def selected_x_axis(self, name: str) -> None:
@@ -780,10 +1052,10 @@ class ChartDisplayOptions(BaseChartDisplayOptions):
             Name of the series to use as the x-axis.
 
         """
+        name = _unwrap_setting_value(name)
         if name not in self.series_names:
             raise ValueError(f"Invalid x-axis name: {name}")
-        idx = self.series_names.index(name)
-        self._pb_obj["displayOptions"]["selectedXAxisIndex"] = idx
+        self._pb_obj["xAxisSeries"] = name
         self._apply()
 
     @classmethod
@@ -794,24 +1066,35 @@ class ChartDisplayOptions(BaseChartDisplayOptions):
         solution_id: str | None = None,
         viewport_id: str | None = None,
         viewport=None,
-    ) -> ChartDisplayOptions:
+    ) -> ChartViewportSettings:
         """Build from a metadata Struct."""
         return cls(pb_obj, client, solution_id, viewport_id, viewport)
 
 
-class ContactTrackersDisplayOptions(BaseChartDisplayOptions):
-    """Read/write display options for contact trackers viewports."""
+class ContactTrackersViewportSettings(BaseChartViewportSettings):
+    """Read/write settings for contact trackers viewports."""
+
+    show_chart: bool = PbProperty("showChart")
+    """Whether to display the chart."""
+    selection_mode: str = PbProperty("chartSelectionMode")
+    """Current contact tracker selection mode."""
 
     @property
     def contact_tracker_names(self) -> list[str]:
         """List of all available contact tracker names."""
-        return [s.string_value for s in self._pb_obj["displayOptions"]["chartNames"].values]
+        if "activeCharts" in self._setting_options:
+            return list(self._setting_options["activeCharts"])
+        if "activeCharts" in self._pb_obj:
+            return list(self._pb_obj["activeCharts"])
+        if "chartNames" in self._pb_obj:
+            return list(self._pb_obj["chartNames"])
+        return []
 
     @property
-    def active_contact_trackers(self) -> list[str]:
+    def active_contact_trackers(self) -> Any:
         """List of currently active contact trackers."""
-        indices = self._pb_obj["displayOptions"]["activeChartIndices"]
-        return [self.contact_tracker_names[int(idx)] for idx in indices]
+        value = list(self._pb_obj["activeCharts"]) if "activeCharts" in self._pb_obj else []
+        return _wrap_setting_value(value, self.contact_tracker_names)
 
     @active_contact_trackers.setter
     def active_contact_trackers(self, names: list[str]) -> None:
@@ -823,11 +1106,11 @@ class ContactTrackersDisplayOptions(BaseChartDisplayOptions):
             List of contact tracker names to make active.
 
         """
+        names = _unwrap_setting_value(names)
         for name in names:
             if name not in self.contact_tracker_names:
                 raise ValueError(f"Invalid contact tracker name: {name}")
-        indices = [self.contact_tracker_names.index(name) for name in names]
-        self._pb_obj["displayOptions"]["activeChartIndices"] = indices
+        self._pb_obj["activeCharts"] = names
         self._apply()
 
     @classmethod
@@ -838,15 +1121,15 @@ class ContactTrackersDisplayOptions(BaseChartDisplayOptions):
         solution_id: str | None = None,
         viewport_id: str | None = None,
         viewport=None,
-    ) -> ContactTrackersDisplayOptions:
+    ) -> ContactTrackersViewportSettings:
         """Build from a metadata Struct."""
         return cls(pb_obj, client, solution_id, viewport_id, viewport)
 
 
-class ConvergenceTrackersDisplayOptions(DisplayOptions):
-    """Read/write display options for convergence trackers viewports."""
+class ConvergenceTrackersViewportSettings(ViewportSettings):
+    """Read/write settings for convergence trackers viewports."""
 
-    selected_tracker_name: str = PbProperty("selectedTrackerName")
+    selected_tracker_name: str = PbProperty("tracker")
     """Name of the currently selected convergence tracker."""
 
     @classmethod
@@ -857,16 +1140,25 @@ class ConvergenceTrackersDisplayOptions(DisplayOptions):
         solution_id: str | None = None,
         viewport_id: str | None = None,
         viewport=None,
-    ) -> ConvergenceTrackersDisplayOptions:
+    ) -> ConvergenceTrackersViewportSettings:
         """Build from a metadata Struct."""
         return cls(pb_obj, client, solution_id, viewport_id, viewport)
 
 
-class LogsDisplayOptions(DisplayOptions):
-    """Read/write display options for logs viewports."""
+class LogsViewportSettings(ViewportSettings):
+    """Read/write settings for logs viewports."""
 
-    log_path: str = PbProperty("currentLogPath")
-    """Path to the currently displayed log file."""
+    @property
+    def log_path(self) -> Any:
+        """Path to the currently displayed log file."""
+        value = self._pb_obj.get("logFile", self._pb_obj.get("currentLogPath"))
+        return self._wrap("logFile", value)
+
+    @log_path.setter
+    def log_path(self, value: str) -> None:
+        """Set the currently displayed log file."""
+        self._pb_obj["logFile"] = _unwrap_setting_value(value)
+        self._apply()
 
     @classmethod
     def _from_pb(
@@ -876,7 +1168,7 @@ class LogsDisplayOptions(DisplayOptions):
         solution_id: str | None = None,
         viewport_id: str | None = None,
         viewport=None,
-    ) -> LogsDisplayOptions:
+    ) -> LogsViewportSettings:
         """Build from a metadata Struct."""
         return cls(pb_obj, client, solution_id, viewport_id, viewport)
 
@@ -886,7 +1178,7 @@ class LogsDisplayOptions(DisplayOptions):
 # ---------------------------------------------------------------------------
 
 
-class Viewport[TDisplayOptions: DisplayOptions](BaseEntity[models.Viewport]):
+class Viewport[TSettings: ViewportSettings](BaseEntity[models.Viewport]):
     """Represents a viewport in a workspace."""
 
     @property
@@ -921,96 +1213,68 @@ class Viewport[TDisplayOptions: DisplayOptions](BaseEntity[models.Viewport]):
         """Read-only viewport metadata (server-computed state)."""
         view = self._resolve_view()
         pb_obj = self._pb.metadata
+        settings = self._pb.settings
+        setting_options = self._pb.setting_options
 
         if view is None:
-            return ViewportMetadata(pb_obj, self._client, self.solution_id)
+            return ViewportMetadata(
+                pb_obj, self._client, self.solution_id, settings, setting_options
+            )
 
         if view.type == models.ViewType.VIEW_TYPE_PLOT:
-            return PlotViewportMetadata(pb_obj, self._client, self.solution_id)
-        elif view.type == models.ViewType.VIEW_TYPE_CHART:
-            return ChartViewportMetadata(pb_obj, self._client, self.solution_id)
-        elif view.type == models.ViewType.VIEW_TYPE_MESH:
-            return MeshViewportMetadata(pb_obj, self._client, self.solution_id)
-        elif view.type == models.ViewType.VIEW_TYPE_CONVERGENCE_TRACKERS:
-            return ConvergenceTrackersViewportMetadata(pb_obj, self._client, self.solution_id)
-        elif view.type == models.ViewType.VIEW_TYPE_CONTACT_TRACKERS:
-            return ContactTrackersViewportMetadata(pb_obj, self._client, self.solution_id)
-        elif view.type == models.ViewType.VIEW_TYPE_LOGS:
-            return LogsViewportMetadata(pb_obj, self._client, self.solution_id)
+            return PlotViewportMetadata(
+                pb_obj, self._client, self.solution_id, settings, setting_options
+            )
 
-        return ViewportMetadata(pb_obj, self._client, self.solution_id)
+        return ViewportMetadata(pb_obj, self._client, self.solution_id, settings, setting_options)
 
     @property
-    def display_options(self) -> TDisplayOptions:
-        """Read/write viewport display options."""
+    def settings(self) -> TSettings:
+        """Read/write viewport settings."""
         view = self._resolve_view()
-        pb_obj = self._pb.metadata
+        pb_obj = self._pb.settings
 
         if view is None:
-            return DisplayOptions._from_pb(pb_obj, self._client, self.solution_id, self.id, self)
+            return self._build_settings(ViewportSettings, pb_obj)
 
         if view.type == models.ViewType.VIEW_TYPE_PLOT:
-            return PlotDisplayOptions._from_pb(
-                pb_obj, self._client, self.solution_id, self.id, self
-            )
+            return self._build_settings(PlotViewportSettings, pb_obj)
         elif view.type == models.ViewType.VIEW_TYPE_CHART:
-            return ChartDisplayOptions._from_pb(
-                pb_obj, self._client, self.solution_id, self.id, self
-            )
+            return self._build_settings(ChartViewportSettings, pb_obj)
         elif view.type == models.ViewType.VIEW_TYPE_MESH:
-            return MeshDisplayOptions._from_pb(
-                pb_obj, self._client, self.solution_id, self.id, self
-            )
+            return self._build_settings(MeshViewportSettings, pb_obj)
         elif view.type == models.ViewType.VIEW_TYPE_CONVERGENCE_TRACKERS:
-            return ConvergenceTrackersDisplayOptions._from_pb(
-                pb_obj, self._client, self.solution_id, self.id, self
-            )
+            return self._build_settings(ConvergenceTrackersViewportSettings, pb_obj)
         elif view.type == models.ViewType.VIEW_TYPE_CONTACT_TRACKERS:
-            return ContactTrackersDisplayOptions._from_pb(
-                pb_obj, self._client, self.solution_id, self.id, self
-            )
+            return self._build_settings(ContactTrackersViewportSettings, pb_obj)
         elif view.type == models.ViewType.VIEW_TYPE_LOGS:
-            return LogsDisplayOptions._from_pb(
-                pb_obj, self._client, self.solution_id, self.id, self
-            )
+            return self._build_settings(LogsViewportSettings, pb_obj)
 
-        return DisplayOptions._from_pb(pb_obj, self._client, self.solution_id, self.id, self)
+        return self._build_settings(ViewportSettings, pb_obj)
+
+    @property
+    def display_options(self):
+        """Removed. Use ``viewport.settings`` instead."""
+        raise AttributeError(
+            "Viewport.display_options has been removed. Use viewport.settings instead."
+        )
+
+    def _build_settings(self, settings_type, pb_obj) -> ViewportSettings:
+        """Build typed settings and attach associated read-only data."""
+        settings = settings_type._from_pb(pb_obj, self._client, self.solution_id, self.id, self)
+        settings._setting_options = _settings_to_dict(self._pb.setting_options)
+        return settings
 
     @contextmanager
-    def update_display_options(self) -> Generator[TDisplayOptions, None, None]:
-        """Batch display options updates in a single server call.
-
-        Suppresses auto-commit during the block and flushes all
-        changes on exit.
-
-        Yields
-        ------
-        DisplayOptions
-            The display options object to modify.
-
-        Examples
-        --------
-        >>> with viewport.update_display_options() as opts:
-        ...     opts.show_mesh_edges = True
-        ...     opts.result_options.deformation_scale = 2.5
-
-        """
-        opts = self.display_options
+    def update_settings(self) -> Generator[TSettings, None, None]:
+        """Batch settings updates in a single server call."""
+        opts = self.settings
         opts._batch_mode = True
-        result_opts = opts._result_options if isinstance(opts, PlotDisplayOptions) else None
-        if result_opts is not None:
-            object.__setattr__(result_opts, "_batch_mode", True)
         try:
             yield opts
         finally:
             opts._batch_mode = False
-            result_opts = opts._result_options if isinstance(opts, PlotDisplayOptions) else None
-            if result_opts is not None:
-                object.__setattr__(result_opts, "_batch_mode", False)
-            if opts._dirty:
-                opts._apply()
-            if result_opts is not None and result_opts._dirty:
-                result_opts._apply()
+            opts._apply()
 
     @property
     def size(self) -> float:
@@ -1018,13 +1282,13 @@ class Viewport[TDisplayOptions: DisplayOptions](BaseEntity[models.Viewport]):
         return self._pb.size
 
     @overload
-    def set_view(self, view: PlotView, wait: bool = ...) -> Viewport[PlotDisplayOptions]: ...
+    def set_view(self, view: PlotView, wait: bool = ...) -> Viewport[PlotViewportSettings]: ...
     @overload
-    def set_view(self, view: ChartView, wait: bool = ...) -> Viewport[ChartDisplayOptions]: ...
+    def set_view(self, view: ChartView, wait: bool = ...) -> Viewport[ChartViewportSettings]: ...
     @overload
-    def set_view(self, view: MeshView, wait: bool = ...) -> Viewport[MeshDisplayOptions]: ...
+    def set_view(self, view: MeshView, wait: bool = ...) -> Viewport[MeshViewportSettings]: ...
     @overload
-    def set_view(self, view: View, wait: bool = ...) -> Viewport[DisplayOptions]: ...
+    def set_view(self, view: View, wait: bool = ...) -> Viewport[ViewportSettings]: ...
     def set_view(self, view: View, wait: bool = True) -> Viewport:
         """Assign a view to this viewport."""
         req = models.UpdateViewportRequest(
