@@ -204,7 +204,7 @@ Before setting a value, check what the server currently allows through the
 
 
 Direct commit vs. batch update of viewport settings
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 When you assign a setting directly
