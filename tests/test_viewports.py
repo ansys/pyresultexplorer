@@ -15,6 +15,7 @@
 # limitations under the License.
 
 import logging
+import time
 
 import pytest
 
@@ -516,7 +517,7 @@ def test_mesh_viewport_settings(rx, multiple_connections_solution):
     rx.delete_workspace(workspace)
 
 
-@pytest.mark.flaky(reruns=1, reruns_delay=1)
+# @pytest.mark.flaky(reruns=1, reruns_delay=1)
 def test_mesh_viewport_named_selection_visibility(
     rx, cp_transient_solution, snapshot, snapshot_settings
 ):
@@ -553,6 +554,7 @@ def test_mesh_viewport_named_selection_visibility(
     assert viewport.settings.visible_named_selection == ns_eppl.id
 
     assert viewport.ready is True
+    time.sleep(0.2)
     snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
     assert snapshot_data == snapshot(name="ND001_EPPL_ELEMENTS")
 
@@ -564,6 +566,15 @@ def test_mesh_viewport_named_selection_visibility(
 
     snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
     assert snapshot_data == snapshot(name="LEFT1")
+
+    # Test unassign named selection
+    opts = viewport.settings
+    opts.visible_named_selection = None
+    assert viewport.settings.visible_named_selection == ""
+
+    time.sleep(0.2)
+    snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
+    assert snapshot_data == snapshot(name="no-named-selection")
 
     opts = viewport.settings
     # test exception for invalid named selection

@@ -794,7 +794,8 @@ class MeshViewportSettings(ThreeDViewportSettings):
         """
         value = _unwrap_setting_value(value)
         if value is None:
-            self._pb_obj["shownNamedSelectionId"] = None
+            self._pb_obj["shownNamedSelectionId"] = ""
+            self._apply()
             return
 
         solution = self._client.get_solution(self._solution_id)
@@ -804,10 +805,10 @@ class MeshViewportSettings(ThreeDViewportSettings):
             ns = value
 
         if ns is None:
-            ns = next((ns for ns in solution.named_selections if ns.id == value), None)
+            ns = next((x for x in solution.named_selections if x.id == value), None)
 
         if ns is None:
-            ns = next((ns for ns in solution.named_selections if ns.name == value), None)
+            ns = next((x for x in solution.named_selections if x.name == value), None)
 
         if ns is None:
             raise ValueError(f"No named selection with id or name '{value}' found in solution.")
