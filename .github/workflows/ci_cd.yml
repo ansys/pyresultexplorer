@@ -226,7 +226,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write # Required to deploy documentation to gh-pages
-    needs: [doc-build, build-library, tests-docker, tests-native, smoke-tests]
+    needs: [doc-build, build-library, tests-native, smoke-tests]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
       - uses: ansys/actions/doc-deploy-dev@7410037bfb276c79ae91eb3617b9f5d2876f0c94 # v11.0.8
@@ -241,7 +241,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write # Required to deploy documentation to gh-pages
-    needs: [doc-build, build-library, tests-docker, tests-native, smoke-tests, update-changelog]
+    needs: [doc-build, build-library, tests-native, smoke-tests, update-changelog]
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     steps:
       - uses: ansys/actions/doc-deploy-stable@7410037bfb276c79ae91eb3617b9f5d2876f0c94 # v11.0.8
@@ -254,7 +254,7 @@ jobs:
   release:
     name: Release project
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
-    needs: [doc-build, build-library, tests-docker, tests-native, smoke-tests, update-changelog]
+    needs: [doc-build, build-library, tests-native, smoke-tests, update-changelog]
     runs-on: ubuntu-latest
     environment: release
     permissions:
