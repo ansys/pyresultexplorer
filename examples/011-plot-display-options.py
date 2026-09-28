@@ -15,16 +15,16 @@
 # limitations under the License.
 
 """
-.. _plot_display_options_example:
+.. _plot_viewport_settings_example:
 
-Customize plot display options and animate results
-===================================================
+Customize plot viewport settings and animate results
+======================================================
 
-This example demonstrates how to configure plot display options and animate
-results across time steps in Result Explorer:
+This example demonstrates how to configure plot viewport settings and
+animate results across time steps in Result Explorer:
 
 - **Plot view management** to find and configure displacement views.
-- **Display options customization** for deformation, component selection,
+- **Viewport settings** customization for deformation, component selection,
   and mesh visualization.
 - **Result range control** using global min/max settings.
 - **Animation through time steps** by updating plot properties dynamically.
@@ -98,15 +98,15 @@ disp_viewport = workspace.viewports[0]
 disp_viewport = disp_viewport.set_view(disp_view, wait=True)
 
 # %%
-# Customize display options
+# Customize viewport settings
 # ----------------------------
-# Configure plot display options including deformation scale and mesh edges.
-with disp_viewport.update_display_options() as disp_opts:
-    disp_opts.result_options.use_global_min_max = True
-    disp_opts.result_options.component_index = 0
-    disp_opts.result_options.deformation_scale = 2
-    disp_opts.result_options.legend_range = None  # auto-range based on current component values
-    disp_opts.show_mesh_edges = True
+# Configure plot viewport settings including deformation scale and mesh edges.
+with disp_viewport.update_settings() as opts:
+    opts.use_global_min_max = True
+    opts.component_name = "X"
+    opts.deformation_scale = 2
+    opts.legend_range = None  # auto-range based on current component values
+    opts.show_mesh_edges = True
 
 # Save thumbnail image
 disp_viewport.save_snapshot(
@@ -123,9 +123,9 @@ print(f"Animating over {len(time_frequencies)} time steps...")
 with imageio.get_writer("011-plot-display-options.gif", mode="I") as writer:
     for i, tf in enumerate(time_frequencies):
         print(f"  Step {i}: set_id={tf.set_id}, value={tf.value}")
-        with disp_viewport.update_display_options() as opts:
+        with disp_viewport.update_settings() as opts:
             # Update the set_id to change the displayed time step
-            opts.result_options.set_id = tf.set_id
+            opts.set_id = tf.set_id
 
         meta = disp_viewport.metadata
         for extreme in [meta.active_result.min, meta.active_result.max]:

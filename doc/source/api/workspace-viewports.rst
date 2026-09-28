@@ -12,17 +12,13 @@ Workspace and viewports
    Viewport
    CameraPosition
    ViewportMetadata
-   ChartViewportMetadata
-   MeshViewportMetadata
    PlotViewportMetadata
-   ContactTrackersViewportMetadata
-   ConvergenceTrackersViewportMetadata
-   LogsViewportMetadata
-   DisplayOptions
-   ResultDisplayOptions
-   MeshDisplayOptions
-   PlotDisplayOptions
-   ChartDisplayOptions
-   ContactTrackersDisplayOptions
-   ConvergenceTrackersDisplayOptions
-   LogsDisplayOptions
+   ViewportSettings
+   ThreeDViewportSettings
+   MeshViewportSettings
+   PlotViewportSettings
+   BaseChartViewportSettings
+   ChartViewportSettings
+   ContactTrackersViewportSettings
+   ConvergenceTrackersViewportSettings
+   LogsViewportSettings

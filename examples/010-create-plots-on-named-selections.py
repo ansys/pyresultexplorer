@@ -167,13 +167,13 @@ print(f" - Right viewport: {plot_2.name}")
 
 # take screenshot of the two viewports
 
-left_viewport.display_options.show_mesh_edges = True
+left_viewport.settings.show_mesh_edges = True
 left_viewport.save_snapshot(
     "left_viewport.png",
     settings=get_example_snapshot_settings(),
 )
 
-right_viewport.display_options.show_mesh_edges = True
+right_viewport.settings.show_mesh_edges = True
 right_viewport.save_snapshot(
     "right_viewport.png",
     settings=get_example_snapshot_settings(),
