@@ -36,7 +36,7 @@ def test_solution(rx, rst_multiple_connections):
 
     assert sol.name == "Test Solution"
     assert sol.id is not None
-    assert sol.n_elements == 246
+    assert sol.n_elements == 255
     assert sol.n_nodes == 844
 
     # list solutions
@@ -74,7 +74,7 @@ def test_solution_properties(rst_solution: Solution):
     assert sol.name == "Test Solution"
     assert sol.id is not None
 
-    assert sol.n_elements == 246
+    assert sol.n_elements == 255
     assert sol.n_nodes == 844
     assert sol.n_sets == 1
     assert sol.analysis_type == "static"
@@ -352,7 +352,8 @@ def test_solution_views(cp_transient_solution: Solution):
 
 def test_solution_warnings(cp_transient_solution: Solution):
 
+    # since DPF 27.1 (RX > 2026.7.0), we expect no warnings for this solution
     sol = cp_transient_solution
 
     assert len(sol.errors) == 0
-    assert len(sol.warnings) > 0
+    assert len(sol.warnings) == 0

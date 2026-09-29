@@ -311,7 +311,7 @@ def multiple_connections_solution(rx, rst_multiple_connections) -> Generator[Sol
         name="Test Solution",
         file_path=rst_multiple_connections,
     )
-    assert sol.n_elements == 246
+    assert sol.n_elements == 255
     assert sol.n_nodes == 844
 
     yield sol
