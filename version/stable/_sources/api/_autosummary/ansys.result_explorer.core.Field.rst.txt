@@ -1,0 +1,29 @@
+﻿Field
+=====
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: Field
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Field.name
+   
+   

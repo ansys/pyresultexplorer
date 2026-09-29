@@ -1,0 +1,6 @@
+all\_sets
+=========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ChartDefinition.all_sets

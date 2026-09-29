@@ -1,0 +1,6 @@
+PLAYWRIGHT\_CHROMIUM
+====================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: BrowserType.PLAYWRIGHT_CHROMIUM

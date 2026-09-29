@@ -1,0 +1,6 @@
+electric\_potential
+===================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultType.electric_potential

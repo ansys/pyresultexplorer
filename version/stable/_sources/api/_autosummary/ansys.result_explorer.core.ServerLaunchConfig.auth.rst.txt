@@ -1,0 +1,6 @@
+auth
+====
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ServerLaunchConfig.auth

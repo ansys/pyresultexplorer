@@ -1,0 +1,6 @@
+beam\_axial\_force
+==================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultFieldName.beam_axial_force

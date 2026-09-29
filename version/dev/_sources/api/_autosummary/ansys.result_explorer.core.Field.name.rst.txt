@@ -1,0 +1,6 @@
+name
+====
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: Field.name

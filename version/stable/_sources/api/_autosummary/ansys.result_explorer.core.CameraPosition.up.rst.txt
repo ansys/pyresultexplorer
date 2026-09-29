@@ -1,0 +1,6 @@
+up
+==
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: CameraPosition.up

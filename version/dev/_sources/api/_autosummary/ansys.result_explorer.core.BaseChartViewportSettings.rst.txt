@@ -1,0 +1,33 @@
+﻿BaseChartViewportSettings
+=========================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: BaseChartViewportSettings
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      BaseChartViewportSettings.active_series
+      BaseChartViewportSettings.series_names
+      BaseChartViewportSettings.show_legend
+      BaseChartViewportSettings.show_table
+      BaseChartViewportSettings.split_direction
+   
+   

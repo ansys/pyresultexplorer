@@ -1,0 +1,6 @@
+last\_set
+=========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: PlotDefinition.last_set

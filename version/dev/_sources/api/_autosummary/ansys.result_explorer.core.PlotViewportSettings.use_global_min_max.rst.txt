@@ -1,0 +1,6 @@
+use\_global\_min\_max
+=====================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: PlotViewportSettings.use_global_min_max

@@ -1,0 +1,6 @@
+fields
+======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ChartResult.fields

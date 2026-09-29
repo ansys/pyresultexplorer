@@ -1,0 +1,6 @@
+width
+=====
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ViewportPlacement.width

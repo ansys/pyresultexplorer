@@ -1,0 +1,6 @@
+elemental
+=========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: Location.elemental

@@ -1,0 +1,6 @@
+stop
+====
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: ResultExplorerInstance.stop

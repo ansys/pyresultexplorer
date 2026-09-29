@@ -1,0 +1,217 @@
+:orphan:
+
+.. _ref_examples:
+
+========
+Examples
+========
+
+.. raw:: html
+
+  <div id='sg-tag-list' class='sphx-glr-tag-list'></div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to interact with Result Explorer&#x27;s file system and solution management capabilities:">
+
+.. only:: html
+
+  .. image:: /examples/images/thumb/sphx_glr_001-query-filesystem_thumb.png
+    :alt:
+
+  :doc:`/examples/001-query-filesystem`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Query the file system and access solution data</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates advanced PyResultExplorer functionality including:">
+
+.. only:: html
+
+  .. image:: /examples/images/thumb/sphx_glr_002-workspace-and-views_thumb.png
+    :alt:
+
+  :doc:`/examples/002-workspace-and-views`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Workspaces, solutions, and view management</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to create and manage workspace layouts with various grid configurations in PyResultExplorer:">
+
+.. only:: html
+
+  .. image:: /examples/images/thumb/sphx_glr_003-workspace-layout_thumb.png
+    :alt:
+
+  :doc:`/examples/003-workspace-layout`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Create workspace grid layouts</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to create named selections and use them to create plots in Result Explorer:">
+
+.. only:: html
+
+  .. image:: /examples/images/thumb/sphx_glr_010-create-plots-on-named-selections_thumb.png
+    :alt:
+
+  :doc:`/examples/010-create-plots-on-named-selections`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Create plots scoped to named selections</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to configure plot display options and animate results across time steps in Result Explorer:">
+
+.. only:: html
+
+  .. image:: /examples/images/thumb/sphx_glr_011-plot-display-options_thumb.png
+    :alt:
+
+  :doc:`/examples/011-plot-display-options`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Customize plot display options and animate results</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example showcases various camera positioning and rotation techniques to navigate and view results from different angles:">
+
+.. only:: html
+
+  .. image:: /examples/images/thumb/sphx_glr_012-camera-position_thumb.png
+    :alt:
+
+  :doc:`/examples/012-camera-position`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Control camera position and orientation</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to create a user-defined plot that displays only the nodes whose total displacement magnitude exceeds a percentage of the maximum displacement in the model:">
+
+.. only:: html
+
+  .. image:: /examples/images/thumb/sphx_glr_013-user-defined-plot_thumb.png
+    :alt:
+
+  :doc:`/examples/013-user-defined-plot`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Create a user-defined plot with DPF filtering</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to work with tracker viewports in Result Explorer:">
+
+.. only:: html
+
+  .. image:: /examples/images/thumb/sphx_glr_020-trackers-viewport-options_thumb.png
+    :alt:
+
+  :doc:`/examples/020-trackers-viewport-options`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Work with contact and convergence trackers</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to create and work with charts in Result Explorer:">
+
+.. only:: html
+
+  .. image:: /examples/images/thumb/sphx_glr_030-create-and-modify-charts_thumb.png
+    :alt:
+
+  :doc:`/examples/030-create-and-modify-charts`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Create and modify charts</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to save Result Explorer sessions and workspace templates for later reuse:">
+
+.. only:: html
+
+  .. image:: /examples/images/thumb/sphx_glr_050-save-session-and-workspace_thumb.png
+    :alt:
+
+  :doc:`/examples/050-save-session-and-workspace`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Save sessions and workspace templates</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /examples/001-query-filesystem
+   /examples/002-workspace-and-views
+   /examples/003-workspace-layout
+   /examples/010-create-plots-on-named-selections
+   /examples/011-plot-display-options
+   /examples/012-camera-position
+   /examples/013-user-defined-plot
+   /examples/020-trackers-viewport-options
+   /examples/030-create-and-modify-charts
+   /examples/050-save-session-and-workspace
+
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_

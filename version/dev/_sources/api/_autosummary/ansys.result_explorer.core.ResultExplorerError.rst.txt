@@ -1,0 +1,6 @@
+﻿ResultExplorerError
+===================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoexception:: ResultExplorerError

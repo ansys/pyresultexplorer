@@ -1,0 +1,6 @@
+newton\_raphson\_residual
+=========================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultType.newton_raphson_residual

@@ -1,0 +1,6 @@
+show\_chart
+===========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ContactTrackersViewportSettings.show_chart

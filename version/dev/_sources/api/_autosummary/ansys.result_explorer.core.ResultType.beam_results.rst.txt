@@ -1,0 +1,6 @@
+beam\_results
+=============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultType.beam_results

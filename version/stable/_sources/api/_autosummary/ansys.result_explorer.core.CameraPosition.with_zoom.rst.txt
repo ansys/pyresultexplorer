@@ -1,0 +1,6 @@
+with\_zoom
+==========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: CameraPosition.with_zoom
