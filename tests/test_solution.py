@@ -88,7 +88,7 @@ def test_solution_properties(rst_solution: Solution):
 
     assert len(sol.views) > 1
 
-    assert len(sol.bodies) == 18
+    assert len(sol.bodies) == 19
     body10 = next((b for b in sol.bodies if b.id == "10"), None)
     assert body10 is not None
     assert body10.labels["mat"] == "9"
