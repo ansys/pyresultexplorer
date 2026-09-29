@@ -36,7 +36,7 @@ def test_solution(rx, rst_multiple_connections):
 
     assert sol.name == "Test Solution"
     assert sol.id is not None
-    assert sol.n_elements == 246
+    assert sol.n_elements == 255
     assert sol.n_nodes == 844
 
     # list solutions
@@ -74,7 +74,7 @@ def test_solution_properties(rst_solution: Solution):
     assert sol.name == "Test Solution"
     assert sol.id is not None
 
-    assert sol.n_elements == 246
+    assert sol.n_elements == 255
     assert sol.n_nodes == 844
     assert sol.n_sets == 1
     assert sol.analysis_type == "static"
@@ -88,15 +88,16 @@ def test_solution_properties(rst_solution: Solution):
 
     assert len(sol.views) > 1
 
-    assert len(sol.bodies) == 18
-    body10 = next((b for b in sol.bodies if b.id == "10"), None)
+    assert len(sol.bodies) == 19
+
+    body10 = next((b for b in sol.bodies if b.id == "11"), None)
     assert body10 is not None
     assert body10.labels["mat"] == "9"
     assert body10.labels["apdl_element_type"] == "175"
-    assert body10.labels["apdl_element_type"] == "175"
+    assert body10.labels["apdl_real_id"] == "9"
     assert body10.element_types == ["CONTA175"]
 
-    assert sol.unsupported_element_types[0] == "SURF154"
+    assert len(sol.unsupported_element_types) == 0
 
     assert len(sol.solver_named_selections) > 0
 
@@ -106,9 +107,10 @@ def test_solution_properties(rst_solution: Solution):
     assert sol.time_frequencies[0].step == 1
     assert sol.time_frequencies[0].substep == 1
 
-    assert len(sol.element_groups) == 5
+    assert len(sol.element_groups) == 6
     assert models.ElementGroup.ELEMENT_GROUP_SOLID in sol.element_groups
     assert models.ElementGroup.ELEMENT_GROUP_MPC in sol.element_groups
+    assert models.ElementGroup.ELEMENT_GROUP_MISC_ in sol.element_groups
 
     assert "MKS" in sol.unit_system
     assert sol.distance_unit == "m"
@@ -352,7 +354,8 @@ def test_solution_views(cp_transient_solution: Solution):
 
 def test_solution_warnings(cp_transient_solution: Solution):
 
+    # since DPF 27.1 (RX > 2026.7.0), we expect no warnings for this solution
     sol = cp_transient_solution
 
     assert len(sol.errors) == 0
-    assert len(sol.warnings) > 0
+    assert len(sol.warnings) == 0
