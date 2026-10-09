@@ -1,0 +1,6 @@
+close
+=====
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: ResultExplorerWebSession.close

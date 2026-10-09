@@ -1,0 +1,6 @@
+save\_session
+=============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Client.save_session

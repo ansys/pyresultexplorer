@@ -1,0 +1,22 @@
+﻿LogsViewportMetadata
+====================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: LogsViewportMetadata
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   

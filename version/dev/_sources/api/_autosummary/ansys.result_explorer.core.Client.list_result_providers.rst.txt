@@ -1,0 +1,6 @@
+list\_result\_providers
+=======================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Client.list_result_providers

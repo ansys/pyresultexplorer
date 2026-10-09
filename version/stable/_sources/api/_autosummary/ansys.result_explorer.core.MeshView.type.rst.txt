@@ -1,0 +1,6 @@
+type
+====
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: MeshView.type

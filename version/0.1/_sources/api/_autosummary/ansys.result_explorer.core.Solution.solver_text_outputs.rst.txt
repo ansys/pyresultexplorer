@@ -1,0 +1,6 @@
+solver\_text\_outputs
+=====================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.solver_text_outputs

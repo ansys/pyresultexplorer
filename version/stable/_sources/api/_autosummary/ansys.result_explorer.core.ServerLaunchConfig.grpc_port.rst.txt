@@ -1,0 +1,6 @@
+grpc\_port
+==========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ServerLaunchConfig.grpc_port

@@ -1,0 +1,6 @@
+start
+=====
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: ResultExplorerServerProcess.start

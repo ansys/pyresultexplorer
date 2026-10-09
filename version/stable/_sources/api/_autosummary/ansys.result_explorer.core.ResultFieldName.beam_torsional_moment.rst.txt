@@ -1,0 +1,6 @@
+beam\_torsional\_moment
+=======================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultFieldName.beam_torsional_moment

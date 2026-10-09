@@ -1,0 +1,6 @@
+options
+=======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: MeshView.options

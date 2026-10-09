@@ -1,0 +1,22 @@
+﻿ViewportMetadata
+================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: ViewportMetadata
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   

@@ -1,0 +1,6 @@
+exit\_fullscreen
+================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Workspace.exit_fullscreen

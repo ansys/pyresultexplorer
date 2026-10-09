@@ -1,0 +1,6 @@
+connect\_with\_token
+====================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Client.connect_with_token

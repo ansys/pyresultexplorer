@@ -1,0 +1,6 @@
+settings
+========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Viewport.settings

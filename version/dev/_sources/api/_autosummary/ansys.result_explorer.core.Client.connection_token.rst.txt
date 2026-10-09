@@ -1,0 +1,6 @@
+connection\_token
+=================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Client.connection_token

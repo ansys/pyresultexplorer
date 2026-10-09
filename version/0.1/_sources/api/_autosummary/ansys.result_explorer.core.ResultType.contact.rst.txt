@@ -1,0 +1,6 @@
+contact
+=======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultType.contact

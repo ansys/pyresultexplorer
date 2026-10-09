@@ -1,0 +1,6 @@
+describe
+========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: WorkspaceLayout.describe

@@ -1,0 +1,6 @@
+save\_snapshot
+==============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Viewport.save_snapshot

@@ -1,0 +1,6 @@
+right\_view
+===========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: CameraPosition.right_view
