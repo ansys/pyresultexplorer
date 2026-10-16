@@ -25,6 +25,9 @@ from .base import NamedBaseEntity, SubEntity
 from .chart_definition import ChartDefinition, chart_definition_to_proto, proto_to_chart_definition
 from .named_selection import (
     NamedSelection,
+    NamedSelectionCreate,
+    NamedSelectionType,
+    named_selection_create_to_proto,
     named_selection_to_proto,
     proto_to_named_selection,
 )
@@ -186,14 +189,17 @@ class Solution(NamedBaseEntity[models.Solution]):
         )
         self._get()
 
-    def create_named_selection(self, definition: models.NamedSelectionCreate) -> NamedSelection:
+    def create_named_selection(self, definition: NamedSelectionCreate) -> NamedSelection:
         """Create a named selection."""
-        if definition.type == models.NamedSelectionType.NAMED_SELECTION_TYPE_BODY:
+        if definition.type == NamedSelectionType.BODY:
             raise ValueError(
                 "Body-based named selections are currently not supported for creation."
             )
+        proto_definition = named_selection_create_to_proto(definition)
         pb_ns = self._client._solution_stub.CreateNamedSelection(
-            models.CreateNamedSelectionRequest(solution_id=self.id, named_selection=definition)
+            models.CreateNamedSelectionRequest(
+                solution_id=self.id, named_selection=proto_definition
+            )
         )
         self._get()
         return proto_to_named_selection(pb_ns)
@@ -206,17 +212,21 @@ class Solution(NamedBaseEntity[models.Solution]):
         self._get()
 
     def update_named_selection(
-        self, definition: models.NamedSelectionCreate | NamedSelection
+        self, definition: NamedSelection
     ) -> NamedSelection:
         """Update a named selection."""
-        ns_def = definition
+        named_selection_id = definition.id
         if isinstance(definition, NamedSelection):
             proto_ns = named_selection_to_proto(definition)
             ns_def = _clone_msg_to_compatible_type(proto_ns, models.NamedSelectionCreate)
+        else:
+            ns_def = named_selection_create_to_proto(definition)
 
         pb_ns = self._client._solution_stub.UpdateNamedSelection(
             models.UpdateNamedSelectionRequest(
-                solution_id=self.id, named_selection_id=definition.id, named_selection=ns_def
+                solution_id=self.id,
+                named_selection_id=named_selection_id,
+                named_selection=ns_def,
             )
         )
         self._get()
