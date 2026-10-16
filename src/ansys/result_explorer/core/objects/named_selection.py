@@ -46,6 +46,7 @@ class NamedSelection:
     size: int | None = None
     readonly: bool | None = None
 
+
 @dataclass(eq=False, repr=False)
 class NamedSelectionCreate:
     type: NamedSelectionType
@@ -58,6 +59,7 @@ class NamedSelectionCreate:
     property_ids: PropertyScoping | None = None
     id: str | None = None
     readonly: bool | None = None
+
 
 def _range_to_proto(value: Range) -> models.Range:
     proto = models.Range()
@@ -83,6 +85,94 @@ def _proto_to_ids_scoping(proto: models.IdsScoping) -> IdsScoping:
             max=proto.range.max if proto.range.HasField("max") else None,
         )
     return IdsScoping(values=list(proto.values), range=value_range)
+
+
+def _property_scoping_to_proto(value: PropertyScoping) -> models.PropertyScoping:
+    proto = models.PropertyScoping(name=value.name)
+    proto.ids.extend(_ids_scoping_to_proto(item) for item in value.ids)
+    return proto
+
+
+def _proto_to_property_scoping(proto: models.PropertyScoping) -> PropertyScoping:
+    return PropertyScoping(
+        name=proto.name,
+        ids=[_proto_to_ids_scoping(item) for item in proto.ids],
+    )
+
+
+def named_selection_create_to_proto(
+    named_selection: NamedSelectionCreate,
+) -> models.NamedSelectionCreate:
+    """Convert a named selection creation model to protobuf.
+
+    Examples
+    --------
+    >>> selection = NamedSelectionCreate(
+    ...     type=NamedSelectionType.ELEMENT,
+    ...     solver_named_selections=[],
+    ...     bodies=[],
+    ...     node_ids=[],
+    ...     element_ids=[],
+    ...     name="Elements",
+    ... )
+    >>> named_selection_create_to_proto(selection).name
+    'Elements'
+
+    """
+    proto = models.NamedSelectionCreate(
+        type=getattr(
+            models.NamedSelectionType,
+            f"NAMED_SELECTION_TYPE_{named_selection.type.name}",
+        ),
+    )
+    for field in ("name", "description", "id", "readonly"):
+        value = getattr(named_selection, field)
+        if value is not None:
+            setattr(proto, field, value)
+
+    proto.solver_named_selections.extend(named_selection.solver_named_selections)
+    for body in named_selection.bodies:
+        proto.bodies.add().string_map.update(body)
+    proto.node_ids.extend(_ids_scoping_to_proto(value) for value in named_selection.node_ids)
+    proto.element_ids.extend(_ids_scoping_to_proto(value) for value in named_selection.element_ids)
+    if named_selection.property_ids is not None:
+        proto.property_ids.CopyFrom(_property_scoping_to_proto(named_selection.property_ids))
+    return proto
+
+
+def proto_to_named_selection_create(
+    proto: models.NamedSelectionCreate,
+) -> NamedSelectionCreate:
+    """Convert a protobuf creation message to the object model.
+
+    Examples
+    --------
+    >>> proto = models.NamedSelectionCreate(
+    ...     type=models.NamedSelectionType.NAMED_SELECTION_TYPE_ELEMENT,
+    ...     name="Elements",
+    ... )
+    >>> proto_to_named_selection_create(proto).name
+    'Elements'
+
+    """
+    property_ids = None
+    if proto.HasField("property_ids"):
+        property_ids = _proto_to_property_scoping(proto.property_ids)
+
+    return NamedSelectionCreate(
+        type=NamedSelectionType[
+            models.NamedSelectionType.Name(proto.type).removeprefix("NAMED_SELECTION_TYPE_")
+        ],
+        solver_named_selections=list(proto.solver_named_selections),
+        bodies=[dict(body.string_map) for body in proto.bodies],
+        node_ids=[_proto_to_ids_scoping(value) for value in proto.node_ids],
+        element_ids=[_proto_to_ids_scoping(value) for value in proto.element_ids],
+        name=proto.name if proto.HasField("name") else None,
+        description=proto.description if proto.HasField("description") else None,
+        property_ids=property_ids,
+        id=proto.id if proto.HasField("id") else None,
+        readonly=proto.readonly if proto.HasField("readonly") else None,
+    )
 
 
 def named_selection_to_proto(named_selection: NamedSelection) -> models.NamedSelection:
@@ -144,10 +234,7 @@ def proto_to_named_selection(proto: models.NamedSelection) -> NamedSelection:
     """
     property_ids = None
     if proto.HasField("property_ids"):
-        property_ids = PropertyScoping(
-            name=proto.property_ids.name,
-            ids=[_proto_to_ids_scoping(value) for value in proto.property_ids.ids],
-        )
+        property_ids = _proto_to_property_scoping(proto.property_ids)
 
     return NamedSelection(
         id=proto.id,
