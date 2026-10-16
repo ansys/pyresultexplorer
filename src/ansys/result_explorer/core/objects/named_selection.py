@@ -46,6 +46,18 @@ class NamedSelection:
     size: int | None = None
     readonly: bool | None = None
 
+@dataclass(eq=False, repr=False)
+class NamedSelectionCreate:
+    type: NamedSelectionType
+    solver_named_selections: list[str]
+    bodies: list[dict[str, str]]
+    node_ids: list[IdsScoping]
+    element_ids: list[IdsScoping]
+    name: str | None = None
+    description: str | None = None
+    property_ids: PropertyScoping | None = None
+    id: str | None = None
+    readonly: bool | None = None
 
 def _range_to_proto(value: Range) -> models.Range:
     proto = models.Range()
