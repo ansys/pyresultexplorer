@@ -16,7 +16,7 @@
 
 """Data models and protobuf converters for named selections."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import IntEnum
 
 from .. import models
@@ -44,7 +44,7 @@ class Range:
 class IdsScoping:
     """Stores explicit IDs or a numeric range."""
 
-    values: list[int] = []
+    values: list[int] = field(default_factory=list)
     range: Range | None = None
 
 
@@ -155,10 +155,10 @@ def named_selection_create_to_proto(
             f"NAMED_SELECTION_TYPE_{named_selection.type.name}",
         ),
     )
-    for field in ("name", "description", "id", "readonly"):
-        value = getattr(named_selection, field)
+    for field_ in ("name", "description", "id", "readonly"):
+        value = getattr(named_selection, field_)
         if value is not None:
-            setattr(proto, field, value)
+            setattr(proto, field_, value)
 
     proto.solver_named_selections.extend(named_selection.solver_named_selections)
     for body in named_selection.bodies:
@@ -231,10 +231,10 @@ def named_selection_to_proto(named_selection: NamedSelection) -> models.NamedSel
             f"NAMED_SELECTION_TYPE_{named_selection.type.name}",
         ),
     )
-    for field in ("name", "description", "creation_time", "location", "size", "readonly"):
-        value = getattr(named_selection, field)
+    for field_ in ("name", "description", "creation_time", "location", "size", "readonly"):
+        value = getattr(named_selection, field_)
         if value is not None:
-            setattr(proto, field, value)
+            setattr(proto, field_, value)
 
     proto.solver_named_selections.extend(named_selection.solver_named_selections)
     for body in named_selection.bodies:
