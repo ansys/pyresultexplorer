@@ -106,7 +106,7 @@ ns_1 = sol.create_named_selection(
         solver_named_selections=[],
         bodies=[],
         node_ids=[],
-        element_ids=[IdsScoping(values=[], range=Range(min=23, max=28))],
+        element_ids=[IdsScoping(range=Range(min=23, max=28))],
     )
 )
 

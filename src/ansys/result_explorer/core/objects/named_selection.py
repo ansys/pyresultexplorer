@@ -44,7 +44,7 @@ class Range:
 class IdsScoping:
     """Stores explicit IDs or a numeric range."""
 
-    values: list[int]
+    values: list[int] = []
     range: Range | None = None
 
 
