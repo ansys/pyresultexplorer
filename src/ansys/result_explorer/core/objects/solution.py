@@ -211,9 +211,7 @@ class Solution(NamedBaseEntity[models.Solution]):
         )
         self._get()
 
-    def update_named_selection(
-        self, definition: NamedSelection
-    ) -> NamedSelection:
+    def update_named_selection(self, definition: NamedSelection) -> NamedSelection:
         """Update a named selection."""
         named_selection_id = definition.id
         if isinstance(definition, NamedSelection):
