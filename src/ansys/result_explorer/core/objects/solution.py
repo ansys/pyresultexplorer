@@ -23,6 +23,11 @@ from google.protobuf.json_format import MessageToDict, ParseDict
 from .. import models
 from .base import NamedBaseEntity, SubEntity
 from .chart_definition import ChartDefinition, chart_definition_to_proto, proto_to_chart_definition
+from .named_selection import (
+    NamedSelection,
+    named_selection_to_proto,
+    proto_to_named_selection,
+)
 from .plot_definition import PlotDefinition, plot_definition_to_proto, proto_to_plot_definition
 
 
@@ -181,9 +186,7 @@ class Solution(NamedBaseEntity[models.Solution]):
         )
         self._get()
 
-    def create_named_selection(
-        self, definition: models.NamedSelectionCreate
-    ) -> models.NamedSelection:
+    def create_named_selection(self, definition: models.NamedSelectionCreate) -> NamedSelection:
         """Create a named selection."""
         if definition.type == models.NamedSelectionType.NAMED_SELECTION_TYPE_BODY:
             raise ValueError(
@@ -193,7 +196,7 @@ class Solution(NamedBaseEntity[models.Solution]):
             models.CreateNamedSelectionRequest(solution_id=self.id, named_selection=definition)
         )
         self._get()
-        return pb_ns
+        return proto_to_named_selection(pb_ns)
 
     def delete_named_selection(self, id: str) -> None:
         """Delete a named selection by ID."""
@@ -203,12 +206,13 @@ class Solution(NamedBaseEntity[models.Solution]):
         self._get()
 
     def update_named_selection(
-        self, definition: models.NamedSelectionCreate | models.NamedSelection
-    ) -> models.NamedSelection:
+        self, definition: models.NamedSelectionCreate | NamedSelection
+    ) -> NamedSelection:
         """Update a named selection."""
         ns_def = definition
-        if isinstance(definition, models.NamedSelection):
-            ns_def = _clone_msg_to_compatible_type(definition, models.NamedSelectionCreate)
+        if isinstance(definition, NamedSelection):
+            proto_ns = named_selection_to_proto(definition)
+            ns_def = _clone_msg_to_compatible_type(proto_ns, models.NamedSelectionCreate)
 
         pb_ns = self._client._solution_stub.UpdateNamedSelection(
             models.UpdateNamedSelectionRequest(
@@ -216,7 +220,7 @@ class Solution(NamedBaseEntity[models.Solution]):
             )
         )
         self._get()
-        return pb_ns
+        return proto_to_named_selection(pb_ns)
 
     @property
     def result_provider(self) -> models.ResultProvider:
@@ -297,9 +301,12 @@ class Solution(NamedBaseEntity[models.Solution]):
         return self._pb.mesh_graphics_options
 
     @property
-    def named_selections(self) -> list[models.NamedSelection]:
+    def named_selections(self) -> list[NamedSelection]:
         """Named selections."""
-        return list(self._pb.named_selections)
+        return [
+            proto_to_named_selection(named_selection)
+            for named_selection in self._pb.named_selections
+        ]
 
     @property
     def available_custom_selections(self) -> list:
