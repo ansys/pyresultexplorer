@@ -49,6 +49,12 @@ from ansys.result_explorer.core.examples import (
     get_example_file,
     get_example_snapshot_settings,
 )
+from ansys.result_explorer.core.objects.named_selection import (
+    IdsScoping,
+    NamedSelectionCreate,
+    NamedSelectionType,
+    Range,
+)
 
 # %%
 # Launch Result Explorer
@@ -94,18 +100,24 @@ print(f"Using timesteps (set IDs): {set_id_1}, {set_id_2}")
 # ------------------------
 # Create named selections based on element IDs for filtering results.
 ns_1 = sol.create_named_selection(
-    models.NamedSelectionCreate(
+    NamedSelectionCreate(
         name="Elements NS 1",
-        type=models.NamedSelectionType.NAMED_SELECTION_TYPE_ELEMENT,
-        element_ids=[models.IdsScoping(range=models.Range(min=23, max=28))],
+        type=NamedSelectionType.ELEMENT,
+        solver_named_selections=[],
+        bodies=[],
+        node_ids=[],
+        element_ids=[IdsScoping(range=Range(min=23, max=28))],
     )
 )
 
 ns_2 = sol.create_named_selection(
-    models.NamedSelectionCreate(
+    NamedSelectionCreate(
         name="Elements NS 2",
-        type=models.NamedSelectionType.NAMED_SELECTION_TYPE_ELEMENT,
-        element_ids=[models.IdsScoping(values=[3, 4, 7, 8, 9, 11, 13, 15, 17, 19])],
+        type=NamedSelectionType.ELEMENT,
+        solver_named_selections=[],
+        bodies=[],
+        node_ids=[],
+        element_ids=[IdsScoping(values=[3, 4, 7, 8, 9, 11, 13, 15, 17, 19])],
     )
 )
 

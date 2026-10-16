@@ -17,13 +17,127 @@
 import logging
 
 import pytest
-from google.protobuf.json_format import MessageToDict
 
 from ansys.result_explorer.core import models
 from ansys.result_explorer.core.exceptions import ResultExplorerError
 from ansys.result_explorer.core.objects import Solution
+from ansys.result_explorer.core.objects.named_selection import (
+    IdsScoping,
+    NamedSelection,
+    NamedSelectionCreate,
+    NamedSelectionType,
+    PropertyScoping,
+    Range,
+    named_selection_create_to_proto,
+    named_selection_to_proto,
+    proto_to_named_selection,
+    proto_to_named_selection_create,
+)
 
 log = logging.getLogger(__name__)
+
+
+def test_named_selection_proto_conversion():
+    named_selection = NamedSelection(
+        id="selection-1",
+        type=NamedSelectionType.MESH_PROPERTY,
+        name="Materials",
+        description="Selected materials",
+        solver_named_selections=["_ELMISC"],
+        bodies=[{"name": "Body 1", "id": "body-1"}],
+        node_ids=[IdsScoping(values=[1, 2])],
+        element_ids=[IdsScoping(values=[], range=Range(min=3, max=5))],
+        property_ids=PropertyScoping(
+            name="mat",
+            ids=[IdsScoping(values=[7], range=Range(min=7))],
+        ),
+        creation_time="2026-10-16T00:00:00Z",
+        location="Elemental",
+        size=0,
+        readonly=False,
+    )
+
+    converted = proto_to_named_selection(named_selection_to_proto(named_selection))
+
+    assert converted.id == named_selection.id
+    assert converted.type == named_selection.type
+    assert converted.name == named_selection.name
+    assert converted.description == named_selection.description
+    assert converted.solver_named_selections == named_selection.solver_named_selections
+    assert converted.bodies == named_selection.bodies
+    assert converted.node_ids[0].values == [1, 2]
+    assert converted.element_ids[0].range.min == 3
+    assert converted.element_ids[0].range.max == 5
+    assert converted.property_ids.name == "mat"
+    assert converted.property_ids.ids[0].range.min == 7
+    assert converted.creation_time == named_selection.creation_time
+    assert converted.location == named_selection.location
+    assert converted.size == 0
+    assert converted.readonly is False
+
+
+def test_proto_to_named_selection_preserves_absent_optional_fields():
+    proto = models.NamedSelection(
+        id="selection-1",
+        type=models.NamedSelectionType.NAMED_SELECTION_TYPE_ELEMENT,
+    )
+
+    named_selection = proto_to_named_selection(proto)
+
+    assert named_selection.name is None
+    assert named_selection.description is None
+    assert named_selection.property_ids is None
+    assert named_selection.creation_time is None
+    assert named_selection.location is None
+    assert named_selection.size is None
+    assert named_selection.readonly is None
+
+
+def test_named_selection_create_proto_conversion():
+    named_selection = NamedSelectionCreate(
+        type=NamedSelectionType.MESH_PROPERTY,
+        solver_named_selections=["_ELMISC"],
+        bodies=[{"name": "Body 1", "id": "body-1"}],
+        node_ids=[IdsScoping(values=[1, 2])],
+        element_ids=[IdsScoping(values=[], range=Range(min=3, max=5))],
+        name="Materials",
+        description="Selected materials",
+        property_ids=PropertyScoping(
+            name="mat",
+            ids=[IdsScoping(values=[7], range=Range(min=7))],
+        ),
+        id="selection-1",
+        readonly=False,
+    )
+
+    converted = proto_to_named_selection_create(named_selection_create_to_proto(named_selection))
+
+    assert converted.type == named_selection.type
+    assert converted.solver_named_selections == named_selection.solver_named_selections
+    assert converted.bodies == named_selection.bodies
+    assert converted.node_ids[0].values == [1, 2]
+    assert converted.element_ids[0].range.min == 3
+    assert converted.element_ids[0].range.max == 5
+    assert converted.name == named_selection.name
+    assert converted.description == named_selection.description
+    assert converted.property_ids.name == "mat"
+    assert converted.property_ids.ids[0].range.min == 7
+    assert converted.id == named_selection.id
+    assert converted.readonly is False
+
+
+def test_proto_to_named_selection_create_preserves_absent_optional_fields():
+    proto = models.NamedSelectionCreate(
+        type=models.NamedSelectionType.NAMED_SELECTION_TYPE_ELEMENT,
+    )
+
+    named_selection = proto_to_named_selection_create(proto)
+
+    assert named_selection.name is None
+    assert named_selection.description is None
+    assert named_selection.property_ids is None
+    assert named_selection.id is None
+    assert named_selection.readonly is None
 
 
 def test_named_selections(multiple_connections_solution: Solution):
@@ -32,25 +146,24 @@ def test_named_selections(multiple_connections_solution: Solution):
     sol = multiple_connections_solution
 
     # create a new named selection
-    named_selection = models.NamedSelectionCreate(
+    named_selection = NamedSelectionCreate(
         name="My NS",
-        type=models.NamedSelectionType.NAMED_SELECTION_TYPE_ELEMENT,
+        type=NamedSelectionType.ELEMENT,
+        solver_named_selections=[],
+        bodies=[],
+        node_ids=[],
         element_ids=[
-            models.IdsScoping(
-                values=[1, 2, 3, 4, 5],
-            ),
+            IdsScoping(values=[1, 2, 3, 4, 5]),
         ],
     )
 
-    # to dict and print
-    named_selection_dict = MessageToDict(named_selection, always_print_fields_with_no_presence=True)
-    log.info(f"Creating named selection with data: {named_selection_dict}")
+    log.info("Creating named selection with data: %s", named_selection)
 
     named_selection = sol.create_named_selection(named_selection)
 
     assert named_selection.id is not None
     assert named_selection.name == "My NS"
-    assert named_selection.type == models.NamedSelectionType.NAMED_SELECTION_TYPE_ELEMENT
+    assert named_selection.type == NamedSelectionType.ELEMENT
     assert named_selection.element_ids[0].values == [1, 2, 3, 4, 5]
     assert named_selection.size == 5
 
@@ -64,7 +177,7 @@ def test_named_selections(multiple_connections_solution: Solution):
     # update the named selection
     named_selection.name = "Updated NS"
     named_selection.element_ids.clear()
-    named_selection.element_ids.append(models.IdsScoping(range=models.Range(min=6, max=10)))
+    named_selection.element_ids.append(IdsScoping(range=Range(min=6, max=10)))
     named_selection = sol.update_named_selection(named_selection)
 
     assert named_selection.name == "Updated NS"
@@ -96,13 +209,15 @@ def test_named_selection_types(multiple_connections_solution: Solution):
     solid186_bodies = []
     for body in bodies:
         if "SOLID186" in body.element_types:
-            string_map = models.StringMap(string_map=body.labels)
-            solid186_bodies.append(string_map)
+            solid186_bodies.append(body.labels)
 
     # create a new named selection
-    named_selection = models.NamedSelectionCreate(
+    named_selection = NamedSelectionCreate(
         name="Selection-SOLID186",
-        type=models.NamedSelectionType.NAMED_SELECTION_TYPE_BODY,
+        type=NamedSelectionType.BODY,
+        solver_named_selections=[],
+        node_ids=[],
+        element_ids=[],
         bodies=solid186_bodies,
     )
 
@@ -111,41 +226,42 @@ def test_named_selection_types(multiple_connections_solution: Solution):
         _ = sol.create_named_selection(named_selection)
 
     # -- create node named selection --
-    named_selection = models.NamedSelectionCreate(
+    named_selection = NamedSelectionCreate(
         name="Selection-Nodes",
-        type=models.NamedSelectionType.NAMED_SELECTION_TYPE_NODE,
+        type=NamedSelectionType.NODE,
+        solver_named_selections=[],
+        bodies=[],
+        element_ids=[],
         node_ids=[
-            models.IdsScoping(
-                values=[59, 60, 61, 62],
-            ),
+            IdsScoping(values=[59, 60, 61, 62]),
         ],
     )
 
     named_selection = sol.create_named_selection(named_selection)
     assert named_selection.id is not None
     assert named_selection.name == "Selection-Nodes"
-    assert named_selection.type == models.NamedSelectionType.NAMED_SELECTION_TYPE_NODE
+    assert named_selection.type == NamedSelectionType.NODE
     assert named_selection.size == 4
     assert named_selection.location == "Nodal"
 
     # -- create a mesh property named selection --
-    named_selection = models.NamedSelectionCreate(
+    named_selection = NamedSelectionCreate(
         name="Selection-MeshProperty",
-        type=models.NamedSelectionType.NAMED_SELECTION_TYPE_MESH_PROPERTY,
-        property_ids=models.PropertyScoping(
+        type=NamedSelectionType.MESH_PROPERTY,
+        solver_named_selections=[],
+        bodies=[],
+        node_ids=[],
+        element_ids=[],
+        property_ids=PropertyScoping(
             name="mat",
-            ids=[
-                models.IdsScoping(
-                    values=[2, 4],
-                )
-            ],
+            ids=[IdsScoping(values=[2, 4])],
         ),
     )
 
     named_selection = sol.create_named_selection(named_selection)
     assert named_selection.id is not None
     assert named_selection.name == "Selection-MeshProperty"
-    assert named_selection.type == models.NamedSelectionType.NAMED_SELECTION_TYPE_MESH_PROPERTY
+    assert named_selection.type == NamedSelectionType.MESH_PROPERTY
     assert named_selection.size == 27 + 27
     assert named_selection.location == "Elemental"
 
@@ -159,9 +275,12 @@ def test_named_selection_types(multiple_connections_solution: Solution):
     assert fixedsu_ns.location == "Nodal"
     assert fixedsu_ns.size == 80
 
-    named_selection = models.NamedSelectionCreate(
+    named_selection = NamedSelectionCreate(
         name="Selection-SolverNS",
-        type=models.NamedSelectionType.NAMED_SELECTION_TYPE_SOLVER_NAMED_SELECTION,
+        type=NamedSelectionType.SOLVER_NAMED_SELECTION,
+        bodies=[],
+        node_ids=[],
+        element_ids=[],
         solver_named_selections=[
             "_ELMISC",
             "_FIXEDSU",
