@@ -37,8 +37,12 @@ timesteps for visualization.
 from ansys.result_explorer.core import (
     Component,
     Field,
+    IdsScoping,
     Location,
+    NamedSelectionCreate,
+    NamedSelectionType,
     PlotDefinition,
+    Range,
     ResultFieldName,
     ResultType,
     launch_result_explorer,
@@ -48,12 +52,6 @@ from ansys.result_explorer.core.examples import (
     ExampleKeys,
     get_example_file,
     get_example_snapshot_settings,
-)
-from ansys.result_explorer.core.objects.named_selection import (
-    IdsScoping,
-    NamedSelectionCreate,
-    NamedSelectionType,
-    Range,
 )
 
 # %%
