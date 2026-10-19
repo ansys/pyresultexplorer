@@ -20,6 +20,7 @@ from .base import BaseEntity, NamedBaseEntity
 from .camera_position import CameraPosition
 from .chart_definition import ChartDefinition, ChartResult, Filter
 from .layout import ViewportPlacement, WorkspaceLayout
+from .named_selection import NamedSelection, NamedSelectionCreate
 from .plot_definition import (
     Component,
     Field,
@@ -56,6 +57,8 @@ __all__ = [
     "LogsViewportSettings",
     "MeshViewportSettings",
     "NamedBaseEntity",
+    "NamedSelection",
+    "NamedSelectionCreate",
     "PlotViewportSettings",
     "PlotViewportMetadata",
     "ThreeDViewportSettings",
