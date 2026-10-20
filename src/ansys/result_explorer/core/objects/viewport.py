@@ -33,6 +33,7 @@ from google.protobuf.json_format import MessageToDict, ParseDict
 from .. import models
 from .base import BaseEntity
 from .camera_position import CameraPosition
+from .named_selection import NamedSelection
 
 if TYPE_CHECKING:
     from ..client import Client
@@ -784,7 +785,7 @@ class MeshViewportSettings(ThreeDViewportSettings):
         return self._wrap("shownNamedSelectionId", self._pb_obj["shownNamedSelectionId"])
 
     @visible_named_selection.setter
-    def visible_named_selection(self, value: str | models.NamedSelection | None) -> None:
+    def visible_named_selection(self, value: str | NamedSelection | None) -> None:
         """Set the visible named selection in this viewport.
 
         Parameters
@@ -804,7 +805,7 @@ class MeshViewportSettings(ThreeDViewportSettings):
         solution = self._client.get_solution(self._solution_id)
 
         ns = None
-        if isinstance(value, models.NamedSelection):
+        if isinstance(value, NamedSelection):
             ns = value
 
         if ns is None:
