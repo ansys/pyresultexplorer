@@ -1,0 +1,6 @@
+results
+=======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ChartDefinition.results

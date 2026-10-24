@@ -1,0 +1,6 @@
+SYSTEM\_DEFAULT
+===============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: BrowserType.SYSTEM_DEFAULT

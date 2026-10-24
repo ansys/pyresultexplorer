@@ -1,0 +1,6 @@
+server\_process
+===============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: ResultExplorerInstance.server_process

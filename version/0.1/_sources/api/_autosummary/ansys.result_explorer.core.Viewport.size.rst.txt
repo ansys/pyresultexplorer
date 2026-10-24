@@ -1,0 +1,6 @@
+size
+====
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Viewport.size

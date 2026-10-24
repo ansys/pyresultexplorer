@@ -1,0 +1,6 @@
+definition
+==========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: ChartView.definition

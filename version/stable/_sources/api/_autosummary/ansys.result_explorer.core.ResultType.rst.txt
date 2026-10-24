@@ -1,0 +1,54 @@
+﻿ResultType
+==========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: ResultType
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ResultType.displacement
+      ResultType.stress
+      ResultType.nodal_stress
+      ResultType.elastic_strain
+      ResultType.nodal_elastic_strain
+      ResultType.plastic_strain
+      ResultType.nodal_plastic_strain
+      ResultType.equivalent_nodal_plastic_strain
+      ResultType.temperature
+      ResultType.heat_flux
+      ResultType.equivalent_plastic_strain
+      ResultType.velocity
+      ResultType.acceleration
+      ResultType.user_defined
+      ResultType.global_energy
+      ResultType.contact
+      ResultType.failure
+      ResultType.electric_potential
+      ResultType.electric_field
+      ResultType.electric_flux_density
+      ResultType.newton_raphson_residual
+      ResultType.structural_temperature
+      ResultType.thermal_strain
+      ResultType.strain_energy
+      ResultType.kinetic_energy
+      ResultType.beam_results
+   
+   

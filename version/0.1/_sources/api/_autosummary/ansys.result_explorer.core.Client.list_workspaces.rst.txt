@@ -1,0 +1,6 @@
+list\_workspaces
+================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Client.list_workspaces

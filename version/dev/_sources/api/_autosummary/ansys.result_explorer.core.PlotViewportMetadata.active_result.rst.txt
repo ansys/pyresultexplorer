@@ -1,0 +1,6 @@
+active\_result
+==============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: PlotViewportMetadata.active_result

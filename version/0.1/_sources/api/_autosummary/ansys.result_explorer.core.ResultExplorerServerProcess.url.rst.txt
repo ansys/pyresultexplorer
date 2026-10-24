@@ -1,0 +1,6 @@
+url
+===
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: ResultExplorerServerProcess.url

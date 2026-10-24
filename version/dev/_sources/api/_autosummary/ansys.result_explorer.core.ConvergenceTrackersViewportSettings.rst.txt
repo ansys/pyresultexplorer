@@ -1,0 +1,29 @@
+﻿ConvergenceTrackersViewportSettings
+===================================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: ConvergenceTrackersViewportSettings
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ConvergenceTrackersViewportSettings.selected_tracker_name
+   
+   

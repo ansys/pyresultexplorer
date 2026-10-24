@@ -1,0 +1,34 @@
+﻿MeshView
+========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: MeshView
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      MeshView.id
+      MeshView.name
+      MeshView.options
+      MeshView.parent
+      MeshView.solution
+      MeshView.type
+   
+   

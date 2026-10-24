@@ -1,0 +1,6 @@
+elastic\_strain\_tensor\_fiber
+==============================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultFieldName.elastic_strain_tensor_fiber

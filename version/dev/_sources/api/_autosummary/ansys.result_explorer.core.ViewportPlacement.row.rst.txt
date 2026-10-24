@@ -1,0 +1,6 @@
+row
+===
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ViewportPlacement.row

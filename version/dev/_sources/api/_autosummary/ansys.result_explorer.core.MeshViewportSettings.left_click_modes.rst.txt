@@ -1,0 +1,6 @@
+left\_click\_modes
+==================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: MeshViewportSettings.left_click_modes

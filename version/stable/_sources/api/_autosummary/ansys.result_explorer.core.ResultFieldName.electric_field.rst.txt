@@ -1,0 +1,6 @@
+electric\_field
+===============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultFieldName.electric_field

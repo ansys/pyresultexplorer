@@ -1,0 +1,6 @@
+acceleration
+============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultType.acceleration

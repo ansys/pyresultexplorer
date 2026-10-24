@@ -1,0 +1,6 @@
+solver\_named\_selections
+=========================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.solver_named_selections

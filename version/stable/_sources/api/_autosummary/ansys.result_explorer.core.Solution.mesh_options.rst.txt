@@ -1,0 +1,6 @@
+mesh\_options
+=============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.mesh_options

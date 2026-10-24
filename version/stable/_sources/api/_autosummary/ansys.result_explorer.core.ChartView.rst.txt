@@ -1,0 +1,34 @@
+﻿ChartView
+=========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: ChartView
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ChartView.definition
+      ChartView.id
+      ChartView.name
+      ChartView.parent
+      ChartView.solution
+      ChartView.type
+   
+   

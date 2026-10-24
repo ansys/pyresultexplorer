@@ -1,0 +1,6 @@
+placements
+==========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: WorkspaceLayout.placements

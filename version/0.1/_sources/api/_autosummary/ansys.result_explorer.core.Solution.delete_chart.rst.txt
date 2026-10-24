@@ -1,0 +1,6 @@
+delete\_chart
+=============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Solution.delete_chart
