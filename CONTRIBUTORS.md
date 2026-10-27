@@ -6,5 +6,6 @@
 
 ## Individual Contributors
 
+* [Mads Bisgaard](https://github.com/mads-bisgaard)
 * [Muhammed Adedigba](https://github.com/moe-ad)
 * [Roberto Pastor Muela](https://github.com/RobPasMue)
