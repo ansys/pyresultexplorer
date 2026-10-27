@@ -14,12 +14,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Data models and protobuf converters for named selections."""
+"""Data models and protobuf converters for named selections.
+
+Integer annotations describe protobuf bounds without runtime validation.
+"""
 
 from dataclasses import dataclass, field
 from enum import IntEnum
+from typing import Annotated
+
+from annotated_types import Ge, Le
 
 from .. import models
+
+Int32 = Annotated[int, Ge(-(2**31)), Le(2**31 - 1)]
 
 
 class NamedSelectionType(IntEnum):
@@ -44,7 +52,7 @@ class Range:
 class IdsScoping:
     """Stores explicit IDs or a numeric range."""
 
-    values: list[int] = field(default_factory=list)
+    values: list[Int32] = field(default_factory=list)
     range: Range | None = None
 
 
@@ -71,7 +79,7 @@ class NamedSelection:
     property_ids: PropertyScoping | None = None
     creation_time: str | None = None
     location: str | None = None
-    size: int | None = None
+    size: Int32 | None = None
     readonly: bool | None = None
 
 

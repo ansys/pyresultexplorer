@@ -14,13 +14,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Plot definition objects."""
+"""Plot definition objects.
+
+Integer annotations describe protobuf bounds without runtime validation.
+"""
 
 from dataclasses import dataclass, field
 from enum import StrEnum
 
 from ansys.result_explorer.core import models
 from ansys.result_explorer.core.exceptions import ResultExplorerError
+
+from .named_selection import Int32
 
 
 class ResultType(StrEnum):
@@ -172,6 +177,9 @@ class ShellPosition(StrEnum):
     middle = "middle"
     bottom = "bottom"
     all = "all"
+    min = "min"
+    max = "max"
+    average = "average"
 
 
 @dataclass
@@ -188,11 +196,11 @@ class PlotDefinition:
     mesh_scoping: models.NamedSelectionDefinition | None = None
     named_selection_id: str | None = None
     # custom_selections: list[CustomSelection] | None = None
-    set_ids: list[int] | None = None
+    set_ids: list[Int32] | None = None
     all_sets: bool | None = False
     last_set: bool | None = True
     script: str | None = None
-    custom_options: dict[str, int | float | str | bool] | None = field(default_factory=dict)
+    custom_options: dict[str, Int32 | float | str | bool] | None = field(default_factory=dict)
     include_displacement: bool | None = False
     shell_position: ShellPosition | None = ShellPosition.top
     id: str | None = None
