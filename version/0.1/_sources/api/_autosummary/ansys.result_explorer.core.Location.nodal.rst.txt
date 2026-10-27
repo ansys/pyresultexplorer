@@ -1,0 +1,6 @@
+nodal
+=====
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: Location.nodal

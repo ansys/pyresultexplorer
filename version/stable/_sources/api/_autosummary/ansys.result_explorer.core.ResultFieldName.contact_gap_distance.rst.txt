@@ -1,0 +1,6 @@
+contact\_gap\_distance
+======================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultFieldName.contact_gap_distance

@@ -1,0 +1,6 @@
+delete\_named\_selection
+========================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Solution.delete_named_selection

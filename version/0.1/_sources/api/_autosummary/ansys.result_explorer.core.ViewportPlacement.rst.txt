@@ -1,0 +1,40 @@
+﻿ViewportPlacement
+=================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: ViewportPlacement
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      ViewportPlacement.covers
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ViewportPlacement.viewport
+      ViewportPlacement.row
+      ViewportPlacement.column
+      ViewportPlacement.row_span
+      ViewportPlacement.column_span
+      ViewportPlacement.x
+      ViewportPlacement.y
+      ViewportPlacement.width
+      ViewportPlacement.height
+   
+   

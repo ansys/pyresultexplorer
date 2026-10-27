@@ -1,0 +1,6 @@
+display\_options
+================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Viewport.display_options

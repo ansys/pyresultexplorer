@@ -1,0 +1,6 @@
+front
+=====
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: CameraPosition.front

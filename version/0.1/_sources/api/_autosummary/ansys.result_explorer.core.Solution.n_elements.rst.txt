@@ -1,0 +1,6 @@
+n\_elements
+===========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.n_elements

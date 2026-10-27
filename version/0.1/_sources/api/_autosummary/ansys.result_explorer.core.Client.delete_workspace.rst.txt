@@ -1,0 +1,6 @@
+delete\_workspace
+=================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Client.delete_workspace

@@ -1,0 +1,103 @@
+﻿Solution
+========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: Solution
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      Solution.create_chart
+      
+      
+      Solution.create_named_selection
+      
+      
+      Solution.create_plot
+      
+      
+      Solution.delete_chart
+      
+      
+      Solution.delete_named_selection
+      
+      
+      Solution.delete_plot
+      
+      
+      Solution.get_solver_out_content
+      
+      
+      Solution.update_chart
+      
+      
+      Solution.update_named_selection
+      
+      
+      Solution.update_plot
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Solution.analysis_type
+      Solution.available_custom_selections
+      Solution.available_mesh_properties
+      Solution.available_results
+      Solution.available_trackers
+      Solution.bodies
+      Solution.cache_plot_data
+      Solution.chart_views
+      Solution.charts
+      Solution.configurable_charts
+      Solution.configurable_plots
+      Solution.contact_trackers_view
+      Solution.convergence_trackers_view
+      Solution.creation_time
+      Solution.description
+      Solution.distance_unit
+      Solution.element_groups
+      Solution.errors
+      Solution.files
+      Solution.id
+      Solution.live
+      Solution.logs_view
+      Solution.mesh_options
+      Solution.mesh_view
+      Solution.n_elements
+      Solution.n_nodes
+      Solution.n_results
+      Solution.n_sets
+      Solution.name
+      Solution.named_selections
+      Solution.outdated
+      Solution.physics_type
+      Solution.plot_views
+      Solution.plots
+      Solution.ready
+      Solution.result_provider
+      Solution.solver_named_selections
+      Solution.solver_text_outputs
+      Solution.solver_version
+      Solution.time_frequencies
+      Solution.time_frequencies_unit
+      Solution.unit_system
+      Solution.unsupported_element_types
+      Solution.views
+      Solution.warnings
+   
+   

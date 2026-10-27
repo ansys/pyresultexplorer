@@ -1,0 +1,6 @@
+ssl
+===
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ServerLaunchConfig.ssl

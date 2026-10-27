@@ -1,0 +1,6 @@
+charts
+======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.charts

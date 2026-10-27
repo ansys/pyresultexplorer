@@ -1,0 +1,6 @@
+global\_internal\_energy
+========================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultFieldName.global_internal_energy

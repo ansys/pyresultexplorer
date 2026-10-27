@@ -1,0 +1,6 @@
+distance\_unit
+==============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.distance_unit

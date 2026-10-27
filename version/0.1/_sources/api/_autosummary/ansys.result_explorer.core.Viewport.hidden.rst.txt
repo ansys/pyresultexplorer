@@ -1,0 +1,6 @@
+hidden
+======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Viewport.hidden

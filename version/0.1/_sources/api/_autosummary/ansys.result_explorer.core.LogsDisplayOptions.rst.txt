@@ -1,0 +1,29 @@
+﻿LogsDisplayOptions
+==================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: LogsDisplayOptions
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      LogsDisplayOptions.log_path
+   
+   

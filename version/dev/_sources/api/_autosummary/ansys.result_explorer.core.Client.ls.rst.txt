@@ -1,0 +1,6 @@
+ls
+==
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Client.ls

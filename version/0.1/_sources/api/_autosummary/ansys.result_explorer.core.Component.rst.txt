@@ -1,0 +1,40 @@
+﻿Component
+=========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: Component
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Component.X
+      Component.Y
+      Component.Z
+      Component.P1
+      Component.P2
+      Component.P3
+      Component.XX
+      Component.YY
+      Component.ZZ
+      Component.XY
+      Component.YZ
+      Component.XZ
+   
+   

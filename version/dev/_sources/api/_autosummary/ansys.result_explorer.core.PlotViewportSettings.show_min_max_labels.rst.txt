@@ -1,0 +1,6 @@
+show\_min\_max\_labels
+======================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: PlotViewportSettings.show_min_max_labels

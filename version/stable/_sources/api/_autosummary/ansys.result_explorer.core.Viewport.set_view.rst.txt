@@ -1,0 +1,6 @@
+set\_view
+=========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Viewport.set_view

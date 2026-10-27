@@ -1,0 +1,6 @@
+playwright\_page
+================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: ResultExplorerWebSession.playwright_page

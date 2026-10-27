@@ -1,0 +1,6 @@
+export\_as\_template
+====================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Workspace.export_as_template

@@ -1,0 +1,6 @@
+set\_sync
+=========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Workspace.set_sync

@@ -1,0 +1,6 @@
+contact\_penetration
+====================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultFieldName.contact_penetration

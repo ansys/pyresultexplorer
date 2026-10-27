@@ -1,0 +1,6 @@
+total\_velocity
+===============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultFieldName.total_velocity

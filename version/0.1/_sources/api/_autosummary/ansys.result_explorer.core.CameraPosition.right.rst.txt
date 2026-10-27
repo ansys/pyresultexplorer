@@ -1,0 +1,6 @@
+right
+=====
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: CameraPosition.right

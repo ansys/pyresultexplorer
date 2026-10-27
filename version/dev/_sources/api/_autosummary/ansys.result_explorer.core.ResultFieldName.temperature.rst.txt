@@ -1,0 +1,6 @@
+temperature
+===========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultFieldName.temperature
