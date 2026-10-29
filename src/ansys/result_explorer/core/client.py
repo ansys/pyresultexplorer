@@ -19,8 +19,10 @@
 import base64
 import json
 import warnings
+from collections.abc import Iterator
 from functools import wraps
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 from typing import TYPE_CHECKING
 
 import grpc
@@ -133,6 +135,7 @@ class Client:
             self._grpc_metadata.extend(custom_headers)
 
         target = f"{self._host}:{self._grpc_port}"
+        channel_options = (("grpc.max_receive_message_length", -1),)
 
         wrapper_metadata = self._grpc_metadata
 
@@ -142,12 +145,12 @@ class Client:
                 UnsecureConnectionWarning,
                 stacklevel=2,
             )
-            self._channel = grpc.insecure_channel(target)
+            self._channel = grpc.insecure_channel(target, options=channel_options)
         elif ca_cert_path is not None:
             with open(ca_cert_path, "rb") as f:
                 trusted_ca = f.read()
             ssl_credentials = grpc.ssl_channel_credentials(root_certificates=trusted_ca)
-            self._channel = grpc.secure_channel(target, ssl_credentials)
+            self._channel = grpc.secure_channel(target, ssl_credentials, options=channel_options)
         else:
             raise ResultExplorerError(
                 "Secure gRPC mode selected but no CA certificate has been provided."
@@ -760,38 +763,83 @@ class Client:
         """
         return self._app_stub.UpdateAppSettings(settings)
 
-    def save_session(self, path: str | Path) -> None:
-        """Save the current session to file.
+    def save_session(
+        self,
+        path: str | Path,
+        *,
+        include_cached_data: bool = True,
+        compression_level: int = 0,
+        precision: int = models.GraphicsPrecision.GRAPHICS_PRECISION_FULL,
+    ) -> None:
+        """Stream the current session to a ZIP-based session file.
 
         Parameters
         ----------
         path : str | Path
-            Path to save the session file. Should end with .rxs extension.
+            Local destination path. The ``.rxs`` extension is appended
+            if missing. An existing file is replaced only on success.
+        include_cached_data : bool, optional
+            Include cached view data. Defaults to ``True``.
+        compression_level : int, optional
+            ZIP compression level for cached graphics, from 0 to 9.
+            Defaults to 0 (no compression).
+        precision : int, optional
+            A ``models.GraphicsPrecision`` value. Defaults to full.
+
+        Examples
+        --------
+        >>> client.save_session("session.rxs")  # doctest: +SKIP
 
         """
+        request = models.SaveSessionRequest(
+            include_cached_data=include_cached_data,
+            compression_level=compression_level,
+            precision=precision,
+        )
         path = Path(path)
         if path.suffix != RX_SESSION_EXTENSION:
             path = path.with_suffix(path.suffix + RX_SESSION_EXTENSION)
         path.parent.mkdir(parents=True, exist_ok=True)
-        session = self._app_stub.SaveSession(models.Empty())
-        with open(path, "w") as f:
-            f.write(session.data)
+        temporary_path: Path | None = None
+        try:
+            with NamedTemporaryFile(mode="wb", dir=path.parent, delete=False) as session_file:
+                temporary_path = Path(session_file.name)
+                for chunk in self._app_stub.SaveSessionStream(request):
+                    session_file.write(chunk.data)
+            temporary_path.replace(path)
+        except grpc.RpcError as error:
+            raise ResultExplorerError.from_grpc_error(error) from None
+        finally:
+            if temporary_path is not None:
+                temporary_path.unlink(missing_ok=True)
 
     def open_session(self, path: str | Path) -> None:
-        """Open a session from file.
+        """Upload and open a ZIP or legacy JSON session file.
 
         Parameters
         ----------
         path : str | Path
-            Path to the session file. Should end with .rxs extension.
+            Local session file with the ``.rxs`` extension.
+
+        Examples
+        --------
+        >>> client.open_session("session.rxs")  # doctest: +SKIP
 
         """
         path = Path(path)
         if path.suffix != RX_SESSION_EXTENSION:
             raise ValueError(f"Session file should have '{RX_SESSION_EXTENSION}' extension.")
-        with open(path) as f:
-            data = f.read()
-        self._app_stub.OpenSession(models.Session(data=data))
+        with path.open("rb") as session_file:
+
+            def requests() -> Iterator[models.OpenSessionRequest]:
+                yield models.OpenSessionRequest(options=models.SessionImportOptions())
+                while data := session_file.read(256 * 1024):
+                    yield models.OpenSessionRequest(data=data)
+
+            try:
+                self._app_stub.OpenSessionStream(requests())
+            except grpc.RpcError as error:
+                raise ResultExplorerError.from_grpc_error(error) from None
 
 
 def _create_grid_workspace(client: Client, name, rows: int, cols: int):

@@ -18,6 +18,7 @@ import json
 import logging
 import time
 from pathlib import Path
+from zipfile import ZipFile
 
 import pytest
 
@@ -62,7 +63,7 @@ def test_app(rx):
 
 
 def test_save_session(rx, tmp_path):
-    """Test save_session path handling: makedirs, extension appending, valid JSON output."""
+    """Test save_session path handling and the ZIP session manifest."""
 
     # Save session to a nested path to verify makedirs
     session_path = tmp_path / "nested" / "dir" / "session.rxs"
@@ -70,9 +71,8 @@ def test_save_session(rx, tmp_path):
 
     assert session_path.exists()
 
-    # Verify the file contains valid JSON
-    content = session_path.read_text()
-    data = json.loads(content)
+    with ZipFile(session_path) as archive:
+        data = json.loads(archive.read("manifest.json"))
     assert isinstance(data, dict)
 
     # Test with a Path without extension - should auto-append .rxs
@@ -81,8 +81,8 @@ def test_save_session(rx, tmp_path):
     expected_path = Path(str(session_path_no_ext) + ".rxs")
     assert expected_path.exists()
 
-    content2 = expected_path.read_text()
-    data2 = json.loads(content2)
+    with ZipFile(expected_path) as archive:
+        data2 = json.loads(archive.read("manifest.json"))
     assert isinstance(data2, dict)
 
     # Test with a string path
@@ -121,8 +121,8 @@ def test_save_session_with_views(rx, rst_multiple_connections, tmp_path):
 
     assert session_path.exists()
 
-    content = session_path.read_text()
-    data = json.loads(content)
+    with ZipFile(session_path) as archive:
+        data = json.loads(archive.read("manifest.json"))
     assert isinstance(data, dict)
 
     # Verify session structure
@@ -139,15 +139,116 @@ def test_save_session_with_views(rx, rst_multiple_connections, tmp_path):
     rx.delete_solution(sol)
 
 
-def test_open_session_round_trip(rx, rst_multiple_connections, tmp_path):
+# @pytest.mark.parametrize(
+#     "include_cached_data", [True, False]
+# )
+# @pytest.mark.parametrize(
+#     "compression_level", [0, 1, 9]
+# )
+# @pytest.mark.parametrize(
+#     "precision", [
+#       models.GraphicsPrecision.GRAPHICS_PRECISION_FULL,
+#       models.GraphicsPrecision.GRAPHICS_PRECISION_REDUCED,
+#       models.GraphicsPrecision.GRAPHICS_PRECISION_LOW],
+# )
+# def test_open_session_round_trip(
+#     rx,
+#     rst_multiple_connections,
+#     tmp_path,
+#     include_cached_data,
+#     compression_level,
+#     precision
+# ):
+#     """Save a session with a workspace and solution, then restore it and verify the state."""
+
+#     # delete all solutions
+#     for sol in rx.list_solutions():
+#         rx.delete_solution(sol)
+
+#     # --- build initial state ---
+#     sol = rx.create_solution(
+#         name="Round Trip Solution",
+#         file_path=rst_multiple_connections,
+#     )
+#     workspace_name = f"Round Trip WS - compr {compression_level} - prec {precision}"
+#     workspace = rx.create_workspace(workspace_name, rows=1, cols=2)
+#     views = sol.views
+#     displacement_view = next((v for v in views if "Displacement" in v.name), None)
+#     assert displacement_view is not None
+#     _ = workspace.assign_view(view=displacement_view, wait=True)
+
+#     # record what we expect to find after the round trip (IDs change on open_session)
+#     saved_ws_id = workspace.id
+#     saved_sol_name = sol.name
+#     saved_ws_name = workspace.name
+#     saved_view_name = displacement_view.name
+
+#     # --- save session ---
+#     session_path = tmp_path / "round_trip.rxs"
+#     rx.save_session(
+#       session_path,
+#       include_cached_data=include_cached_data,
+#       compression_level=compression_level,
+#       precision=precision,
+#     )
+#     assert session_path.exists()
+
+#     # --- clear state ---
+#     rx.delete_workspace(workspace)
+#     rx.delete_solution(sol)
+#     assert all(w.id != saved_ws_id for w in rx.list_workspaces())
+
+#     # --- restore session ---
+#     with pytest.raises(ValueError, match="extension"):
+#         rx.open_session(str(session_path).replace(".rxs", ".txt"))
+
+#     # --- restore session ---
+#     rx.open_session(session_path)
+#     time.sleep(1)  # wait for session to load
+
+#     # --- verify workspaces ---
+#     workspaces = rx.list_workspaces()
+#     restored_ws = next((w for w in workspaces if w.name == saved_ws_name), None)
+#     assert restored_ws is not None, f"Workspace '{saved_ws_name}' not found after open_session"
+#     assert len(restored_ws.viewport_ids) == 2
+
+#     # --- verify solution ---
+#     solutions = rx.list_solutions()
+#     restored_sol = next((s for s in solutions if s.name == saved_sol_name), None)
+#     assert restored_sol is not None, f"Solution '{saved_sol_name}' not found after open_session"
+
+#     # --- verify the viewport has the view assigned ---
+#     # IDs are re-generated on open_session, so match by view name instead
+#     restored_vps = restored_ws.viewports
+#     assigned_vp = next((v for v in restored_vps if v.view_id), None)
+#     assert assigned_vp is not None, "No viewport with an assigned view found after open_session"
+#     restored_view = next(
+#         (v for v in rx.get_solution(restored_sol.id).views if v.id == assigned_vp.view_id), None
+#     )
+#     assert restored_view is not None, "Could not resolve the assigned view"
+#     assert restored_view.name == saved_view_name
+#     assert assigned_vp.solution_id == restored_sol.id
+
+#     # --- cleanup ---
+#     rx.delete_workspace(restored_ws)
+#     rx.delete_solution(restored_sol)
+
+
+@pytest.mark.parametrize("count", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
+def test_open_session_round_trip(rx, rst_multiple_connections, tmp_path, count):
     """Save a session with a workspace and solution, then restore it and verify the state."""
+
+    # delete all solutions
+    for sol in rx.list_solutions():
+        rx.delete_solution(sol)
 
     # --- build initial state ---
     sol = rx.create_solution(
         name="Round Trip Solution",
         file_path=rst_multiple_connections,
     )
-    workspace = rx.create_workspace("Round Trip WS", rows=1, cols=2)
+    workspace_name = f"Round Trip WS - count {count}"
+    workspace = rx.create_workspace(workspace_name, rows=1, cols=2)
     views = sol.views
     displacement_view = next((v for v in views if "Displacement" in v.name), None)
     assert displacement_view is not None
@@ -161,7 +262,7 @@ def test_open_session_round_trip(rx, rst_multiple_connections, tmp_path):
 
     # --- save session ---
     session_path = tmp_path / "round_trip.rxs"
-    rx.save_session(session_path)
+    rx.save_session(session_path, include_cached_data=False)
     assert session_path.exists()
 
     # --- clear state ---

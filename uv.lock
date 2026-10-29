@@ -35,7 +35,7 @@ wheels = [
 [[package]]
 name = "ansys-api-result-explorer"
 version = "0.2.dev0"
-source = { git = "https://github.com/ansys/ansys-api-result-explorer?rev=dcd825ed9ce4c2e1c9f1369a4a28d680522f48b4#dcd825ed9ce4c2e1c9f1369a4a28d680522f48b4" }
+source = { git = "https://github.com/ansys/ansys-api-result-explorer?rev=1d62e14094df9a549ddced7de03f3683526a4014#1d62e14094df9a549ddced7de03f3683526a4014" }
 dependencies = [
     { name = "grpcio" },
     { name = "protobuf" },
@@ -89,7 +89,7 @@ examples = [
 [package.metadata]
 requires-dist = [
     { name = "annotated-types", specifier = ">=0.7.0" },
-    { name = "ansys-api-result-explorer", git = "https://github.com/ansys/ansys-api-result-explorer?rev=dcd825ed9ce4c2e1c9f1369a4a28d680522f48b4" },
+    { name = "ansys-api-result-explorer", git = "https://github.com/ansys/ansys-api-result-explorer?rev=1d62e14094df9a549ddced7de03f3683526a4014" },
     { name = "grpcio", specifier = ">=1.63.0" },
     { name = "playwright", marker = "extra == 'playwright'", specifier = ">=1.62.0" },
     { name = "protobuf" },
