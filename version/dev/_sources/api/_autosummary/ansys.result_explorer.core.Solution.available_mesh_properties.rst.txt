@@ -1,0 +1,6 @@
+available\_mesh\_properties
+===========================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.available_mesh_properties

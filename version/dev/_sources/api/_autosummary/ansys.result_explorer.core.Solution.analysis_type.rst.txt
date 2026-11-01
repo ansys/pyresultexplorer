@@ -1,0 +1,6 @@
+analysis\_type
+==============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.analysis_type

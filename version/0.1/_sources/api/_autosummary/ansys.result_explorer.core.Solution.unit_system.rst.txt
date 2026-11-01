@@ -1,0 +1,6 @@
+unit\_system
+============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.unit_system

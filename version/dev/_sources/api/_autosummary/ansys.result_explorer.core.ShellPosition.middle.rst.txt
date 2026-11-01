@@ -1,0 +1,6 @@
+middle
+======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ShellPosition.middle

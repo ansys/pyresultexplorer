@@ -1,0 +1,6 @@
+ZZ
+==
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: Component.ZZ

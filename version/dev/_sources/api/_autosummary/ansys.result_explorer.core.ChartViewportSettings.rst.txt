@@ -1,0 +1,36 @@
+﻿ChartViewportSettings
+=====================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: ChartViewportSettings
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ChartViewportSettings.active_series
+      ChartViewportSettings.chart_names
+      ChartViewportSettings.selected_x_axis
+      ChartViewportSettings.series_names
+      ChartViewportSettings.show_chart
+      ChartViewportSettings.show_legend
+      ChartViewportSettings.show_table
+      ChartViewportSettings.split_direction
+   
+   

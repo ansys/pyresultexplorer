@@ -1,0 +1,6 @@
+kinetic\_energy
+===============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultType.kinetic_energy

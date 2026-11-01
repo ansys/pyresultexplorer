@@ -1,0 +1,6 @@
+from\_proto
+===========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: ChartDefinition.from_proto

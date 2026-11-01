@@ -1,0 +1,6 @@
+sync\_time\_freq
+================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Workspace.sync_time_freq

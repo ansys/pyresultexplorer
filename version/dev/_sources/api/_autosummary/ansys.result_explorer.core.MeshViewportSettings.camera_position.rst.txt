@@ -1,0 +1,6 @@
+camera\_position
+================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: MeshViewportSettings.camera_position

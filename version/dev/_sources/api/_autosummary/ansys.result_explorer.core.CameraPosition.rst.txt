@@ -1,0 +1,70 @@
+﻿CameraPosition
+==============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: CameraPosition
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      CameraPosition.back
+      
+      
+      CameraPosition.bottom
+      
+      
+      CameraPosition.front
+      
+      
+      CameraPosition.isometric
+      
+      
+      CameraPosition.left
+      
+      
+      CameraPosition.right_view
+      
+      
+      CameraPosition.rotate_x
+      
+      
+      CameraPosition.rotate_y
+      
+      
+      CameraPosition.rotate_z
+      
+      
+      CameraPosition.top
+      
+      
+      CameraPosition.with_translation
+      
+      
+      CameraPosition.with_zoom
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      CameraPosition.forward
+      CameraPosition.matrix
+      CameraPosition.right
+      CameraPosition.translation
+      CameraPosition.up
+      CameraPosition.zoom
+   
+   

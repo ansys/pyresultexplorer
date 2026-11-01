@@ -1,0 +1,36 @@
+﻿MeshDisplayOptions
+==================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: MeshDisplayOptions
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      MeshDisplayOptions.camera_position
+      MeshDisplayOptions.expanded_groups
+      MeshDisplayOptions.explode
+      MeshDisplayOptions.explode_direction
+      MeshDisplayOptions.explode_scale_factor
+      MeshDisplayOptions.show_mesh_edges
+      MeshDisplayOptions.visible_bodies
+      MeshDisplayOptions.visible_named_selection
+   
+   

@@ -1,0 +1,6 @@
+selected\_x\_axis
+=================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: ChartViewportSettings.selected_x_axis

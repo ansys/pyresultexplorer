@@ -1,0 +1,6 @@
+nodal\_elastic\_strain
+======================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultType.nodal_elastic_strain

@@ -1,0 +1,6 @@
+web\_url
+========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: ResultExplorerInstance.web_url

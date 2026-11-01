@@ -1,0 +1,29 @@
+﻿LogsViewportSettings
+====================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: LogsViewportSettings
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      LogsViewportSettings.log_path
+   
+   

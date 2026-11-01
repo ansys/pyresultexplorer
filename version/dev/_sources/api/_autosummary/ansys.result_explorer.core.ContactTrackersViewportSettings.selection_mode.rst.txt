@@ -1,0 +1,6 @@
+selection\_mode
+===============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ContactTrackersViewportSettings.selection_mode

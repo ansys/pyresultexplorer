@@ -1,0 +1,6 @@
+errors
+======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.errors

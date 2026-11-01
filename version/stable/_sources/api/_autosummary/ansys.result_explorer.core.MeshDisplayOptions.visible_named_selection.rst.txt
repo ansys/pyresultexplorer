@@ -1,0 +1,6 @@
+visible\_named\_selection
+=========================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: MeshDisplayOptions.visible_named_selection
