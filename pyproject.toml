@@ -12,7 +12,7 @@ license = "Apache-2.0"
 license-files = [ "LICENSE" ]
 maintainers = [ { name = "Synopsys, Inc. and ANSYS, Inc.", email = "pyansys-core@synopsys.com" } ]
 authors = [ { name = "Synopsys, Inc. and ANSYS, Inc.", email = "pyansys-core@synopsys.com" } ]
-requires-python = ">=3.12,<4.0"
+requires-python = ">=3.12,<3.15"
 classifiers = [
   "Development Status :: 4 - Beta",
   "Operating System :: OS Independent",
