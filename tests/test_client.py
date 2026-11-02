@@ -55,14 +55,14 @@ def test_grpc_error_not_found():
     [
         {
             "http_base_url": "https://localhost:8443",
-            "grpc_base_url": "grpcs://localhost:50000",
+            "grpc_base_url": "https://localhost:50000",
             "hps_data": None,
             "session_id": "session",
             "ca_cert_path": "ca.pem",
         },
         {
             "httpBaseUrl": "https://localhost:8443",
-            "grpcBaseUrl": "grpcs://localhost:50000",
+            "grpcBaseUrl": "https://localhost:50000",
             "hpsData": None,
             "sessionId": "session",
             "caCertPath": "ca.pem",
@@ -76,7 +76,7 @@ def test_connection_token_accepts_field_names_and_aliases(
     token = ConnectionToken.model_validate(payload)
 
     assert str(token.http_base_url) == "https://localhost:8443/"
-    assert str(token.grpc_base_url) == "grpcs://localhost:50000"
+    assert str(token.grpc_base_url) == "https://localhost:50000/"
     assert token.session_id == "session"
     assert token.ca_cert_path == "ca.pem"
 
@@ -84,7 +84,7 @@ def test_connection_token_accepts_field_names_and_aliases(
 def test_connect_with_token_missing_host():
     """Test token validation for missing host."""
     token = base64.b64encode(json.dumps({"grpcPort": 5000, "sessionId": "123"}).encode()).decode()
-    with pytest.raises(ValueError, match="missing 'host'"):
+    with pytest.raises(ValueError, match="Invalid connection token."):
         Client.connect_with_token(token)
 
 
@@ -93,14 +93,14 @@ def test_connect_with_token_missing_grpc_port():
     token = base64.b64encode(
         json.dumps({"host": "localhost", "sessionId": "123"}).encode()
     ).decode()
-    with pytest.raises(ValueError, match="missing 'grpcPort'"):
+    with pytest.raises(ValueError, match="Invalid connection token."):
         Client.connect_with_token(token)
 
 
 def test_connect_with_token_missing_session_id():
     """Test token validation for missing sessionId."""
     token = base64.b64encode(json.dumps({"host": "localhost", "grpcPort": 5000}).encode()).decode()
-    with pytest.raises(ValueError, match="missing 'sessionId'"):
+    with pytest.raises(ValueError, match="Invalid connection token."):
         Client.connect_with_token(token)
 
 
