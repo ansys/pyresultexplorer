@@ -34,7 +34,7 @@ from ansys.api.result_explorer.v0 import (
 from ansys.result_explorer.core import models
 
 from .exceptions import ResultExplorerError, UnsecureConnectionWarning
-from .objects import Solution, Viewport, Workspace
+from .objects import ConnectionToken, Solution, Viewport, Workspace
 
 if TYPE_CHECKING:
     from .launch import ResultExplorerInstance, ResultExplorerWebSession
@@ -292,26 +292,21 @@ class Client:
         """Connect with a base64 encoded json object that contains the connection info."""
         decoded_bytes = base64.b64decode(token)
         json_string = decoded_bytes.decode("utf-8")
-        data = json.loads(json_string)
+        try:
+            connection_token = ConnectionToken.model_validate(json.loads(json_string))
+        except Exception as e:
+            raise ValueError("Invalid connection token.") from e
 
-        host = data.get("host")
-        grpc_port = data.get("grpcPort")
-        session_id = data.get("sessionId")
-        ca_cert_path = data.get("caCertPath")
-
-        if host is None:
-            raise ValueError("Token is missing 'host' information.")
-        if grpc_port is None:
-            raise ValueError("Token is missing 'grpcPort' information.")
-        if session_id is None:
-            raise ValueError("Token is missing 'sessionId' information.")
+        # host and port validation is handled in ConnectionToken
+        assert connection_token.grpc_base_url.host is not None  # noqa: S101
+        assert connection_token.grpc_base_url.port is not None  # noqa: S101
 
         return cls(
-            host=host,
-            grpc_port=grpc_port,
-            session_id=session_id,
-            ca_cert_path=ca_cert_path,
-            insecure=(ca_cert_path is None),
+            host=connection_token.grpc_base_url.host,
+            grpc_port=connection_token.grpc_base_url.port,
+            session_id=connection_token.session_id,
+            ca_cert_path=connection_token.ca_cert_path,
+            insecure=(connection_token.ca_cert_path is None),
         )
 
     @property
@@ -323,7 +318,7 @@ class Client:
             "sessionId": self._session_id,
             "caCertPath": self._ca_cert_path,
         }
-        json_string = json.dumps(data)
+        json_string = ConnectionToken.model_validate(data).model_dump_json()
         encoded_bytes = base64.b64encode(json_string.encode("utf-8"))
         return encoded_bytes.decode("utf-8")
 
