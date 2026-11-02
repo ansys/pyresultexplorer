@@ -98,7 +98,7 @@ GrpcUrl = Annotated[
 class HpsData(BaseModel):
     """Represents HPS data."""
 
-    resource_name: str
+    resource_name: Annotated[str, Field(alias="resourceName")]
 
 
 class ConnectionToken(BaseModel):
