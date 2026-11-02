@@ -19,7 +19,9 @@
 from __future__ import annotations
 
 import weakref
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Annotated
+
+from pydantic import AnyUrl, BaseModel, Field, HttpUrl, UrlConstraints
 
 if TYPE_CHECKING:
     from ..client import Client
@@ -82,3 +84,28 @@ class SubEntity[PBType, ParentType: BaseEntity](NamedBaseEntity[PBType]):
         if parent is None:
             raise RuntimeError(f"Parent of {self} has been garbage collected.")
         return parent
+
+
+GrpcUrl = Annotated[
+    AnyUrl,
+    UrlConstraints(
+        allowed_schemes=["grpc", "grpcs"],
+        host_required=True,
+    ),
+]
+
+
+class HpsData(BaseModel):
+    """Represents HPS data."""
+
+    resource_name: str
+
+
+class ConnectionToken(BaseModel):
+    """Represents a connection token."""
+
+    http_base_url: Annotated[HttpUrl, Field(alias="httpBaseUrl")]
+    grpc_base_url: Annotated[GrpcUrl, Field(alias="grpcBaseUrl")]
+    hps_data: Annotated[HpsData | None, Field(alias="hpsData")] = None
+    session_id: Annotated[str, Field(alias="sessionId")]
+    ca_cert_path: Annotated[str, Field(alias="caCertPath")]
