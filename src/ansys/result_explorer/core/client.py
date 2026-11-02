@@ -17,7 +17,6 @@
 """Result Explorer client for gRPC communication."""
 
 import base64
-import json
 import warnings
 from functools import wraps
 from pathlib import Path
@@ -293,7 +292,7 @@ class Client:
         decoded_bytes = base64.b64decode(token)
         json_string = decoded_bytes.decode("utf-8")
         try:
-            connection_token = ConnectionToken.model_validate(json.loads(json_string))
+            connection_token = ConnectionToken.model_validate_json(json_string)
         except Exception as e:
             raise ValueError("Invalid connection token.") from e
 

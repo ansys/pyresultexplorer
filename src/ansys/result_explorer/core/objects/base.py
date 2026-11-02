@@ -21,7 +21,7 @@ from __future__ import annotations
 import weakref
 from typing import TYPE_CHECKING, Annotated, Self
 
-from pydantic import AnyUrl, BaseModel, ConfigDict, Field, HttpUrl, UrlConstraints, model_validator
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, UrlConstraints, model_validator
 
 if TYPE_CHECKING:
     from ..client import Client
@@ -86,15 +86,6 @@ class SubEntity[PBType, ParentType: BaseEntity](NamedBaseEntity[PBType]):
         return parent
 
 
-GrpcUrl = Annotated[
-    AnyUrl,
-    UrlConstraints(
-        allowed_schemes=["grpc", "grpcs"],
-        host_required=True,
-    ),
-]
-
-
 class HpsData(BaseModel):
     """Represents HPS data."""
 
@@ -107,12 +98,18 @@ class ConnectionToken(BaseModel):
     model_config = ConfigDict(validate_by_name=True, validate_by_alias=True)
 
     http_base_url: Annotated[
-        HttpUrl, Field(alias="httpBaseUrl"), UrlConstraints(host_required=True)
+        HttpUrl,
+        Field(alias="httpBaseUrl"),
+        UrlConstraints(host_required=True, allowed_schemes=["http", "https"]),
     ]
-    grpc_base_url: Annotated[GrpcUrl, Field(alias="grpcBaseUrl")]
+    grpc_base_url: Annotated[
+        HttpUrl,
+        Field(alias="grpcBaseUrl"),
+        UrlConstraints(host_required=True, allowed_schemes=["http", "https"]),
+    ]
     hps_data: Annotated[HpsData | None, Field(alias="hpsData")] = None
     session_id: Annotated[str, Field(alias="sessionId")]
-    ca_cert_path: Annotated[str, Field(alias="caCertPath")]
+    ca_cert_path: Annotated[str | None, Field(alias="caCertPath")] = None
 
     @model_validator(mode="after")
     def validate_ports(self) -> Self:
