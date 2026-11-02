@@ -19,9 +19,9 @@
 from __future__ import annotations
 
 import weakref
-from typing import TYPE_CHECKING, Annotated
+from typing import TYPE_CHECKING, Annotated, Self
 
-from pydantic import AnyUrl, BaseModel, Field, HttpUrl, UrlConstraints
+from pydantic import AnyUrl, BaseModel, Field, HttpUrl, UrlConstraints, model_validator
 
 if TYPE_CHECKING:
     from ..client import Client
@@ -111,3 +111,12 @@ class ConnectionToken(BaseModel):
     hps_data: Annotated[HpsData | None, Field(alias="hpsData")] = None
     session_id: Annotated[str, Field(alias="sessionId")]
     ca_cert_path: Annotated[str, Field(alias="caCertPath")]
+
+    @model_validator(mode="after")
+    def validate_ports(self) -> Self:
+        """Validate that the base URLs have ports."""
+        if self.http_base_url.port is None:
+            raise ValueError("HTTP base URL must include a port.")
+        if self.grpc_base_url.port is None:
+            raise ValueError("gRPC base URL must include a port.")
+        return self
