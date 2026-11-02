@@ -104,7 +104,9 @@ class HpsData(BaseModel):
 class ConnectionToken(BaseModel):
     """Represents a connection token."""
 
-    http_base_url: Annotated[HttpUrl, Field(alias="httpBaseUrl")]
+    http_base_url: Annotated[
+        HttpUrl, Field(alias="httpBaseUrl"), UrlConstraints(host_required=True)
+    ]
     grpc_base_url: Annotated[GrpcUrl, Field(alias="grpcBaseUrl")]
     hps_data: Annotated[HpsData | None, Field(alias="hpsData")] = None
     session_id: Annotated[str, Field(alias="sessionId")]
