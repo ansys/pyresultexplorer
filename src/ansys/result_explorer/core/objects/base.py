@@ -21,7 +21,7 @@ from __future__ import annotations
 import weakref
 from typing import TYPE_CHECKING, Annotated, Self
 
-from pydantic import AnyUrl, BaseModel, Field, HttpUrl, UrlConstraints, model_validator
+from pydantic import AnyUrl, BaseModel, ConfigDict, Field, HttpUrl, UrlConstraints, model_validator
 
 if TYPE_CHECKING:
     from ..client import Client
@@ -103,6 +103,8 @@ class HpsData(BaseModel):
 
 class ConnectionToken(BaseModel):
     """Represents a connection token."""
+
+    model_config = ConfigDict(validate_by_name=True, validate_by_alias=True)
 
     http_base_url: Annotated[
         HttpUrl, Field(alias="httpBaseUrl"), UrlConstraints(host_required=True)

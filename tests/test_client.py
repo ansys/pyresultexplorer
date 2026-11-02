@@ -23,6 +23,7 @@ import pytest
 
 from ansys.result_explorer.core import __version__
 from ansys.result_explorer.core.client import Client, ResultExplorerError
+from ansys.result_explorer.core.objects import ConnectionToken
 
 
 def test_pkg_version():
@@ -47,6 +48,37 @@ def test_grpc_error_not_found():
 
     result = ResultExplorerError.from_grpc_error(mock_error)
     assert "Resource not found" in str(result)
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {
+            "http_base_url": "https://localhost:8443",
+            "grpc_base_url": "grpcs://localhost:50000",
+            "hps_data": None,
+            "session_id": "session",
+            "ca_cert_path": "ca.pem",
+        },
+        {
+            "httpBaseUrl": "https://localhost:8443",
+            "grpcBaseUrl": "grpcs://localhost:50000",
+            "hpsData": None,
+            "sessionId": "session",
+            "caCertPath": "ca.pem",
+        },
+    ],
+)
+def test_connection_token_accepts_field_names_and_aliases(
+    payload: dict[str, object],
+) -> None:
+    """Test that connection tokens accept Python field names and aliases."""
+    token = ConnectionToken.model_validate(payload)
+
+    assert str(token.http_base_url) == "https://localhost:8443/"
+    assert str(token.grpc_base_url) == "grpcs://localhost:50000"
+    assert token.session_id == "session"
+    assert token.ca_cert_path == "ca.pem"
 
 
 def test_connect_with_token_missing_host():
