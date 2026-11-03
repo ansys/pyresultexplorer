@@ -294,7 +294,11 @@ class Client:
         try:
             connection_token = ConnectionToken.model_validate_json(json_string)
         except Exception as e:
-            raise ValueError("Invalid connection token.") from e
+            msg = (
+                "Invalid connection token. "
+                "Ensure you are using compatible versions of pyresultexplorer and Result Explorer."
+            )
+            raise ValueError(msg) from e
 
         # host and port validation is handled in ConnectionToken
         assert connection_token.grpc_base_url.host is not None  # noqa: S101
