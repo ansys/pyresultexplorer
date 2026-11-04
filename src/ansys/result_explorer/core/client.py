@@ -315,9 +315,9 @@ class Client:
     @property
     def connection_token(self) -> str:
         """Get a base64 encoded json object that contains the connection info."""
+        protocol = "http" if self._ca_cert_path is None else "https"
         data = {
-            "host": self._host,
-            "grpcPort": self._grpc_port,
+            "grpc_base_url": f"{protocol}://{self._host}:{self._grpc_port}",
             "sessionId": self._session_id,
             "caCertPath": self._ca_cert_path,
         }

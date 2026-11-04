@@ -95,13 +95,8 @@ class HpsData(BaseModel):
 class ConnectionToken(BaseModel):
     """Represents a connection token."""
 
-    model_config = ConfigDict(validate_by_name=True, validate_by_alias=True)
+    model_config = ConfigDict(validate_by_name=True, validate_by_alias=True, extra="ignore")
 
-    http_base_url: Annotated[
-        HttpUrl,
-        Field(alias="httpBaseUrl"),
-        UrlConstraints(host_required=True, allowed_schemes=["http", "https"]),
-    ]
     grpc_base_url: Annotated[
         HttpUrl,
         Field(alias="grpcBaseUrl"),
@@ -114,8 +109,6 @@ class ConnectionToken(BaseModel):
     @model_validator(mode="after")
     def validate_ports(self) -> Self:
         """Validate that the base URLs have ports."""
-        if self.http_base_url.port is None:
-            raise ValueError("HTTP base URL must include a port.")
         if self.grpc_base_url.port is None:
             raise ValueError("gRPC base URL must include a port.")
         return self
