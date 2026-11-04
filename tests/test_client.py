@@ -54,14 +54,12 @@ def test_grpc_error_not_found():
     "payload",
     [
         {
-            "http_base_url": "https://localhost:8443",
             "grpc_base_url": "https://localhost:50000",
             "hps_data": None,
             "session_id": "session",
             "ca_cert_path": "ca.pem",
         },
         {
-            "httpBaseUrl": "https://localhost:8443",
             "grpcBaseUrl": "https://localhost:50000",
             "hpsData": None,
             "sessionId": "session",
@@ -75,8 +73,7 @@ def test_connection_token_accepts_field_names_and_aliases(
     """Test that connection tokens accept Python field names and aliases."""
     token = ConnectionToken.model_validate(payload)
 
-    assert str(token.http_base_url) == "https://localhost:8443/"
-    assert str(token.grpc_base_url) == "https://localhost:50000/"
+    assert f"{token.grpc_base_url}" == "https://localhost:50000/"
     assert token.session_id == "session"
     assert token.ca_cert_path == "ca.pem"
 
