@@ -446,7 +446,7 @@ class TestServerLaunchIntegration:
         response = requests.get(api_url, timeout=5, verify=False)
         assert response.status_code == 200
         data = response.json()
-        assert "gateway_info" in data
+        assert "gateway_connection_info" in data
 
         # Stop the server gracefully
         process.stop()
