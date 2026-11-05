@@ -17,6 +17,8 @@
 """Result Explorer client for gRPC communication."""
 
 import base64
+import ssl
+import tempfile
 import warnings
 from functools import wraps
 from pathlib import Path
@@ -304,12 +306,26 @@ class Client:
         assert connection_token.grpc_base_url.host is not None  # noqa: S101
         assert connection_token.grpc_base_url.port is not None  # noqa: S101
 
+        custom_headers: list[tuple[str, str]] = []
+        if hps_data := connection_token.hps_data:
+            # We are connecting to HPS -> add resource name header
+            custom_headers.append(("x-resource-name", hps_data.resource_name))
+
+        certificate_pem = ssl.get_server_certificate(
+            (connection_token.grpc_base_url.host, connection_token.grpc_base_url.port),
+            timeout=10,
+        )
+        tmp_dir = tempfile.mkdtemp()
+        ca_cert_path = Path(tmp_dir, "ca_cert.pem")
+        ca_cert_path.write_text(certificate_pem)
+
         return cls(
             host=connection_token.grpc_base_url.host,
             grpc_port=connection_token.grpc_base_url.port,
             session_id=connection_token.session_id,
-            ca_cert_path=connection_token.ca_cert_path,
-            insecure=(connection_token.ca_cert_path is None),
+            ca_cert_path=connection_token.ca_cert_path or ca_cert_path,
+            insecure=(connection_token.grpc_base_url.scheme == "http"),
+            custom_headers=custom_headers,
         )
 
     @property
