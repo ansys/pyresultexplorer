@@ -311,6 +311,7 @@ class Client:
             # We are connecting to HPS -> add resource name header
             custom_headers.append(("x-resource-name", hps_data.resource_name))
 
+        ### TODO: This snippet must go. But where to get the root certificate from?
         certificate_pem = ssl.get_server_certificate(
             (connection_token.grpc_base_url.host, connection_token.grpc_base_url.port),
             timeout=10,
