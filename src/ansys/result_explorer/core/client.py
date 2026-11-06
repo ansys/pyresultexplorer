@@ -18,7 +18,6 @@
 
 import base64
 import ssl
-import tempfile
 import warnings
 from functools import wraps
 from pathlib import Path
@@ -150,10 +149,15 @@ class Client:
             ssl_credentials = grpc.ssl_channel_credentials(root_certificates=trusted_ca)
             self._channel = grpc.secure_channel(target, ssl_credentials)
         else:
-            raise ResultExplorerError(
-                "Secure gRPC mode selected but no CA certificate has been provided."
-                "Provide either a ca_cert_path for secure connection or set insecure=True."
+            # if no CA certificate path is provided, use the default system CA certificates
+            certs = ssl.create_default_context().get_ca_certs(True)
+            cert_string = ""
+            for cert in certs:
+                cert_string += ssl.DER_cert_to_PEM_cert(cert)
+            ssl_credentials = grpc.ssl_channel_credentials(
+                root_certificates=cert_string.encode("utf-8")
             )
+            self._channel = grpc.secure_channel(target, ssl_credentials)
 
         # Wrap stubs to handle errors in a centralized way
         # To enable autocompletion on the stubs, we use a 'wrong' type annotation.
@@ -311,20 +315,11 @@ class Client:
             # We are connecting to HPS -> add resource name header
             custom_headers.append(("x-resource-name", hps_data.resource_name))
 
-        ### TODO: This snippet must go. But where to get the root certificate from?
-        certificate_pem = ssl.get_server_certificate(
-            (connection_token.grpc_base_url.host, connection_token.grpc_base_url.port),
-            timeout=10,
-        )
-        tmp_dir = tempfile.mkdtemp()
-        ca_cert_path = Path(tmp_dir, "ca_cert.pem")
-        ca_cert_path.write_text(certificate_pem)
-
         return cls(
             host=connection_token.grpc_base_url.host,
             grpc_port=connection_token.grpc_base_url.port,
             session_id=connection_token.session_id,
-            ca_cert_path=connection_token.ca_cert_path or ca_cert_path,
+            ca_cert_path=connection_token.ca_cert_path,
             insecure=(connection_token.grpc_base_url.scheme == "http"),
             custom_headers=custom_headers,
         )
