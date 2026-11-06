@@ -19,7 +19,9 @@
 from __future__ import annotations
 
 import weakref
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Annotated, Self
+
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, UrlConstraints, model_validator
 
 if TYPE_CHECKING:
     from ..client import Client
@@ -82,3 +84,33 @@ class SubEntity[PBType, ParentType: BaseEntity](NamedBaseEntity[PBType]):
         if parent is None:
             raise RuntimeError(f"Parent of {self} has been garbage collected.")
         return parent
+
+
+class HpsData(BaseModel):
+    """Represents HPS data."""
+
+    model_config = ConfigDict(validate_by_name=True, validate_by_alias=True, extra="ignore")
+
+    grpc_resource_name: Annotated[str, Field(alias="grpcResourceName")]
+
+
+class ConnectionToken(BaseModel):
+    """Represents a connection token."""
+
+    model_config = ConfigDict(validate_by_name=True, validate_by_alias=True, extra="ignore")
+
+    grpc_base_url: Annotated[
+        HttpUrl,
+        Field(alias="grpcBaseUrl"),
+        UrlConstraints(host_required=True, allowed_schemes=["http", "https"]),
+    ]
+    hps_data: Annotated[HpsData | None, Field(alias="hpsData")] = None
+    session_id: Annotated[str, Field(alias="sessionId")]
+    ca_cert_path: Annotated[str | None, Field(alias="caCertPath")] = None
+
+    @model_validator(mode="after")
+    def validate_ports(self) -> Self:
+        """Validate that the base URLs have ports."""
+        if self.grpc_base_url.port is None:
+            raise ValueError("gRPC base URL must include a port.")
+        return self

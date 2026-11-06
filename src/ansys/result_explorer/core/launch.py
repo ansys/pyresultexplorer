@@ -521,7 +521,7 @@ class ResultExplorerServerProcess:
             data = response.json()
 
             # Extract gateway port info from response
-            gateway_info = data.get("gateway_info", {})
+            gateway_info = data.get("gateway_connection_info", {})
             self._gateway_http_port = gateway_info.get("http_port")
             self._gateway_grpc_port = gateway_info.get("grpc_port")
 
