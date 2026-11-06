@@ -313,7 +313,7 @@ class Client:
         custom_headers: list[tuple[str, str]] = []
         if hps_data := connection_token.hps_data:
             # We are connecting to HPS -> add resource name header
-            custom_headers.append(("x-resource-name", hps_data.resource_name))
+            custom_headers.append(("x-resource-name", hps_data.grpc_resource_name))
 
         return cls(
             host=connection_token.grpc_base_url.host,

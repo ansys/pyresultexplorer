@@ -89,7 +89,9 @@ class SubEntity[PBType, ParentType: BaseEntity](NamedBaseEntity[PBType]):
 class HpsData(BaseModel):
     """Represents HPS data."""
 
-    resource_name: Annotated[str, Field(alias="resourceName")]
+    model_config = ConfigDict(validate_by_name=True, validate_by_alias=True, extra="ignore")
+
+    grpc_resource_name: Annotated[str, Field(alias="grpcResourceName")]
 
 
 class ConnectionToken(BaseModel):
