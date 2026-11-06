@@ -143,8 +143,9 @@ class Client:
         wrapper_metadata = self._grpc_metadata
 
         if insecure:
+            msg = f"Using an insecure gRPC channel, unencrypted communication with {target}."
             warnings.warn(
-                f"Using an insecure gRPC channel, unencrypted communication with {target}.",
+                msg,
                 UnsecureConnectionWarning,
                 stacklevel=2,
             )
