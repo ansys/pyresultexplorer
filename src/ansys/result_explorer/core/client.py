@@ -93,6 +93,7 @@ class Client:
         session_id: str,
         host: str = "localhost",
         grpc_port: int = 50000,
+        grpc_resource_name: str | None = None,
         ca_cert_path: str | Path | None = None,
         insecure: bool = False,
         custom_headers: list[tuple[str, str]] | None = None,
@@ -108,6 +109,8 @@ class Client:
             Hostname or IP address of the Result Explorer API. Default is "localhost".
         grpc_port : int, optional
             Port number for the gRPC API. Default is 50000.
+        grpc_resource_name : str, optional
+            Resource name for the gRPC connection, used for routing via RCS on HPS.
         ca_cert_path : str | Path, optional
             Path to CA certificate for secure gRPC connection.
             If not provided, ``insecure=True`` must be set.
@@ -129,6 +132,9 @@ class Client:
         self._ca_cert_path = ca_cert_path
         self._instance = instance
         self._grpc_metadata = [("x-session-id", self._session_id)]
+        self._grpc_resource_name = grpc_resource_name
+        if self._grpc_resource_name:
+            self._grpc_metadata.append(("x-resource-name", self._grpc_resource_name))
         if custom_headers:
             self._grpc_metadata.extend(custom_headers)
 
@@ -309,19 +315,14 @@ class Client:
         # host and port validation is handled in ConnectionToken
         assert connection_token.grpc_base_url.host is not None  # noqa: S101
         assert connection_token.grpc_base_url.port is not None  # noqa: S101
-
-        custom_headers: list[tuple[str, str]] = []
-        if hps_data := connection_token.hps_data:
-            # We are connecting to HPS -> add resource name header
-            custom_headers.append(("x-resource-name", hps_data.grpc_resource_name))
-
+        hps_data = connection_token.hps_data
         return cls(
             host=connection_token.grpc_base_url.host,
             grpc_port=connection_token.grpc_base_url.port,
+            grpc_resource_name=hps_data.grpc_resource_name if hps_data else None,
             session_id=connection_token.session_id,
             ca_cert_path=connection_token.ca_cert_path,
             insecure=(connection_token.grpc_base_url.scheme == "http"),
-            custom_headers=custom_headers,
         )
 
     @property
@@ -330,6 +331,9 @@ class Client:
         protocol = "http" if self._ca_cert_path is None else "https"
         data = {
             "grpc_base_url": f"{protocol}://{self._host}:{self._grpc_port}",
+            "hpsData": {"grpcResourceName": self._grpc_resource_name}
+            if self._grpc_resource_name
+            else None,
             "sessionId": self._session_id,
             "caCertPath": self._ca_cert_path,
         }

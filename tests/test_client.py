@@ -16,13 +16,15 @@
 
 import base64
 import json
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import grpc
 import pytest
 
 from ansys.result_explorer.core import __version__
 from ansys.result_explorer.core.client import Client, ResultExplorerError
+from ansys.result_explorer.core.exceptions import UnsecureConnectionWarning
+from ansys.result_explorer.core.models import AppInfo
 from ansys.result_explorer.core.objects import ConnectionToken
 
 
@@ -99,6 +101,27 @@ def test_connect_with_token_missing_session_id():
     token = base64.b64encode(json.dumps({"host": "localhost", "grpcPort": 5000}).encode()).decode()
     with pytest.raises(ValueError, match="Invalid connection token."):
         Client.connect_with_token(token)
+
+
+def test_connect_with_token_preserves_hps_info() -> None:
+    connection_info = ConnectionToken.model_validate(
+        {
+            "grpcBaseUrl": "http://localhost:50000",
+            "hpsData": {"grpcResourceName": "test-resource"},
+            "sessionId": "test-session",
+            "caCertPath": None,
+        }
+    )
+    token = base64.b64encode(connection_info.model_dump_json().encode("utf-8")).decode("utf-8")
+
+    with patch("ansys.result_explorer.core.client.grpc.insecure_channel") as mock_channel:
+        mock_channel.return_value.unary_unary.return_value.return_value = AppInfo(
+            version="2026.8.0"
+        )
+        with pytest.warns(UnsecureConnectionWarning):
+            client = Client.connect_with_token(token)
+
+        assert client.connection_token == token
 
 
 def test_default_result_provider(rx):
