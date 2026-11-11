@@ -49,7 +49,7 @@ RX_SESSION_EXTENSION = ".rxs"
 class GrpcStubWrapper:
     """Wrapper that automatically handles gRPC errors and injects metadata for insecure channels."""
 
-    def __init__(self, stub, metadata=None):
+    def __init__(self, stub: object, metadata: list[tuple[str, str]] | None = None) -> None:
         """Initialize the gRPC stub wrapper.
 
         Parameters
@@ -63,7 +63,7 @@ class GrpcStubWrapper:
         self._stub = stub
         self._metadata = metadata
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str) -> object:
         """Get attribute from wrapped stub, wrapping callable methods."""
         attr = getattr(self._stub, name)
 
@@ -72,7 +72,7 @@ class GrpcStubWrapper:
             return attr
 
         @wraps(attr)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args: object, **kwargs: object) -> object:
             # Inject metadata for insecure connections (for secure, it's in channel credentials)
             if self._metadata and "metadata" not in kwargs:
                 kwargs["metadata"] = self._metadata
@@ -101,7 +101,7 @@ class Client:
         insecure: bool = False,
         custom_headers: list[tuple[str, str]] | None = None,
         instance: "ResultExplorerInstance | None" = None,
-    ):
+    ) -> None:
         """Initialize the client and connect to Result Explorer.
 
         Parameters
@@ -205,7 +205,7 @@ class Client:
         if version == "2026.7.0":
             raise ResultExplorerError("Incompatible Result Explorer version detected: 2026.7.0.")
 
-    def __del__(self):
+    def __del__(self) -> None:
         """Clean up resources when client is destroyed."""
         try:
             if self._instance is not None:
@@ -213,7 +213,7 @@ class Client:
         except Exception:
             pass
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return a user-friendly string representation of the client."""
         web_info = ""
         instance_type = "External Connection"
@@ -343,7 +343,7 @@ class Client:
         self,
         path: str | Path,
         result_provider: str | models.ResultProvider | None = None,
-        depth=0,
+        depth: int = 0,
     ) -> list[models.FSItem]:
         """List items in a result provider's file system.
 
@@ -482,19 +482,18 @@ class Client:
             The newly created solution.
 
         """
-        rp = None
-        if result_provider is None:
-            rp = self.default_result_provider
         if isinstance(result_provider, models.ResultProvider):
             rp = result_provider
         else:
+            rp_name = self._get_result_provider_name(result_provider)
             rps = self.list_result_providers()
-            rp = next((rp for rp in rps if rp.name == result_provider), None)
-        if rp is None:
-            raise ValueError(
-                f"Result provider '{result_provider}' not found. "
-                f"Available providers: {[rp.name for rp in rps]}"
-            )
+            found = next((p for p in rps if p.name == rp_name), None)
+            if found is None:
+                raise ValueError(
+                    f"Result provider '{rp_name}' not found. "
+                    f"Available providers: {[p.name for p in rps]}"
+                )
+            rp = found
 
         if not rp.hps_url:
             raise ValueError(
@@ -742,7 +741,8 @@ class Client:
 
         """
         if self._app_info is None:
-            self._app_info = self._app_stub.GetAppInfo(models.Empty())
+            app_info: models.AppInfo = self._app_stub.GetAppInfo(models.Empty())
+            self._app_info = app_info
         return self._app_info
 
     def app_settings(self) -> models.AppSettings:
@@ -806,7 +806,7 @@ class Client:
         self._app_stub.OpenSession(models.Session(data=data))
 
 
-def _create_grid_workspace(client: Client, name, rows: int, cols: int):
+def _create_grid_workspace(client: Client, name: str | None, rows: int, cols: int) -> Workspace:
     if rows < 1 or cols < 1:
         raise ValueError("rows and cols must be >= 1")
 

@@ -106,7 +106,7 @@ class WorkspaceLayout:
 
     """
 
-    def __init__(self, placements: list[ViewportPlacement], rows: int, cols: int):
+    def __init__(self, placements: list[ViewportPlacement], rows: int, cols: int) -> None:
         """Initialize a workspace layout."""
         self._placements = placements
         self._rows = rows

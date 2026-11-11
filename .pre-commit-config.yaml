@@ -20,6 +20,7 @@ repos:
       entry: uv run pyright
       language: system
       types_or: [python, pyi]
+      exclude: ^examples/
       require_serial: true
 
 # Add copyright statement to files

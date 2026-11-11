@@ -134,6 +134,7 @@ def test_solution_properties(rst_solution: Solution):
     )
     assert stress_plot_def is not None
     assert stress_plot_def.last_set is True
+    assert stress_plot_def.fields is not None
     assert stress_plot_def.fields[0].name is not None
 
     # find configurable displacement chart

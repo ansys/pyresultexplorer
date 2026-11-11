@@ -22,3 +22,10 @@ Workspace and viewports
    ContactTrackersViewportSettings
    ConvergenceTrackersViewportSettings
    LogsViewportSettings
+   StrSetting
+   IntSetting
+   FloatSetting
+   BoolSetting
+   ListSetting
+   TupleSetting
+   OpaqueSetting

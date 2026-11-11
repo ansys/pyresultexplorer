@@ -37,7 +37,7 @@ urls.Tracker = "https://github.com/ansys/pyresultexplorer/issues"
 [dependency-groups]
 dev = [
   "hypothesis>=6.170.5",
-  "pillow>=12.0.0",
+  "pillow>=12.1.0",
   "pre-commit==4.7.0",
   "pyright==1.1.414",
   "pytest==9.1.1",
@@ -96,14 +96,14 @@ lint.select = [
 lint.ignore = []
 lint.per-file-ignores.".github/scripts/*.py" = [ "E501" ]
 lint.per-file-ignores."__init__.py" = [ "F401" ]
-lint.per-file-ignores."examples/**/*.py" = [ "D", "PLC0415" ]
+lint.per-file-ignores."examples/**/*.py" = [ "ANN", "D", "PLC0415" ]
 lint.per-file-ignores."src/**/models.py" = [ "F401" ]
 # ignore docstring requirements for tests, examples
 lint.per-file-ignores."tests/**/*.py" = [ "ANN", "D", "PLC0415" ]
 
 [tool.pyright]
 pythonVersion = "3.12"
-include = [ "examples", "src", "tests" ]
+include = [ "src", "tests" ]
 exclude = [ "**/__pycache__", ".uv_cache", ".venv", "tests/data" ]
 
 [tool.pytest]
