@@ -61,6 +61,32 @@ def test_connection_token_with_path_ca_cert(tmp_path: Path) -> None:
     assert payload["ca_cert_path"] == str(ca_cert_path)
 
 
+@pytest.mark.filterwarnings(
+    "ignore::ansys.result_explorer.core.exceptions.UnsecureConnectionWarning"
+)
+@pytest.mark.parametrize(
+    ("insecure", "with_ca_cert"),
+    [(True, False), (True, True), (False, True), (False, False)],
+    ids=["insecure", "insecure-ignores-ca-cert", "ca-cert", "system-ca"],
+)
+def test_connection_token_round_trip_preserves_security(
+    tmp_path: Path, insecure: bool, with_ca_cert: bool
+) -> None:
+    ca_cert_path = tmp_path / "ca.pem"
+    ca_cert_path.write_text("dummy")
+    with patch.object(Client, "_check_compatibility"):
+        client = Client(
+            session_id="session",
+            ca_cert_path=ca_cert_path if with_ca_cert else None,
+            insecure=insecure,
+        )
+
+    with patch.object(Client, "__init__", return_value=None, autospec=True) as init:
+        Client.connect_with_token(client.connection_token)
+
+    assert init.call_args.kwargs["insecure"] is insecure
+
+
 def test_default_result_provider(rx):
     """Test default result provider getter and setter."""
     # Verify default result provider is set

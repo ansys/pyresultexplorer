@@ -133,6 +133,7 @@ class Client:
         self._grpc_port = grpc_port
         self._session_id = session_id
         self._ca_cert_path = ca_cert_path
+        self._insecure = insecure
         self._instance = instance
         self._grpc_metadata = [("x-session-id", self._session_id)]
         self._grpc_resource_name = grpc_resource_name
@@ -327,7 +328,7 @@ class Client:
     @property
     def connection_token(self) -> str:
         """Get a base64 encoded json object that contains the connection info."""
-        protocol = "http" if self._ca_cert_path is None else "https"
+        protocol = "http" if self._insecure else "https"
         connection_token = ConnectionToken(
             grpc_base_url=f"{protocol}://{self._host}:{self._grpc_port}",
             hps_data=HpsData(self._grpc_resource_name) if self._grpc_resource_name else None,
