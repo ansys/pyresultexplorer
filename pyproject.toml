@@ -99,7 +99,7 @@ lint.per-file-ignores."__init__.py" = [ "F401" ]
 lint.per-file-ignores."examples/**/*.py" = [ "D", "PLC0415" ]
 lint.per-file-ignores."src/**/models.py" = [ "F401" ]
 # ignore docstring requirements for tests, examples
-lint.per-file-ignores."tests/**/*.py" = [ "D", "PLC0415" ]
+lint.per-file-ignores."tests/**/*.py" = [ "ANN", "D", "PLC0415" ]
 
 [tool.pyright]
 pythonVersion = "3.12"
