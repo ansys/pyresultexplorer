@@ -120,14 +120,7 @@ from ansys.api.result_explorer.v0.workspace_pb2 import (
 
 @dataclass
 class HpsData:
-    """Represents HPS data.
-
-    Parameters
-    ----------
-    grpc_resource_name : str
-        Resource name used to route gRPC requests on HPS.
-
-    """
+    """Represents connection data specific to HPS."""
 
     grpc_resource_name: str
 
@@ -138,17 +131,7 @@ class HpsData:
 
     @classmethod
     def create(cls, input: dict[str, Any]) -> "HpsData":
-        """Create an ``HpsData`` instance from a dictionary.
-
-        Keys can be camelCase or snake_case. Unknown keys are ignored.
-
-        Examples
-        --------
-        >>> from ansys.result_explorer.core.models import HpsData
-        >>> HpsData.create({"grpcResourceName": "resource"})
-        HpsData(grpc_resource_name='resource')
-
-        """
+        """Create an ``HpsData`` instance from a dictionary."""
         # Input values are untyped; __post_init__ validates them.
         return cls(
             grpc_resource_name=input.get("grpcResourceName", input.get("grpc_resource_name"))  # type: ignore
@@ -157,21 +140,7 @@ class HpsData:
 
 @dataclass
 class ConnectionToken:
-    """Represents a connection token.
-
-    Parameters
-    ----------
-    grpc_base_url : str
-        Base URL of the gRPC API. Must use ``http`` or ``https`` and
-        include a host and a port.
-    session_id : str
-        Unique identifier for the Result Explorer session.
-    hps_data : HpsData, optional
-        HPS routing data.
-    ca_cert_path : str, optional
-        Path to the CA certificate for a secure connection.
-
-    """
+    """Represents a connection token."""
 
     grpc_base_url: str
     session_id: str
@@ -201,20 +170,7 @@ class ConnectionToken:
 
     @classmethod
     def create(cls, input: dict[str, Any]) -> "ConnectionToken":
-        """Create a ``ConnectionToken`` instance from a dictionary.
-
-        Keys can be camelCase or snake_case. Unknown keys are ignored.
-
-        Examples
-        --------
-        >>> from ansys.result_explorer.core.models import ConnectionToken
-        >>> token = ConnectionToken.create(
-        ...     {"grpcBaseUrl": "http://localhost:50000", "sessionId": "session"}
-        ... )
-        >>> token.grpc_base_url
-        'http://localhost:50000'
-
-        """
+        """Create a ``ConnectionToken`` instance from a dictionary."""
         hps_data = input.get("hpsData", input.get("hps_data"))
         # Input values are untyped; __post_init__ validates them.
         return cls(
