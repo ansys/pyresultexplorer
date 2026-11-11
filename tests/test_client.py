@@ -47,7 +47,7 @@ def test_save_session_stream(tmp_path: Path, filename: str) -> None:
         models.SaveSessionRequest(
             include_cached_data=True,
             only_cache_visible_views=False,
-            compression_level=0,
+            compression_level=1,
             precision=models.GraphicsPrecision.GRAPHICS_PRECISION_FULL,
         )
     )

@@ -781,7 +781,7 @@ class Client:
         *,
         include_cached_data: bool = True,
         only_cache_visible_views: bool = False,
-        compression_level: int = 0,
+        compression_level: int = 1,
         precision: int = models.GraphicsPrecision.GRAPHICS_PRECISION_FULL,
     ) -> None:
         """Stream the current session to a ZIP-based session file.
@@ -798,7 +798,7 @@ class Client:
             Defaults to ``False``.
         compression_level : int, optional
             ZIP compression level for cached graphics, from 0 to 9.
-            Defaults to 0 (no compression).
+            Defaults to 1. Use 0 for no compression.
         precision : int, optional
             A ``models.GraphicsPrecision`` value. Defaults to full.
 
