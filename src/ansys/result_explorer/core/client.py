@@ -307,15 +307,7 @@ class Client:
         """Connect with a base64 encoded json object that contains the connection info."""
         decoded_bytes = base64.b64decode(token)
         json_string = decoded_bytes.decode("utf-8")
-        try:
-            connection_token = ConnectionToken.create(json.loads(json_string))
-        except Exception as e:
-            msg = (
-                "Invalid connection token. "
-                "Ensure you are using compatible versions of pyresultexplorer and Result Explorer."
-            )
-            raise ValueError(msg) from e
-
+        connection_token = ConnectionToken.create(json.loads(json_string))
         # Host and port presence is validated by ConnectionToken
         url = urlsplit(connection_token.grpc_base_url)
         assert url.hostname is not None  # noqa: S101
@@ -340,7 +332,7 @@ class Client:
             grpc_base_url=f"{protocol}://{self._host}:{self._grpc_port}",
             hps_data=HpsData(self._grpc_resource_name) if self._grpc_resource_name else None,
             session_id=self._session_id,
-            ca_cert_path=self._ca_cert_path,
+            ca_cert_path=str(self._ca_cert_path) if self._ca_cert_path is not None else None,
         )
         json_string = json.dumps(connection_token.to_dict())
         encoded_bytes = base64.b64encode(json_string.encode("utf-8"))

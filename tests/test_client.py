@@ -14,13 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from unittest.mock import MagicMock
+import base64
+import json
+from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 import grpc
 import pytest
 
 from ansys.result_explorer.core import __version__
-from ansys.result_explorer.core.client import ResultExplorerError
+from ansys.result_explorer.core.client import Client, ResultExplorerError
 
 
 def test_pkg_version():
@@ -45,6 +48,17 @@ def test_grpc_error_not_found():
 
     result = ResultExplorerError.from_grpc_error(mock_error)
     assert "Resource not found" in str(result)
+
+
+def test_connection_token_with_path_ca_cert(tmp_path: Path) -> None:
+    ca_cert_path = tmp_path / "ca.pem"
+    ca_cert_path.write_text("dummy")
+    with patch.object(Client, "_check_compatibility"):
+        client = Client(session_id="session", ca_cert_path=ca_cert_path)
+
+    payload = json.loads(base64.b64decode(client.connection_token))
+
+    assert payload["ca_cert_path"] == str(ca_cert_path)
 
 
 def test_default_result_provider(rx):
