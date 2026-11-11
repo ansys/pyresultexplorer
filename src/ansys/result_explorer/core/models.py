@@ -16,6 +16,10 @@
 
 """gRPC models for Result Explorer client."""
 
+from dataclasses import asdict, dataclass
+from typing import Any
+from urllib.parse import urlsplit
+
 from ansys.api.result_explorer.v0.app_pb2 import (
     AppInfo,
     AppSettings,
@@ -117,3 +121,70 @@ from ansys.api.result_explorer.v0.workspace_pb2 import (
     WorkspaceList,
     WorkspaceUpdateRequest,
 )
+
+
+@dataclass
+class HpsData:
+    """Represents connection data specific to HPS."""
+
+    grpc_resource_name: str
+
+    def __post_init__(self) -> None:
+        """Validate the field types."""
+        if not isinstance(self.grpc_resource_name, str):
+            raise ValueError("'grpc_resource_name' must be a string.")
+
+    @classmethod
+    def create(cls, input: dict[str, Any]) -> "HpsData":
+        """Create an ``HpsData`` instance from a dictionary."""
+        # Input values are untyped; __post_init__ validates them.
+        return cls(
+            grpc_resource_name=input.get("grpcResourceName", input.get("grpc_resource_name"))  # type: ignore
+        )
+
+
+@dataclass
+class ConnectionToken:
+    """Represents a connection token."""
+
+    grpc_base_url: str
+    session_id: str
+    hps_data: HpsData | None = None
+    ca_cert_path: str | None = None
+
+    def __post_init__(self) -> None:
+        """Validate the field types and the gRPC base URL."""
+        if not isinstance(self.session_id, str):
+            raise ValueError("'session_id' must be a string.")
+        if not isinstance(self.hps_data, HpsData | None):
+            raise ValueError("'hps_data' must be an HpsData instance or None.")
+        if not isinstance(self.ca_cert_path, str | None):
+            raise ValueError("'ca_cert_path' must be a string or None.")
+        if not isinstance(self.grpc_base_url, str):
+            raise ValueError("'grpc_base_url' must be a string.")
+        url = urlsplit(self.grpc_base_url)
+        try:
+            port = url.port
+        except ValueError:
+            port = None
+        if url.scheme not in ("http", "https") or not url.hostname or port is None:
+            raise ValueError(
+                "'grpc_base_url' must be an http(s) URL with a host and a port, "
+                f"got {self.grpc_base_url!r}."
+            )
+
+    @classmethod
+    def create(cls, input: dict[str, Any]) -> "ConnectionToken":
+        """Create a ``ConnectionToken`` instance from a dictionary."""
+        hps_data = input.get("hpsData", input.get("hps_data"))
+        # Input values are untyped; __post_init__ validates them.
+        return cls(
+            grpc_base_url=input.get("grpcBaseUrl", input.get("grpc_base_url")),  # type: ignore
+            session_id=input.get("sessionId", input.get("session_id")),  # type: ignore
+            hps_data=HpsData.create(hps_data) if isinstance(hps_data, dict) else hps_data,
+            ca_cert_path=input.get("caCertPath", input.get("ca_cert_path")),
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert the token to a dictionary with snake_case keys."""
+        return asdict(self)
