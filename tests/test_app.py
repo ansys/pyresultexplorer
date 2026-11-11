@@ -17,12 +17,23 @@
 import json
 import logging
 import time
+from dataclasses import replace
 from pathlib import Path
 from zipfile import ZipFile
 
 import pytest
 
-from ansys.result_explorer.core import models
+from ansys.result_explorer.core import (
+    Client,
+    Component,
+    Field,
+    Location,
+    PlotDefinition,
+    ResultExplorerError,
+    ResultFieldName,
+    ResultType,
+    models,
+)
 
 log = logging.getLogger(__name__)
 
@@ -223,3 +234,53 @@ def test_open_session_round_trip(
     # --- cleanup ---
     rx.delete_workspace(restored_ws)
     rx.delete_solution(restored_sol)
+
+
+def test_open_session_read_only(rx: Client, rst_multiple_connections: str, tmp_path: Path) -> None:
+    solution = rx.create_solution(
+        name="Read-only Session Solution", file_path=rst_multiple_connections
+    )
+    definition = PlotDefinition(
+        result_type=ResultType.displacement,
+        location=Location.nodal,
+        name="Disp",
+        fields=[
+            Field(
+                ResultFieldName.displacement,
+                components=[Component.X, Component.Y, Component.Z],
+            )
+        ],
+    )
+    plot = solution.create_plot(definition)
+    workspace = rx.create_workspace("Test Workspace")
+    workspace.assign_view(view=plot, wait=True)
+
+    session_path = tmp_path / "read_only.rxs"
+    rx.save_session(session_path)
+
+    rx.delete_workspace(workspace)
+    rx.delete_solution(solution)
+
+    time.sleep(0.5)
+    rx.open_session(session_path, read_only=True)
+    time.sleep(0.5)
+
+    restored_solution = next(s for s in rx.list_solutions() if s.name == solution.name)
+    log.info("Restored solution: %s", restored_solution)
+    restored_workspace = next(w for w in rx.list_workspaces() if w.name == workspace.name)
+    original_plots = restored_solution.plots
+    restored_plot = next(p for p in original_plots if p.name == definition.name)
+
+    with pytest.raises(ResultExplorerError, match=r"read-only"):
+        restored_solution.create_plot(replace(definition, name="New Displacement"))
+
+    with pytest.raises(ResultExplorerError, match=r"read-only"):
+        restored_solution.update_plot(replace(restored_plot, name="Renamed Displacement"))
+
+    assert rx.get_solution(restored_solution.id).plots == original_plots
+
+    rx.delete_workspace(restored_workspace)
+    rx.delete_solution(restored_solution)
+
+    assert not any(s.name == solution.name for s in rx.list_solutions())
+    assert not any(w.name == workspace.name for w in rx.list_workspaces())

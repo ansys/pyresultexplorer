@@ -46,6 +46,7 @@ def test_save_session_stream(tmp_path: Path, filename: str) -> None:
     client._app_stub.SaveSessionStream.assert_called_once_with(
         models.SaveSessionRequest(
             include_cached_data=True,
+            only_cache_visible_views=False,
             compression_level=0,
             precision=models.GraphicsPrecision.GRAPHICS_PRECISION_FULL,
         )
@@ -54,21 +55,27 @@ def test_save_session_stream(tmp_path: Path, filename: str) -> None:
     assert list(expected.parent.iterdir()) == [expected]
 
 
-def test_save_session_stream_options(tmp_path: Path) -> None:
+@pytest.mark.parametrize("include_cached_data", [True, False])
+@pytest.mark.parametrize("only_cache_visible_views", [True, False])
+def test_save_session_stream_options(
+    tmp_path: Path, include_cached_data: bool, only_cache_visible_views: bool
+) -> None:
     client = Client.__new__(Client)
     client._app_stub = MagicMock()
     client._app_stub.SaveSessionStream.return_value = iter([models.SessionChunk(data=b"archive")])
 
     client.save_session(
         tmp_path / "session.rxs",
-        include_cached_data=False,
+        include_cached_data=include_cached_data,
+        only_cache_visible_views=only_cache_visible_views,
         compression_level=6,
         precision=models.GraphicsPrecision.GRAPHICS_PRECISION_LOW,
     )
 
     client._app_stub.SaveSessionStream.assert_called_once_with(
         models.SaveSessionRequest(
-            include_cached_data=False,
+            include_cached_data=include_cached_data,
+            only_cache_visible_views=only_cache_visible_views,
             compression_level=6,
             precision=models.GraphicsPrecision.GRAPHICS_PRECISION_LOW,
         )
@@ -99,7 +106,8 @@ def test_save_session_stream_failure_preserves_destination(tmp_path: Path) -> No
 @pytest.mark.parametrize(
     "data", [b'{"app_state": {}}', b"PK\x03\x04\xff" * 120000], ids=["json", "zip"]
 )
-def test_open_session_stream(tmp_path: Path, data: bytes) -> None:
+@pytest.mark.parametrize("read_only", [None, False, True], ids=["default", "writable", "read-only"])
+def test_open_session_stream(tmp_path: Path, data: bytes, read_only: bool | None) -> None:
     client = Client.__new__(Client)
     client._app_stub = MagicMock()
     destination = tmp_path / "session.rxs"
@@ -108,6 +116,9 @@ def test_open_session_stream(tmp_path: Path, data: bytes) -> None:
     def consume(requests: Iterator[models.OpenSessionRequest]) -> models.Empty:
         options = next(requests)
         assert options.WhichOneof("payload") == "options"
+        assert options.options == models.SessionImportOptions(
+            read_only=False if read_only is None else read_only
+        )
         received = bytearray()
         for request in requests:
             assert request.WhichOneof("payload") == "data"
@@ -117,7 +128,10 @@ def test_open_session_stream(tmp_path: Path, data: bytes) -> None:
         return models.Empty()
 
     client._app_stub.OpenSessionStream.side_effect = consume
-    client.open_session(destination)
+    if read_only is None:
+        client.open_session(destination)
+    else:
+        client.open_session(destination, read_only=read_only)
 
     client._app_stub.OpenSessionStream.assert_called_once()
     client._app_stub.OpenSession.assert_not_called()

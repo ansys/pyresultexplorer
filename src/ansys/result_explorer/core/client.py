@@ -780,6 +780,7 @@ class Client:
         path: str | Path,
         *,
         include_cached_data: bool = True,
+        only_cache_visible_views: bool = False,
         compression_level: int = 0,
         precision: int = models.GraphicsPrecision.GRAPHICS_PRECISION_FULL,
     ) -> None:
@@ -792,6 +793,9 @@ class Client:
             if missing. An existing file is replaced only on success.
         include_cached_data : bool, optional
             Include cached view data. Defaults to ``True``.
+        only_cache_visible_views : bool, optional
+            Cache only visible views when including cached data.
+            Defaults to ``False``.
         compression_level : int, optional
             ZIP compression level for cached graphics, from 0 to 9.
             Defaults to 0 (no compression).
@@ -805,6 +809,7 @@ class Client:
         """
         request = models.SaveSessionRequest(
             include_cached_data=include_cached_data,
+            only_cache_visible_views=only_cache_visible_views,
             compression_level=compression_level,
             precision=precision,
         )
@@ -825,13 +830,15 @@ class Client:
             if temporary_path is not None:
                 temporary_path.unlink(missing_ok=True)
 
-    def open_session(self, path: str | Path) -> None:
+    def open_session(self, path: str | Path, *, read_only: bool = False) -> None:
         """Upload and open a ZIP or legacy JSON session file.
 
         Parameters
         ----------
         path : str | Path
             Local session file with the ``.rxs`` extension.
+        read_only : bool, optional
+            Open the session in read-only mode. Defaults to ``False``.
 
         Examples
         --------
@@ -844,7 +851,9 @@ class Client:
         with path.open("rb") as session_file:
 
             def requests() -> Iterator[models.OpenSessionRequest]:
-                yield models.OpenSessionRequest(options=models.SessionImportOptions())
+                yield models.OpenSessionRequest(
+                    options=models.SessionImportOptions(read_only=read_only)
+                )
                 while data := session_file.read(256 * 1024):
                     yield models.OpenSessionRequest(data=data)
 
