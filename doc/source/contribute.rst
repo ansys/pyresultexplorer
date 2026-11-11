@@ -49,7 +49,8 @@ Installing PyResultExplorer in developer mode allows you to modify the source an
 
    The hooks run Ruff, which also requires type annotations on library
    functions, and Pyright for type checking. Tests and examples are
-   exempt from the annotation rules, and Pyright skips the examples.
+   exempt from the annotation rules, and Pyright checks only ``src`` and
+   ``tests``.
    Both check only the staged files. To type check the whole project,
    run:
 
