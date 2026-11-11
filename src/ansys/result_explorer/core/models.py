@@ -16,7 +16,9 @@
 
 """gRPC models for Result Explorer client."""
 
-from typing import Annotated, Self
+from dataclasses import asdict, dataclass
+from typing import Any
+from urllib.parse import urlsplit
 
 from ansys.api.result_explorer.v0.app_pb2 import (
     AppInfo,
@@ -114,45 +116,114 @@ from ansys.api.result_explorer.v0.workspace_pb2 import (
     WorkspaceList,
     WorkspaceUpdateRequest,
 )
-from pydantic import BaseModel, ConfigDict, HttpUrl, UrlConstraints, model_validator
-from pydantic import Field as PydanticField
 
 
-class HpsData(BaseModel):
-    """Represents HPS data."""
+@dataclass
+class HpsData:
+    """Represents HPS data.
 
-    model_config = ConfigDict(validate_by_name=True, validate_by_alias=True, extra="ignore")
+    Parameters
+    ----------
+    grpc_resource_name : str
+        Resource name used to route gRPC requests on HPS.
 
-    grpc_resource_name: Annotated[str, PydanticField(alias="grpcResourceName")]
+    """
 
-    @classmethod
-    def create(cls, input: dict) -> "HpsData":
-        """Create an HpsData instance from a dictionary."""
-        return cls.model_validate(input)
+    grpc_resource_name: str
 
-
-class ConnectionToken(BaseModel):
-    """Represents a connection token."""
-
-    model_config = ConfigDict(validate_by_name=True, validate_by_alias=True, extra="ignore")
-
-    grpc_base_url: Annotated[
-        HttpUrl,
-        PydanticField(alias="grpcBaseUrl"),
-        UrlConstraints(host_required=True, allowed_schemes=["http", "https"]),
-    ]
-    hps_data: Annotated[HpsData | None, PydanticField(alias="hpsData")] = None
-    session_id: Annotated[str, PydanticField(alias="sessionId")]
-    ca_cert_path: Annotated[str | None, PydanticField(alias="caCertPath")] = None
-
-    @model_validator(mode="after")
-    def validate_ports(self) -> Self:
-        """Validate that the base URLs have ports."""
-        if self.grpc_base_url.port is None:
-            raise ValueError("gRPC base URL must include a port.")
-        return self
+    def __post_init__(self) -> None:
+        """Validate the field types."""
+        if not isinstance(self.grpc_resource_name, str):
+            raise ValueError("'grpc_resource_name' must be a string.")
 
     @classmethod
-    def create(cls, input: dict) -> "ConnectionToken":
-        """Create a ConnectionToken instance from a dictionary."""
-        return cls.model_validate(input)
+    def create(cls, input: dict[str, Any]) -> "HpsData":
+        """Create an ``HpsData`` instance from a dictionary.
+
+        Keys can be camelCase or snake_case. Unknown keys are ignored.
+
+        Examples
+        --------
+        >>> from ansys.result_explorer.core.models import HpsData
+        >>> HpsData.create({"grpcResourceName": "resource"})
+        HpsData(grpc_resource_name='resource')
+
+        """
+        # Input values are untyped; __post_init__ validates them.
+        return cls(
+            grpc_resource_name=input.get("grpcResourceName", input.get("grpc_resource_name"))  # type: ignore
+        )
+
+
+@dataclass
+class ConnectionToken:
+    """Represents a connection token.
+
+    Parameters
+    ----------
+    grpc_base_url : str
+        Base URL of the gRPC API. Must use ``http`` or ``https`` and
+        include a host and a port.
+    session_id : str
+        Unique identifier for the Result Explorer session.
+    hps_data : HpsData, optional
+        HPS routing data.
+    ca_cert_path : str, optional
+        Path to the CA certificate for a secure connection.
+
+    """
+
+    grpc_base_url: str
+    session_id: str
+    hps_data: HpsData | None = None
+    ca_cert_path: str | None = None
+
+    def __post_init__(self) -> None:
+        """Validate the field types and the gRPC base URL."""
+        if not isinstance(self.session_id, str):
+            raise ValueError("'session_id' must be a string.")
+        if not isinstance(self.hps_data, HpsData | None):
+            raise ValueError("'hps_data' must be an HpsData instance or None.")
+        if not isinstance(self.ca_cert_path, str | None):
+            raise ValueError("'ca_cert_path' must be a string or None.")
+        if not isinstance(self.grpc_base_url, str):
+            raise ValueError("'grpc_base_url' must be a string.")
+        url = urlsplit(self.grpc_base_url)
+        try:
+            port = url.port
+        except ValueError:
+            port = None
+        if url.scheme not in ("http", "https") or not url.hostname or port is None:
+            raise ValueError(
+                "'grpc_base_url' must be an http(s) URL with a host and a port, "
+                f"got {self.grpc_base_url!r}."
+            )
+
+    @classmethod
+    def create(cls, input: dict[str, Any]) -> "ConnectionToken":
+        """Create a ``ConnectionToken`` instance from a dictionary.
+
+        Keys can be camelCase or snake_case. Unknown keys are ignored.
+
+        Examples
+        --------
+        >>> from ansys.result_explorer.core.models import ConnectionToken
+        >>> token = ConnectionToken.create(
+        ...     {"grpcBaseUrl": "http://localhost:50000", "sessionId": "session"}
+        ... )
+        >>> token.grpc_base_url
+        'http://localhost:50000'
+
+        """
+        hps_data = input.get("hpsData", input.get("hps_data"))
+        # Input values are untyped; __post_init__ validates them.
+        return cls(
+            grpc_base_url=input.get("grpcBaseUrl", input.get("grpc_base_url")),  # type: ignore
+            session_id=input.get("sessionId", input.get("session_id")),  # type: ignore
+            hps_data=HpsData.create(hps_data) if isinstance(hps_data, dict) else hps_data,
+            ca_cert_path=input.get("caCertPath", input.get("ca_cert_path")),
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert the token to a dictionary with snake_case keys."""
+        return asdict(self)

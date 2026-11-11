@@ -26,7 +26,6 @@ dependencies = [
   "ansys-api-result-explorer",
   "grpcio>=1.63.0",
   "protobuf",
-  "pydantic>=2.14.2",
   "python-slugify>=8.0.4",
   "requests",
 ]

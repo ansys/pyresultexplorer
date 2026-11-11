@@ -17,11 +17,13 @@
 """Result Explorer client for gRPC communication."""
 
 import base64
+import json
 import ssl
 import warnings
 from functools import wraps
 from pathlib import Path
 from typing import TYPE_CHECKING
+from urllib.parse import urlsplit
 
 import grpc
 from ansys.api.result_explorer.v0 import (
@@ -34,7 +36,7 @@ from ansys.api.result_explorer.v0 import (
 from ansys.result_explorer.core import models
 
 from .exceptions import ResultExplorerError, UnsecureConnectionWarning
-from .models import ConnectionToken
+from .models import ConnectionToken, HpsData
 from .objects import Solution, Viewport, Workspace
 
 if TYPE_CHECKING:
@@ -306,7 +308,7 @@ class Client:
         decoded_bytes = base64.b64decode(token)
         json_string = decoded_bytes.decode("utf-8")
         try:
-            connection_token = ConnectionToken.model_validate_json(json_string)
+            connection_token = ConnectionToken.create(json.loads(json_string))
         except Exception as e:
             msg = (
                 "Invalid connection token. "
@@ -314,32 +316,33 @@ class Client:
             )
             raise ValueError(msg) from e
 
-        # host and port validation is handled in ConnectionToken
-        assert connection_token.grpc_base_url.host is not None  # noqa: S101
-        assert connection_token.grpc_base_url.port is not None  # noqa: S101
+        # Host and port presence is validated by ConnectionToken
+        url = urlsplit(connection_token.grpc_base_url)
+        assert url.hostname is not None  # noqa: S101
+        assert url.port is not None  # noqa: S101
+        # gRPC targets require brackets around IPv6 addresses
+        host = f"[{url.hostname}]" if ":" in url.hostname else url.hostname
         hps_data = connection_token.hps_data
         return cls(
-            host=connection_token.grpc_base_url.host,
-            grpc_port=connection_token.grpc_base_url.port,
+            host=host,
+            grpc_port=url.port,
             grpc_resource_name=hps_data.grpc_resource_name if hps_data else None,
             session_id=connection_token.session_id,
             ca_cert_path=connection_token.ca_cert_path,
-            insecure=(connection_token.grpc_base_url.scheme == "http"),
+            insecure=(url.scheme == "http"),
         )
 
     @property
     def connection_token(self) -> str:
         """Get a base64 encoded json object that contains the connection info."""
         protocol = "http" if self._ca_cert_path is None else "https"
-        data = {
-            "grpc_base_url": f"{protocol}://{self._host}:{self._grpc_port}",
-            "hpsData": {"grpcResourceName": self._grpc_resource_name}
-            if self._grpc_resource_name
-            else None,
-            "sessionId": self._session_id,
-            "caCertPath": self._ca_cert_path,
-        }
-        json_string = ConnectionToken.model_validate(data).model_dump_json()
+        connection_token = ConnectionToken(
+            grpc_base_url=f"{protocol}://{self._host}:{self._grpc_port}",
+            hps_data=HpsData(self._grpc_resource_name) if self._grpc_resource_name else None,
+            session_id=self._session_id,
+            ca_cert_path=self._ca_cert_path,
+        )
+        json_string = json.dumps(connection_token.to_dict())
         encoded_bytes = base64.b64encode(json_string.encode("utf-8"))
         return encoded_bytes.decode("utf-8")
 
