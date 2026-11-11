@@ -82,6 +82,7 @@ PyResultExplorer is a Python client library for Result Explorer that communicate
 - **Type check with Pyright** — Ruff's `ANN` rules enforce annotations (including no `Any`), and
   a pre-commit hook runs `uv run pyright` on staged files. Run `uv run pyright` for a full check.
 - **Keep line length ≤100 characters** — Break long lines at logical boundaries.
+- Make sure to run all pre-commit hooks before committing code.
 
 ### Docstring Guidelines
 
