@@ -125,6 +125,11 @@ class HpsData(BaseModel):
 
     grpc_resource_name: Annotated[str, PydanticField(alias="grpcResourceName")]
 
+    @classmethod
+    def create(cls, input: dict) -> "HpsData":
+        """Create an HpsData instance from a dictionary."""
+        return cls.model_validate(input)
+
 
 class ConnectionToken(BaseModel):
     """Represents a connection token."""
@@ -146,3 +151,8 @@ class ConnectionToken(BaseModel):
         if self.grpc_base_url.port is None:
             raise ValueError("gRPC base URL must include a port.")
         return self
+
+    @classmethod
+    def create(cls, input: dict) -> "ConnectionToken":
+        """Create a ConnectionToken instance from a dictionary."""
+        return cls.model_validate(input)
