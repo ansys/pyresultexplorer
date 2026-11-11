@@ -34,7 +34,8 @@ from ansys.api.result_explorer.v0 import (
 from ansys.result_explorer.core import models
 
 from .exceptions import ResultExplorerError, UnsecureConnectionWarning
-from .objects import ConnectionToken, Solution, Viewport, Workspace
+from .models import ConnectionToken
+from .objects import Solution, Viewport, Workspace
 
 if TYPE_CHECKING:
     from .launch import ResultExplorerInstance, ResultExplorerWebSession

@@ -24,8 +24,7 @@ import pytest
 from ansys.result_explorer.core import __version__
 from ansys.result_explorer.core.client import Client, ResultExplorerError
 from ansys.result_explorer.core.exceptions import UnsecureConnectionWarning
-from ansys.result_explorer.core.models import AppInfo
-from ansys.result_explorer.core.objects import ConnectionToken
+from ansys.result_explorer.core.models import AppInfo, ConnectionToken
 
 
 def test_pkg_version():

@@ -16,6 +16,8 @@
 
 """gRPC models for Result Explorer client."""
 
+from typing import Annotated, Self
+
 from ansys.api.result_explorer.v0.app_pb2 import (
     AppInfo,
     AppSettings,
@@ -112,3 +114,35 @@ from ansys.api.result_explorer.v0.workspace_pb2 import (
     WorkspaceList,
     WorkspaceUpdateRequest,
 )
+from pydantic import BaseModel, ConfigDict, HttpUrl, UrlConstraints, model_validator
+from pydantic import Field as PydanticField
+
+
+class HpsData(BaseModel):
+    """Represents HPS data."""
+
+    model_config = ConfigDict(validate_by_name=True, validate_by_alias=True, extra="ignore")
+
+    grpc_resource_name: Annotated[str, PydanticField(alias="grpcResourceName")]
+
+
+class ConnectionToken(BaseModel):
+    """Represents a connection token."""
+
+    model_config = ConfigDict(validate_by_name=True, validate_by_alias=True, extra="ignore")
+
+    grpc_base_url: Annotated[
+        HttpUrl,
+        PydanticField(alias="grpcBaseUrl"),
+        UrlConstraints(host_required=True, allowed_schemes=["http", "https"]),
+    ]
+    hps_data: Annotated[HpsData | None, PydanticField(alias="hpsData")] = None
+    session_id: Annotated[str, PydanticField(alias="sessionId")]
+    ca_cert_path: Annotated[str | None, PydanticField(alias="caCertPath")] = None
+
+    @model_validator(mode="after")
+    def validate_ports(self) -> Self:
+        """Validate that the base URLs have ports."""
+        if self.grpc_base_url.port is None:
+            raise ValueError("gRPC base URL must include a port.")
+        return self

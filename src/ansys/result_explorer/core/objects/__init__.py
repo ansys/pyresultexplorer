@@ -16,7 +16,7 @@
 
 """Pythonic wrapper objects for gRPC models."""
 
-from .base import BaseEntity, ConnectionToken, NamedBaseEntity
+from .base import BaseEntity, NamedBaseEntity
 from .camera_position import CameraPosition
 from .chart_definition import ChartDefinition, ChartResult, Filter
 from .layout import ViewportPlacement, WorkspaceLayout
@@ -63,7 +63,6 @@ __all__ = [
     "ChartView",
     "ChartViewportSettings",
     "Component",
-    "ConnectionToken",
     "ContactTrackersViewportSettings",
     "ConvergenceTrackersViewportSettings",
     "Field",
