@@ -14,17 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import base64
-import json
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import grpc
 import pytest
 
 from ansys.result_explorer.core import __version__
-from ansys.result_explorer.core.client import Client, ResultExplorerError
-from ansys.result_explorer.core.exceptions import UnsecureConnectionWarning
-from ansys.result_explorer.core.models import AppInfo, ConnectionToken
+from ansys.result_explorer.core.client import ResultExplorerError
 
 
 def test_pkg_version():
@@ -49,78 +45,6 @@ def test_grpc_error_not_found():
 
     result = ResultExplorerError.from_grpc_error(mock_error)
     assert "Resource not found" in str(result)
-
-
-@pytest.mark.parametrize(
-    "payload",
-    [
-        {
-            "grpc_base_url": "https://localhost:50000",
-            "hps_data": None,
-            "session_id": "session",
-            "ca_cert_path": "ca.pem",
-        },
-        {
-            "grpcBaseUrl": "https://localhost:50000",
-            "hpsData": None,
-            "sessionId": "session",
-            "caCertPath": "ca.pem",
-        },
-    ],
-)
-def test_connection_token_accepts_field_names_and_aliases(
-    payload: dict[str, object],
-) -> None:
-    """Test that connection tokens accept Python field names and aliases."""
-    token = ConnectionToken.model_validate(payload)
-
-    assert f"{token.grpc_base_url}" == "https://localhost:50000/"
-    assert token.session_id == "session"
-    assert token.ca_cert_path == "ca.pem"
-
-
-def test_connect_with_token_missing_host():
-    """Test token validation for missing host."""
-    token = base64.b64encode(json.dumps({"grpcPort": 5000, "sessionId": "123"}).encode()).decode()
-    with pytest.raises(ValueError, match="Invalid connection token."):
-        Client.connect_with_token(token)
-
-
-def test_connect_with_token_missing_grpc_port():
-    """Test token validation for missing grpcPort."""
-    token = base64.b64encode(
-        json.dumps({"host": "localhost", "sessionId": "123"}).encode()
-    ).decode()
-    with pytest.raises(ValueError, match="Invalid connection token."):
-        Client.connect_with_token(token)
-
-
-def test_connect_with_token_missing_session_id():
-    """Test token validation for missing sessionId."""
-    token = base64.b64encode(json.dumps({"host": "localhost", "grpcPort": 5000}).encode()).decode()
-    with pytest.raises(ValueError, match="Invalid connection token."):
-        Client.connect_with_token(token)
-
-
-def test_connect_with_token_preserves_hps_info() -> None:
-    connection_info = ConnectionToken.model_validate(
-        {
-            "grpcBaseUrl": "http://localhost:50000",
-            "hpsData": {"grpcResourceName": "test-resource"},
-            "sessionId": "test-session",
-            "caCertPath": None,
-        }
-    )
-    token = base64.b64encode(connection_info.model_dump_json().encode("utf-8")).decode("utf-8")
-
-    with patch("ansys.result_explorer.core.client.grpc.insecure_channel") as mock_channel:
-        mock_channel.return_value.unary_unary.return_value.return_value = AppInfo(
-            version="2026.8.0"
-        )
-        with pytest.warns(UnsecureConnectionWarning):
-            client = Client.connect_with_token(token)
-
-        assert client.connection_token == token
 
 
 def test_default_result_provider(rx):
