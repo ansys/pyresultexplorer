@@ -16,7 +16,8 @@
 
 import base64
 import json
-from unittest.mock import MagicMock
+from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 import grpc
 import pytest
@@ -49,27 +50,41 @@ def test_grpc_error_not_found():
     assert "Resource not found" in str(result)
 
 
-def test_connect_with_token_missing_host():
-    """Test token validation for missing host."""
-    token = base64.b64encode(json.dumps({"grpcPort": 5000, "sessionId": "123"}).encode()).decode()
-    with pytest.raises(ValueError, match="missing 'host'"):
-        Client.connect_with_token(token)
+def test_connection_token_with_path_ca_cert(tmp_path: Path) -> None:
+    ca_cert_path = tmp_path / "ca.pem"
+    ca_cert_path.write_text("dummy")
+    with patch.object(Client, "_check_compatibility"):
+        client = Client(session_id="session", ca_cert_path=ca_cert_path)
+
+    payload = json.loads(base64.b64decode(client.connection_token))
+
+    assert payload["ca_cert_path"] == str(ca_cert_path)
 
 
-def test_connect_with_token_missing_grpc_port():
-    """Test token validation for missing grpcPort."""
-    token = base64.b64encode(
-        json.dumps({"host": "localhost", "sessionId": "123"}).encode()
-    ).decode()
-    with pytest.raises(ValueError, match="missing 'grpcPort'"):
-        Client.connect_with_token(token)
+@pytest.mark.filterwarnings(
+    "ignore::ansys.result_explorer.core.exceptions.UnsecureConnectionWarning"
+)
+@pytest.mark.parametrize(
+    ("insecure", "with_ca_cert"),
+    [(True, False), (True, True), (False, True), (False, False)],
+    ids=["insecure", "insecure-ignores-ca-cert", "ca-cert", "system-ca"],
+)
+def test_connection_token_round_trip_preserves_security(
+    tmp_path: Path, insecure: bool, with_ca_cert: bool
+) -> None:
+    ca_cert_path = tmp_path / "ca.pem"
+    ca_cert_path.write_text("dummy")
+    with patch.object(Client, "_check_compatibility"):
+        client = Client(
+            session_id="session",
+            ca_cert_path=ca_cert_path if with_ca_cert else None,
+            insecure=insecure,
+        )
 
+    with patch.object(Client, "__init__", return_value=None, autospec=True) as init:
+        Client.connect_with_token(client.connection_token)
 
-def test_connect_with_token_missing_session_id():
-    """Test token validation for missing sessionId."""
-    token = base64.b64encode(json.dumps({"host": "localhost", "grpcPort": 5000}).encode()).decode()
-    with pytest.raises(ValueError, match="missing 'sessionId'"):
-        Client.connect_with_token(token)
+    assert init.call_args.kwargs["insecure"] is insecure
 
 
 def test_default_result_provider(rx):
