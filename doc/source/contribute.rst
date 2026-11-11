@@ -47,6 +47,14 @@ Installing PyResultExplorer in developer mode allows you to modify the source an
 
       pre-commit install
 
+   The hooks run Ruff, which also requires type annotations on all
+   functions, and Pyright for type checking. Both check only the staged
+   files. To type check the whole project, run:
+
+   .. code:: bash
+
+      uv run pyright
+
 How to test
 ===========
 

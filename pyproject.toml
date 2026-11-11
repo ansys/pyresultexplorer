@@ -39,6 +39,7 @@ dev = [
   "hypothesis>=6.170.5",
   "pillow>=12.0.0",
   "pre-commit==4.7.0",
+  "pyright==1.1.414",
   "pytest==9.1.1",
   "pytest-cov==7.1.0",
   "pytest-playwright>=0.9.0",
@@ -73,6 +74,7 @@ cache-dir = "./.uv_cache"
 line-length = 100
 extend-exclude = [ "src/ansys/result_explorer/core/protogen" ]
 lint.select = [
+  "ANN",     # flake8-annotations
   "B",       # flake8-bugbear
   "C4",      # flake8-comprehensions
   "D",       # pydocstyle
@@ -98,6 +100,11 @@ lint.per-file-ignores."examples/**/*.py" = [ "D", "PLC0415" ]
 lint.per-file-ignores."src/**/models.py" = [ "F401" ]
 # ignore docstring requirements for tests, examples
 lint.per-file-ignores."tests/**/*.py" = [ "D", "PLC0415" ]
+
+[tool.pyright]
+pythonVersion = "3.12"
+include = [ "examples", "src", "tests" ]
+exclude = [ "**/__pycache__", ".uv_cache", ".venv", "tests/data" ]
 
 [tool.pytest]
 ini_options.addopts = '-ra -vv -m "not images "'
