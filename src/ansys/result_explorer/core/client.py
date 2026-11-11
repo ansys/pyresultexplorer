@@ -18,10 +18,12 @@
 
 import base64
 import json
+import ssl
 import warnings
 from functools import wraps
 from pathlib import Path
 from typing import TYPE_CHECKING
+from urllib.parse import urlsplit
 
 import grpc
 from ansys.api.result_explorer.v0 import (
@@ -34,6 +36,7 @@ from ansys.api.result_explorer.v0 import (
 from ansys.result_explorer.core import models
 
 from .exceptions import ResultExplorerError, UnsecureConnectionWarning
+from .models import ConnectionToken, HpsData
 from .objects import Solution, Viewport, Workspace
 
 if TYPE_CHECKING:
@@ -93,6 +96,7 @@ class Client:
         session_id: str,
         host: str = "localhost",
         grpc_port: int = 50000,
+        grpc_resource_name: str | None = None,
         ca_cert_path: str | Path | None = None,
         insecure: bool = False,
         custom_headers: list[tuple[str, str]] | None = None,
@@ -108,6 +112,8 @@ class Client:
             Hostname or IP address of the Result Explorer API. Default is "localhost".
         grpc_port : int, optional
             Port number for the gRPC API. Default is 50000.
+        grpc_resource_name : str, optional
+            Resource name for the gRPC connection, used for routing via RCS on HPS.
         ca_cert_path : str | Path, optional
             Path to CA certificate for secure gRPC connection.
             If not provided, ``insecure=True`` must be set.
@@ -127,8 +133,12 @@ class Client:
         self._grpc_port = grpc_port
         self._session_id = session_id
         self._ca_cert_path = ca_cert_path
+        self._insecure = insecure
         self._instance = instance
         self._grpc_metadata = [("x-session-id", self._session_id)]
+        self._grpc_resource_name = grpc_resource_name
+        if self._grpc_resource_name:
+            self._grpc_metadata.append(("x-resource-name", self._grpc_resource_name))
         if custom_headers:
             self._grpc_metadata.extend(custom_headers)
 
@@ -137,8 +147,9 @@ class Client:
         wrapper_metadata = self._grpc_metadata
 
         if insecure:
+            msg = f"Using an insecure gRPC channel, unencrypted communication with {target}."
             warnings.warn(
-                f"Using an insecure gRPC channel, unencrypted communication with {target}.",
+                msg,
                 UnsecureConnectionWarning,
                 stacklevel=2,
             )
@@ -149,10 +160,15 @@ class Client:
             ssl_credentials = grpc.ssl_channel_credentials(root_certificates=trusted_ca)
             self._channel = grpc.secure_channel(target, ssl_credentials)
         else:
-            raise ResultExplorerError(
-                "Secure gRPC mode selected but no CA certificate has been provided."
-                "Provide either a ca_cert_path for secure connection or set insecure=True."
+            # if no CA certificate path is provided, use the default system CA certificates
+            certs = ssl.create_default_context().get_ca_certs(True)
+            cert_string = ""
+            for cert in certs:
+                cert_string += ssl.DER_cert_to_PEM_cert(cert)
+            ssl_credentials = grpc.ssl_channel_credentials(
+                root_certificates=cert_string.encode("utf-8")
             )
+            self._channel = grpc.secure_channel(target, ssl_credentials)
 
         # Wrap stubs to handle errors in a centralized way
         # To enable autocompletion on the stubs, we use a 'wrong' type annotation.
@@ -292,38 +308,34 @@ class Client:
         """Connect with a base64 encoded json object that contains the connection info."""
         decoded_bytes = base64.b64decode(token)
         json_string = decoded_bytes.decode("utf-8")
-        data = json.loads(json_string)
-
-        host = data.get("host")
-        grpc_port = data.get("grpcPort")
-        session_id = data.get("sessionId")
-        ca_cert_path = data.get("caCertPath")
-
-        if host is None:
-            raise ValueError("Token is missing 'host' information.")
-        if grpc_port is None:
-            raise ValueError("Token is missing 'grpcPort' information.")
-        if session_id is None:
-            raise ValueError("Token is missing 'sessionId' information.")
-
+        connection_token = ConnectionToken.create(json.loads(json_string))
+        # Host and port presence is validated by ConnectionToken
+        url = urlsplit(connection_token.grpc_base_url)
+        assert url.hostname is not None  # noqa: S101
+        assert url.port is not None  # noqa: S101
+        # gRPC targets require brackets around IPv6 addresses
+        host = f"[{url.hostname}]" if ":" in url.hostname else url.hostname
+        hps_data = connection_token.hps_data
         return cls(
             host=host,
-            grpc_port=grpc_port,
-            session_id=session_id,
-            ca_cert_path=ca_cert_path,
-            insecure=(ca_cert_path is None),
+            grpc_port=url.port,
+            grpc_resource_name=hps_data.grpc_resource_name if hps_data else None,
+            session_id=connection_token.session_id,
+            ca_cert_path=connection_token.ca_cert_path,
+            insecure=(url.scheme == "http"),
         )
 
     @property
     def connection_token(self) -> str:
         """Get a base64 encoded json object that contains the connection info."""
-        data = {
-            "host": self._host,
-            "grpcPort": self._grpc_port,
-            "sessionId": self._session_id,
-            "caCertPath": self._ca_cert_path,
-        }
-        json_string = json.dumps(data)
+        protocol = "http" if self._insecure else "https"
+        connection_token = ConnectionToken(
+            grpc_base_url=f"{protocol}://{self._host}:{self._grpc_port}",
+            hps_data=HpsData(self._grpc_resource_name) if self._grpc_resource_name else None,
+            session_id=self._session_id,
+            ca_cert_path=str(self._ca_cert_path) if self._ca_cert_path is not None else None,
+        )
+        json_string = json.dumps(connection_token.to_dict())
         encoded_bytes = base64.b64encode(json_string.encode("utf-8"))
         return encoded_bytes.decode("utf-8")
 
