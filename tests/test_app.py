@@ -102,7 +102,10 @@ def test_save_session(rx, tmp_path):
     assert Path(session_path_str).exists()
 
 
-def test_save_session_with_views(rx, rst_multiple_connections, tmp_path):
+@pytest.mark.parametrize("workspace_count", [None, 1, 2])
+def test_save_session_with_views(
+    rx: Client, rst_multiple_connections: str, tmp_path: Path, workspace_count: int | None
+) -> None:
     """Test that a session with solutions, workspaces, and views is saved correctly."""
 
     # Create a solution
@@ -128,7 +131,9 @@ def test_save_session_with_views(rx, rst_multiple_connections, tmp_path):
 
     # Save session
     session_path = tmp_path / "full_session.rxs"
-    rx.save_session(session_path)
+    workspace_ids = None if workspace_count is None else [ws1.id, ws2.id][:workspace_count]
+    expected_count = len(rx.list_workspaces()) if workspace_count is None else workspace_count
+    rx.save_session(session_path, workspace_ids=workspace_ids)
 
     assert session_path.exists()
 
@@ -143,7 +148,7 @@ def test_save_session_with_views(rx, rst_multiple_connections, tmp_path):
     assert "solutions" in app_state
     assert "workspaces" in app_state
     assert len(app_state["solutions"]) >= 1
-    assert len(app_state["workspaces"]) >= 2
+    assert len(app_state["workspaces"]) == expected_count
 
     rx.delete_workspace(ws1)
     rx.delete_workspace(ws2)
@@ -189,6 +194,7 @@ def test_open_session_round_trip(
     session_path = tmp_path / "round_trip.rxs"
     rx.save_session(
         session_path,
+        workspace_ids=[workspace.id],
         include_cached_data=include_cached_data,
         compression_level=compression_level,
         precision=precision,
@@ -256,7 +262,7 @@ def test_open_session_read_only(rx: Client, rst_multiple_connections: str, tmp_p
     workspace.assign_view(view=plot, wait=True)
 
     session_path = tmp_path / "read_only.rxs"
-    rx.save_session(session_path)
+    rx.save_session(session_path, workspace_ids=[workspace.id])
 
     rx.delete_workspace(workspace)
     rx.delete_solution(solution)

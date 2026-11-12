@@ -779,6 +779,7 @@ class Client:
         self,
         path: str | Path,
         *,
+        workspace_ids: list[str] | None = None,
         include_cached_data: bool = True,
         only_cache_visible_views: bool = False,
         compression_level: int = 1,
@@ -791,6 +792,10 @@ class Client:
         path : str | Path
             Local destination path. The ``.rxs`` extension is appended
             if missing. An existing file is replaced only on success.
+        workspace_ids : list[str], optional
+            IDs of workspaces to include. Defaults to ``None``,
+            which includes all workspaces. An explicit list must
+            contain at least one workspace ID.
         include_cached_data : bool, optional
             Include cached view data. Defaults to ``True``.
         only_cache_visible_views : bool, optional
@@ -802,12 +807,22 @@ class Client:
         precision : int, optional
             A ``models.GraphicsPrecision`` value. Defaults to full.
 
+        Raises
+        ------
+        ValueError
+            If ``workspace_ids`` is an empty list.
+
         Examples
         --------
         >>> client.save_session("session.rxs")  # doctest: +SKIP
 
         """
+        if workspace_ids is not None and not workspace_ids:
+            raise ValueError("workspace_ids must not be empty.")
+        if workspace_ids is None:
+            workspace_ids = [workspace.id for workspace in self.list_workspaces()]
         request = models.SaveSessionRequest(
+            workspace_ids=workspace_ids,
             include_cached_data=include_cached_data,
             only_cache_visible_views=only_cache_visible_views,
             compression_level=compression_level,

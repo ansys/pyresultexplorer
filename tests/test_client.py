@@ -31,6 +31,10 @@ from ansys.result_explorer.core.client import Client, ResultExplorerError
 def test_save_session_stream(tmp_path: Path, filename: str) -> None:
     client = Client.__new__(Client)
     client._app_stub = MagicMock()
+    client._workspace_stub = MagicMock()
+    client._workspace_stub.List.return_value.workspaces = [
+        models.Workspace(id="existing-workspace")
+    ]
     destination = tmp_path / filename
     expected = destination if destination.suffix == ".rxs" else Path(str(destination) + ".rxs")
 
@@ -45,6 +49,7 @@ def test_save_session_stream(tmp_path: Path, filename: str) -> None:
     assert expected.read_bytes() == b"PK\x03\x04\xff\x00session archive"
     client._app_stub.SaveSessionStream.assert_called_once_with(
         models.SaveSessionRequest(
+            workspace_ids=["existing-workspace"],
             include_cached_data=True,
             only_cache_visible_views=False,
             compression_level=1,
@@ -57,15 +62,24 @@ def test_save_session_stream(tmp_path: Path, filename: str) -> None:
 
 @pytest.mark.parametrize("include_cached_data", [True, False])
 @pytest.mark.parametrize("only_cache_visible_views", [True, False])
+@pytest.mark.parametrize("workspace_ids", [None, ["workspace-1", "workspace-2"]])
 def test_save_session_stream_options(
-    tmp_path: Path, include_cached_data: bool, only_cache_visible_views: bool
+    tmp_path: Path,
+    include_cached_data: bool,
+    only_cache_visible_views: bool,
+    workspace_ids: list[str] | None,
 ) -> None:
     client = Client.__new__(Client)
     client._app_stub = MagicMock()
+    client._workspace_stub = MagicMock()
+    client._workspace_stub.List.return_value.workspaces = [
+        models.Workspace(id="existing-workspace")
+    ]
     client._app_stub.SaveSessionStream.return_value = iter([models.SessionChunk(data=b"archive")])
 
     client.save_session(
         tmp_path / "session.rxs",
+        workspace_ids=workspace_ids,
         include_cached_data=include_cached_data,
         only_cache_visible_views=only_cache_visible_views,
         compression_level=6,
@@ -74,17 +88,39 @@ def test_save_session_stream_options(
 
     client._app_stub.SaveSessionStream.assert_called_once_with(
         models.SaveSessionRequest(
+            workspace_ids=["existing-workspace"] if workspace_ids is None else workspace_ids,
             include_cached_data=include_cached_data,
             only_cache_visible_views=only_cache_visible_views,
             compression_level=6,
             precision=models.GraphicsPrecision.GRAPHICS_PRECISION_LOW,
         )
     )
+    if workspace_ids is None:
+        client._workspace_stub.List.assert_called_once_with(models.Empty())
+    else:
+        client._workspace_stub.List.assert_not_called()
+
+
+def test_save_session_rejects_empty_workspace_ids(tmp_path: Path) -> None:
+    client = Client.__new__(Client)
+    client._app_stub = MagicMock()
+    client._workspace_stub = MagicMock()
+    destination = tmp_path / "session.rxs"
+    destination.write_bytes(b"existing session")
+
+    with pytest.raises(ValueError, match="workspace_ids must not be empty"):
+        client.save_session(destination, workspace_ids=[])
+
+    client._app_stub.SaveSessionStream.assert_not_called()
+    client._workspace_stub.List.assert_not_called()
+    assert destination.read_bytes() == b"existing session"
+    assert list(tmp_path.iterdir()) == [destination]
 
 
 def test_save_session_stream_failure_preserves_destination(tmp_path: Path) -> None:
     client = Client.__new__(Client)
     client._app_stub = MagicMock()
+    client._workspace_stub = MagicMock()
     destination = tmp_path / "session.rxs"
     destination.write_bytes(b"existing session")
     failure = grpc.RpcError()
