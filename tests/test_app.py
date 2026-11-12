@@ -17,11 +17,23 @@
 import json
 import logging
 import time
+from dataclasses import replace
 from pathlib import Path
+from zipfile import ZipFile
 
 import pytest
 
-from ansys.result_explorer.core import models
+from ansys.result_explorer.core import (
+    Client,
+    Component,
+    Field,
+    Location,
+    PlotDefinition,
+    ResultExplorerError,
+    ResultFieldName,
+    ResultType,
+    models,
+)
 
 log = logging.getLogger(__name__)
 
@@ -62,7 +74,7 @@ def test_app(rx):
 
 
 def test_save_session(rx, tmp_path):
-    """Test save_session path handling: makedirs, extension appending, valid JSON output."""
+    """Test save_session path handling and the ZIP session manifest."""
 
     # Save session to a nested path to verify makedirs
     session_path = tmp_path / "nested" / "dir" / "session.rxs"
@@ -70,9 +82,8 @@ def test_save_session(rx, tmp_path):
 
     assert session_path.exists()
 
-    # Verify the file contains valid JSON
-    content = session_path.read_text()
-    data = json.loads(content)
+    with ZipFile(session_path) as archive:
+        data = json.loads(archive.read("manifest.json"))
     assert isinstance(data, dict)
 
     # Test with a Path without extension - should auto-append .rxs
@@ -81,8 +92,8 @@ def test_save_session(rx, tmp_path):
     expected_path = Path(str(session_path_no_ext) + ".rxs")
     assert expected_path.exists()
 
-    content2 = expected_path.read_text()
-    data2 = json.loads(content2)
+    with ZipFile(expected_path) as archive:
+        data2 = json.loads(archive.read("manifest.json"))
     assert isinstance(data2, dict)
 
     # Test with a string path
@@ -91,7 +102,10 @@ def test_save_session(rx, tmp_path):
     assert Path(session_path_str).exists()
 
 
-def test_save_session_with_views(rx, rst_multiple_connections, tmp_path):
+@pytest.mark.parametrize("workspace_count", [None, 1, 2])
+def test_save_session_with_views(
+    rx: Client, rst_multiple_connections: str, tmp_path: Path, workspace_count: int | None
+) -> None:
     """Test that a session with solutions, workspaces, and views is saved correctly."""
 
     # Create a solution
@@ -117,12 +131,14 @@ def test_save_session_with_views(rx, rst_multiple_connections, tmp_path):
 
     # Save session
     session_path = tmp_path / "full_session.rxs"
-    rx.save_session(session_path)
+    workspace_ids = None if workspace_count is None else [ws1.id, ws2.id][:workspace_count]
+    expected_count = len(rx.list_workspaces()) if workspace_count is None else workspace_count
+    rx.save_session(session_path, workspace_ids=workspace_ids)
 
     assert session_path.exists()
 
-    content = session_path.read_text()
-    data = json.loads(content)
+    with ZipFile(session_path) as archive:
+        data = json.loads(archive.read("manifest.json"))
     assert isinstance(data, dict)
 
     # Verify session structure
@@ -132,22 +148,37 @@ def test_save_session_with_views(rx, rst_multiple_connections, tmp_path):
     assert "solutions" in app_state
     assert "workspaces" in app_state
     assert len(app_state["solutions"]) >= 1
-    assert len(app_state["workspaces"]) >= 2
+    assert len(app_state["workspaces"]) == expected_count
 
     rx.delete_workspace(ws1)
     rx.delete_workspace(ws2)
     rx.delete_solution(sol)
 
 
-def test_open_session_round_trip(rx, rst_multiple_connections, tmp_path):
+@pytest.mark.parametrize(
+    ("include_cached_data", "compression_level", "precision"),
+    [
+        (True, 0, models.GraphicsPrecision.GRAPHICS_PRECISION_FULL),
+        (False, 1, models.GraphicsPrecision.GRAPHICS_PRECISION_REDUCED),
+        (True, 9, models.GraphicsPrecision.GRAPHICS_PRECISION_LOW),
+    ],
+)
+def test_open_session_round_trip(
+    rx, rst_multiple_connections, tmp_path, include_cached_data, compression_level, precision
+):
     """Save a session with a workspace and solution, then restore it and verify the state."""
+
+    # delete all solutions
+    for sol in rx.list_solutions():
+        rx.delete_solution(sol)
 
     # --- build initial state ---
     sol = rx.create_solution(
         name="Round Trip Solution",
         file_path=rst_multiple_connections,
     )
-    workspace = rx.create_workspace("Round Trip WS", rows=1, cols=2)
+    workspace_name = f"Round Trip WS - compr {compression_level} - prec {precision}"
+    workspace = rx.create_workspace(workspace_name, rows=1, cols=2)
     views = sol.views
     displacement_view = next((v for v in views if "Displacement" in v.name), None)
     assert displacement_view is not None
@@ -161,7 +192,13 @@ def test_open_session_round_trip(rx, rst_multiple_connections, tmp_path):
 
     # --- save session ---
     session_path = tmp_path / "round_trip.rxs"
-    rx.save_session(session_path)
+    rx.save_session(
+        session_path,
+        workspace_ids=[workspace.id],
+        include_cached_data=include_cached_data,
+        compression_level=compression_level,
+        precision=precision,
+    )
     assert session_path.exists()
 
     # --- clear state ---
@@ -203,3 +240,53 @@ def test_open_session_round_trip(rx, rst_multiple_connections, tmp_path):
     # --- cleanup ---
     rx.delete_workspace(restored_ws)
     rx.delete_solution(restored_sol)
+
+
+def test_open_session_read_only(rx: Client, rst_multiple_connections: str, tmp_path: Path) -> None:
+    solution = rx.create_solution(
+        name="Read-only Session Solution", file_path=rst_multiple_connections
+    )
+    definition = PlotDefinition(
+        result_type=ResultType.displacement,
+        location=Location.nodal,
+        name="Disp",
+        fields=[
+            Field(
+                ResultFieldName.displacement,
+                components=[Component.X, Component.Y, Component.Z],
+            )
+        ],
+    )
+    plot = solution.create_plot(definition)
+    workspace = rx.create_workspace("Test Workspace")
+    workspace.assign_view(view=plot, wait=True)
+
+    session_path = tmp_path / "read_only.rxs"
+    rx.save_session(session_path, workspace_ids=[workspace.id])
+
+    rx.delete_workspace(workspace)
+    rx.delete_solution(solution)
+
+    time.sleep(0.5)
+    rx.open_session(session_path, read_only=True)
+    time.sleep(0.5)
+
+    restored_solution = next(s for s in rx.list_solutions() if s.name == solution.name)
+    log.info("Restored solution: %s", restored_solution)
+    restored_workspace = next(w for w in rx.list_workspaces() if w.name == workspace.name)
+    original_plots = restored_solution.plots
+    restored_plot = next(p for p in original_plots if p.name == definition.name)
+
+    with pytest.raises(ResultExplorerError, match=r"read-only"):
+        restored_solution.create_plot(replace(definition, name="New Displacement"))
+
+    with pytest.raises(ResultExplorerError, match=r"read-only"):
+        restored_solution.update_plot(replace(restored_plot, name="Renamed Displacement"))
+
+    assert rx.get_solution(restored_solution.id).plots == original_plots
+
+    rx.delete_workspace(restored_workspace)
+    rx.delete_solution(restored_solution)
+
+    assert not any(s.name == solution.name for s in rx.list_solutions())
+    assert not any(w.name == workspace.name for w in rx.list_workspaces())
