@@ -5,6 +5,7 @@ import os
 import pathlib
 import shutil
 import sys
+import types
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -231,24 +232,45 @@ if switcher_version != "dev":
     )
 
 
-def _skip_inherited_str_members(
+_BUILTIN_BASES = (str, int, float, list, tuple)
+
+
+def _is_inherited_builtin_member(name: str, obj: object) -> bool:
+    """Return whether ``obj`` is a builtin member that was not overridden."""
+    for base in _BUILTIN_BASES:
+        if name not in vars(base):
+            continue
+        if getattr(base, name, None) is obj or getattr(obj, "__objclass__", None) is base:
+            return True
+        # Builtin classmethods such as ``int.from_bytes`` are bound to the subclass.
+        owner = getattr(obj, "__self__", None)
+        if (
+            isinstance(obj, types.BuiltinMethodType)
+            and isinstance(owner, type)
+            and issubclass(owner, base)
+        ):
+            return True
+    return False
+
+
+def _skip_inherited_builtin_members(
     app: Sphinx, what: str, name: str, obj: object, skip: bool, options: object
 ) -> bool | None:
-    """Skip ``str`` members inherited unchanged by ``StrEnum`` classes.
+    """Skip members inherited unchanged from builtin types.
 
     Sphinx's autosummary documents every attribute returned by ``dir()``,
-    including builtin ``str`` methods (for example, ``maketrans``) inherited
-    by the project's ``StrEnum`` classes. Autodoc cannot format the signature
-    of some of these C-implemented methods, which turns into a build error
-    when warnings are treated as errors. Skip any member that is the exact
-    same object as its ``str`` counterpart, since it isn't overridden and
-    doesn't need to be documented here.
+    including builtin members inherited by the project's ``StrEnum`` classes
+    and setting value types (for example, ``str.maketrans`` or ``int.real``).
+    Their docstrings don't follow the numpydoc style and some C-implemented
+    signatures can't be formatted, which turns into build errors when
+    warnings are treated as errors. These members aren't overridden, so they
+    don't need to be documented here.
     """
-    if getattr(str, name, None) is obj:
+    if _is_inherited_builtin_member(name, obj):
         return True
     return None
 
 
 def setup(app: Sphinx) -> None:
     """Register Sphinx event hooks."""
-    app.connect("autodoc-skip-member", _skip_inherited_str_members)
+    app.connect("autodoc-skip-member", _skip_inherited_builtin_members)
