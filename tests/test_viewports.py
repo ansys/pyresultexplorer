@@ -973,7 +973,7 @@ def test_camera_position_with_zoom():
 
 
 @pytest.mark.parametrize("property_name", ["visible_bodies", "transparent_bodies"])
-def test_visible_bodies_option(
+def test_bodies_options(
     rx,
     multiple_connections_solution,
     snapshot,
