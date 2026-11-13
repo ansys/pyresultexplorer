@@ -16,6 +16,7 @@
 
 import logging
 import time
+from typing import Literal
 
 import pytest
 
@@ -971,7 +972,14 @@ def test_camera_position_with_zoom():
     assert cam.with_translation(10, 20, 30).translation == (10, 20, 30)
 
 
-def test_visible_bodies_option(rx, multiple_connections_solution, snapshot, snapshot_settings):
+@pytest.mark.parametrize("property_name", ["visible_bodies", "transparent_bodies"])
+def test_visible_bodies_option(
+    rx,
+    multiple_connections_solution,
+    snapshot,
+    snapshot_settings,
+    property_name: Literal["visible_bodies", "transparent_bodies"],
+):
     """Test visible bodies display option."""
 
     if rx.app_info.version == "2026.7.0":
@@ -1002,8 +1010,14 @@ def test_visible_bodies_option(rx, multiple_connections_solution, snapshot, snap
 
     # Test visible_bodies property
     opts = viewport.settings
-    opts.visible_bodies = solid186_body_ids
-    assert viewport.settings.visible_bodies == solid186_body_ids
+    if property_name == "visible_bodies":
+        opts.visible_bodies = solid186_body_ids
+        assert viewport.settings.visible_bodies == solid186_body_ids
+    elif property_name == "transparent_bodies":
+        opts.transparent_bodies = solid186_body_ids
+        assert viewport.settings.transparent_bodies == solid186_body_ids
+    else:
+        pytest.fail(f"Unknown property: {property_name}")
 
     # image comparison
     snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
