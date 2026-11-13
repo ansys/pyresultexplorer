@@ -739,6 +739,8 @@ class ThreeDViewportSettings(ViewportSettings):
     """List of expanded group."""
     visible_bodies: list[str] = PbProperty("shownBodies")
     """List of visible body IDs."""
+    transparent_bodies: list[str] = PbProperty("transparentBodies")
+    """List of transparent body IDs."""
 
     @property
     def camera_position(self) -> Any:
