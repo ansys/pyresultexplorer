@@ -1,0 +1,32 @@
+﻿ShellPosition
+=============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: ShellPosition
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ShellPosition.top
+      ShellPosition.middle
+      ShellPosition.bottom
+      ShellPosition.all
+   
+   

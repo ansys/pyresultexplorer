@@ -1,0 +1,6 @@
+log\_path
+=========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: LogsDisplayOptions.log_path

@@ -1,0 +1,6 @@
+structural\_temperature
+=======================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultFieldName.structural_temperature

@@ -1,0 +1,6 @@
+import\_workspace\_from\_template
+=================================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Client.import_workspace_from_template

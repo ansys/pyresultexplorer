@@ -1,0 +1,6 @@
+plotly\_figure
+==============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ChartDefinition.plotly_figure

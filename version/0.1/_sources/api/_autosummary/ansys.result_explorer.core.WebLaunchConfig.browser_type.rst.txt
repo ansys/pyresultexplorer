@@ -1,0 +1,6 @@
+browser\_type
+=============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: WebLaunchConfig.browser_type

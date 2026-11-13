@@ -1,0 +1,6 @@
+expanded\_groups
+================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: MeshDisplayOptions.expanded_groups

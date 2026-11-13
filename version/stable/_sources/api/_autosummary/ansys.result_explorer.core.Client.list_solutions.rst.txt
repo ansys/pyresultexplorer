@@ -1,0 +1,6 @@
+list\_solutions
+===============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Client.list_solutions

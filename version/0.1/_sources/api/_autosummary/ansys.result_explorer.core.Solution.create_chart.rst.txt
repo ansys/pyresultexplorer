@@ -1,0 +1,6 @@
+create\_chart
+=============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Solution.create_chart

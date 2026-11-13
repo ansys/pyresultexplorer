@@ -1,0 +1,6 @@
+gateway\_grpc\_port
+===================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: ResultExplorerServerProcess.gateway_grpc_port

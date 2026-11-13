@@ -1,0 +1,6 @@
+custom\_options
+===============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ChartDefinition.custom_options

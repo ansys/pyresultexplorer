@@ -1,0 +1,40 @@
+﻿ChartDefinition
+===============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: ChartDefinition
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      ChartDefinition.from_proto
+      
+      
+      ChartDefinition.to_proto
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ChartDefinition.all_sets
+      ChartDefinition.plotly_figure
+      ChartDefinition.user_defined
+      ChartDefinition.name
+      ChartDefinition.results
+      ChartDefinition.custom_options
+   
+   

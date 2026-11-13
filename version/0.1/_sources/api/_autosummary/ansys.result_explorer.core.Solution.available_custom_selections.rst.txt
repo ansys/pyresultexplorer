@@ -1,0 +1,6 @@
+available\_custom\_selections
+=============================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.available_custom_selections

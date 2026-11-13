@@ -1,0 +1,6 @@
+viewport\_at
+============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Workspace.viewport_at

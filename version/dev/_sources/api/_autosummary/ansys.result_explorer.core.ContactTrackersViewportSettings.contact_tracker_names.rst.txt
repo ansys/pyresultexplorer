@@ -1,0 +1,6 @@
+contact\_tracker\_names
+=======================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: ContactTrackersViewportSettings.contact_tracker_names

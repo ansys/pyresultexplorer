@@ -1,0 +1,44 @@
+﻿PlotViewportSettings
+====================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: PlotViewportSettings
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      PlotViewportSettings.camera_position
+      PlotViewportSettings.color_maps
+      PlotViewportSettings.component_name
+      PlotViewportSettings.deformation_scale
+      PlotViewportSettings.expanded_groups
+      PlotViewportSettings.explode
+      PlotViewportSettings.explode_direction
+      PlotViewportSettings.explode_scale_factor
+      PlotViewportSettings.left_click_modes
+      PlotViewportSettings.legend_range
+      PlotViewportSettings.result
+      PlotViewportSettings.set_id
+      PlotViewportSettings.show_mesh_edges
+      PlotViewportSettings.show_min_max_labels
+      PlotViewportSettings.use_global_min_max
+      PlotViewportSettings.visible_bodies
+   
+   

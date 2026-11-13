@@ -1,0 +1,6 @@
+strain\_energy
+==============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultFieldName.strain_energy

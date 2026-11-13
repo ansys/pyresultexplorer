@@ -1,0 +1,58 @@
+﻿Viewport
+========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: Viewport
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      Viewport.hide
+      
+      
+      Viewport.save_snapshot
+      
+      
+      Viewport.set_size
+      
+      
+      Viewport.set_view
+      
+      
+      Viewport.show
+      
+      
+      Viewport.take_snapshot
+      
+      
+      Viewport.update_display_options
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Viewport.display_options
+      Viewport.hidden
+      Viewport.id
+      Viewport.metadata
+      Viewport.ready
+      Viewport.size
+      Viewport.solution_id
+      Viewport.view
+      Viewport.view_id
+   
+   

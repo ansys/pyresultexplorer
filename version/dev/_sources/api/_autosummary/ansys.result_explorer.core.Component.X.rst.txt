@@ -1,0 +1,6 @@
+X
+=
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: Component.X

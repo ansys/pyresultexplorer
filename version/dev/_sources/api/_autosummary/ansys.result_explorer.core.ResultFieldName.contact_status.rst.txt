@@ -1,0 +1,6 @@
+contact\_status
+===============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultFieldName.contact_status

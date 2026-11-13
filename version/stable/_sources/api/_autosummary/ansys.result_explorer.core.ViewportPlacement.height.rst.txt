@@ -1,0 +1,6 @@
+height
+======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ViewportPlacement.height

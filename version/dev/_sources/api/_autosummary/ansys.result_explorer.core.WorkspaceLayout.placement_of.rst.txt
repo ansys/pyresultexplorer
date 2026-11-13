@@ -1,0 +1,6 @@
+placement\_of
+=============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: WorkspaceLayout.placement_of

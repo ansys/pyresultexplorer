@@ -1,0 +1,6 @@
+min
+===
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: Filter.min

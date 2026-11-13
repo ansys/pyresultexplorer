@@ -1,0 +1,6 @@
+fullscreen\_viewport\_id
+========================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Workspace.fullscreen_viewport_id
