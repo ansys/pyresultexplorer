@@ -71,6 +71,7 @@ def test_plot(multiple_connections_solution: Solution):
     # verify the plot is in the solution's plots
     plot_def_in_sol = next((p for p in sol.plots if p.id == plot_def.id), None)
     assert plot_def_in_sol is not None
+    assert plot_def_in_sol.fields is not None
     assert plot_def_in_sol.fields[0].name == "equivalent_von_mises_stress"
     assert plot_def_in_sol.fields[1].name == "stress_tensor"
     assert plot_def_in_sol.fields[1].components == ["XX", "ZZ"]
@@ -120,6 +121,7 @@ def test_plot_view_no_definition(multiple_connections_solution: Solution):
     plot_def = plot_view.definition
 
     # delete the plot view
+    assert plot_def.id is not None
     sol.delete_plot(plot_def.id)
 
     with pytest.raises(RuntimeError, match="not found"):
@@ -311,6 +313,7 @@ class TestPlotDefinitionConversion:
 
         py_def = proto_to_plot_definition(proto)
 
+        assert py_def.custom_options is not None
         assert py_def.custom_options["threshold"] == pytest.approx(1.5)
         assert py_def.custom_options["label"] == "peak"
         assert py_def.custom_options["count"] == 3
@@ -326,6 +329,7 @@ class TestPlotDefinitionConversion:
         proto = plot_definition_to_proto(original, models.PlotDefinitionCreate)
         restored = proto_to_plot_definition(proto)
 
+        assert restored.custom_options is not None
         assert restored.custom_options["threshold"] == pytest.approx(2.5)
         assert restored.custom_options["label"] == "top"
         assert restored.custom_options["count"] == 7
@@ -355,6 +359,7 @@ class TestPlotDefinitionConversion:
         assert py_def.named_selection_id == "ns-abc"
         assert py_def.set_ids == [5]
         assert py_def.supports_monitoring is None
+        assert py_def.fields is not None
         assert len(py_def.fields) == 1
         assert py_def.fields[0].name == ResultFieldName.velocity
         assert py_def.fields[0].components == [Component.X, Component.Y, Component.Z]
@@ -377,6 +382,7 @@ class TestPlotDefinitionConversion:
         assert py_def.name == "displacement plot"
         assert py_def.supports_monitoring is True
         assert py_def.creation_time == "2026-01-01T00:00:00Z"
+        assert py_def.fields is not None
         assert len(py_def.fields) == 1
         assert py_def.fields[0].name == ResultFieldName.total_displacement
         assert py_def.fields[0].components is None
@@ -413,6 +419,7 @@ class TestPlotDefinitionConversion:
         assert restored.on_skin == original.on_skin
         assert restored.include_displacement == original.include_displacement
         assert restored.id == original.id
+        assert restored.fields is not None
         assert len(restored.fields) == 1
         assert restored.fields[0].name == ResultFieldName.stress_tensor
         assert restored.fields[0].components == [Component.XX, Component.YY, Component.ZZ]

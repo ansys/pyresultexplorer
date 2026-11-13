@@ -27,6 +27,7 @@ from .layout import WorkspaceLayout, _build_layout
 from .viewport import Viewport
 
 if TYPE_CHECKING:
+    from ..client import Client
     from .solution import View
 
 RX_WORKSPACE_TEMPLATE_EXTENSION = ".rxwt"
@@ -36,7 +37,7 @@ class Workspace(NamedBaseEntity[models.Workspace]):
     """Represents a workspace with viewports and solutions."""
 
     @property
-    def _sync_options(self):
+    def _sync_options(self) -> models.SyncOptions:
         return self._pb.sync_options
 
     @property
@@ -45,7 +46,7 @@ class Workspace(NamedBaseEntity[models.Workspace]):
         return self._sync_options.camera
 
     @sync_camera.setter
-    def sync_camera(self, value: bool):
+    def sync_camera(self, value: bool) -> None:
         self.set_sync(camera=value)
 
     @property
@@ -54,7 +55,7 @@ class Workspace(NamedBaseEntity[models.Workspace]):
         return self._sync_options.time_freq
 
     @sync_time_freq.setter
-    def sync_time_freq(self, value: bool):
+    def sync_time_freq(self, value: bool) -> None:
         self.set_sync(time_freq=value)
 
     @property
@@ -63,7 +64,7 @@ class Workspace(NamedBaseEntity[models.Workspace]):
         return self._sync_options.legend
 
     @sync_legend.setter
-    def sync_legend(self, value: bool):
+    def sync_legend(self, value: bool) -> None:
         self.set_sync(legend=value)
 
     @property
@@ -72,7 +73,7 @@ class Workspace(NamedBaseEntity[models.Workspace]):
         return self._sync_options.probe_entity
 
     @sync_probe_entity.setter
-    def sync_probe_entity(self, value: bool):
+    def sync_probe_entity(self, value: bool) -> None:
         self.set_sync(probe_entity=value)
 
     @property
@@ -81,7 +82,7 @@ class Workspace(NamedBaseEntity[models.Workspace]):
         return self._sync_options.probe_location
 
     @sync_probe_location.setter
-    def sync_probe_location(self, value: bool):
+    def sync_probe_location(self, value: bool) -> None:
         self.set_sync(probe_location=value)
 
     @property
@@ -161,7 +162,10 @@ class Workspace(NamedBaseEntity[models.Workspace]):
         return self.layout.viewport_at(row, column)
 
     def create_viewport(
-        self, viewport: Viewport, direction: models.ViewportDirection, size: float | None = None
+        self,
+        viewport: Viewport,
+        direction: models.ViewportDirection.ValueType,
+        size: float | None = None,
     ) -> Viewport:
         """Create a new viewport as a child of the given viewport."""
         req = models.CreateViewportRequest(
@@ -244,7 +248,7 @@ class Workspace(NamedBaseEntity[models.Workspace]):
     @classmethod
     def import_from_template(
         cls,
-        client,
+        client: Client,
         path: str | Path,
         *,
         workspace_name: str,

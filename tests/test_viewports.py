@@ -16,12 +16,14 @@
 
 import logging
 import time
+from typing import cast
 
 import pytest
 
 from ansys.result_explorer.core import (
     CameraPosition,
     ChartViewportSettings,
+    Client,
     ContactTrackersViewportSettings,
     ConvergenceTrackersViewportSettings,
     LogsViewportSettings,
@@ -47,6 +49,9 @@ from ansys.result_explorer.core.objects.viewport import (
     _dict_to_settings,
     _settings_to_dict,
 )
+
+# Offline unit tests never reach the server, so no client is needed.
+NO_CLIENT = cast(Client, None)
 
 log = logging.getLogger(__name__)
 
@@ -131,7 +136,7 @@ def test_viewport_settings_round_trip():
 
 
 def test_viewport_setting_options():
-    settings = ThreeDViewportSettings._from_pb(_dict_to_settings({}), client=None)
+    settings = ThreeDViewportSettings._from_pb(_dict_to_settings({}), client=NO_CLIENT)
     settings._setting_options = _settings_to_dict(
         _dict_to_settings(
             {
@@ -155,7 +160,7 @@ def test_viewport_setting_options():
 
 def test_plot_viewport_setting_options():
     settings = PlotViewportSettings._from_pb(
-        _dict_to_settings({"componentName": "X", "timeFrequencySetId": 1}), client=None
+        _dict_to_settings({"componentName": "X", "timeFrequencySetId": 1}), client=NO_CLIENT
     )
     settings._setting_options = _settings_to_dict(
         _dict_to_settings(
@@ -168,41 +173,42 @@ def test_plot_viewport_setting_options():
     )
 
     assert settings.component_name.options == ["Magnitude", "X", "Y", "Z"]
+    assert settings.set_id is not None
     assert settings.set_id.options == ["1", "2"]
     assert settings.color_maps == ["Rainbow", "Turbo"]
 
 
 def test_viewport_settings_and_options_types():
     three_d_settings = ThreeDViewportSettings._from_pb(
-        _dict_to_settings({"showMesh": True}), client=None
+        _dict_to_settings({"showMesh": True}), client=NO_CLIENT
     )
     three_d_settings._setting_options = _settings_to_dict(
         _dict_to_settings({"leftClickMode": ["Select Bodies"]})
     )
     mesh_settings = MeshViewportSettings._from_pb(
-        _dict_to_settings({"shownNamedSelectionId": "selection-1"}), client=None
+        _dict_to_settings({"shownNamedSelectionId": "selection-1"}), client=NO_CLIENT
     )
     chart_settings = ChartViewportSettings._from_pb(
         _dict_to_settings({"showChart": True, "showLegend": True, "xAxisSeries": "Time"}),
-        client=None,
+        client=NO_CLIENT,
     )
     chart_settings._setting_options = _settings_to_dict(
         _dict_to_settings({"activeSeries": ["Time"]})
     )
     contact_settings = ContactTrackersViewportSettings._from_pb(
-        _dict_to_settings({"chartSelectionMode": "chartBodies"}), client=None
+        _dict_to_settings({"chartSelectionMode": "chartBodies"}), client=NO_CLIENT
     )
     contact_settings._setting_options = _settings_to_dict(
         _dict_to_settings({"chartSelectionMode": ["chartBodies"]})
     )
     convergence_settings = ConvergenceTrackersViewportSettings._from_pb(
-        _dict_to_settings({"tracker": "Force Convergence"}), client=None
+        _dict_to_settings({"tracker": "Force Convergence"}), client=NO_CLIENT
     )
     convergence_settings._setting_options = _settings_to_dict(
         _dict_to_settings({"tracker": ["Force"]})
     )
     logs_settings = LogsViewportSettings._from_pb(
-        _dict_to_settings({"logFile": "solve.out"}), client=None
+        _dict_to_settings({"logFile": "solve.out"}), client=NO_CLIENT
     )
     logs_settings._setting_options = _settings_to_dict(
         _dict_to_settings({"logFile": ["solve.out"]})
@@ -224,7 +230,7 @@ def test_viewport_settings_and_options_types():
 
 
 def test_unassigned_viewport_uses_generic_settings():
-    viewport = Viewport(models.Viewport(id="viewport-1"), client=None)
+    viewport = Viewport(models.Viewport(id="viewport-1"), client=NO_CLIENT)
 
     assert isinstance(viewport.settings, ViewportSettings)
     assert isinstance(viewport.metadata, object)
@@ -248,7 +254,7 @@ def test_plot_viewport_settings_from_raw_settings_with_empty_values():
         models.SettingOption(key="transparencyLevel", value=models.SettingValue(string_value=""))
     )
 
-    opts = PlotViewportSettings._from_pb(settings, client=None)
+    opts = PlotViewportSettings._from_pb(settings, client=NO_CLIENT)
 
     assert opts.visible_bodies == []
     assert opts.expanded_groups == []
@@ -268,7 +274,7 @@ def test_plot_viewport_settings_from_raw_settings():
                 "componentName": "X",
             }
         ),
-        client=None,
+        client=NO_CLIENT,
     )
 
     assert settings.show_mesh_edges.value is True
@@ -538,6 +544,7 @@ def test_mesh_viewport_named_selection_visibility(
 
     # Test named selection visibility by id
     ns_contact = next((ns for ns in sol.named_selections if "CONTACT" in ns.name), None)
+    assert ns_contact is not None
     with viewport.update_settings() as opts:
         opts.visible_named_selection = ns_contact.id
         opts.show_mesh_edges = True
@@ -549,6 +556,7 @@ def test_mesh_viewport_named_selection_visibility(
 
     # Test named selection visibility by object
     ns_eppl = next((ns for ns in sol.named_selections if "ND001_EPPL_ELEMENTS" in ns.name), None)
+    assert ns_eppl is not None
     opts = viewport.settings
     opts.visible_named_selection = ns_eppl
     assert viewport.settings.visible_named_selection == ns_eppl.id
@@ -562,6 +570,7 @@ def test_mesh_viewport_named_selection_visibility(
     with viewport.update_settings() as opts:
         opts.visible_named_selection = "LEFT1"
     ns_left = next((ns for ns in sol.named_selections if "LEFT1" in ns.name), None)
+    assert ns_left is not None
     assert viewport.settings.visible_named_selection == ns_left.id
 
     snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
@@ -939,6 +948,9 @@ def test_result_display_options_snapshots(
 
     # verify extremes
     meta: PlotViewportMetadata = viewport.metadata
+    assert meta.active_result is not None
+    assert meta.active_result.min is not None
+    assert meta.active_result.max is not None
     assert meta.active_result.min.value == 0.0
     assert meta.active_result.max.value == pytest.approx(1.187e-4, rel=1e-3)
     assert meta.active_result.max.entity_id == 7
@@ -1055,6 +1067,8 @@ def test_plot_viewport_result_metadata(rx, cp_transient_solution):
 
     assert len(eqv_stress_metadata.sets) == 15
     assert eqv_stress_metadata.num_components == 1
+    assert eqv_stress_metadata.global_component_extremes[0].min is not None
+    assert eqv_stress_metadata.global_component_extremes[0].max is not None
     assert eqv_stress_metadata.global_component_extremes[0].min.value == pytest.approx(
         8.422e5, rel=1e-3
     )
@@ -1070,6 +1084,8 @@ def test_plot_viewport_result_metadata(rx, cp_transient_solution):
 
     stress_set_7 = next((s for s in stress_metadata.sets if s.set_id == 7), None)
     assert stress_set_7 is not None
+    assert stress_set_7.component_extremes[0].min is not None
+    assert stress_set_7.component_extremes[0].max is not None
     assert stress_set_7.component_extremes[0].min.value == pytest.approx(-6.866e8, rel=1e-3)
     assert stress_set_7.component_extremes[0].max.value == pytest.approx(6.257e7, rel=1e-3)
     assert stress_set_7.component_extremes[0].max.entity_id == 180
@@ -1082,10 +1098,13 @@ def test_plot_viewport_result_metadata(rx, cp_transient_solution):
         settings.component_name = "Z"
 
     active_res = viewport.metadata.active_result
+    assert active_res is not None
     assert active_res.set_id == 12
     assert active_res.component_name == "Z"
     assert active_res.unit == "m"
     assert active_res.time_frequency == pytest.approx(0.06416, rel=1e-3)
+    assert active_res.min is not None
+    assert active_res.max is not None
     assert active_res.min.value == pytest.approx(-2.844e-5, rel=1e-3)
     assert active_res.max.value == pytest.approx(2.847e-5, rel=1e-3)
     assert active_res.max.entity_id == 393

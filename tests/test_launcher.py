@@ -438,6 +438,8 @@ class TestServerLaunchIntegration:
         assert process.is_running is True
         assert process.port > 0
         assert process.url.startswith("http://127.0.0.1:")
+        assert process.gateway_http_port is not None
+        assert process.gateway_grpc_port is not None
         assert process.gateway_http_port > 0
         assert process.gateway_grpc_port > 0
 
@@ -521,6 +523,7 @@ class TestServerLaunchIntegration:
         # Verify client is connected
         assert client is not None
         assert client.instance is not None
+        assert client.web_url is not None
         assert "/web" in client.web_url
         assert client.web_session is not None
 

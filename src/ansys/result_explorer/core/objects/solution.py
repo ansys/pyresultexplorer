@@ -18,7 +18,10 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from google.protobuf.json_format import MessageToDict, ParseDict
+from google.protobuf.message import Message
 
 from .. import models
 from .base import NamedBaseEntity, SubEntity
@@ -33,12 +36,15 @@ from .named_selection import (
 )
 from .plot_definition import PlotDefinition, plot_definition_to_proto, proto_to_plot_definition
 
+if TYPE_CHECKING:
+    from ..client import Client
+
 
 class View(SubEntity[models.View, "Solution"]):
     """Represents a result view in a solution."""
 
     @property
-    def type(self) -> models.ViewType:
+    def type(self) -> models.ViewType.ValueType:
         """View type."""
         return self._pb.type
 
@@ -91,13 +97,13 @@ class MeshView(View):
 class Solution(NamedBaseEntity[models.Solution]):
     """Represents a solution loaded in the application."""
 
-    def __init__(self, pb_obj: models.Solution, client):
+    def __init__(self, pb_obj: models.Solution, client: Client) -> None:
         """Initialize solution entity."""
         super().__init__(pb_obj, client)
 
         self._result_provider: models.ResultProvider | None = None
 
-    def _get(self):
+    def _get(self) -> None:
         """Get the latest solution data from the application."""
         self._pb = self._client._solution_stub.Get(models.ResourceId(id=self.id))
 
@@ -143,11 +149,14 @@ class Solution(NamedBaseEntity[models.Solution]):
 
     def delete_plot(self, id: str | PlotView | PlotDefinition) -> None:
         """Delete a plot by ID."""
-        plot_id = id
         if isinstance(id, PlotView):
             plot_id = id.definition.id
         elif isinstance(id, PlotDefinition):
             plot_id = id.id
+        else:
+            plot_id = id
+        if plot_id is None:
+            raise ValueError("Cannot delete a plot definition without an ID.")
 
         self._client._solution_stub.DeletePlotDefinition(
             models.DeletePlotDefinitionRequest(solution_id=self.id, plot_definition_id=plot_id)
@@ -178,11 +187,14 @@ class Solution(NamedBaseEntity[models.Solution]):
 
     def delete_chart(self, id: str | ChartView | ChartDefinition) -> None:
         """Delete a chart by ID."""
-        chart_id = id
         if isinstance(id, ChartView):
             chart_id = id.definition.id
         elif isinstance(id, ChartDefinition):
             chart_id = id.id
+        else:
+            chart_id = id
+        if chart_id is None:
+            raise ValueError("Cannot delete a chart definition without an ID.")
 
         self._client._solution_stub.DeleteChartDefinition(
             models.DeleteChartDefinitionRequest(solution_id=self.id, chart_definition_id=chart_id)
@@ -337,7 +349,7 @@ class Solution(NamedBaseEntity[models.Solution]):
         return self._pb.distance_unit
 
     @property
-    def element_groups(self) -> list[models.ElementGroup]:
+    def element_groups(self) -> list[models.ElementGroup.ValueType]:
         """Element groups in the mesh."""
         return list(self._pb.element_groups)
 
@@ -619,7 +631,7 @@ class Solution(NamedBaseEntity[models.Solution]):
         return "\n".join(lines)
 
 
-def _clone_msg_to_compatible_type(msg, target_msg_type: type):
+def _clone_msg_to_compatible_type[T: Message](msg: Message, target_msg_type: type[T]) -> T:
     data = MessageToDict(
         msg,
         preserving_proto_field_name=True,

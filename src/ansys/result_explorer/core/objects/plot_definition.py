@@ -330,6 +330,7 @@ def proto_to_plot_definition(
 
 
 def _proto_field_to_field(proto_field: models.Field) -> Field:
+    name: ResultFieldName
     try:
         name = ResultFieldName(proto_field.name)
     except ValueError:
