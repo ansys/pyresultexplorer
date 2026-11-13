@@ -138,7 +138,7 @@ jobs:
 
   tests-native:
     name: "Tests Native"
-    uses: ./.github/workflows/tests.yml
+    uses: $/.github/workflows/tests.yml
     permissions:
       contents: read
     with:

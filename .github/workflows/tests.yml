@@ -76,7 +76,7 @@ jobs:
       - name: "Install Result Explorer (native)"
         id: install-rx
         if: ${{ env.DEPLOYMENT == 'native' }}
-        uses: ./.github/actions/result-explorer-server
+        uses: $/.github/actions/result-explorer-server
         with:
           version: ${{ inputs.rx-version == 'dev' && 'latest-dev' || inputs.rx-version }}
           installation-path: ${{ env.RX_SERVER_INSTALLATION_PATH }}
@@ -85,7 +85,7 @@ jobs:
       - name: "Start Result Explorer (docker)"
         id: rx-compose
         if: ${{ env.DEPLOYMENT == 'docker' }}
-        uses: ./.github/actions/result-explorer-docker
+        uses: $/.github/actions/result-explorer-docker
         with:
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           ghcr-username: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
