@@ -91,15 +91,18 @@ class MeshView(View):
 class Solution(NamedBaseEntity[models.Solution]):
     """Represents a solution loaded in the application."""
 
-    def __init__(self, pb_obj: models.Solution, client):
+    def __init__(self, pb_obj: models.ExtendedSolution, client):
         """Initialize solution entity."""
-        super().__init__(pb_obj, client)
+        super().__init__(pb_obj.solution, client)
+        self._read_only: bool = pb_obj.read_only
 
         self._result_provider: models.ResultProvider | None = None
 
     def _get(self):
         """Get the latest solution data from the application."""
-        self._pb = self._client._solution_stub.Get(models.ResourceId(id=self.id))
+        pb_obj = self._client._solution_stub.Get(models.ResourceId(id=self.id))
+        self._pb = pb_obj.solution
+        self._read_only = pb_obj.read_only
 
     def _get_plot_view(self, plot_def_id: str) -> PlotView:
         """Get the PlotView associated with a given plot definition ID."""
@@ -252,6 +255,17 @@ class Solution(NamedBaseEntity[models.Solution]):
     def name(self) -> str:
         """Solution name."""
         return self._pb.name
+
+    @property
+    def read_only(self) -> bool:
+        """Whether the solution is read-only.
+
+        Read-only solutions, such as solutions opened from a session in
+        read-only mode, serve the data cached in the session and cannot be
+        modified. For example, you cannot create, update, or delete their
+        plots, charts, or named selections.
+        """
+        return self._read_only
 
     @property
     def description(self) -> str:

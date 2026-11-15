@@ -16,10 +16,12 @@
 
 import logging
 from pathlib import Path
+from unittest.mock import MagicMock
 
 import pytest
 
 from ansys.result_explorer.core import models
+from ansys.result_explorer.core.client import Client
 from ansys.result_explorer.core.objects import ChartDefinition, ResultType, Solution, View
 
 log = logging.getLogger(__name__)
@@ -38,15 +40,18 @@ def test_solution(rx, rst_multiple_connections):
     assert sol.id is not None
     assert sol.n_elements == 255
     assert sol.n_nodes == 844
+    assert sol.read_only is False
 
     # list solutions
     solutions = rx.list_solutions()
     assert any(s.id == sol.id for s in solutions)
+    assert all(s.read_only is False for s in solutions if s.id == sol.id)
 
     # get solution
     fetched_sol = rx.get_solution(sol.id)
     assert fetched_sol.id == sol.id
     assert fetched_sol.name == sol.name
+    assert fetched_sol.read_only is False
     assert fetched_sol.n_elements == sol.n_elements
     assert len(fetched_sol.views) > 0
 
@@ -359,3 +364,51 @@ def test_solution_warnings(cp_transient_solution: Solution):
 
     assert len(sol.errors) == 0
     assert len(sol.warnings) == 0
+
+
+def _extended_solution(solution_id: str, read_only: bool) -> models.ExtendedSolution:
+    return models.ExtendedSolution(
+        solution=models.Solution(id=solution_id, name=f"Solution {solution_id}"),
+        read_only=read_only,
+    )
+
+
+@pytest.mark.parametrize("read_only", [True, False])
+def test_solution_read_only_from_extended_solution(read_only: bool):
+    sol = Solution(_extended_solution("sol", read_only), MagicMock())
+
+    assert sol.read_only is read_only
+    assert sol.id == "sol"
+    assert sol.name == "Solution sol"
+
+
+def test_solution_read_only_defaults_to_false():
+    sol = Solution(models.ExtendedSolution(solution=models.Solution(id="sol")), MagicMock())
+
+    assert sol.read_only is False
+
+
+def test_solution_refresh_updates_read_only():
+    client = MagicMock()
+    client._solution_stub.Get.return_value = _extended_solution("sol", True)
+    sol = Solution(_extended_solution("sol", False), client)
+
+    sol._get()
+
+    client._solution_stub.Get.assert_called_once_with(models.ResourceId(id="sol"))
+    assert sol.read_only is True
+    assert isinstance(sol._pb, models.Solution)
+
+
+def test_client_solution_queries_expose_read_only():
+    client = MagicMock()
+    client._solution_stub.Get.return_value = _extended_solution("read-only", True)
+    client._solution_stub.List.return_value = models.SolutionList(
+        solutions=[_extended_solution("editable", False), _extended_solution("read-only", True)]
+    )
+
+    fetched = Client.get_solution(client, "read-only")
+    listed = Client.list_solutions(client)
+
+    assert (fetched.id, fetched.read_only) == ("read-only", True)
+    assert [(s.id, s.read_only) for s in listed] == [("editable", False), ("read-only", True)]
