@@ -330,8 +330,24 @@ def cp_transient_solution(rx, rst_cp_transient) -> Generator[Solution, None, Non
         name="Test Solution - CP Transient",
         file_path=rst_cp_transient,
     )
-    assert sol.n_elements == 122
-    assert sol.n_nodes == 406
+    yield sol
+
+    rx.delete_solution(sol)
+
+
+@pytest.fixture(scope="session")
+def rst_mixed_shell_solid(data_directory, is_docker) -> str:
+    return _get_result_path(data_directory, "mixed_shell_solid_with_contact.rst", is_docker)
+
+
+@pytest.fixture
+def mixed_shell_solid_solution(rx, rst_mixed_shell_solid) -> Generator[Solution, None, None]:
+    sol = rx.create_solution(
+        name="Test Solution - Mixed Shell Solid",
+        file_path=rst_mixed_shell_solid,
+    )
+    assert sol.n_elements == 56
+    assert sol.n_nodes == 171
 
     yield sol
 

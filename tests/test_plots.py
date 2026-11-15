@@ -21,6 +21,12 @@ import pytest
 from ansys.result_explorer.core import Client, models
 from ansys.result_explorer.core.exceptions import ResultExplorerError
 from ansys.result_explorer.core.objects import Solution
+from ansys.result_explorer.core.objects.named_selection import (
+    IdsScoping,
+    NamedSelectionCreate,
+    NamedSelectionType,
+    PropertyScoping,
+)
 from ansys.result_explorer.core.objects.plot_definition import (
     Component,
     Field,
@@ -247,6 +253,70 @@ def test_plot_using_python_plot_definition(multiple_connections_solution: Soluti
     # delete via Python PlotDefinition
     sol.delete_plot(py_def)
     assert next((p for p in sol.plots if p.id == plot_def.id), None) is None
+
+
+# Expected (min, max) of stress XX on the shell body. Elemental values match
+# Mechanical references (elements 66 and 67), where top = -bottom and middle = 0.
+SHELL_STRESS_XX_EXTREMES = {
+    Location.elemental: {
+        ShellPosition.top: (-1.0811, 0.099602),
+        ShellPosition.middle: (0.0, 0.0),
+        ShellPosition.bottom: (-0.099602, 1.0811),
+        ShellPosition.min: (-1.0811, -0.099602),
+        ShellPosition.max: (0.099602, 1.0811),
+        ShellPosition.average: (0.0, 0.0),
+    },
+    Location.nodal: {
+        ShellPosition.top: (-1.4370, 0.21612),
+        ShellPosition.middle: (0.0, 0.0),
+        ShellPosition.bottom: (-0.21612, 1.4370),
+        ShellPosition.min: (-1.4370, -0.0091596),
+        ShellPosition.max: (0.0091596, 1.4370),
+        ShellPosition.average: (0.0, 0.0),
+    },
+}
+
+
+@pytest.mark.parametrize("location", [Location.elemental, Location.nodal])
+def test_plot_shell_positions(rx: Client, mixed_shell_solid_solution: Solution, location: Location):
+    sol = mixed_shell_solid_solution
+
+    shell_selection = sol.create_named_selection(
+        NamedSelectionCreate(
+            name="Shell body",
+            type=NamedSelectionType.MESH_PROPERTY,
+            solver_named_selections=[],
+            bodies=[],
+            node_ids=[],
+            element_ids=[],
+            property_ids=PropertyScoping(name="mat", ids=[IdsScoping(values=[3])]),
+        )
+    )
+    assert shell_selection.size == 4
+
+    workspace = rx.create_workspace("Shell positions")
+    for shell_position, (expected_min, expected_max) in SHELL_STRESS_XX_EXTREMES[location].items():
+        plot_def = PlotDefinition(
+            result_type=ResultType.stress,
+            location=location,
+            on_skin=False,
+            shell_position=shell_position,
+            named_selection_id=shell_selection.id,
+            fields=[Field(ResultFieldName.stress_tensor, [Component.XX])],
+        )
+        plot_view = sol.create_plot(plot_def)
+        assert plot_view.definition.shell_position == shell_position
+
+        viewport = workspace.assign_view(view=plot_view, wait=True)
+        active_result = viewport.metadata.active_result
+        assert active_result.min.value == pytest.approx(expected_min, rel=1e-3, abs=1e-9), (
+            shell_position
+        )
+        assert active_result.max.value == pytest.approx(expected_max, rel=1e-3, abs=1e-9), (
+            shell_position
+        )
+
+    rx.delete_workspace(workspace)
 
 
 class TestPlotDefinitionConversion:
