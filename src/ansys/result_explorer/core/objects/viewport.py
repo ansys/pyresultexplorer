@@ -815,6 +815,10 @@ class ThreeDViewportSettings(ViewportSettings):
     """List of expanded group."""
     visible_bodies = PbProperty[ListSetting[str], list[str]]("shownBodies")
     """List of visible body IDs."""
+    result_context = PbProperty[StrSetting, Literal["all", "visible_bodies", "opaque_bodies"]](
+        "resultContext"
+    )
+    """Bodies used to compute the legend range."""
 
     @property
     def camera_position(self) -> CameraPosition | None:
