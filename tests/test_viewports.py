@@ -15,6 +15,7 @@
 # limitations under the License.
 
 import logging
+import random
 import time
 from typing import Literal, cast
 
@@ -483,10 +484,7 @@ def test_mesh_viewport_settings(rx, multiple_connections_solution):
     """Test MeshViewportSettings properties."""
     sol = multiple_connections_solution
 
-    # Find a mesh view from the solution
-    views = sol.views
-    mesh_view = next((v for v in views if v.type == ViewType.VIEW_TYPE_MESH), None)
-    assert mesh_view is not None
+    mesh_view = sol.mesh_view
 
     # Create workspace and assign mesh view
     workspace = rx.create_workspace("Test Mesh Settings")
@@ -530,10 +528,7 @@ def test_mesh_viewport_named_selection_visibility(
     """Test named selection visibility in MeshViewportSettings."""
     sol = cp_transient_solution
 
-    # Find a mesh view from the solution
-    views = sol.views
-    mesh_view = next((v for v in views if v.type == ViewType.VIEW_TYPE_MESH), None)
-    assert mesh_view is not None
+    mesh_view = sol.mesh_view
 
     # Create workspace and assign mesh view
     workspace = rx.create_workspace("Test Mesh Settings Visibility")
@@ -983,13 +978,11 @@ def test_camera_position_with_zoom():
     assert cam.with_translation(10, 20, 30).translation == (10, 20, 30)
 
 
-@pytest.mark.parametrize("property_name", ["visible_bodies", "transparent_bodies"])
-def test_bodies_options(
+def test_visible_bodies_options(
     rx,
     multiple_connections_solution,
     snapshot,
     snapshot_settings,
-    property_name: Literal["visible_bodies", "transparent_bodies"],
 ):
     """Test visible bodies display option."""
 
@@ -998,10 +991,7 @@ def test_bodies_options(
 
     sol = multiple_connections_solution
 
-    # Find a mesh view from the solution
-    views = sol.views
-    mesh_view = next((v for v in views if v.type == ViewType.VIEW_TYPE_MESH), None)
-    assert mesh_view is not None
+    mesh_view = sol.mesh_view
 
     # Create workspace and assign mesh view
     workspace = rx.create_workspace("Test Body Visibility")
@@ -1021,14 +1011,63 @@ def test_bodies_options(
 
     # Test visible_bodies property
     opts = viewport.settings
-    if property_name == "visible_bodies":
-        opts.visible_bodies = solid186_body_ids
-        assert viewport.settings.visible_bodies == solid186_body_ids
-    elif property_name == "transparent_bodies":
-        opts.transparent_bodies = solid186_body_ids
-        assert viewport.settings.transparent_bodies == solid186_body_ids
-    else:
-        pytest.fail(f"Unknown property: {property_name}")
+    opts.visible_bodies = solid186_body_ids
+    assert viewport.settings.visible_bodies == solid186_body_ids
+
+    # image comparison
+    snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
+    assert snapshot_data == snapshot(name="SOLID186_bodies")
+
+    # Cleanup
+    rx.delete_workspace(workspace)
+
+
+@pytest.mark.parametrize(
+    "transparency_style", ["transparent-contour", "transparent-grey", "transparent-body-color"]
+)
+def test_transparent_bodies_options(
+    rx,
+    multiple_connections_solution,
+    snapshot,
+    snapshot_settings,
+    transparency_style: Literal[
+        "transparent-contour", "transparent-grey", "transparent-body-color"
+    ],
+):
+    """Test transparent bodies display option."""
+
+    if rx.app_info.version == "2026.7.0":
+        pytest.skip("Skipping test due to known issue in version 2026.7.0")
+
+    sol = multiple_connections_solution
+
+    mesh_view = sol.mesh_view
+
+    # Create workspace and assign mesh view
+    workspace = rx.create_workspace("Test Body Visibility")
+    viewport = workspace.assign_view(view=mesh_view, wait=True)
+
+    _ = viewport.take_snapshot(settings=snapshot_settings)
+
+    # image comparison
+    snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
+    assert snapshot_data == snapshot(name="initial")
+
+    bodies = sol.bodies
+    solid186_body_ids = []
+    for body in bodies:
+        if "SOLID186" in body.element_types:
+            solid186_body_ids.append(body.id)
+
+    # Test transparent_bodies property
+    opts = viewport.settings
+    opts.transparent_bodies = solid186_body_ids
+    assert viewport.settings.transparent_bodies == solid186_body_ids
+    opts.transparency_style = transparency_style
+    assert viewport.settings.transparency_style == transparency_style
+    level = random.uniform(0.0, 100.0)
+    opts.transparency_level = level
+    assert viewport.settings.transparency_level == level
 
     # image comparison
     snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
