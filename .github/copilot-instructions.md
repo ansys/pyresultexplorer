@@ -79,7 +79,13 @@ PyResultExplorer is a Python client library for Result Explorer that communicate
   ruff format src/
   ```
 - **Fix all linting errors** — Before committing, ensure no errors from `ruff check`.
+- **Type check with Pyright** — Ruff's `ANN` rules enforce annotations (including no `Any`) in
+  `src/`, and a pre-commit hook runs `uv run pyright` on staged files. Tests and examples are
+  exempt from `ANN`, and Pyright checks only `src/` and `tests/` (examples and docs are skipped,
+  and the docs dependencies are not installed in CI).
+  Run `uv run pyright` for a full check.
 - **Keep line length ≤100 characters** — Break long lines at logical boundaries.
+- **Run pre-commit hooks** — Make sure to run all pre-commit hooks before committing code, and fix the failing hooks.
 
 ### Docstring Guidelines
 
