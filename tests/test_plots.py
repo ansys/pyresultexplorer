@@ -18,7 +18,7 @@ import logging
 
 import pytest
 
-from ansys.result_explorer.core import Client, models
+from ansys.result_explorer.core import Client, PlotViewportMetadata, models
 from ansys.result_explorer.core.exceptions import ResultExplorerError
 from ansys.result_explorer.core.objects import Solution
 from ansys.result_explorer.core.objects.named_selection import (
@@ -311,8 +311,12 @@ def test_plot_shell_positions(rx: Client, mixed_shell_solid_solution: Solution, 
             plot_view = sol.create_plot(plot_def)
             assert plot_view.definition.shell_position == shell_position
 
-            viewport = workspace.assign_view(view=plot_view, wait=True)
-            active_result = viewport.metadata.active_result
+            metadata = workspace.assign_view(view=plot_view, wait=True).metadata
+            assert isinstance(metadata, PlotViewportMetadata)
+            active_result = metadata.active_result
+            assert active_result is not None
+            assert active_result.min is not None
+            assert active_result.max is not None
             assert active_result.min.value == pytest.approx(expected_min, rel=1e-3, abs=1e-9), (
                 shell_position
             )
