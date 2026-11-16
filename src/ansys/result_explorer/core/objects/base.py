@@ -19,16 +19,21 @@
 from __future__ import annotations
 
 import weakref
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Protocol
 
 if TYPE_CHECKING:
     from ..client import Client
 
 
-class BaseEntity[PBType]:
+class _PbMessage(Protocol):
+    @property
+    def id(self) -> str: ...
+
+
+class BaseEntity[PBType: _PbMessage]:
     """Base class for all domain objects wrapping protobuf messages."""
 
-    def __init__(self, pb_obj: PBType, client: Client):
+    def __init__(self, pb_obj: PBType, client: Client) -> None:
         """Initialize base entity."""
         self._pb: PBType = pb_obj
         self._client = client
@@ -47,7 +52,7 @@ class BaseEntity[PBType]:
         return self._pb.id
 
 
-class NamedBaseEntity[PBType](BaseEntity[PBType]):
+class NamedBaseEntity[PBType: _PbMessage](BaseEntity[PBType]):
     """Base class for entities that include a name field."""
 
     def __repr__(self) -> str:
@@ -64,13 +69,13 @@ class NamedBaseEntity[PBType](BaseEntity[PBType]):
     @property
     def name(self) -> str:
         """Human-readable name."""
-        return self._pb.name if hasattr(self._pb, "name") else ""
+        return getattr(self._pb, "name", "")
 
 
-class SubEntity[PBType, ParentType: BaseEntity](NamedBaseEntity[PBType]):
+class SubEntity[PBType: _PbMessage, ParentType: BaseEntity](NamedBaseEntity[PBType]):
     """Base class for entities that are sub-entities of a parent entity."""
 
-    def __init__(self, pb_obj: PBType, client: Client, parent: ParentType):
+    def __init__(self, pb_obj: PBType, client: Client, parent: ParentType) -> None:
         """Initialize sub-entity."""
         super().__init__(pb_obj, client)
         self._parent_ref = weakref.ref(parent)

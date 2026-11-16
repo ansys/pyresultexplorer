@@ -20,11 +20,11 @@ from __future__ import annotations
 
 import dataclasses
 import json
-from collections.abc import Generator
+from collections.abc import Callable, Generator, Iterable, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal, overload
+from typing import TYPE_CHECKING, Any, Literal, Never, Self, cast, overload
 
 from ansys.api.result_explorer.v0 import base_pb2
 from google.protobuf import struct_pb2
@@ -39,6 +39,8 @@ if TYPE_CHECKING:
     from ..client import Client
     from .solution import ChartView, MeshView, PlotView, View
 
+type _SettingsSource = Sequence[models.SettingOption] | dict[str, Any]
+type _PyValue = str | float | bool | dict[str, Any] | list[str] | list[float] | list[bool] | None
 
 # ---------------------------------------------------------------------------
 # Utils
@@ -77,7 +79,7 @@ _NUMBER_SETTING_KEYS = {
 }
 
 
-def _setting_value_to_python(value: models.SettingValue) -> Any:
+def _setting_value_to_python(value: models.SettingValue) -> _PyValue:
     """Convert a viewport setting value to a Python value."""
     kind = value.WhichOneof("kind")
     if kind is None:
@@ -101,7 +103,7 @@ def _setting_value_to_python(value: models.SettingValue) -> Any:
     raise ValueError(f"Unsupported viewport setting value kind: {kind}")
 
 
-def _settings_to_dict(settings) -> dict[str, Any]:
+def _settings_to_dict(settings: Iterable[models.SettingOption]) -> dict[str, Any]:
     """Convert viewport settings to a Python dictionary."""
     return {
         setting.key: _normalize_setting_value(
@@ -112,7 +114,7 @@ def _settings_to_dict(settings) -> dict[str, Any]:
     }
 
 
-def _normalize_setting_value(key: str, value: Any) -> Any:
+def _normalize_setting_value(key: str, value: _PyValue) -> _PyValue:
     """Normalize ambiguous empty setting values from the server."""
     if value not in ("", None):
         return value
@@ -125,7 +127,7 @@ def _normalize_setting_value(key: str, value: Any) -> Any:
     return value
 
 
-def _python_to_setting_value(value: Any) -> models.SettingValue:
+def _python_to_setting_value(value: object) -> models.SettingValue:
     """Convert a Python value to a viewport setting value."""
     if isinstance(value, bool):
         return models.SettingValue(bool_value=value)
@@ -149,7 +151,7 @@ def _python_to_setting_value(value: Any) -> models.SettingValue:
             )
         if values and all(isinstance(item, dict) for item in values):
             list_value = struct_pb2.ListValue()
-            ParseDict(values, list_value)
+            list_value.extend(values)
             return models.SettingValue(object_list_value=list_value)
         return models.SettingValue(
             string_list_value=base_pb2.StringList(values=[str(item) for item in values])
@@ -170,10 +172,10 @@ def _dict_to_settings(settings: dict[str, Any]) -> list[models.SettingOption]:
     return setting_options
 
 
-def _value_or_none(settings: dict[str, Any], key: str) -> Any:
-    """Return a setting value, treating empty strings as unset."""
+def _value_or_none[T](settings: dict[str, Any], key: str, convert: Callable[[Any], T]) -> T | None:
+    """Return a converted setting value, treating empty strings as unset."""
     value = settings.get(key)
-    return None if value == "" else value
+    return None if value in ("", None) else convert(value)
 
 
 def _root_setting_key(key: str) -> str:
@@ -181,14 +183,14 @@ def _root_setting_key(key: str) -> str:
     return key.split(".", 1)[0]
 
 
-class _SettingValueMixin:
+class _SettingValueMixin[V]:
     """Adds ``.value``/``.options`` to a value that stays usable as its own type."""
 
-    _value: Any
+    _value: V
     _options: list[Any] | None
 
     @property
-    def value(self) -> Any:
+    def value(self) -> V:
         """Current value of the setting."""
         return self._value
 
@@ -208,15 +210,36 @@ class _SettingValueMixin:
         return f"{self._value} (options: {self._options})"
 
 
-class _OpaqueSettingValue:
+class StrSetting(_SettingValueMixin[str], str):
+    """String setting value that also exposes ``value`` and ``options``."""
+
+
+class IntSetting(_SettingValueMixin[int], int):
+    """Integer setting value that also exposes ``value`` and ``options``."""
+
+
+class FloatSetting(_SettingValueMixin[float], float):
+    """Float setting value that also exposes ``value`` and ``options``."""
+
+
+class ListSetting[T](_SettingValueMixin[list[T]], list[T]):
+    """List setting value that also exposes ``value`` and ``options``."""
+
+
+class TupleSetting[T](_SettingValueMixin[tuple[T, ...]], tuple[T, ...]):
+    """Tuple setting value that also exposes ``value`` and ``options``."""
+
+
+class OpaqueSetting[V]:
     """Value/options pair for setting values whose type cannot be subclassed."""
 
-    def __init__(self, value: Any, options: list[Any] | None):
+    def __init__(self, value: V, options: list[Any] | None) -> None:
+        """Initialize with a raw value and its available options."""
         self._value = value
         self._options = options
 
     @property
-    def value(self) -> Any:
+    def value(self) -> V:
         """Current value of the setting."""
         return self._value
 
@@ -226,94 +249,141 @@ class _OpaqueSettingValue:
         return self._options
 
     def __bool__(self) -> bool:
+        """Return the truthiness of the raw value."""
         return bool(self._value)
 
     def __eq__(self, other: object) -> bool:
-        return self._value == (other.value if isinstance(other, _OpaqueSettingValue) else other)
+        """Compare the raw value with another value or setting."""
+        return self._value == (other.value if isinstance(other, OpaqueSetting) else other)
 
     def __hash__(self) -> int:
+        """Return the hash of the raw value."""
         return hash(self._value)
 
     def __repr__(self) -> str:
+        """Return the raw value representation with its options."""
         if self._options is None:
             return repr(self._value)
         return f"{self._value!r} (options: {self._options!r})"
 
     def __str__(self) -> str:
+        """Return the raw value as a string with its options."""
         if self._options is None:
             return str(self._value)
         return f"{self._value} (options: {self._options})"
 
 
-def _wrap_setting_value(value: Any, options: list[Any] | None) -> Any:
+class BoolSetting(OpaqueSetting[bool]):
+    """Boolean setting value; ``bool`` cannot be subclassed, so use ``.value``."""
+
+
+_SETTING_TYPES: dict[type, type[Any]] = {
+    str: StrSetting,
+    int: IntSetting,
+    float: FloatSetting,
+    list: ListSetting,
+    tuple: TupleSetting,
+}
+
+
+@overload
+def _wrap_setting_value(value: None, options: list[Any] | None) -> None: ...
+@overload
+def _wrap_setting_value(  # pyright: ignore[reportOverlappingOverload]
+    value: bool, options: list[Any] | None
+) -> BoolSetting: ...
+@overload
+def _wrap_setting_value(value: str, options: list[Any] | None) -> StrSetting: ...
+@overload
+def _wrap_setting_value(value: int, options: list[Any] | None) -> IntSetting: ...
+@overload
+def _wrap_setting_value(value: float, options: list[Any] | None) -> FloatSetting: ...
+@overload
+def _wrap_setting_value[T](value: list[T], options: list[Any] | None) -> ListSetting[T]: ...
+@overload
+def _wrap_setting_value[T](value: tuple[T, ...], options: list[Any] | None) -> TupleSetting[T]: ...
+@overload
+def _wrap_setting_value(value: CameraPosition, options: list[Any] | None) -> CameraPosition: ...
+def _wrap_setting_value(value: object, options: list[Any] | None) -> object:
     """Wrap a raw setting value so it also exposes ``.value``/``.options``.
 
-    The result stays usable as the original type wherever possible (for
-    example, a wrapped string still supports string methods and equality).
-    ``bool`` can't be subclassed, so it gets a small dedicated wrapper
-    instead. An unset (``None``) value is returned as-is so ``is None``
-    checks on optional settings keep working.
+    The result stays usable as the original type (for example, a wrapped
+    string still supports string methods and equality). ``bool`` can't be
+    subclassed, so it gets a small dedicated wrapper instead. An unset
+    (``None``) value is returned as-is so ``is None`` checks on optional
+    settings keep working.
     """
     if value is None:
         return None
     if isinstance(value, bool):
-        return _OpaqueSettingValue(value, options)
+        return BoolSetting(value, options)
     try:
-        # Mixin listed first so its __repr__/__str__ take priority over the
-        # base type's (built-in types like str/int define their own).
-        cls = type(f"{type(value).__name__}Setting", (_SettingValueMixin, type(value)), {})
+        cls: type[Any] | None = _SETTING_TYPES.get(type(value))
+        if cls is None:
+            # Mixin listed first so its __repr__/__str__ take priority over the
+            # base type's (built-in types like str/int define their own).
+            cls = type(f"{type(value).__name__}Setting", (_SettingValueMixin, type(value)), {})
         try:
             wrapped = cls(value)
         except TypeError:
             wrapped = object.__new__(cls)
             wrapped.__dict__.update(getattr(value, "__dict__", {}))
     except TypeError:
-        return _OpaqueSettingValue(value, options)
+        return OpaqueSetting(value, options)
     wrapped._value = value
     wrapped._options = options
     return wrapped
 
 
-def _unwrap_setting_value(value: Any) -> Any:
+@overload
+def _unwrap_setting_value[V](value: _SettingValueMixin[V] | OpaqueSetting[V]) -> V: ...
+@overload
+def _unwrap_setting_value[T](value: T) -> T: ...
+def _unwrap_setting_value(value: object) -> object:
     """Return the raw value from a wrapped setting, passing through otherwise."""
-    if isinstance(value, _SettingValueMixin | _OpaqueSettingValue):
+    if isinstance(value, _SettingValueMixin | OpaqueSetting):
         return value.value
     return value
 
 
-class PbProperty:
+class PbProperty[GetT, SetT]:
     """Descriptor for accessing nested protobuf object properties.
 
     Supports dot-notation for nested keys (e.g., "cameraPosition.matrix").
-    Auto-commits to server when property is set.
+    Auto-commits to server when property is set. ``GetT`` is the wrapped
+    type returned on access and ``SetT`` the raw type accepted on assignment.
     """
 
-    def __init__(self, key: str):
+    def __init__(self, key: str) -> None:
         """Initialize descriptor with property key path."""
         self.key = key
 
-    def __get__(self, obj, objtype=None):
+    @overload
+    def __get__(self, obj: None, objtype: type | None = None) -> Self: ...
+    @overload
+    def __get__(self, obj: ViewportSettings, objtype: type | None = None) -> GetT: ...
+    def __get__(self, obj: ViewportSettings | None, objtype: type | None = None) -> Self | GetT:
         """Get property value from nested protobuf object."""
         if obj is None:
             return self
-        value = self._get_nested(obj._pb_obj, self.key)
-        return obj._wrap(self.key, value)
+        value: Any = self._get_nested(obj._pb_obj, self.key)
+        return cast(GetT, _wrap_setting_value(value, obj._options_for(self.key)))
 
-    def __set__(self, obj, value):
+    def __set__(self, obj: ViewportSettings, value: SetT) -> None:
         """Set property value on nested protobuf object and apply to server."""
         self._set_nested(obj._pb_obj, self.key, _unwrap_setting_value(value))
-        if hasattr(obj, "_apply"):
-            obj._apply()
+        obj._apply()
 
     @staticmethod
-    def _get_nested(obj, path: str):
+    def _get_nested(obj: dict[str, Any], path: str) -> object:
         """Get nested value using dot notation."""
+        value: Any = obj
         for k in path.split("."):
-            obj = obj[k]
-        return obj
+            value = value[k]
+        return value
 
     @staticmethod
-    def _set_nested(obj, path: str, value):
+    def _set_nested(obj: dict[str, Any], path: str, value: object) -> None:
         """Set nested value using dot notation."""
         keys = path.split(".")
         for k in keys[:-1]:
@@ -321,24 +391,28 @@ class PbProperty:
         obj[keys[-1]] = value
 
 
-class PbPropertyReadOnly:
+class PbPropertyReadOnly[T]:
     """Read-only descriptor for accessing nested protobuf object properties.
 
     Supports dot-notation for nested keys.
     Raises AttributeError on write attempts.
     """
 
-    def __init__(self, key: str):
+    def __init__(self, key: str) -> None:
         """Initialize read-only descriptor with property key path."""
         self.key = key
 
-    def __get__(self, obj, objtype=None):
+    @overload
+    def __get__(self, obj: None, objtype: type | None = None) -> Self: ...
+    @overload
+    def __get__(self, obj: ViewportSettings, objtype: type | None = None) -> T: ...
+    def __get__(self, obj: ViewportSettings | None, objtype: type | None = None) -> Self | T:
         """Get read-only property value from nested protobuf object."""
         if obj is None:
             return self
-        return PbProperty._get_nested(obj._pb_obj, self.key)
+        return cast(T, PbProperty._get_nested(obj._pb_obj, self.key))
 
-    def __set__(self, obj, value):
+    def __set__(self, obj: ViewportSettings, value: object) -> None:
         """Prevent setting value on read-only property."""
         raise AttributeError(
             f"Property '{self.key}' of '{type(obj).__name__}' object is read-only."
@@ -358,11 +432,11 @@ class ViewportMetadata:
         pb_obj: struct_pb2.Struct,
         client: Client,
         solution_id: str | None = None,
-        settings=None,
-        setting_options=None,
-    ):
+        settings: Iterable[models.SettingOption] | None = None,
+        setting_options: Iterable[models.SettingOption] | None = None,
+    ) -> None:
         """Initialize viewport metadata wrapper."""
-        self._pb_obj = pb_obj
+        self._pb_obj: dict[str, Any] = MessageToDict(pb_obj)
         self._client = client
         self._solution_id = solution_id
         self._settings = _settings_to_dict(settings) if settings is not None else {}
@@ -370,9 +444,9 @@ class ViewportMetadata:
             _settings_to_dict(setting_options) if setting_options is not None else {}
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return metadata as formatted JSON string."""
-        return json.dumps(MessageToDict(self._pb_obj), indent=2)
+        return json.dumps(self._pb_obj, indent=2)
 
 
 @dataclass(frozen=True)
@@ -389,7 +463,7 @@ class ResultExtreme:
     """Displacement vector (x, y, z) at the extreme."""
 
     @classmethod
-    def _from_pb(cls, pb_obj) -> ResultExtreme:
+    def _from_pb(cls, pb_obj: dict[str, Any]) -> ResultExtreme:
         """Build from a protobuf struct object."""
         pos = pb_obj["position"] if "position" in pb_obj else None
         disp = pb_obj["displacement"] if "displacement" in pb_obj else None
@@ -426,7 +500,7 @@ class ResultExtremes:
     """Maximum extreme of the result set."""
 
     @classmethod
-    def _from_pb(cls, pb_obj) -> ResultExtremes:
+    def _from_pb(cls, pb_obj: list[dict[str, Any]]) -> ResultExtremes:
         """Build from a protobuf struct object."""
         return cls(
             min=ResultExtreme._from_pb(pb_obj[0]) if len(pb_obj) > 0 else None,
@@ -456,10 +530,10 @@ class ActiveResult:
     time_frequency: float
     """Time or frequency associated with the result set."""
 
-    min: ResultExtreme
+    min: ResultExtreme | None
     """Minimum extreme of the result set."""
 
-    max: ResultExtreme
+    max: ResultExtreme | None
     """Maximum extreme of the result set."""
 
     def __str__(self) -> str:
@@ -486,11 +560,11 @@ class ResultSetMetadata:
     component_extremes: list[ResultExtremes]
     """Min/max extremes for each component in the result set."""
 
-    magnitude_extremes: list[ResultExtremes]
+    magnitude_extremes: ResultExtremes
     """Min/max extremes for the magnitude of the result set."""
 
     @classmethod
-    def _from_pb(cls, pb_obj) -> ResultSetMetadata:
+    def _from_pb(cls, pb_obj: dict[str, Any]) -> ResultSetMetadata:
         """Build from a protobuf struct object."""
         return cls(
             id=pb_obj["id"],
@@ -530,11 +604,11 @@ class ResultMetadata:
     """List of result sets associated with the result."""
     global_component_extremes: list[ResultExtremes]
     """Global (over all result sets) min/max extremes for each component in the result."""
-    global_magnitude_extremes: list[ResultExtremes]
+    global_magnitude_extremes: ResultExtremes
     """Global (over all result sets) min/max extremes for the magnitude of the result."""
 
     @classmethod
-    def _from_pb(cls, pb_obj) -> ResultMetadata:
+    def _from_pb(cls, pb_obj: dict[str, Any]) -> ResultMetadata:
         """Build from a protobuf struct object."""
         return cls(
             name=pb_obj["name"],
@@ -643,12 +717,12 @@ class ViewportSettings:
 
     def __init__(
         self,
-        pb_obj,
+        pb_obj: _SettingsSource,
         client: Client,
         solution_id: str | None = None,
         viewport_id: str | None = None,
-        viewport=None,
-    ):
+        viewport: Viewport | None = None,
+    ) -> None:
         """Initialize viewport settings wrapper.
 
         Parameters
@@ -665,7 +739,9 @@ class ViewportSettings:
             Parent viewport reference for state updates after auto-commit.
 
         """
-        self._pb_obj = _settings_to_dict(pb_obj) if not isinstance(pb_obj, dict) else pb_obj
+        self._pb_obj: dict[str, Any] = (
+            pb_obj if isinstance(pb_obj, dict) else _settings_to_dict(pb_obj)
+        )
         self._client = client
         self._solution_id = solution_id
         self._viewport_id = viewport_id
@@ -673,9 +749,9 @@ class ViewportSettings:
         self._setting_options: dict[str, Any] = {}
         self._batch_mode = False
 
-    def _wrap(self, key: str, value: Any) -> Any:
-        """Wrap a raw value together with its available options, if known."""
-        return _wrap_setting_value(value, self._setting_options.get(_root_setting_key(key)))
+    def _options_for(self, key: str) -> list[Any] | None:
+        """Return the available options for a setting key, if known."""
+        return self._setting_options.get(_root_setting_key(key))
 
     def _to_pb(self) -> list[models.SettingOption]:
         """Return setting options for viewport updates.
@@ -710,16 +786,16 @@ class ViewportSettings:
     @classmethod
     def _from_pb(
         cls,
-        pb_obj,
+        pb_obj: _SettingsSource,
         client: Client,
         solution_id: str | None = None,
         viewport_id: str | None = None,
-        viewport=None,
+        viewport: Viewport | None = None,
     ) -> ViewportSettings:
         """Build from a metadata Struct."""
         return cls(pb_obj, client, solution_id, viewport_id, viewport)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return viewport settings as formatted JSON string."""
         return json.dumps(self._pb_obj, indent=2)
 
@@ -727,26 +803,27 @@ class ViewportSettings:
 class ThreeDViewportSettings(ViewportSettings):
     """Manages editable settings for 3D viewports."""
 
-    show_mesh_edges: bool = PbProperty("showMesh")
+    show_mesh_edges = PbProperty[BoolSetting, bool]("showMesh")
     """Whether to display the mesh edges."""
-    explode: bool = PbProperty("explodeActive")
+    explode = PbProperty[BoolSetting, bool]("explodeActive")
     """Whether to enable explode mode."""
-    explode_scale_factor: float = PbProperty("explodeScale")
+    explode_scale_factor = PbProperty[FloatSetting, float]("explodeScale")
     """Scale factor for explode visualization."""
-    explode_direction: Literal["Radial", "X", "Y", "Z"] = PbProperty("explodeDirection")
+    explode_direction = PbProperty[StrSetting, Literal["Radial", "X", "Y", "Z"]]("explodeDirection")
     """Direction of explosion: ``Radial``, ``X``, ``Y``, or ``Z``."""
-    expanded_groups: list[str] = PbProperty("expandedGroups")
+    expanded_groups = PbProperty[ListSetting[str], list[str]]("expandedGroups")
     """List of expanded group."""
-    visible_bodies: list[str] = PbProperty("shownBodies")
+    visible_bodies = PbProperty[ListSetting[str], list[str]]("shownBodies")
     """List of visible body IDs."""
 
     @property
-    def camera_position(self) -> Any:
+    def camera_position(self) -> CameraPosition | None:
         """Current camera position, or None if not set."""
         if "cameraPosition" not in self._pb_obj:
-            return self._wrap("cameraPosition", None)
+            return _wrap_setting_value(None, self._options_for("cameraPosition"))
         raw = self._pb_obj["cameraPosition"]
-        return self._wrap("cameraPosition", CameraPosition(list(raw["matrix"])))
+        camera = CameraPosition(list(raw["matrix"]))
+        return _wrap_setting_value(camera, self._options_for("cameraPosition"))
 
     @camera_position.setter
     def camera_position(self, value: CameraPosition) -> None:
@@ -766,11 +843,11 @@ class ThreeDViewportSettings(ViewportSettings):
     @classmethod
     def _from_pb(
         cls,
-        pb_obj,
+        pb_obj: _SettingsSource,
         client: Client,
         solution_id: str | None = None,
         viewport_id: str | None = None,
-        viewport=None,
+        viewport: Viewport | None = None,
     ) -> ThreeDViewportSettings:
         """Build from a metadata Struct."""
         return cls(pb_obj, client, solution_id, viewport_id, viewport)
@@ -780,9 +857,10 @@ class MeshViewportSettings(ThreeDViewportSettings):
     """Manages editable settings for mesh viewports."""
 
     @property
-    def visible_named_selection(self) -> Any:
+    def visible_named_selection(self) -> StrSetting:
         """Currently visible named selection in this viewport."""
-        return self._wrap("shownNamedSelectionId", self._pb_obj["shownNamedSelectionId"])
+        value: str = self._pb_obj["shownNamedSelectionId"]
+        return _wrap_setting_value(value, self._options_for("shownNamedSelectionId"))
 
     @visible_named_selection.setter
     def visible_named_selection(self, value: str | NamedSelection | None) -> None:
@@ -802,6 +880,8 @@ class MeshViewportSettings(ThreeDViewportSettings):
             self._apply()
             return
 
+        if self._solution_id is None:
+            raise ValueError("Cannot resolve named selection: viewport has no solution.")
         solution = self._client.get_solution(self._solution_id)
 
         ns = None
@@ -823,11 +903,11 @@ class MeshViewportSettings(ThreeDViewportSettings):
     @classmethod
     def _from_pb(
         cls,
-        pb_obj,
+        pb_obj: _SettingsSource,
         client: Client,
         solution_id: str | None = None,
         viewport_id: str | None = None,
-        viewport=None,
+        viewport: Viewport | None = None,
     ) -> MeshViewportSettings:
         """Build from a metadata Struct."""
         return cls(pb_obj, client, solution_id, viewport_id, viewport)
@@ -836,13 +916,14 @@ class MeshViewportSettings(ThreeDViewportSettings):
 class PlotViewportSettings(ThreeDViewportSettings):
     """Manages editable settings for plot viewports."""
 
-    show_min_max_labels: bool = PbProperty("showMinMaxLabels")
+    show_min_max_labels = PbProperty[BoolSetting, bool]("showMinMaxLabels")
     """Whether to display min/max labels on the plot."""
 
     @property
-    def result(self) -> Any:
+    def result(self) -> StrSetting | None:
         """Name of the result currently displayed."""
-        return self._wrap("result", _value_or_none(self._pb_obj, "result"))
+        value = _value_or_none(self._pb_obj, "result", str)
+        return _wrap_setting_value(value, self._options_for("result"))
 
     @result.setter
     def result(self, value: str | None) -> None:
@@ -853,10 +934,10 @@ class PlotViewportSettings(ThreeDViewportSettings):
         self._apply()
 
     @property
-    def set_id(self) -> Any:
+    def set_id(self) -> IntSetting | None:
         """Actual time/frequency set ID (not an index)."""
-        value = _value_or_none(self._pb_obj, "timeFrequencySetId")
-        return self._wrap("timeFrequencySetId", int(value) if value is not None else None)
+        value = _value_or_none(self._pb_obj, "timeFrequencySetId", int)
+        return _wrap_setting_value(value, self._options_for("timeFrequencySetId"))
 
     @set_id.setter
     def set_id(self, value: int | None) -> None:
@@ -867,10 +948,12 @@ class PlotViewportSettings(ThreeDViewportSettings):
         self._apply()
 
     @property
-    def component_name(self) -> Any:
+    def component_name(self) -> StrSetting:
         """Component name for the active result, such as ``"X"`` or ``"Magnitude"``."""
-        value = _value_or_none(self._pb_obj, "componentName")
-        return self._wrap("componentName", value if value is not None else "Magnitude")
+        value = _value_or_none(self._pb_obj, "componentName", str)
+        return _wrap_setting_value(
+            value if value is not None else "Magnitude", self._options_for("componentName")
+        )
 
     @component_name.setter
     def component_name(self, value: str) -> None:
@@ -881,10 +964,10 @@ class PlotViewportSettings(ThreeDViewportSettings):
         self._apply()
 
     @property
-    def deformation_scale(self) -> Any:
+    def deformation_scale(self) -> FloatSetting | None:
         """Deformation scale factor."""
-        value = _value_or_none(self._pb_obj, "deformationScale")
-        return self._wrap("deformationScale", float(value) if value is not None else None)
+        value = _value_or_none(self._pb_obj, "deformationScale", float)
+        return _wrap_setting_value(value, self._options_for("deformationScale"))
 
     @deformation_scale.setter
     def deformation_scale(self, value: float | None) -> None:
@@ -895,10 +978,10 @@ class PlotViewportSettings(ThreeDViewportSettings):
         self._apply()
 
     @property
-    def use_global_min_max(self) -> Any:
+    def use_global_min_max(self) -> BoolSetting | None:
         """Whether to use the global min/max for the legend range."""
-        value = _value_or_none(self._pb_obj, "legendUseGlobalMinMax")
-        return self._wrap("legendUseGlobalMinMax", value)
+        value = _value_or_none(self._pb_obj, "legendUseGlobalMinMax", bool)
+        return _wrap_setting_value(value, self._options_for("legendUseGlobalMinMax"))
 
     @use_global_min_max.setter
     def use_global_min_max(self, value: bool | None) -> None:
@@ -909,16 +992,14 @@ class PlotViewportSettings(ThreeDViewportSettings):
         self._apply()
 
     @property
-    def legend_range(self) -> Any:
+    def legend_range(self) -> TupleSetting[float] | None:
         """Custom legend range as ``(min, max)``, or None for auto-range."""
-        legend_min = _value_or_none(self._pb_obj, "legendMin")
-        legend_max = _value_or_none(self._pb_obj, "legendMax")
+        legend_min = _value_or_none(self._pb_obj, "legendMin", float)
+        legend_max = _value_or_none(self._pb_obj, "legendMax", float)
         value = (
-            (float(legend_min), float(legend_max))
-            if legend_min is not None and legend_max is not None
-            else None
+            (legend_min, legend_max) if legend_min is not None and legend_max is not None else None
         )
-        return self._wrap("legendMin", value)
+        return _wrap_setting_value(value, self._options_for("legendMin"))
 
     @legend_range.setter
     def legend_range(self, value: tuple[float, float] | None) -> None:
@@ -943,11 +1024,11 @@ class PlotViewportSettings(ThreeDViewportSettings):
     @classmethod
     def _from_pb(
         cls,
-        pb_obj,
+        pb_obj: _SettingsSource,
         client: Client,
         solution_id: str | None = None,
         viewport_id: str | None = None,
-        viewport=None,
+        viewport: Viewport | None = None,
     ) -> PlotViewportSettings:
         """Build from a metadata Struct."""
         return cls(pb_obj, client, solution_id, viewport_id, viewport)
@@ -956,18 +1037,18 @@ class PlotViewportSettings(ThreeDViewportSettings):
 class BaseChartViewportSettings(ViewportSettings):
     """Manages editable settings for chart viewports."""
 
-    show_legend: bool = PbProperty("showLegend")
+    show_legend = PbProperty[BoolSetting, bool]("showLegend")
     """Whether to display the legend."""
-    show_table: bool = PbProperty("showTable")
+    show_table = PbProperty[BoolSetting, bool]("showTable")
     """Whether to display the data table."""
 
     @property
-    def split_direction(self) -> Any:
+    def split_direction(self) -> StrSetting:
         """Direction to split chart and table: ``horizontal`` or ``vertical``."""
         value = self._pb_obj.get("tablePosition", self._pb_obj.get("splitDirection"))
         if value is None:
             value = "vertical"
-        return self._wrap("tablePosition", value)
+        return _wrap_setting_value(value, self._options_for("tablePosition"))
 
     @split_direction.setter
     def split_direction(self, value: Literal["horizontal", "vertical"]) -> None:
@@ -985,7 +1066,7 @@ class BaseChartViewportSettings(ViewportSettings):
         return []
 
     @property
-    def active_series(self) -> Any:
+    def active_series(self) -> ListSetting[str]:
         """List of currently active series."""
         value = list(self._pb_obj["activeSeries"]) if "activeSeries" in self._pb_obj else []
         return _wrap_setting_value(value, self.series_names)
@@ -1010,11 +1091,11 @@ class BaseChartViewportSettings(ViewportSettings):
     @classmethod
     def _from_pb(
         cls,
-        pb_obj,
+        pb_obj: _SettingsSource,
         client: Client,
         solution_id: str | None = None,
         viewport_id: str | None = None,
-        viewport=None,
+        viewport: Viewport | None = None,
     ) -> BaseChartViewportSettings:
         """Build from a metadata Struct."""
         return cls(pb_obj, client, solution_id, viewport_id, viewport)
@@ -1023,7 +1104,7 @@ class BaseChartViewportSettings(ViewportSettings):
 class ChartViewportSettings(BaseChartViewportSettings):
     """Read/write settings for chart viewports."""
 
-    show_chart: bool = PbProperty("showChart")
+    show_chart = PbProperty[BoolSetting, bool]("showChart")
     """Whether to display the chart."""
 
     @property
@@ -1038,7 +1119,7 @@ class ChartViewportSettings(BaseChartViewportSettings):
         return []
 
     @property
-    def selected_x_axis(self) -> Any:
+    def selected_x_axis(self) -> StrSetting:
         """Name of the currently selected x-axis series."""
         value = self._pb_obj.get("xAxisSeries", "")
         return _wrap_setting_value(value, self.series_names)
@@ -1062,11 +1143,11 @@ class ChartViewportSettings(BaseChartViewportSettings):
     @classmethod
     def _from_pb(
         cls,
-        pb_obj,
+        pb_obj: _SettingsSource,
         client: Client,
         solution_id: str | None = None,
         viewport_id: str | None = None,
-        viewport=None,
+        viewport: Viewport | None = None,
     ) -> ChartViewportSettings:
         """Build from a metadata Struct."""
         return cls(pb_obj, client, solution_id, viewport_id, viewport)
@@ -1075,9 +1156,9 @@ class ChartViewportSettings(BaseChartViewportSettings):
 class ContactTrackersViewportSettings(BaseChartViewportSettings):
     """Read/write settings for contact trackers viewports."""
 
-    show_chart: bool = PbProperty("showChart")
+    show_chart = PbProperty[BoolSetting, bool]("showChart")
     """Whether to display the chart."""
-    selection_mode: str = PbProperty("chartSelectionMode")
+    selection_mode = PbProperty[StrSetting, str]("chartSelectionMode")
     """Current contact tracker selection mode."""
 
     @property
@@ -1092,7 +1173,7 @@ class ContactTrackersViewportSettings(BaseChartViewportSettings):
         return []
 
     @property
-    def active_contact_trackers(self) -> Any:
+    def active_contact_trackers(self) -> ListSetting[str]:
         """List of currently active contact trackers."""
         value = list(self._pb_obj["activeCharts"]) if "activeCharts" in self._pb_obj else []
         return _wrap_setting_value(value, self.contact_tracker_names)
@@ -1117,11 +1198,11 @@ class ContactTrackersViewportSettings(BaseChartViewportSettings):
     @classmethod
     def _from_pb(
         cls,
-        pb_obj,
+        pb_obj: _SettingsSource,
         client: Client,
         solution_id: str | None = None,
         viewport_id: str | None = None,
-        viewport=None,
+        viewport: Viewport | None = None,
     ) -> ContactTrackersViewportSettings:
         """Build from a metadata Struct."""
         return cls(pb_obj, client, solution_id, viewport_id, viewport)
@@ -1130,17 +1211,17 @@ class ContactTrackersViewportSettings(BaseChartViewportSettings):
 class ConvergenceTrackersViewportSettings(ViewportSettings):
     """Read/write settings for convergence trackers viewports."""
 
-    selected_tracker_name: str = PbProperty("tracker")
+    selected_tracker_name = PbProperty[StrSetting, str]("tracker")
     """Name of the currently selected convergence tracker."""
 
     @classmethod
     def _from_pb(
         cls,
-        pb_obj,
+        pb_obj: _SettingsSource,
         client: Client,
         solution_id: str | None = None,
         viewport_id: str | None = None,
-        viewport=None,
+        viewport: Viewport | None = None,
     ) -> ConvergenceTrackersViewportSettings:
         """Build from a metadata Struct."""
         return cls(pb_obj, client, solution_id, viewport_id, viewport)
@@ -1150,10 +1231,10 @@ class LogsViewportSettings(ViewportSettings):
     """Read/write settings for logs viewports."""
 
     @property
-    def log_path(self) -> Any:
+    def log_path(self) -> StrSetting | None:
         """Path to the currently displayed log file."""
         value = self._pb_obj.get("logFile", self._pb_obj.get("currentLogPath"))
-        return self._wrap("logFile", value)
+        return _wrap_setting_value(value, self._options_for("logFile"))
 
     @log_path.setter
     def log_path(self, value: str) -> None:
@@ -1164,15 +1245,24 @@ class LogsViewportSettings(ViewportSettings):
     @classmethod
     def _from_pb(
         cls,
-        pb_obj,
+        pb_obj: _SettingsSource,
         client: Client,
         solution_id: str | None = None,
         viewport_id: str | None = None,
-        viewport=None,
+        viewport: Viewport | None = None,
     ) -> LogsViewportSettings:
         """Build from a metadata Struct."""
         return cls(pb_obj, client, solution_id, viewport_id, viewport)
 
+
+_SETTINGS_TYPES: dict[models.ViewType.ValueType, type[ViewportSettings]] = {
+    models.ViewType.VIEW_TYPE_PLOT: PlotViewportSettings,
+    models.ViewType.VIEW_TYPE_CHART: ChartViewportSettings,
+    models.ViewType.VIEW_TYPE_MESH: MeshViewportSettings,
+    models.ViewType.VIEW_TYPE_CONVERGENCE_TRACKERS: ConvergenceTrackersViewportSettings,
+    models.ViewType.VIEW_TYPE_CONTACT_TRACKERS: ContactTrackersViewportSettings,
+    models.ViewType.VIEW_TYPE_LOGS: LogsViewportSettings,
+}
 
 # ---------------------------------------------------------------------------
 # Viewport entity
@@ -1233,34 +1323,23 @@ class Viewport[TSettings: ViewportSettings](BaseEntity[models.Viewport]):
     def settings(self) -> TSettings:
         """Read/write viewport settings."""
         view = self._resolve_view()
-        pb_obj = self._pb.settings
-
-        if view is None:
-            return self._build_settings(ViewportSettings, pb_obj)
-
-        if view.type == models.ViewType.VIEW_TYPE_PLOT:
-            return self._build_settings(PlotViewportSettings, pb_obj)
-        elif view.type == models.ViewType.VIEW_TYPE_CHART:
-            return self._build_settings(ChartViewportSettings, pb_obj)
-        elif view.type == models.ViewType.VIEW_TYPE_MESH:
-            return self._build_settings(MeshViewportSettings, pb_obj)
-        elif view.type == models.ViewType.VIEW_TYPE_CONVERGENCE_TRACKERS:
-            return self._build_settings(ConvergenceTrackersViewportSettings, pb_obj)
-        elif view.type == models.ViewType.VIEW_TYPE_CONTACT_TRACKERS:
-            return self._build_settings(ContactTrackersViewportSettings, pb_obj)
-        elif view.type == models.ViewType.VIEW_TYPE_LOGS:
-            return self._build_settings(LogsViewportSettings, pb_obj)
-
-        return self._build_settings(ViewportSettings, pb_obj)
+        settings_type = (
+            ViewportSettings if view is None else _SETTINGS_TYPES.get(view.type, ViewportSettings)
+        )
+        return cast(TSettings, self._build_settings(settings_type, self._pb.settings))
 
     @property
-    def display_options(self):
+    def display_options(self) -> Never:
         """Removed. Use ``viewport.settings`` instead."""
         raise AttributeError(
             "Viewport.display_options has been removed. Use viewport.settings instead."
         )
 
-    def _build_settings(self, settings_type, pb_obj) -> ViewportSettings:
+    def _build_settings(
+        self,
+        settings_type: type[ViewportSettings],
+        pb_obj: Sequence[models.SettingOption],
+    ) -> ViewportSettings:
         """Build typed settings and attach associated read-only data."""
         settings = settings_type._from_pb(pb_obj, self._client, self.solution_id, self.id, self)
         settings._setting_options = _settings_to_dict(self._pb.setting_options)

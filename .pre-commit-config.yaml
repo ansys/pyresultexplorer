@@ -11,6 +11,18 @@ repos:
     # Run the formatter.
     - id: ruff-format
 
+# Type check with the project's locked environment so imports resolve.
+# Only staged files are checked; run `uv run pyright` for a full check.
+- repo: local
+  hooks:
+    - id: pyright
+      name: pyright
+      entry: uv run pyright
+      language: system
+      types_or: [python, pyi]
+      files: ^(src|tests)/
+      require_serial: true
+
 # Add copyright statement to files
 - repo: https://github.com/ansys/pre-commit-hooks
   rev: 55c5b6a5439abd847613579c6924da750e8b78b2  # frozen: v0.8.0

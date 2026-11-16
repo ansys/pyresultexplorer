@@ -33,7 +33,7 @@ class CameraPosition:
         [ 0         0         0         w  ]
     """
 
-    def __init__(self, matrix: list[float]):
+    def __init__(self, matrix: list[float]) -> None:
         """Initialize camera position from 16-element matrix.
 
         Parameters
