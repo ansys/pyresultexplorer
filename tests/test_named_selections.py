@@ -72,6 +72,7 @@ def test_named_selections(multiple_connections_solution: Solution):
     named_selection = sol.update_named_selection(named_selection)
 
     assert named_selection.name == "Updated NS"
+    assert named_selection.element_ids[0].range is not None
     assert named_selection.element_ids[0].range.min == 6
     assert named_selection.element_ids[0].range.max == 10
     assert named_selection.size == 5
@@ -79,6 +80,7 @@ def test_named_selections(multiple_connections_solution: Solution):
     ns_in_sol = next((ns for ns in sol.named_selections if ns.id == named_selection.id), None)
     assert ns_in_sol is not None
     assert ns_in_sol.name == "Updated NS"
+    assert ns_in_sol.element_ids[0].range is not None
     assert ns_in_sol.element_ids[0].range.min == 6
     assert ns_in_sol.element_ids[0].range.max == 10
     assert ns_in_sol.size == 5

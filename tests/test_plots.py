@@ -18,9 +18,15 @@ import logging
 
 import pytest
 
-from ansys.result_explorer.core import Client, models
+from ansys.result_explorer.core import Client, PlotViewportMetadata, models
 from ansys.result_explorer.core.exceptions import ResultExplorerError
 from ansys.result_explorer.core.objects import Solution
+from ansys.result_explorer.core.objects.named_selection import (
+    IdsScoping,
+    NamedSelectionCreate,
+    NamedSelectionType,
+    PropertyScoping,
+)
 from ansys.result_explorer.core.objects.plot_definition import (
     Component,
     Field,
@@ -71,6 +77,7 @@ def test_plot(multiple_connections_solution: Solution):
     # verify the plot is in the solution's plots
     plot_def_in_sol = next((p for p in sol.plots if p.id == plot_def.id), None)
     assert plot_def_in_sol is not None
+    assert plot_def_in_sol.fields is not None
     assert plot_def_in_sol.fields[0].name == "equivalent_von_mises_stress"
     assert plot_def_in_sol.fields[1].name == "stress_tensor"
     assert plot_def_in_sol.fields[1].components == ["XX", "ZZ"]
@@ -120,6 +127,7 @@ def test_plot_view_no_definition(multiple_connections_solution: Solution):
     plot_def = plot_view.definition
 
     # delete the plot view
+    assert plot_def.id is not None
     sol.delete_plot(plot_def.id)
 
     with pytest.raises(RuntimeError, match="not found"):
@@ -249,6 +257,76 @@ def test_plot_using_python_plot_definition(multiple_connections_solution: Soluti
     assert next((p for p in sol.plots if p.id == plot_def.id), None) is None
 
 
+# Expected (min, max) of stress XX on the shell body. Elemental values match
+# Mechanical references (elements 66 and 67), where top = -bottom and middle = 0.
+SHELL_STRESS_XX_EXTREMES = {
+    Location.elemental: {
+        ShellPosition.top: (-1.0811, 0.099602),
+        ShellPosition.middle: (0.0, 0.0),
+        ShellPosition.bottom: (-0.099602, 1.0811),
+        ShellPosition.min: (-1.0811, -0.099602),
+        ShellPosition.max: (0.099602, 1.0811),
+        ShellPosition.average: (0.0, 0.0),
+    },
+    Location.nodal: {
+        ShellPosition.top: (-1.4370, 0.21612),
+        ShellPosition.middle: (0.0, 0.0),
+        ShellPosition.bottom: (-0.21612, 1.4370),
+        ShellPosition.min: (-1.4370, -0.0091596),
+        ShellPosition.max: (0.0091596, 1.4370),
+        ShellPosition.average: (0.0, 0.0),
+    },
+}
+
+
+@pytest.mark.parametrize("location", [Location.elemental, Location.nodal])
+def test_plot_shell_positions(rx: Client, mixed_shell_solid_solution: Solution, location: Location):
+    sol = mixed_shell_solid_solution
+
+    shell_selection = sol.create_named_selection(
+        NamedSelectionCreate(
+            name="Shell body",
+            type=NamedSelectionType.MESH_PROPERTY,
+            solver_named_selections=[],
+            bodies=[],
+            node_ids=[],
+            element_ids=[],
+            property_ids=PropertyScoping(name="mat", ids=[IdsScoping(values=[3])]),
+        )
+    )
+    assert shell_selection.size == 4
+
+    expected_extremes = SHELL_STRESS_XX_EXTREMES[location]
+    workspace = rx.create_workspace("Shell positions")
+    try:
+        for shell_position, (expected_min, expected_max) in expected_extremes.items():
+            plot_def = PlotDefinition(
+                result_type=ResultType.stress,
+                location=location,
+                on_skin=False,
+                shell_position=shell_position,
+                named_selection_id=shell_selection.id,
+                fields=[Field(ResultFieldName.stress_tensor, [Component.XX])],
+            )
+            plot_view = sol.create_plot(plot_def)
+            assert plot_view.definition.shell_position == shell_position
+
+            metadata = workspace.assign_view(view=plot_view, wait=True).metadata
+            assert isinstance(metadata, PlotViewportMetadata)
+            active_result = metadata.active_result
+            assert active_result is not None
+            assert active_result.min is not None
+            assert active_result.max is not None
+            assert active_result.min.value == pytest.approx(expected_min, rel=1e-3, abs=1e-9), (
+                shell_position
+            )
+            assert active_result.max.value == pytest.approx(expected_max, rel=1e-3, abs=1e-9), (
+                shell_position
+            )
+    finally:
+        rx.delete_workspace(workspace)
+
+
 class TestPlotDefinitionConversion:
     """Check converting between PlotDefinition and its protobuf representation."""
 
@@ -311,6 +389,7 @@ class TestPlotDefinitionConversion:
 
         py_def = proto_to_plot_definition(proto)
 
+        assert py_def.custom_options is not None
         assert py_def.custom_options["threshold"] == pytest.approx(1.5)
         assert py_def.custom_options["label"] == "peak"
         assert py_def.custom_options["count"] == 3
@@ -326,6 +405,7 @@ class TestPlotDefinitionConversion:
         proto = plot_definition_to_proto(original, models.PlotDefinitionCreate)
         restored = proto_to_plot_definition(proto)
 
+        assert restored.custom_options is not None
         assert restored.custom_options["threshold"] == pytest.approx(2.5)
         assert restored.custom_options["label"] == "top"
         assert restored.custom_options["count"] == 7
@@ -355,6 +435,7 @@ class TestPlotDefinitionConversion:
         assert py_def.named_selection_id == "ns-abc"
         assert py_def.set_ids == [5]
         assert py_def.supports_monitoring is None
+        assert py_def.fields is not None
         assert len(py_def.fields) == 1
         assert py_def.fields[0].name == ResultFieldName.velocity
         assert py_def.fields[0].components == [Component.X, Component.Y, Component.Z]
@@ -377,6 +458,7 @@ class TestPlotDefinitionConversion:
         assert py_def.name == "displacement plot"
         assert py_def.supports_monitoring is True
         assert py_def.creation_time == "2026-01-01T00:00:00Z"
+        assert py_def.fields is not None
         assert len(py_def.fields) == 1
         assert py_def.fields[0].name == ResultFieldName.total_displacement
         assert py_def.fields[0].components is None
@@ -413,6 +495,7 @@ class TestPlotDefinitionConversion:
         assert restored.on_skin == original.on_skin
         assert restored.include_displacement == original.include_displacement
         assert restored.id == original.id
+        assert restored.fields is not None
         assert len(restored.fields) == 1
         assert restored.fields[0].name == ResultFieldName.stress_tensor
         assert restored.fields[0].components == [Component.XX, Component.YY, Component.ZZ]

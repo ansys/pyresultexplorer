@@ -69,8 +69,8 @@ class ToleranceImageSnapshotExtension(PNGImageSnapshotExtension):
             (0, 0, 0, 0),  # Transparent background
         )
 
-        current_pixels = list(current_image.getdata())
-        baseline_pixels = list(baseline_image.getdata())
+        current_pixels = list(current_image.get_flattened_data())
+        baseline_pixels = list(baseline_image.get_flattened_data())
 
         # Build diff: red for differences, original pixel with reduced alpha for matches
         diff_pixels = []
@@ -80,9 +80,10 @@ class ToleranceImageSnapshotExtension(PNGImageSnapshotExtension):
                 diff_pixels.append((255, 0, 0, 255))
             # Match: original pixel with reduced alpha (~40% opaque)
             # Handle both RGB and RGBA pixels
-            elif isinstance(current_px, int):
+            elif isinstance(current_px, int | float):
                 # Grayscale
-                diff_pixels.append((current_px, current_px, current_px, 100))
+                gray = int(current_px)
+                diff_pixels.append((gray, gray, gray, 100))
             elif len(current_px) == 3:
                 # RGB
                 r, g, b = current_px
@@ -168,8 +169,8 @@ class ToleranceImageSnapshotExtension(PNGImageSnapshotExtension):
                 return False
 
             # Compare pixels
-            current_pixels = list(current_image.getdata())
-            baseline_pixels = list(baseline_image.getdata())
+            current_pixels = list(current_image.get_flattened_data())
+            baseline_pixels = list(baseline_image.get_flattened_data())
 
             total_pixels = len(current_pixels)
             differing_pixels = sum(
