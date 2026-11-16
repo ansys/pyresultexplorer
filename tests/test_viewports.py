@@ -15,7 +15,6 @@
 # limitations under the License.
 
 import logging
-import random
 import time
 from typing import Literal, cast
 
@@ -1065,7 +1064,7 @@ def test_transparent_bodies_options(
     assert viewport.settings.transparent_bodies == solid186_body_ids
     opts.transparency_style = transparency_style
     assert viewport.settings.transparency_style == transparency_style
-    level = random.uniform(0.0, 100.0)
+    level = 3.14
     opts.transparency_level = level
     assert viewport.settings.transparency_level == level
 
