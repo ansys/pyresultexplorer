@@ -294,29 +294,31 @@ def test_plot_shell_positions(rx: Client, mixed_shell_solid_solution: Solution, 
     )
     assert shell_selection.size == 4
 
+    expected_extremes = SHELL_STRESS_XX_EXTREMES[location]
     workspace = rx.create_workspace("Shell positions")
-    for shell_position, (expected_min, expected_max) in SHELL_STRESS_XX_EXTREMES[location].items():
-        plot_def = PlotDefinition(
-            result_type=ResultType.stress,
-            location=location,
-            on_skin=False,
-            shell_position=shell_position,
-            named_selection_id=shell_selection.id,
-            fields=[Field(ResultFieldName.stress_tensor, [Component.XX])],
-        )
-        plot_view = sol.create_plot(plot_def)
-        assert plot_view.definition.shell_position == shell_position
+    try:
+        for shell_position, (expected_min, expected_max) in expected_extremes.items():
+            plot_def = PlotDefinition(
+                result_type=ResultType.stress,
+                location=location,
+                on_skin=False,
+                shell_position=shell_position,
+                named_selection_id=shell_selection.id,
+                fields=[Field(ResultFieldName.stress_tensor, [Component.XX])],
+            )
+            plot_view = sol.create_plot(plot_def)
+            assert plot_view.definition.shell_position == shell_position
 
-        viewport = workspace.assign_view(view=plot_view, wait=True)
-        active_result = viewport.metadata.active_result
-        assert active_result.min.value == pytest.approx(expected_min, rel=1e-3, abs=1e-9), (
-            shell_position
-        )
-        assert active_result.max.value == pytest.approx(expected_max, rel=1e-3, abs=1e-9), (
-            shell_position
-        )
-
-    rx.delete_workspace(workspace)
+            viewport = workspace.assign_view(view=plot_view, wait=True)
+            active_result = viewport.metadata.active_result
+            assert active_result.min.value == pytest.approx(expected_min, rel=1e-3, abs=1e-9), (
+                shell_position
+            )
+            assert active_result.max.value == pytest.approx(expected_max, rel=1e-3, abs=1e-9), (
+                shell_position
+            )
+    finally:
+        rx.delete_workspace(workspace)
 
 
 class TestPlotDefinitionConversion:
