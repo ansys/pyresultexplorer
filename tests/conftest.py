@@ -330,6 +330,9 @@ def cp_transient_solution(rx, rst_cp_transient) -> Generator[Solution, None, Non
         name="Test Solution - CP Transient",
         file_path=rst_cp_transient,
     )
+    assert sol.n_elements == 122
+    assert sol.n_nodes == 406
+
     yield sol
 
     rx.delete_solution(sol)
