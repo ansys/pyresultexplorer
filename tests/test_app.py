@@ -246,6 +246,8 @@ def test_open_session_read_only(rx: Client, rst_multiple_connections: str, tmp_p
     solution = rx.create_solution(
         name="Read-only Session Solution", file_path=rst_multiple_connections
     )
+    assert solution.read_only is False
+
     definition = PlotDefinition(
         result_type=ResultType.displacement,
         location=Location.nodal,
@@ -272,6 +274,9 @@ def test_open_session_read_only(rx: Client, rst_multiple_connections: str, tmp_p
     time.sleep(0.5)
 
     restored_solution = next(s for s in rx.list_solutions() if s.name == solution.name)
+
+    assert restored_solution.read_only is True
+
     log.info("Restored solution: %s", restored_solution)
     restored_workspace = next(w for w in rx.list_workspaces() if w.name == workspace.name)
     original_plots = restored_solution.plots
