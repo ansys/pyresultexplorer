@@ -98,6 +98,7 @@ from ansys.api.result_explorer.v0.solution_pb2 import (
     DeleteChartDefinitionRequest,
     DeleteNamedSelectionRequest,
     DeletePlotDefinitionRequest,
+    ExtendedSolution,
     SolutionCreate,
     SolutionList,
     UpdateChartDefinitionRequest,

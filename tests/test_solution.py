@@ -16,6 +16,7 @@
 
 import logging
 from pathlib import Path
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -38,15 +39,18 @@ def test_solution(rx, rst_multiple_connections):
     assert sol.id is not None
     assert sol.n_elements == 255
     assert sol.n_nodes == 844
+    assert sol.read_only is False
 
     # list solutions
     solutions = rx.list_solutions()
     assert any(s.id == sol.id for s in solutions)
+    assert all(s.read_only is False for s in solutions if s.id == sol.id)
 
     # get solution
     fetched_sol = rx.get_solution(sol.id)
     assert fetched_sol.id == sol.id
     assert fetched_sol.name == sol.name
+    assert fetched_sol.read_only is False
     assert fetched_sol.n_elements == sol.n_elements
     assert len(fetched_sol.views) > 0
 
@@ -134,6 +138,7 @@ def test_solution_properties(rst_solution: Solution):
     )
     assert stress_plot_def is not None
     assert stress_plot_def.last_set is True
+    assert stress_plot_def.fields is not None
     assert stress_plot_def.fields[0].name is not None
 
     # find configurable displacement chart
@@ -359,3 +364,25 @@ def test_solution_warnings(cp_transient_solution: Solution):
 
     assert len(sol.errors) == 0
     assert len(sol.warnings) == 0
+
+
+def _extended_solution(solution_id: str, read_only: bool) -> models.ExtendedSolution:
+    return models.ExtendedSolution(
+        solution=models.Solution(id=solution_id, name=f"Solution {solution_id}"),
+        read_only=read_only,
+    )
+
+
+@pytest.mark.parametrize("read_only", [True, False])
+def test_solution_read_only_from_extended_solution(read_only: bool):
+    sol = Solution(_extended_solution("sol", read_only), MagicMock())
+
+    assert sol.read_only is read_only
+    assert sol.id == "sol"
+    assert sol.name == "Solution sol"
+
+
+def test_solution_read_only_defaults_to_false():
+    sol = Solution(models.ExtendedSolution(solution=models.Solution(id="sol")), MagicMock())
+
+    assert sol.read_only is False

@@ -22,6 +22,8 @@ configurations, and the web UI can be opened in either the system's default brow
 or a Playwright browser instance.
 """
 
+from __future__ import annotations
+
 import os
 import socket
 import subprocess
@@ -33,13 +35,16 @@ import webbrowser
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
-from typing import TYPE_CHECKING
+from types import TracebackType
+from typing import TYPE_CHECKING, Self
 
 import requests
 
 from .logger import log
 
 if TYPE_CHECKING:
+    from playwright.sync_api import Page, Playwright
+
     from .client import Client
 
 RX_SERVER_ENV_VAR = "ANSYS_RESULT_EXPLORER_SERVER"
@@ -60,11 +65,13 @@ class _PlaywrightManager:
     or manage its own instance.
     """
 
-    _instance = None
+    _instance: _PlaywrightManager | None = None
     _lock = threading.Lock()
+    _playwright: Playwright | None
+    _is_external: bool
     _ref_count = 0
 
-    def __new__(cls):
+    def __new__(cls) -> _PlaywrightManager:
         """Ensure singleton pattern."""
         if cls._instance is None:
             with cls._lock:
@@ -74,7 +81,7 @@ class _PlaywrightManager:
                     cls._instance._is_external = False
         return cls._instance
 
-    def set_external_playwright(self, playwright):
+    def set_external_playwright(self, playwright: Playwright) -> None:
         """Set an externally-managed Playwright instance.
 
         Use this when pytest-playwright or another manager is already running
@@ -93,7 +100,7 @@ class _PlaywrightManager:
             self._ref_count = 0
             log.debug("Using externally-managed Playwright instance (e.g., from pytest-playwright)")
 
-    def get_playwright(self):
+    def get_playwright(self) -> Playwright:
         """Get the Playwright instance, starting it if necessary.
 
         Returns
@@ -114,7 +121,7 @@ class _PlaywrightManager:
             log.debug(f"Playwright ref count: {self._ref_count}")
             return self._playwright
 
-    def release_playwright(self):
+    def release_playwright(self) -> None:
         """Release a reference to the Playwright instance.
 
         Stops the instance when the reference count reaches zero (if self-managed).
@@ -136,7 +143,7 @@ class _PlaywrightManager:
 class BrowserType(StrEnum):
     """Enumeration of supported browser types for web UI launch."""
 
-    def __init__(self, value: str):
+    def __init__(self, value: str) -> None:
         """Initialize browser type enum."""
 
     SYSTEM_DEFAULT = "system-default"
@@ -328,7 +335,7 @@ class ServerLaunchConfig:
     num_threads: int | None = None
     log_level: str | None = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Validate and initialize configuration after dataclass initialization."""
         # Ensure SSL is enabled if auth is enabled
         if self.auth and not self.ssl:
@@ -371,7 +378,7 @@ class ResultExplorerServerProcess:
     server process.
     """
 
-    def __init__(self, config: ServerLaunchConfig):
+    def __init__(self, config: ServerLaunchConfig) -> None:
         """Initialize the server process manager."""
         self._config = config
         self._process = None
@@ -455,7 +462,8 @@ class ResultExplorerServerProcess:
 
         Sends a graceful shutdown request via HTTP PUT, then terminates the process if needed.
         """
-        if self._process is not None:
+        process = self._process
+        if process is not None:
             log.info("Stopping Result Explorer server...")
 
             # Try graceful shutdown via API
@@ -467,7 +475,7 @@ class ResultExplorerServerProcess:
                     requests.put(shutdown_url, timeout=2, verify=verify_ssl)
                     log.debug("Shutdown request sent, waiting for process to exit...")
                     try:
-                        self._process.wait(timeout=5)
+                        process.wait(timeout=5)
                         self._process = None
                         log.info("Result Explorer server stopped gracefully.")
                         return
@@ -480,15 +488,15 @@ class ResultExplorerServerProcess:
                     log.debug(f"Graceful shutdown request failed: {e}, will terminate process.")
 
             # Fallback to forceful termination
-            self._process.terminate()
+            process.terminate()
             try:
-                self._process.wait(timeout=10)
+                process.wait(timeout=10)
             except subprocess.TimeoutExpired:
                 log.warning(
                     "Result Explorer server did not terminate gracefully, killing process..."
                 )
-                self._process.kill()
-                self._process.wait()
+                process.kill()
+                process.wait()
             self._process = None
             log.info("Result Explorer server stopped.")
 
@@ -556,7 +564,7 @@ class ResultExplorerServerProcess:
         """Get the CA certificate path."""
         return self._ca_cert_path
 
-    def __del__(self):
+    def __del__(self) -> None:
         """Ensure server is stopped when object is destroyed."""
         if self._process is not None and self.is_running:
             self.stop()
@@ -583,7 +591,7 @@ class WebLaunchConfig:
     server_url: str | None = None
     browser_type: BrowserType = BrowserType.PLAYWRIGHT_CHROMIUM_HEADLESS
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Validate configuration."""
         if not isinstance(self.browser_type, BrowserType):
             raise ValueError(
@@ -598,7 +606,7 @@ class ResultExplorerWebSession:
     or a Playwright browser instance.
     """
 
-    def __init__(self, config: WebLaunchConfig):
+    def __init__(self, config: WebLaunchConfig) -> None:
         """Initialize the web session."""
         self._config = config
         self._playwright_browser = None
@@ -608,12 +616,13 @@ class ResultExplorerWebSession:
 
         if self._config.server_url is None:
             raise ValueError("server_url must be provided in WebLaunchConfig.")
+        self._server_url: str = self._config.server_url
 
     def launch(self) -> None:
         """Launch the web UI."""
         if self._config.browser_type == BrowserType.SYSTEM_DEFAULT:
             log.info(f"Opening web UI in system default browser: {self._config.server_url}")
-            webbrowser.open(self._config.server_url)
+            webbrowser.open(self._server_url)
         else:
             self._launch_playwright_browser()
 
@@ -662,13 +671,15 @@ class ResultExplorerWebSession:
             self._playwright_browser = playwright.chromium.launch(headless=headless)
             log.info("Browser launched successfully after installation.")
 
+        if self._playwright_browser is None:
+            raise RuntimeError("Failed to launch the Playwright browser.")
         self._playwright_context = self._playwright_browser.new_context(
             # Ignore HTTPS errors for self-signed certificates (e.g., when SSL is enabled for auth)
             ignore_https_errors=True,
             viewport={"width": 1920, "height": 1080},
         )
         self._playwright_page = self._playwright_context.new_page()
-        self._playwright_page.goto(self._config.server_url)
+        self._playwright_page.goto(self._server_url)
 
     def close(self) -> None:
         """Close the web session."""
@@ -698,11 +709,11 @@ class ResultExplorerWebSession:
             self._playwright_manager = None
 
     @property
-    def playwright_page(self):
+    def playwright_page(self) -> Page | None:
         """Get the Playwright page object for advanced interaction."""
         return self._playwright_page
 
-    def __del__(self):
+    def __del__(self) -> None:
         """Ensure web session is closed when object is destroyed."""
         try:
             self.close()
@@ -721,7 +732,7 @@ class ResultExplorerInstance:
         self,
         server_config: ServerLaunchConfig | None = None,
         web_config: WebLaunchConfig | None = None,
-    ):
+    ) -> None:
         """Initialize a Result Explorer instance."""
         self._server_config = server_config or ServerLaunchConfig()
         self._web_config = web_config or WebLaunchConfig()
@@ -829,15 +840,20 @@ class ResultExplorerInstance:
             self._server_process.stop()
             self._server_process = None
 
-    def __enter__(self):
+    def __enter__(self) -> Self:
         """Context manager entry."""
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
         """Context manager exit."""
         self.stop()
 
-    def __del__(self):
+    def __del__(self) -> None:
         """Ensure instance is stopped when object is destroyed."""
         try:
             self.stop()
@@ -848,7 +864,7 @@ class ResultExplorerInstance:
 def launch_result_explorer(
     server_config: ServerLaunchConfig | None = None,
     web_config: WebLaunchConfig | None = None,
-) -> "Client":
+) -> Client:
     """Launch a Result Explorer instance and return a configured Client.
 
     Convenience function to launch a Result Explorer instance and return
@@ -899,7 +915,10 @@ def launch_result_explorer(
         time.sleep(2.0)
 
     # Create the Client
-    ca_cert_path = instance._server_process.ca_cert_path
+    server_process = instance.server_process
+    if server_process is None:
+        raise RuntimeError("Result Explorer server process was not started.")
+    ca_cert_path = server_process.ca_cert_path
     client = ClientImpl(
         session_id=instance.session_id,
         host="localhost",

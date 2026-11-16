@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 
 
-def main():
+def main() -> None:
     """Generate HTML snapshot diff report."""
     diffs_dir = Path("tests/__snapshots__/diffs")
     report_file = Path("snapshot_diffs_report.html")

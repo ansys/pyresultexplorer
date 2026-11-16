@@ -69,12 +69,16 @@ def test_chart(multiple_connections_solution: Solution):
     assert chart_def.name == "My chart"
     assert chart_def.user_defined is False
     assert chart_def.all_sets is True
+    assert chart_def.results is not None
     assert len(chart_def.results) == 1
+    assert chart_def.results[0].filters is not None
     assert chart_def.results[0].filters[0] == Filter.max
 
     # verify the chart is in the solution's charts
     chart_def_in_sol = next((c for c in sol.charts if c.id == chart_def.id), None)
     assert chart_def_in_sol is not None
+    assert chart_def_in_sol.results is not None
+    assert chart_def_in_sol.results[0].fields is not None
     assert chart_def_in_sol.results[0].name == "Stress"
     assert chart_def_in_sol.results[0].fields[0].name == "equivalent_von_mises_stress"
     assert chart_def_in_sol.results[0].fields[1].name == "stress_tensor"
@@ -90,6 +94,7 @@ def test_chart(multiple_connections_solution: Solution):
     chart_def_in_sol = next((c for c in sol.charts if c.id == chart_def.id), None)
     assert chart_def_in_sol is not None
     assert chart_def_in_sol.name == "Updated chart"
+    assert chart_def_in_sol.results is not None
     assert chart_def_in_sol.results[0].name == "Updated Stress"
 
     # delete the chart
@@ -134,6 +139,7 @@ def test_chart_view_no_definition(multiple_connections_solution: Solution):
     chart_def = chart_view.definition
 
     # delete the chart view
+    assert chart_def.id is not None
     sol.delete_chart(chart_def.id)
 
     with pytest.raises(RuntimeError, match="not found"):
@@ -287,6 +293,7 @@ class TestChartDefinitionConversion:
         assert py_def.set_ids == [5]
         assert py_def.user_defined is False
         assert py_def.supports_monitoring is None
+        assert py_def.results is not None
         assert len(py_def.results) == 1
         r = py_def.results[0]
         assert r.result_type == ResultType.velocity
@@ -294,6 +301,7 @@ class TestChartDefinitionConversion:
         assert r.location == "Nodal"
         assert r.shell_position == ShellPosition.top
         assert r.filters == [Filter.min]
+        assert r.fields is not None
         assert len(r.fields) == 1
         assert r.fields[0].name == ResultFieldName.velocity
         assert r.fields[0].components == [Component.X, Component.Y, Component.Z]
@@ -321,8 +329,10 @@ class TestChartDefinitionConversion:
         assert py_def.supports_monitoring is True
         assert py_def.creation_time == "2026-01-01T00:00:00Z"
         assert py_def.all_sets is True
+        assert py_def.results is not None
         assert len(py_def.results) == 1
         assert py_def.results[0].result_type == ResultType.displacement
+        assert py_def.results[0].fields is not None
         assert py_def.results[0].name == "Displacement"
         assert py_def.results[0].fields[0].name == ResultFieldName.total_displacement
 
@@ -335,6 +345,7 @@ class TestChartDefinitionConversion:
 
         py_def = proto_to_chart_definition(proto)
 
+        assert py_def.custom_options is not None
         assert py_def.custom_options["threshold"] == pytest.approx(1.5)
         assert py_def.custom_options["label"] == "peak"
         assert py_def.custom_options["count"] == 3
@@ -371,6 +382,7 @@ class TestChartDefinitionConversion:
         assert restored.set_ids == original.set_ids
         assert restored.named_selection_id == original.named_selection_id
         assert restored.id == original.id
+        assert restored.results is not None
         assert len(restored.results) == 1
         r = restored.results[0]
         assert r.result_type == ResultType.stress
@@ -379,6 +391,7 @@ class TestChartDefinitionConversion:
         assert r.shell_position == ShellPosition.bottom
         assert r.filters == [Filter.max, Filter.min]
         assert r.on_skin is False
+        assert r.fields is not None
         assert r.fields[0].name == ResultFieldName.stress_tensor
         assert r.fields[0].components == [Component.XX, Component.YY]
 
@@ -391,6 +404,7 @@ class TestChartDefinitionConversion:
         proto = chart_definition_to_proto(original, models.ChartDefinitionCreate)
         restored = proto_to_chart_definition(proto)
 
+        assert restored.custom_options is not None
         assert restored.custom_options["threshold"] == pytest.approx(2.5)
         assert restored.custom_options["label"] == "top"
         assert restored.custom_options["count"] == 7
