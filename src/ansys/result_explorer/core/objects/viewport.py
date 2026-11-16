@@ -817,6 +817,14 @@ class ThreeDViewportSettings(ViewportSettings):
     """List of visible body IDs."""
     transparent_bodies = PbProperty[ListSetting[str], list[str]]("transparentBodies")
     """List of transparent body IDs."""
+    transparency_style = PbProperty[
+        StrSetting,
+        Literal["transparent-contour", "transparent-grey", "transparent-body-color"],
+    ]("transparencyMode")
+    """Display style of transparent bodies: ``transparent-contour``,
+    ``transparent-grey``, or ``transparent-body-color``."""
+    transparency_level = PbProperty[FloatSetting, float]("transparencyLevel")
+    """Transparency level of transparent bodies."""
 
     @property
     def camera_position(self) -> CameraPosition | None:
