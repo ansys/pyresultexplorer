@@ -30,9 +30,9 @@ from ansys.result_explorer.core import (
     AnnotationTargetKind,
     Client,
     Field,
+    HotSpot,
     HotSpotDefinition,
     HotSpotKind,
-    MeshViewportSettings,
     PlotDefinition,
     PlotViewportMetadata,
     PlotViewportSettings,
@@ -40,6 +40,7 @@ from ansys.result_explorer.core import (
     ResultFieldName,
     ResultType,
     ThreeDViewportMetadata,
+    ViewportAnnotations,
     models,
 )
 from ansys.result_explorer.core.objects.viewport import (
@@ -127,74 +128,95 @@ def test_resolved_hot_spot_is_read_only():
         hot_spot.note = "edited"
     with pytest.raises(AttributeError, match="read-only"):
         hot_spot.property_visibility.result_name = True
-    with pytest.raises(AttributeError):
-        hot_spot.anchor = AnnotationAnchor()  # type: ignore[misc]
 
-
-def test_hot_spots_only_on_plot_viewports():
-    struct = struct_pb2.Struct()
-    struct.update({"resolvedAnnotations": [HOT_SPOT]})
     mesh_metadata = ThreeDViewportMetadata(struct, NO_CLIENT)
-    mesh_settings = MeshViewportSettings._from_pb(_dict_to_settings({}), client=NO_CLIENT)
-
     assert len(mesh_metadata.resolved_annotations) == 1
     assert not hasattr(mesh_metadata, "hot_spots")
-    assert not hasattr(mesh_settings.annotations, "add_hot_spot")
-    assert not hasattr(mesh_settings, "hot_spots_max_number")
-
-    plot_annotations = _offline_settings({}).annotations
-    with pytest.raises(ValueError, match="not a hot spot"):
-        plot_annotations.add_hot_spot(ResolvedAnnotation({"definition": {"id": "user"}}))
 
 
-def test_hot_spot_edit_copy_in_settings():
-    opts = _offline_settings({"annotations": None})
-    hot_spot = ResolvedAnnotation(HOT_SPOT)
+class _OfflineStore:
+    """Annotation store over offline plot settings, counting the applies."""
 
-    edit = opts.annotations.add_hot_spot(hot_spot)
-    edit.note = "Max stress"
-    edit.property_visibility.result_name = True
+    def __init__(self, settings: dict) -> None:
+        self.opts = _offline_settings(settings)
+        self.applies = 0
 
-    assert opts.annotations.add_hot_spot(hot_spot).note == "Max stress"
-    (stored,) = _round_trip(opts)["annotations"]
+    def __call__(self) -> tuple[list[dict], Callable[[], None]]:
+        def apply() -> None:
+            self.applies += 1
+
+        return self.opts._annotation_items(), apply
+
+    def saved(self) -> list[dict]:
+        return _round_trip(self.opts)["annotations"]
+
+
+def test_hot_spot_edits_store_a_copy():
+    store = _OfflineStore({"annotations": None})
+    hot_spot = HotSpot(ResolvedAnnotation(HOT_SPOT), store)
+    assert not hot_spot.is_edited
+    assert hot_spot.result is not None
+    assert hot_spot.result.value == 250.0
+
+    hot_spot.note = "Max stress"
+    hot_spot.property_visibility.result_name = True
+
+    assert store.applies == 2
+    assert hot_spot.is_edited
+    (stored,) = store.saved()
     assert stored["id"] == "max:1"
     assert stored["source"] == "graphics"
     assert stored["note"] == "Max stress"
-    assert stored["propertyVisibility"]["resultName"] is True
+    assert stored["propertyVisibility"] == {"resultValue": True, "note": True, "resultName": True}
     assert stored["resultReference"]["value"] == 250.0
+    assert HotSpot(ResolvedAnnotation(HOT_SPOT), store).note == "Max stress"
+    assert [a.id for a in store.opts.annotations] == ["max:1"]
 
-    opts.annotations.remove(edit)
-    assert "max:1" not in opts.annotations
+    with pytest.raises(AttributeError):
+        hot_spot.anchor = AnnotationAnchor()  # type: ignore[misc]
+
+    hot_spot.reset()
+    assert not hot_spot.is_edited
+    assert hot_spot.note == ""
+    assert store.saved() == []
 
 
-def test_user_annotations_in_settings():
-    opts = _offline_settings({})
+def test_viewport_annotations():
+    store = _OfflineStore({})
+    resolution = {"status": "resolved", "meshLocation": [0.0, 0.0, 0.1]}
+    annotations = ViewportAnnotations(store, lambda i: resolution if i == "a1" else None)
+    HotSpot(ResolvedAnnotation(HOT_SPOT), store).visibility = False
     anchor = AnnotationAnchor(position=(0.0, 0.0, 0.1))
 
-    annotation = opts.annotations.add(anchor, note="Origin", id="a1")
+    annotation = annotations.add(anchor, note="Origin", id="a1")
     assert annotation.property_visibility.mesh_location is True
     assert annotation.property_visibility.result_value is False
-    with_result = opts.annotations.add(anchor, result_reference=AnnotationResultReference("s"))
+    assert annotation.status == AnnotationStatus.resolved
+    assert annotation.mesh_location == (0.0, 0.0, 0.1)
+    with_result = annotations.add(anchor, result_reference=AnnotationResultReference("s"))
     assert with_result.property_visibility.result_value is True
-    assert with_result.property_visibility.mesh_location is False
-    opts.annotations.remove(with_result)
+    assert with_result.status is None
+    annotations.remove(with_result)
 
-    annotation.placement = AnnotationPlacement.screen_pinned
+    annotations["a1"].placement = AnnotationPlacement.screen_pinned
     annotation.card_screen_location = (0.5, 1.0)
+    assert annotation.placement == AnnotationPlacement.screen_pinned
+    assert annotations[0].card_screen_location == (0.5, 1.0)
 
     with pytest.raises(ValueError, match="between 0 and 1"):
         annotation.card_screen_location = (10.0, 20.0)
-
     with pytest.raises(ValueError, match="already exists"):
-        opts.annotations.add(anchor, id="a1")
+        annotations.add(anchor, id="a1")
+    with pytest.raises(KeyError):
+        annotations.remove("max:1")
 
-    restored = PlotViewportSettings._from_pb(opts._to_pb(), client=NO_CLIENT).annotations
-    assert restored["a1"].anchor == anchor
-    assert restored["a1"].placement == AnnotationPlacement.screen_pinned
-    assert restored["a1"].card_screen_location == (0.5, 1.0)
-
-    opts.annotations.clear()
-    assert _round_trip(opts)["annotations"] == []
+    assert len(annotations) == 1
+    assert "max:1" not in annotations
+    annotations.clear()
+    assert len(annotations) == 0
+    assert [a["id"] for a in store.saved()] == ["max:1"]
+    with pytest.raises(LookupError, match="removed"):
+        _ = annotation.note
 
 
 def test_hot_spot_display_options():
@@ -231,14 +253,14 @@ def _wait_for_metadata(
         time.sleep(1)
 
 
-def _hot_spots(viewport: Viewport) -> list[ResolvedAnnotation]:
+def _hot_spots(viewport: Viewport) -> list[HotSpot]:
+    return viewport.hot_spots
+
+
+def _resolved_note_of(viewport: Viewport, annotation_id: str) -> str | None:
     metadata = viewport.metadata
     assert isinstance(metadata, PlotViewportMetadata)
-    return metadata.hot_spots
-
-
-def _note_of(viewport: Viewport, annotation_id: str) -> str | None:
-    return next((h.note for h in _hot_spots(viewport) if h.id == annotation_id), None)
+    return next((h.note for h in metadata.hot_spots if h.id == annotation_id), None)
 
 
 def test_hot_spots(rx, multiple_connections_solution):
@@ -265,20 +287,46 @@ def test_hot_spots(rx, multiple_connections_solution):
     values = [h.result.value for h in hot_spots if h.result is not None]
     assert values == sorted(values, reverse=True)
 
-    viewport.settings.hot_spots_max_number = 2
     hot_spot = hot_spots[0]
+    with viewport.update_settings() as settings:
+        settings.hot_spots_max_number = 2
+        hot_spot.note = "Max stress"
+        hot_spot.property_visibility.result_name = True
 
-    edit = viewport.settings.annotations.add_hot_spot(hot_spot)
-    edit.note = "Max stress"
-
+    assert hot_spot.note == "Max stress"
     assert viewport.settings.hot_spots_max_number == 2
-    assert viewport.settings.annotations[hot_spot.id].note == "Max stress"
     viewport = _wait_for_metadata(
-        rx, workspace.id, viewport.id, lambda v: _note_of(v, hot_spot.id) == "Max stress"
+        rx, workspace.id, viewport.id, lambda v: _resolved_note_of(v, hot_spot.id) == "Max stress"
     )
     edited = next(h for h in _hot_spots(viewport) if h.id == hot_spot.id)
-    assert edited.note == "Max stress"
+    assert edited.is_edited
+    assert edited.property_visibility.result_name is True
     assert edited.result_reference == hot_spot.result_reference
+
+    edited.reset()
+    assert not edited.is_edited
+    assert viewport.settings.annotations == []
+
+
+def test_annotations_and_hot_spots_by_view_type(rx, multiple_connections_solution):
+    sol = multiple_connections_solution
+    workspace = rx.create_workspace("Mesh annotations")
+    viewport = workspace.assign_view(view=sol.mesh_view, wait=True)
+
+    annotation = viewport.annotations.add(AnnotationAnchor(position=(0.0, 0.0, 0.0)), note="O")
+    assert [a.note for a in viewport.annotations] == ["O"]
+    viewport = _wait_for_metadata(
+        rx, workspace.id, viewport.id, lambda v: v.annotations[annotation.id].status is not None
+    )
+    assert viewport.annotations[annotation.id].status == AnnotationStatus.resolved
+    with pytest.raises(TypeError, match="plot viewports"):
+        _ = viewport.hot_spots
+
+    empty_viewport = workspace.create_viewport(
+        viewport, models.ViewportDirection.VIEWPORT_DIRECTION_RIGHT
+    )
+    with pytest.raises(TypeError, match="plot and mesh"):
+        _ = empty_viewport.annotations
 
 
 def _hot_spot_values(viewport: Viewport) -> list[float]:

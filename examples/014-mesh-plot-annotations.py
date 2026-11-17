@@ -20,8 +20,9 @@
 Annotate mesh and plot viewports
 ================================
 
-This example shows how to add annotations to 3D viewports and read them
-back once Result Explorer resolves them in the scene:
+This example shows how to add annotations to 3D viewports with
+``viewport.annotations``, and read them back once Result Explorer resolves
+them in the scene:
 
 - **Mesh annotations** anchored to a node, showing its location.
 - **Plot annotations** showing the result value at the node.
@@ -74,8 +75,8 @@ def wait_for_annotations(viewport: Viewport, count: int, timeout: float = 30.0) 
     deadline = time.monotonic() + timeout
     while True:
         viewport = next(v for v in rx.get_workspace(workspace.id).viewports if v.id == viewport.id)
-        resolved = getattr(viewport.metadata, "resolved_annotations", [])
-        if sum(a.status == "resolved" for a in resolved) >= count or time.monotonic() > deadline:
+        resolved = sum(a.status == "resolved" for a in viewport.annotations)
+        if resolved >= count or time.monotonic() > deadline:
             return viewport
         time.sleep(1)
 
@@ -98,7 +99,7 @@ print(f"Body {body.id} ({body.name}) has labels {dict(body.labels)}")
 mesh_viewport = workspace.assign_view(view=sol.mesh_view, wait=True)
 
 node = AnnotationTarget(kind=AnnotationTargetKind.node, id=21, body_ids=(body.id,))
-mesh_annotation = mesh_viewport.settings.annotations.add(
+mesh_annotation = mesh_viewport.annotations.add(
     AnnotationAnchor(target=node), note="Monitored node"
 )
 print(f"Added {mesh_annotation}")
@@ -110,10 +111,10 @@ mesh_annotation.property_visibility.mesh_location = False
 print(mesh_annotation.property_visibility)
 
 # %%
-# Read the resolved annotation to get the node location.
+# Once resolved, the annotation also gives the node location.
 mesh_viewport = wait_for_annotations(mesh_viewport, count=1)
-(resolved,) = mesh_viewport.metadata.resolved_annotations
-print(f"Status: {resolved.status}, mesh location: {resolved.mesh_location}")
+mesh_annotation = mesh_viewport.annotations[mesh_annotation.id]
+print(f"Status: {mesh_annotation.status}, mesh location: {mesh_annotation.mesh_location}")
 mesh_viewport.save_snapshot(
     file_path="014-mesh-plot-annotations-mesh.png", settings=get_example_snapshot_settings()
 )
@@ -131,7 +132,7 @@ plot_viewport = workspace.create_viewport(
 # A result reference without a value makes Result Explorer look up the
 # value of the displayed result at the node.
 result_name = str(plot_viewport.settings.result)
-plot_annotation = plot_viewport.settings.annotations.add(
+plot_annotation = plot_viewport.annotations.add(
     AnnotationAnchor(target=node),
     note="Monitored node",
     result_reference=AnnotationResultReference(name=result_name),
@@ -139,9 +140,9 @@ plot_annotation = plot_viewport.settings.annotations.add(
 plot_annotation.property_visibility.result_name = True
 
 plot_viewport = wait_for_annotations(plot_viewport, count=1)
-(resolved,) = plot_viewport.metadata.resolved_annotations
-print(f"Status: {resolved.status}, result: {resolved.result}")
-print(f"Deformed location: {resolved.deformed_location}")
+plot_annotation = plot_viewport.annotations[plot_annotation.id]
+print(f"Status: {plot_annotation.status}, result: {plot_annotation.result}")
+print(f"Deformed location: {plot_annotation.deformed_location}")
 plot_viewport.save_snapshot(
     file_path="014-mesh-plot-annotations-plot.png", settings=get_example_snapshot_settings()
 )
@@ -152,13 +153,12 @@ plot_viewport.save_snapshot(
 # The anchor and the result reference are fixed once the annotation is
 # created. The note, the visibility, the placement, and the card properties
 # are editable. Batch the edits to apply them in a single call.
-with plot_viewport.update_settings() as settings:
-    annotation = settings.annotations[plot_annotation.id]
-    annotation.note = "Monitored node, pinned"
-    annotation.placement = AnnotationPlacement.screen_pinned
-    annotation.card_screen_location = (1.0, 0.25)
+with plot_viewport.update_settings():
+    plot_annotation.note = "Monitored node, pinned"
+    plot_annotation.placement = AnnotationPlacement.screen_pinned
+    plot_annotation.card_screen_location = (1.0, 0.25)
 
-for annotation in plot_viewport.settings.annotations:
+for annotation in plot_viewport.annotations:
     print(f"{annotation.note!r}: {annotation.placement}, {annotation.card_screen_location}")
 plot_viewport.save_snapshot(
     file_path="014-mesh-plot-annotations-pinned.png", settings=get_example_snapshot_settings()
@@ -168,8 +168,8 @@ plot_viewport.save_snapshot(
 # Remove annotations
 # ------------------
 # Remove an annotation by ID, or all of them at once.
-mesh_viewport.settings.annotations.remove(mesh_annotation.id)
-plot_viewport.settings.annotations.clear()
-print(f"Remaining annotations: {len(plot_viewport.settings.annotations)}")
+mesh_viewport.annotations.remove(mesh_annotation.id)
+plot_viewport.annotations.clear()
+print(f"Remaining annotations: {len(plot_viewport.annotations)}")
 
 rx.stop()

@@ -163,8 +163,8 @@ def _default_property_visibility(with_result: bool) -> dict[str, bool]:
 
 def _read_only_error(name: str) -> AttributeError:
     return AttributeError(
-        f"'{name}' is read-only. Add the annotation to 'viewport.settings.annotations' "
-        "to edit its presentation."
+        f"'{name}' is read-only. Edit annotations and hot spots through "
+        "'viewport.annotations' and 'viewport.hot_spots'."
     )
 
 
@@ -205,12 +205,10 @@ class AnnotationPropertyVisibility:
 
 
 class Annotation:
-    """Proxy for an annotation definition.
+    """Read-only view of an annotation definition.
 
-    The anchor, sets and result reference are read-only. The note,
-    visibility, placement, card location and property visibility are
-    editable when the annotation belongs to the viewport settings; each
-    edit is applied to the viewport.
+    Returned by ``viewport.settings.annotations``, which lists the stored
+    definitions, including the edited copies of hot spots.
     """
 
     def __init__(self, data: dict[str, Any], on_change: Callable[[], None] | None = None) -> None:
@@ -320,43 +318,42 @@ class Annotation:
         return f"{type(self).__name__}<{kind}>(id={self.id!r}, note={self.note!r})"
 
 
-class ResolvedAnnotation(Annotation):
-    """Read-only annotation shown in the scene, with its resolved data."""
+class _SceneResolution:
+    """Resolution of an annotation in the scene, published by the web UI."""
 
-    def __init__(self, data: dict[str, Any]) -> None:
-        """Wrap a ``resolvedAnnotations`` metadata entry."""
-        super().__init__(data.get("definition", {}))
-        self._resolved = data
+    def _resolution(self) -> dict[str, Any]:
+        raise NotImplementedError
 
     @property
-    def status(self) -> AnnotationStatus:
-        """Resolution status in the scene."""
-        return AnnotationStatus(self._resolved.get("status", "pending"))
+    def status(self) -> AnnotationStatus | None:
+        """Resolution status in the scene, or None until it is resolved."""
+        status = self._resolution().get("status")
+        return None if status is None else AnnotationStatus(status)
 
     @property
     def body_hidden(self) -> bool:
         """Whether all the bodies of the anchor are hidden."""
-        return bool(self._resolved.get("bodyHidden", False))
+        return bool(self._resolution().get("bodyHidden", False))
 
     @property
     def mesh_location(self) -> Vector3 | None:
         """Undeformed location of the anchor."""
-        return _vector3(self._resolved.get("meshLocation"))
+        return _vector3(self._resolution().get("meshLocation"))
 
     @property
     def deformed_location(self) -> Vector3 | None:
         """Deformed location of the anchor."""
-        return _vector3(self._resolved.get("deformedLocation"))
+        return _vector3(self._resolution().get("deformedLocation"))
 
     @property
     def scene_location(self) -> Vector3 | None:
         """Location of the anchor in the displayed scene."""
-        return _vector3(self._resolved.get("sceneLocation"))
+        return _vector3(self._resolution().get("sceneLocation"))
 
     @property
     def result(self) -> AnnotationResult | None:
         """Resolved result value, if any."""
-        result = self._resolved.get("result")
+        result = self._resolution().get("result")
         if result is None:
             return None
         return AnnotationResult(
@@ -366,48 +363,248 @@ class ResolvedAnnotation(Annotation):
             unit=result.get("unit", ""),
         )
 
+
+class ResolvedAnnotation(Annotation, _SceneResolution):
+    """Read-only annotation shown in the scene, with its resolved data."""
+
+    def __init__(self, data: dict[str, Any]) -> None:
+        """Wrap a ``resolvedAnnotations`` metadata entry."""
+        super().__init__(data.get("definition", {}))
+        self._resolved = data
+
+    def _resolution(self) -> dict[str, Any]:
+        return self._resolved
+
     def _definition(self) -> dict[str, Any]:
         return copy.deepcopy(self._data)
 
 
-class ViewportAnnotations:
-    """Annotations stored in the settings of a 3D viewport.
+# Returns the annotation definitions of the viewport settings and the
+# function applying them. Inside ``viewport.update_settings()``, these are
+# the batched settings.
+type AnnotationStore = Callable[[], tuple[list[dict[str, Any]], Callable[[], None]]]
+type AnnotationResolver = Callable[[str], dict[str, Any] | None]
 
-    Items are live: editing one applies the settings to the viewport.
+
+def _find(items: list[dict[str, Any]], annotation_id: str) -> dict[str, Any] | None:
+    return next((data for data in items if data.get("id") == annotation_id), None)
+
+
+class _LiveAnnotation(_SceneResolution):
+    """Annotation of a viewport, looked up by ID on every access.
+
+    Reading or editing always uses the current viewport settings, so
+    proxies stay consistent with each other and with other setting edits.
     """
 
-    def __init__(self, items: list[dict[str, Any]], on_change: Callable[[], None]) -> None:
-        """Wrap the ``annotations`` setting list."""
-        self._items = items
-        self._on_change = on_change
+    def __init__(self, annotation_id: str, store: AnnotationStore) -> None:
+        self._id = annotation_id
+        self._store = store
 
-    def _wrap(self, data: dict[str, Any]) -> Annotation:
-        return Annotation(data, self._on_change)
+    def _current(self) -> Annotation:
+        raise NotImplementedError
+
+    def _edit(self, edit: Callable[[Annotation], None]) -> None:
+        raise NotImplementedError
+
+    @property
+    def id(self) -> str:
+        """Unique identifier."""
+        return self._id
+
+    @property
+    def set_ids(self) -> tuple[int, ...] | None:
+        """Result sets the annotation is shown on, or None for all sets."""
+        return self._current().set_ids
+
+    @property
+    def anchor(self) -> AnnotationAnchor:
+        """Location the annotation points to."""
+        return self._current().anchor
+
+    @property
+    def result_reference(self) -> AnnotationResultReference | None:
+        """Result the annotation shows, if any."""
+        return self._current().result_reference
+
+    @property
+    def note(self) -> str:
+        """Free text shown on the card."""
+        return self._current().note
+
+    @note.setter
+    def note(self, value: str) -> None:
+        self._edit(lambda a: setattr(a, "note", value))
+
+    @property
+    def visibility(self) -> bool:
+        """Whether the annotation is shown."""
+        return self._current().visibility
+
+    @visibility.setter
+    def visibility(self, value: bool) -> None:
+        self._edit(lambda a: setattr(a, "visibility", value))
+
+    @property
+    def placement(self) -> AnnotationPlacement:
+        """Placement of the card."""
+        return self._current().placement
+
+    @placement.setter
+    def placement(self, value: AnnotationPlacement | str) -> None:
+        self._edit(lambda a: setattr(a, "placement", value))
+
+    @property
+    def card_screen_location(self) -> tuple[float, float] | None:
+        """Location of a pinned card as fractions of the viewport.
+
+        ``(0, 0)`` places the card at the top left and ``(1, 1)`` at the
+        bottom right of the viewport.
+        """
+        return self._current().card_screen_location
+
+    @card_screen_location.setter
+    def card_screen_location(self, value: tuple[float, float] | None) -> None:
+        self._edit(lambda a: setattr(a, "card_screen_location", value))
+
+    @property
+    def property_visibility(self) -> AnnotationPropertyVisibility:
+        """Visibility of each property on the card."""
+        data = dict(self._current()._data.get("propertyVisibility", {}))
+
+        def write() -> None:
+            self._edit(lambda a: a._set("propertyVisibility", dict(data)))
+
+        return AnnotationPropertyVisibility(data, write)
+
+    def __repr__(self) -> str:
+        """Return a short description of the annotation."""
+        return f"{type(self).__name__}(id={self.id!r}, note={self.note!r})"
+
+
+class ViewportAnnotation(_LiveAnnotation):
+    """User annotation of a 3D viewport.
+
+    The anchor, sets and result reference are set when the annotation is
+    added. The note, visibility, placement, card location and property
+    visibility are editable; each edit applies to the viewport. The
+    resolution in the scene (status, locations, result) is published by
+    the web UI once the scene is rendered, and is unset until then.
+    """
+
+    def __init__(
+        self, annotation_id: str, store: AnnotationStore, resolve: AnnotationResolver
+    ) -> None:
+        """Bind an annotation ID to the viewport settings and metadata."""
+        super().__init__(annotation_id, store)
+        self._resolve = resolve
+
+    def _resolution(self) -> dict[str, Any]:
+        return self._resolve(self._id) or {}
+
+    def _lookup(self) -> tuple[dict[str, Any], Callable[[], None]]:
+        items, apply = self._store()
+        data = _find(items, self._id)
+        if data is None:
+            raise LookupError(f"Annotation {self._id!r} was removed from the viewport.")
+        return data, apply
+
+    def _current(self) -> Annotation:
+        return Annotation(self._lookup()[0])
+
+    def _edit(self, edit: Callable[[Annotation], None]) -> None:
+        edit(Annotation(*self._lookup()))
+
+
+class HotSpot(_LiveAnnotation):
+    """Hot spot of a plot viewport.
+
+    The anchor, sets, result reference and resolved result come from the
+    data and are read-only. The note, visibility, placement, card location
+    and property visibility are editable: the first edit stores an edited
+    copy in the viewport settings, and ``reset()`` removes it.
+    """
+
+    def __init__(self, resolved: ResolvedAnnotation, store: AnnotationStore) -> None:
+        """Bind a resolved hot spot to the viewport settings."""
+        super().__init__(resolved.id, store)
+        self._resolved = resolved
+
+    def _resolution(self) -> dict[str, Any]:
+        return self._resolved._resolution()
+
+    def _current(self) -> Annotation:
+        items, _ = self._store()
+        data = _find(items, self._id)
+        return self._resolved if data is None else Annotation(data)
+
+    def _edit(self, edit: Callable[[Annotation], None]) -> None:
+        items, apply = self._store()
+        data = _find(items, self._id)
+        if data is not None:
+            edit(Annotation(data, apply))
+            return
+        data = self._resolved._definition()
+        data["source"] = _GRAPHICS_SOURCE
+        edit(Annotation(data, lambda: None))
+        items.append(data)
+        apply()
+
+    @property
+    def is_edited(self) -> bool:
+        """Whether the presentation of the hot spot was edited."""
+        return _find(self._store()[0], self._id) is not None
+
+    def reset(self) -> None:
+        """Remove the edits, restoring the original presentation."""
+        items, apply = self._store()
+        data = _find(items, self._id)
+        if data is not None:
+            items.remove(data)
+            apply()
+
+
+class ViewportAnnotations:
+    """User annotations of a 3D viewport.
+
+    Items are looked up by ID in the current viewport settings, and edits
+    apply to the viewport. The edited copies of hot spots are listed in
+    ``viewport.hot_spots`` instead.
+    """
+
+    def __init__(self, store: AnnotationStore, resolve: AnnotationResolver) -> None:
+        """Bind to the viewport settings and metadata."""
+        self._store = store
+        self._resolve = resolve
+
+    def _ids(self) -> list[str]:
+        items, _ = self._store()
+        return [d["id"] for d in items if d.get("source") != _GRAPHICS_SOURCE and "id" in d]
+
+    def _wrap(self, annotation_id: str) -> ViewportAnnotation:
+        return ViewportAnnotation(annotation_id, self._store, self._resolve)
 
     def __len__(self) -> int:
         """Return the number of annotations."""
-        return len(self._items)
+        return len(self._ids())
 
-    def __iter__(self) -> Iterator[Annotation]:
+    def __iter__(self) -> Iterator[ViewportAnnotation]:
         """Iterate over the annotations."""
-        return (self._wrap(item) for item in self._items)
+        return (self._wrap(annotation_id) for annotation_id in self._ids())
 
-    def __getitem__(self, key: int | str) -> Annotation:
+    def __getitem__(self, key: int | str) -> ViewportAnnotation:
         """Return an annotation by index or by ID."""
+        ids = self._ids()
         if isinstance(key, int):
-            return self._wrap(self._items[key])
-        return self._wrap(self._items[self._index(key)])
+            return self._wrap(ids[key])
+        if key not in ids:
+            raise KeyError(key)
+        return self._wrap(key)
 
     def __contains__(self, item: object) -> bool:
         """Return whether an annotation or ID is stored."""
-        key = item.id if isinstance(item, Annotation) else item
-        return any(data.get("id") == key for data in self._items)
-
-    def _index(self, annotation_id: str) -> int:
-        for index, data in enumerate(self._items):
-            if data.get("id") == annotation_id:
-                return index
-        raise KeyError(annotation_id)
+        key = item.id if isinstance(item, ViewportAnnotation) else item
+        return key in self._ids()
 
     def add(
         self,
@@ -418,7 +615,7 @@ class ViewportAnnotations:
         placement: AnnotationPlacement = AnnotationPlacement.follow_scene,
         visibility: bool = True,
         id: str | None = None,
-    ) -> Annotation:
+    ) -> ViewportAnnotation:
         """Add a user annotation.
 
         Parameters
@@ -440,7 +637,7 @@ class ViewportAnnotations:
 
         Returns
         -------
-        Annotation
+        ViewportAnnotation
             Editable annotation.
 
         """
@@ -456,63 +653,32 @@ class ViewportAnnotations:
             data["resultReference"] = result_reference._to_dict()
         if set_ids is not None:
             data["setIds"] = list(set_ids)
-        return self._append(data)
-
-    def _append(self, data: dict[str, Any]) -> Annotation:
-        if data["id"] in self:
+        items, apply = self._store()
+        if _find(items, data["id"]) is not None:
             raise ValueError(f"Annotation {data['id']!r} already exists.")
-        self._items.append(data)
-        self._on_change()
-        return self._wrap(data)
+        items.append(data)
+        apply()
+        return self._wrap(data["id"])
 
-    def remove(self, annotation: Annotation | str) -> None:
-        """Remove an annotation, restoring a hot spot to its original presentation."""
-        key = annotation.id if isinstance(annotation, Annotation) else annotation
-        del self._items[self._index(key)]
-        self._on_change()
+    def remove(self, annotation: ViewportAnnotation | str) -> None:
+        """Remove an annotation."""
+        key = annotation.id if isinstance(annotation, ViewportAnnotation) else annotation
+        items, apply = self._store()
+        data = _find(items, key)
+        if data is None or data.get("source") == _GRAPHICS_SOURCE:
+            raise KeyError(key)
+        items.remove(data)
+        apply()
 
     def clear(self) -> None:
-        """Remove all the annotations."""
-        self._items.clear()
-        self._on_change()
+        """Remove all the user annotations; hot spot edits are kept."""
+        items, apply = self._store()
+        items[:] = [d for d in items if d.get("source") == _GRAPHICS_SOURCE]
+        apply()
 
     def __repr__(self) -> str:
         """Return the stored annotations."""
-        return f"{type(self).__name__}({list(self)!r})"
-
-
-class PlotViewportAnnotations(ViewportAnnotations):
-    """Annotations stored in the settings of a plot viewport.
-
-    Besides user annotations, holds the edited copies of hot spots.
-    """
-
-    def add_hot_spot(self, hot_spot: ResolvedAnnotation) -> Annotation:
-        """Store an editable copy of a hot spot.
-
-        The copy keeps the ID of the hot spot, so its presentation
-        replaces the presentation of the hot spot. The anchor and result
-        always come from the hot spot data. An existing copy is returned
-        unchanged.
-
-        Parameters
-        ----------
-        hot_spot : ResolvedAnnotation
-            Hot spot from ``viewport.metadata.hot_spots``.
-
-        Returns
-        -------
-        Annotation
-            Editable copy of the hot spot.
-
-        """
-        if not hot_spot.is_hot_spot:
-            raise ValueError(f"Annotation {hot_spot.id!r} is not a hot spot.")
-        if hot_spot.id in self:
-            return self[hot_spot.id]
-        data = hot_spot._definition()
-        data["source"] = _GRAPHICS_SOURCE
-        return self._append(data)
+        return f"ViewportAnnotations({list(self)!r})"
 
 
 def _vector3(value: list[float] | None) -> Vector3 | None:

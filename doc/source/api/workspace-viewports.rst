@@ -38,7 +38,8 @@ Annotations and hot spots
    :toctree: _autosummary
 
    ViewportAnnotations
-   PlotViewportAnnotations
+   ViewportAnnotation
+   HotSpot
    Annotation
    ResolvedAnnotation
    AnnotationAnchor

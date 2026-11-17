@@ -24,10 +24,10 @@ This example shows how to find the locations of the highest stresses with
 hot spots:
 
 - **Hot spot detection** enabled in the plot definition.
-- **Hot spot inspection** from the viewport metadata.
+- **Hot spot inspection** with ``viewport.hot_spots``.
 - **Hot spot filters** in the viewport settings: maximum number, separation
   distance, and value range.
-- **Hot spot edits** through an editable copy in the viewport annotations.
+- **Hot spot edits** of the note, the visibility, and the card.
 
 """
 
@@ -39,12 +39,11 @@ from collections.abc import Callable
 from ansys.result_explorer.core import (
     AnnotationPlacement,
     Field,
+    HotSpot,
     HotSpotDefinition,
     HotSpotKind,
     Location,
     PlotDefinition,
-    PlotViewportMetadata,
-    ResolvedAnnotation,
     ResultFieldName,
     ResultType,
     Viewport,
@@ -94,29 +93,23 @@ viewport = workspace.assign_view(view=plot, wait=True)
 # is met.
 
 
-def hot_spots_of(viewport: Viewport) -> list[ResolvedAnnotation]:
-    """Return the hot spots shown in a plot viewport."""
-    metadata = viewport.metadata
-    return metadata.hot_spots if isinstance(metadata, PlotViewportMetadata) else []
-
-
 def wait_for_hot_spots(
     viewport: Viewport,
-    condition: Callable[[list[ResolvedAnnotation]], bool] = bool,
+    condition: Callable[[list[HotSpot]], bool] = bool,
     timeout: float = 30.0,
 ) -> Viewport:
     """Return the viewport once its hot spots meet ``condition``."""
     deadline = time.monotonic() + timeout
     while True:
         viewport = next(v for v in rx.get_workspace(workspace.id).viewports if v.id == viewport.id)
-        if condition(hot_spots_of(viewport)) or time.monotonic() > deadline:
+        if condition(viewport.hot_spots) or time.monotonic() > deadline:
             return viewport
         time.sleep(1)
 
 
 def print_hot_spots(viewport: Viewport) -> None:
     """Print the value and location of each hot spot."""
-    for hot_spot in hot_spots_of(viewport):
+    for hot_spot in viewport.hot_spots:
         result = hot_spot.result
         target = hot_spot.anchor.target
         value = f"{result.value:.4g} {result.unit}" if result else "N/A"
@@ -127,10 +120,9 @@ def print_hot_spots(viewport: Viewport) -> None:
 # %%
 # Inspect the hot spots
 # ---------------------
-# Hot spots are read-only annotations with the resolved result value and
-# location.
+# Each hot spot gives its result value and location, read from the data.
 viewport = wait_for_hot_spots(viewport)
-print(f"{len(hot_spots_of(viewport))} hot spots:")
+print(f"{len(viewport.hot_spots)} hot spots:")
 print_hot_spots(viewport)
 viewport.save_snapshot(
     file_path="015-hotspots-detected.png", settings=get_example_snapshot_settings()
@@ -166,51 +158,41 @@ with viewport.update_settings() as settings:
     settings.hot_spots_threshold_range = None
 
 viewport = wait_for_hot_spots(viewport, lambda hot_spots: len(hot_spots) == 5)
-print(f"{len(hot_spots_of(viewport))} hot spots after clearing the filters")
+print(f"{len(viewport.hot_spots)} hot spots after clearing the filters")
 
 # %%
 # Edit a hot spot
 # ---------------
-# Hot spots in the metadata are read-only. Add one to the viewport
-# annotations to edit its presentation: the note, the visibility, the card
-# placement, and the properties shown on the card. Its location and value
-# always come from the data.
-highest = hot_spots_of(viewport)[0]
-try:
+# The presentation of a hot spot is editable: the note, the visibility, the
+# card placement, and the properties shown on the card. Its location and
+# value always come from the data. Batch the edits to apply them in a single
+# call.
+highest = viewport.hot_spots[0]
+with viewport.update_settings():
     highest.note = "Highest stress"
-except AttributeError as error:
-    print(error)
+    highest.property_visibility.result_name = True
+    highest.placement = AnnotationPlacement.screen_pinned
+    highest.card_screen_location = (1.0, 0.25)
 
-edit = viewport.settings.annotations.add_hot_spot(highest)
-with viewport.update_settings() as settings:
-    annotation = settings.annotations[edit.id]
-    annotation.note = "Highest stress"
-    annotation.property_visibility.result_name = True
-    annotation.placement = AnnotationPlacement.screen_pinned
-    annotation.card_screen_location = (1.0, 0.25)
-
-viewport = wait_for_hot_spots(
-    viewport, lambda hot_spots: any(h.note == "Highest stress" for h in hot_spots)
-)
-edited = next(h for h in hot_spots_of(viewport) if h.id == highest.id)
-print(f"{edited.note!r}: {edited.result}")
+print(f"{highest.note!r}, edited: {highest.is_edited}, result: {highest.result}")
 viewport.save_snapshot(
     file_path="015-hotspots-edited.png", settings=get_example_snapshot_settings()
 )
 
 # %%
-# Hide the other hot spots by editing them too.
-for hot_spot in hot_spots_of(viewport)[1:]:
-    viewport.settings.annotations.add_hot_spot(hot_spot).visibility = False
+# Hide the other hot spots.
+with viewport.update_settings():
+    for hot_spot in viewport.hot_spots[1:]:
+        hot_spot.visibility = False
 
-viewport = wait_for_hot_spots(viewport, lambda hot_spots: sum(h.visibility for h in hot_spots) == 1)
 viewport.save_snapshot(
     file_path="015-hotspots-highest.png", settings=get_example_snapshot_settings()
 )
 
 # %%
-# Removing the edited copies restores the original hot spots.
-viewport.settings.annotations.clear()
+# Reset the hot spots to restore their original presentation.
+for hot_spot in viewport.hot_spots:
+    hot_spot.reset()
 
 # %%
 # Detect the lowest values

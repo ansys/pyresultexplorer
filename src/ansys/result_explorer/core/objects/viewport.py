@@ -31,7 +31,13 @@ from google.protobuf import struct_pb2
 from google.protobuf.json_format import MessageToDict, ParseDict
 
 from .. import models
-from .annotation import PlotViewportAnnotations, ResolvedAnnotation, ViewportAnnotations
+from .annotation import (
+    Annotation,
+    AnnotationStore,
+    HotSpot,
+    ResolvedAnnotation,
+    ViewportAnnotations,
+)
 from .base import BaseEntity
 from .camera_position import CameraPosition
 from .named_selection import NamedSelection
@@ -657,10 +663,9 @@ class PlotViewportMetadata(ThreeDViewportMetadata):
 
     @property
     def hot_spots(self) -> list[ResolvedAnnotation]:
-        """Hot spots shown in the scene.
+        """Hot spots shown in the scene, read-only.
 
-        To edit the presentation of a hot spot, add it to the settings with
-        ``viewport.settings.annotations.add_hot_spot(hot_spot)``.
+        Use ``viewport.hot_spots`` to edit their presentation.
         """
         return [a for a in self.resolved_annotations if a.is_hot_spot]
 
@@ -867,13 +872,13 @@ class ThreeDViewportSettings(ViewportSettings):
         return self._setting_options.get("leftClickMode", [])
 
     @property
-    def annotations(self) -> ViewportAnnotations:
-        """Annotations stored in this viewport.
+    def annotations(self) -> list[Annotation]:
+        """Annotation definitions stored in this viewport, read-only.
 
-        User annotations and edited copies of hot spots. Editing an item
-        applies the settings to the viewport.
+        User annotations and edited copies of hot spots. Use
+        ``viewport.annotations`` and ``viewport.hot_spots`` to edit them.
         """
-        return ViewportAnnotations(self._annotation_items(), self._apply)
+        return [Annotation(data) for data in self._annotation_items()]
 
     def _annotation_items(self) -> list[dict[str, Any]]:
         items = self._pb_obj.get("annotations")
@@ -959,15 +964,6 @@ class PlotViewportSettings(ThreeDViewportSettings):
 
     show_min_max_labels = PbProperty[BoolSetting, bool]("showMinMaxLabels")
     """Whether to display min/max labels on the plot."""
-
-    @property
-    def annotations(self) -> PlotViewportAnnotations:
-        """Annotations stored in this viewport.
-
-        User annotations and edited copies of hot spots. Editing an item
-        applies the settings to the viewport.
-        """
-        return PlotViewportAnnotations(self._annotation_items(), self._apply)
 
     @property
     def result(self) -> StrSetting | None:
@@ -1370,6 +1366,8 @@ _SETTINGS_TYPES: dict[models.ViewType.ValueType, type[ViewportSettings]] = {
     models.ViewType.VIEW_TYPE_LOGS: LogsViewportSettings,
 }
 
+_THREE_D_VIEW_TYPES = {models.ViewType.VIEW_TYPE_PLOT, models.ViewType.VIEW_TYPE_MESH}
+
 # ---------------------------------------------------------------------------
 # Viewport entity
 # ---------------------------------------------------------------------------
@@ -1458,14 +1456,83 @@ class Viewport[TSettings: ViewportSettings](BaseEntity[models.Viewport]):
 
     @contextmanager
     def update_settings(self) -> Generator[TSettings, None, None]:
-        """Batch settings updates in a single server call."""
+        """Batch settings updates in a single server call.
+
+        Edits made through ``viewport.annotations`` and
+        ``viewport.hot_spots`` inside the block are part of the batch.
+        """
         opts = self.settings
         opts._batch_mode = True
+        self._batch_settings = opts
         try:
             yield opts
         finally:
+            self._batch_settings = None
             opts._batch_mode = False
             opts._apply()
+
+    _batch_settings: ViewportSettings | None = None
+
+    def _annotation_store(self) -> AnnotationStore:
+        """Return the store giving the current annotation definitions."""
+
+        def store() -> tuple[list[dict[str, Any]], Callable[[], None]]:
+            settings = self._batch_settings
+            if not isinstance(settings, ThreeDViewportSettings):
+                settings = cast(
+                    ThreeDViewportSettings,
+                    self._build_settings(ThreeDViewportSettings, self._pb.settings),
+                )
+            return settings._annotation_items(), settings._apply
+
+        return store
+
+    def _resolved_annotation(self, annotation_id: str) -> dict[str, Any] | None:
+        """Return the resolution of an annotation in the current metadata."""
+        resolved = MessageToDict(self._pb.metadata).get("resolvedAnnotations") or []
+        return next(
+            (r for r in resolved if r.get("definition", {}).get("id") == annotation_id), None
+        )
+
+    @property
+    def annotations(self) -> ViewportAnnotations:
+        """User annotations of this 3D viewport.
+
+        Editable: adding, editing or removing an annotation applies to the
+        viewport. The resolution in the scene (status, locations, result)
+        reflects the metadata when the viewport was last read.
+
+        Raises
+        ------
+        TypeError
+            If the viewport doesn't show a plot or the mesh.
+
+        """
+        view = self._resolve_view()
+        if view is None or view.type not in _THREE_D_VIEW_TYPES:
+            raise TypeError("Annotations are only available on plot and mesh viewports.")
+        return ViewportAnnotations(self._annotation_store(), self._resolved_annotation)
+
+    @property
+    def hot_spots(self) -> list[HotSpot]:
+        """Hot spots of this plot viewport.
+
+        The location and result values are read-only and reflect the
+        metadata when the viewport was last read. The presentation (note,
+        visibility, placement, card location and property visibility) is
+        editable; each edit applies to the viewport.
+
+        Raises
+        ------
+        TypeError
+            If the viewport doesn't show a plot.
+
+        """
+        metadata = self.metadata
+        if not isinstance(metadata, PlotViewportMetadata):
+            raise TypeError("Hot spots are only available on plot viewports.")
+        store = self._annotation_store()
+        return [HotSpot(resolved, store) for resolved in metadata.hot_spots]
 
     @property
     def size(self) -> float:
