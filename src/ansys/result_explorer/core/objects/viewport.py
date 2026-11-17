@@ -31,6 +31,7 @@ from google.protobuf import struct_pb2
 from google.protobuf.json_format import MessageToDict, ParseDict
 
 from .. import models
+from .annotation import ResolvedAnnotation, ViewportAnnotations
 from .base import BaseEntity
 from .camera_position import CameraPosition
 from .named_selection import NamedSelection
@@ -49,6 +50,7 @@ type _PyValue = str | float | bool | dict[str, Any] | list[str] | list[float] | 
 
 _BOOL_SETTING_KEYS = {
     "explodeActive",
+    "hotSpotsByEntity",
     "legendUseGlobalMinMax",
     "showLegend",
     "showMesh",
@@ -61,6 +63,7 @@ _LIST_SETTING_KEYS = {
     "activeCharts",
     "activeSeriesIndices",
     "activeSeries",
+    "annotations",
     "chartNames",
     "expandedGroups",
     "selectedBodies",
@@ -71,6 +74,8 @@ _LIST_SETTING_KEYS = {
 _NUMBER_SETTING_KEYS = {
     "deformationScale",
     "explodeScale",
+    "hotSpotsMaxNumber",
+    "hotSpotsSeparationDistance",
     "legendMax",
     "legendMin",
     "selectedXAxisIndex",
@@ -635,7 +640,28 @@ class ResultMetadata:
         return self.__str__()
 
 
-class PlotViewportMetadata(ViewportMetadata):
+class ThreeDViewportMetadata(ViewportMetadata):
+    """Read-only metadata of 3D viewports."""
+
+    @property
+    def resolved_annotations(self) -> list[ResolvedAnnotation]:
+        """Annotations shown in the scene, resolved against the displayed data.
+
+        The web UI publishes them once the viewport is rendered.
+        """
+        return [ResolvedAnnotation(a) for a in self._pb_obj.get("resolvedAnnotations") or []]
+
+    @property
+    def hot_spots(self) -> list[ResolvedAnnotation]:
+        """Hot spots shown in the scene.
+
+        To edit the presentation of a hot spot, add it to the settings with
+        ``viewport.settings.annotations.add_hot_spot(hot_spot)``.
+        """
+        return [a for a in self.resolved_annotations if a.is_hot_spot]
+
+
+class PlotViewportMetadata(ThreeDViewportMetadata):
     """Read-only metadata specific to plot viewports."""
 
     @property
@@ -840,6 +866,18 @@ class ThreeDViewportSettings(ViewportSettings):
         """
         return self._setting_options.get("leftClickMode", [])
 
+    @property
+    def annotations(self) -> ViewportAnnotations:
+        """Annotations stored in this viewport.
+
+        User annotations and edited copies of hot spots. Editing an item
+        applies the settings to the viewport.
+        """
+        items = self._pb_obj.get("annotations")
+        if not isinstance(items, list):
+            items = self._pb_obj["annotations"] = []
+        return ViewportAnnotations(items, self._apply)
+
     @classmethod
     def _from_pb(
         cls,
@@ -1020,6 +1058,62 @@ class PlotViewportSettings(ThreeDViewportSettings):
         TODO: no writable color-map setting exists yet.
         """
         return self._setting_options.get("legendColorMap", [])
+
+    @property
+    def hot_spots_max_number(self) -> IntSetting | None:
+        """Maximum number of hot spots shown per set, or None for all."""
+        value = _value_or_none(self._pb_obj, "hotSpotsMaxNumber", int)
+        return _wrap_setting_value(value, self._options_for("hotSpotsMaxNumber"))
+
+    @hot_spots_max_number.setter
+    def hot_spots_max_number(self, value: int | None) -> None:
+        self._set_setting("hotSpotsMaxNumber", value)
+
+    @property
+    def hot_spots_by_entity(self) -> BoolSetting | None:
+        """Whether the maximum number of hot spots applies to each body."""
+        value = _value_or_none(self._pb_obj, "hotSpotsByEntity", bool)
+        return _wrap_setting_value(value, self._options_for("hotSpotsByEntity"))
+
+    @hot_spots_by_entity.setter
+    def hot_spots_by_entity(self, value: bool | None) -> None:
+        self._set_setting("hotSpotsByEntity", value)
+
+    @property
+    def hot_spots_separation_distance(self) -> FloatSetting | None:
+        """Minimum distance between two hot spots, or None for no minimum."""
+        value = _value_or_none(self._pb_obj, "hotSpotsSeparationDistance", float)
+        return _wrap_setting_value(value, self._options_for("hotSpotsSeparationDistance"))
+
+    @hot_spots_separation_distance.setter
+    def hot_spots_separation_distance(self, value: float | None) -> None:
+        self._set_setting("hotSpotsSeparationDistance", value)
+
+    @property
+    def hot_spots_threshold_range(self) -> TupleSetting[float | None] | None:
+        """Value range of the hot spots as ``(low, high)``; None bounds are open."""
+        raw = self._pb_obj.get("hotSpotsThresholdRange")
+        value = None
+        if isinstance(raw, dict) and (raw.get("low") is not None or raw.get("high") is not None):
+            value = (raw.get("low"), raw.get("high"))
+        return _wrap_setting_value(value, self._options_for("hotSpotsThresholdRange"))
+
+    @hot_spots_threshold_range.setter
+    def hot_spots_threshold_range(self, value: tuple[float | None, float | None] | None) -> None:
+        value = _unwrap_setting_value(value)
+        if value is None or value == (None, None):
+            self._set_setting("hotSpotsThresholdRange", None)
+            return
+        low, high = value
+        bounds = {"low": low, "high": high}
+        self._set_setting(
+            "hotSpotsThresholdRange", {k: v for k, v in bounds.items() if v is not None}
+        )
+
+    def _set_setting(self, key: str, value: object) -> None:
+        """Set a setting, or clear it when None, and apply."""
+        self._pb_obj[key] = _unwrap_setting_value(value)
+        self._apply()
 
     @classmethod
     def _from_pb(
@@ -1314,6 +1408,11 @@ class Viewport[TSettings: ViewportSettings](BaseEntity[models.Viewport]):
 
         if view.type == models.ViewType.VIEW_TYPE_PLOT:
             return PlotViewportMetadata(
+                pb_obj, self._client, self.solution_id, settings, setting_options
+            )
+
+        if view.type == models.ViewType.VIEW_TYPE_MESH:
+            return ThreeDViewportMetadata(
                 pb_obj, self._client, self.solution_id, settings, setting_options
             )
 
