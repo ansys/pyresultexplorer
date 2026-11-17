@@ -67,7 +67,7 @@ module.name = "ansys.result_explorer.core"
 
 [tool.uv]
 default-groups = [ "dev" ]
-sources.ansys-api-result-explorer = { git = "https://github.com/ansys/ansys-api-result-explorer", rev = "dcd825ed9ce4c2e1c9f1369a4a28d680522f48b4" }
+sources.ansys-api-result-explorer = { git = "https://github.com/ansys/ansys-api-result-explorer", rev = "d20da9355aa9a5f089056b6defdb3eff3a5c8933" }
 cache-dir = "./.uv_cache"
 
 [tool.ruff]
