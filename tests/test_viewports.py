@@ -1035,9 +1035,6 @@ def test_transparent_bodies_options(
 ):
     """Test transparent bodies display option."""
 
-    if rx.app_info.version == "2026.7.0":
-        pytest.skip("Skipping test due to known issue in version 2026.7.0")
-
     sol = multiple_connections_solution
 
     mesh_view = sol.mesh_view
