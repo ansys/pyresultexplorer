@@ -26,6 +26,7 @@ from .annotation import (
     AnnotationStatus,
     AnnotationTarget,
     AnnotationTargetKind,
+    PlotViewportAnnotations,
     ResolvedAnnotation,
     ViewportAnnotations,
 )
@@ -117,6 +118,7 @@ __all__ = [
     "OpaqueSetting",
     "PlotDefinition",
     "PlotView",
+    "PlotViewportAnnotations",
     "PlotViewportMetadata",
     "PlotViewportSettings",
     "PropertyScoping",

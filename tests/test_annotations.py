@@ -32,12 +32,14 @@ from ansys.result_explorer.core import (
     Field,
     HotSpotDefinition,
     HotSpotKind,
+    MeshViewportSettings,
     PlotDefinition,
     PlotViewportMetadata,
     PlotViewportSettings,
     ResolvedAnnotation,
     ResultFieldName,
     ResultType,
+    ThreeDViewportMetadata,
     models,
 )
 from ansys.result_explorer.core.objects.viewport import (
@@ -127,6 +129,22 @@ def test_resolved_hot_spot_is_read_only():
         hot_spot.property_visibility.result_name = True
     with pytest.raises(AttributeError):
         hot_spot.anchor = AnnotationAnchor()  # type: ignore[misc]
+
+
+def test_hot_spots_only_on_plot_viewports():
+    struct = struct_pb2.Struct()
+    struct.update({"resolvedAnnotations": [HOT_SPOT]})
+    mesh_metadata = ThreeDViewportMetadata(struct, NO_CLIENT)
+    mesh_settings = MeshViewportSettings._from_pb(_dict_to_settings({}), client=NO_CLIENT)
+
+    assert len(mesh_metadata.resolved_annotations) == 1
+    assert not hasattr(mesh_metadata, "hot_spots")
+    assert not hasattr(mesh_settings.annotations, "add_hot_spot")
+    assert not hasattr(mesh_settings, "hot_spots_max_number")
+
+    plot_annotations = _offline_settings({}).annotations
+    with pytest.raises(ValueError, match="not a hot spot"):
+        plot_annotations.add_hot_spot(ResolvedAnnotation({"definition": {"id": "user"}}))
 
 
 def test_hot_spot_edit_copy_in_settings():

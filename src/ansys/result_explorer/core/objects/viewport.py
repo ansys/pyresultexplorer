@@ -31,7 +31,7 @@ from google.protobuf import struct_pb2
 from google.protobuf.json_format import MessageToDict, ParseDict
 
 from .. import models
-from .annotation import ResolvedAnnotation, ViewportAnnotations
+from .annotation import PlotViewportAnnotations, ResolvedAnnotation, ViewportAnnotations
 from .base import BaseEntity
 from .camera_position import CameraPosition
 from .named_selection import NamedSelection
@@ -651,6 +651,10 @@ class ThreeDViewportMetadata(ViewportMetadata):
         """
         return [ResolvedAnnotation(a) for a in self._pb_obj.get("resolvedAnnotations") or []]
 
+
+class PlotViewportMetadata(ThreeDViewportMetadata):
+    """Read-only metadata specific to plot viewports."""
+
     @property
     def hot_spots(self) -> list[ResolvedAnnotation]:
         """Hot spots shown in the scene.
@@ -659,10 +663,6 @@ class ThreeDViewportMetadata(ViewportMetadata):
         ``viewport.settings.annotations.add_hot_spot(hot_spot)``.
         """
         return [a for a in self.resolved_annotations if a.is_hot_spot]
-
-
-class PlotViewportMetadata(ThreeDViewportMetadata):
-    """Read-only metadata specific to plot viewports."""
 
     @property
     def results(self) -> list[ResultMetadata]:
@@ -873,10 +873,13 @@ class ThreeDViewportSettings(ViewportSettings):
         User annotations and edited copies of hot spots. Editing an item
         applies the settings to the viewport.
         """
+        return ViewportAnnotations(self._annotation_items(), self._apply)
+
+    def _annotation_items(self) -> list[dict[str, Any]]:
         items = self._pb_obj.get("annotations")
         if not isinstance(items, list):
             items = self._pb_obj["annotations"] = []
-        return ViewportAnnotations(items, self._apply)
+        return items
 
     @classmethod
     def _from_pb(
@@ -956,6 +959,15 @@ class PlotViewportSettings(ThreeDViewportSettings):
 
     show_min_max_labels = PbProperty[BoolSetting, bool]("showMinMaxLabels")
     """Whether to display min/max labels on the plot."""
+
+    @property
+    def annotations(self) -> PlotViewportAnnotations:
+        """Annotations stored in this viewport.
+
+        User annotations and edited copies of hot spots. Editing an item
+        applies the settings to the viewport.
+        """
+        return PlotViewportAnnotations(self._annotation_items(), self._apply)
 
     @property
     def result(self) -> StrSetting | None:

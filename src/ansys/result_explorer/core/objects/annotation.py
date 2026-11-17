@@ -458,31 +458,6 @@ class ViewportAnnotations:
             data["setIds"] = list(set_ids)
         return self._append(data)
 
-    def add_hot_spot(self, hot_spot: ResolvedAnnotation) -> Annotation:
-        """Store an editable copy of a hot spot.
-
-        The copy keeps the ID of the hot spot, so its presentation
-        replaces the presentation of the hot spot. The anchor and result
-        always come from the hot spot data. An existing copy is returned
-        unchanged.
-
-        Parameters
-        ----------
-        hot_spot : ResolvedAnnotation
-            Hot spot from ``viewport.metadata.hot_spots``.
-
-        Returns
-        -------
-        Annotation
-            Editable copy of the hot spot.
-
-        """
-        if hot_spot.id in self:
-            return self[hot_spot.id]
-        data = hot_spot._definition()
-        data["source"] = _GRAPHICS_SOURCE
-        return self._append(data)
-
     def _append(self, data: dict[str, Any]) -> Annotation:
         if data["id"] in self:
             raise ValueError(f"Annotation {data['id']!r} already exists.")
@@ -503,7 +478,41 @@ class ViewportAnnotations:
 
     def __repr__(self) -> str:
         """Return the stored annotations."""
-        return f"ViewportAnnotations({list(self)!r})"
+        return f"{type(self).__name__}({list(self)!r})"
+
+
+class PlotViewportAnnotations(ViewportAnnotations):
+    """Annotations stored in the settings of a plot viewport.
+
+    Besides user annotations, holds the edited copies of hot spots.
+    """
+
+    def add_hot_spot(self, hot_spot: ResolvedAnnotation) -> Annotation:
+        """Store an editable copy of a hot spot.
+
+        The copy keeps the ID of the hot spot, so its presentation
+        replaces the presentation of the hot spot. The anchor and result
+        always come from the hot spot data. An existing copy is returned
+        unchanged.
+
+        Parameters
+        ----------
+        hot_spot : ResolvedAnnotation
+            Hot spot from ``viewport.metadata.hot_spots``.
+
+        Returns
+        -------
+        Annotation
+            Editable copy of the hot spot.
+
+        """
+        if not hot_spot.is_hot_spot:
+            raise ValueError(f"Annotation {hot_spot.id!r} is not a hot spot.")
+        if hot_spot.id in self:
+            return self[hot_spot.id]
+        data = hot_spot._definition()
+        data["source"] = _GRAPHICS_SOURCE
+        return self._append(data)
 
 
 def _vector3(value: list[float] | None) -> Vector3 | None:
