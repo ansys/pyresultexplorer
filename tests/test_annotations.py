@@ -25,7 +25,6 @@ from ansys.result_explorer.core import (
     AnnotationAnchor,
     AnnotationPlacement,
     AnnotationResultReference,
-    AnnotationStatus,
     AnnotationTarget,
     AnnotationTargetKind,
     Client,
@@ -117,7 +116,7 @@ def test_resolved_hot_spot_is_read_only():
     (hot_spot,) = metadata.hot_spots
     assert hot_spot.id == "max:1"
     assert hot_spot.set_ids == (1,)
-    assert hot_spot.status == AnnotationStatus.resolved
+    assert hot_spot.status == "resolved"
     assert hot_spot.anchor.target == AnnotationTarget(AnnotationTargetKind.node, 12, ("4",))
     assert hot_spot.deformed_location == (1.0, 2.0, 3.5)
     assert hot_spot.result is not None
@@ -141,7 +140,7 @@ class _OfflineStore:
         self.opts = _offline_settings(settings)
         self.applies = 0
 
-    def __call__(self) -> tuple[list[dict], Callable[[], None]]:
+    def __call__(self, edit: bool = False) -> tuple[list[dict], Callable[[], None]]:
         def apply() -> None:
             self.applies += 1
 
@@ -174,6 +173,10 @@ def test_hot_spot_edits_store_a_copy():
 
     with pytest.raises(AttributeError):
         hot_spot.anchor = AnnotationAnchor()  # type: ignore[misc]
+    with pytest.raises(AttributeError):
+        hot_spot.set_ids = [2]  # type: ignore[misc]
+    with pytest.raises(AttributeError):
+        hot_spot.result_reference = AnnotationResultReference()  # type: ignore[misc]
 
     hot_spot.reset()
     assert not hot_spot.is_edited
@@ -191,7 +194,7 @@ def test_viewport_annotations():
     annotation = annotations.add(anchor, note="Origin", id="a1")
     assert annotation.property_visibility.mesh_location is True
     assert annotation.property_visibility.result_value is False
-    assert annotation.status == AnnotationStatus.resolved
+    assert annotation.status == "resolved"
     assert annotation.mesh_location == (0.0, 0.0, 0.1)
     with_result = annotations.add(anchor, result_reference=AnnotationResultReference("s"))
     assert with_result.property_visibility.result_value is True
@@ -217,6 +220,39 @@ def test_viewport_annotations():
     assert [a["id"] for a in store.saved()] == ["max:1"]
     with pytest.raises(LookupError, match="removed"):
         _ = annotation.note
+
+
+def test_dynamic_and_locked_annotations():
+    store = _OfflineStore({})
+    annotations = ViewportAnnotations(store, lambda _: None)
+    anchor = AnnotationAnchor(position=(0.0, 0.0, 0.1))
+
+    dynamic = annotations.add(anchor, result_reference=AnnotationResultReference(), id="d")
+    locked = annotations.add(
+        anchor,
+        result_reference=AnnotationResultReference("displacement", ""),
+        set_ids=[3],
+        id="l",
+    )
+    assert dynamic.set_ids is None
+    assert dynamic.result_reference == AnnotationResultReference()
+    assert locked.set_ids == (3,)
+
+    dynamic.set_ids = [1, 2]
+    dynamic.result_reference = AnnotationResultReference("displacement", "X")
+    locked.set_ids = None
+    locked.result_reference = AnnotationResultReference()
+
+    stored = {a["id"]: a for a in store.saved()}
+    assert stored["d"]["setIds"] == [1, 2]
+    assert stored["d"]["resultReference"] == {"name": "displacement", "component": "X"}
+    assert "setIds" not in stored["l"]
+    assert stored["l"]["resultReference"] == {}
+
+    with pytest.raises(ValueError, match="at least one set"):
+        dynamic.set_ids = []
+    with pytest.raises(ValueError, match="at least one set"):
+        annotations.add(anchor, set_ids=[])
 
 
 def test_hot_spot_display_options():
@@ -318,7 +354,16 @@ def test_annotations_and_hot_spots_by_view_type(rx, multiple_connections_solutio
     viewport = _wait_for_metadata(
         rx, workspace.id, viewport.id, lambda v: v.annotations[annotation.id].status is not None
     )
-    assert viewport.annotations[annotation.id].status == AnnotationStatus.resolved
+    assert viewport.annotations[annotation.id].status == "resolved"
+
+    # An item read from an older Viewport object joins the batch of a newer one
+    with viewport.update_settings() as settings:
+        settings.show_mesh_edges = True
+        annotation.note = "Batched"
+    viewport = next(v for v in rx.get_workspace(workspace.id).viewports if v.id == viewport.id)
+    assert viewport.annotations[annotation.id].note == "Batched"
+    assert viewport.settings.show_mesh_edges.value is True
+
     with pytest.raises(TypeError, match="plot viewports"):
         _ = viewport.hot_spots
 
@@ -397,3 +442,77 @@ def test_plot_update_refreshes_open_viewport(rx, multiple_connections_solution):
         timeout=20.0,
     )
     assert _available_results(viewport) == [ResultFieldName.principal_stress_1]
+
+
+def _status_and_value(viewport: Viewport, annotation_id: str) -> tuple[str | None, float | None]:
+    annotation = viewport.annotations[annotation_id]
+    return annotation.status, annotation.result.value if annotation.result else None
+
+
+def test_dynamic_and_locked_plot_annotations(rx, cp_transient_solution):
+    sol = cp_transient_solution
+    first_set, last_set = sol.time_frequencies[0].set_id, sol.time_frequencies[-1].set_id
+    workspace = rx.create_workspace("Locked annotations")
+    view = sol.create_plot(
+        PlotDefinition(
+            result_type=ResultType.displacement,
+            location="Nodal",
+            name="Displacement, all sets",
+            fields=[Field(name=ResultFieldName.displacement)],
+            all_sets=True,
+            last_set=False,
+        )
+    )
+    viewport = workspace.assign_view(view=view, wait=True)
+    # The web UI selects the initial set once the plot is loaded
+    viewport = _wait_for_metadata(
+        rx, workspace.id, viewport.id, lambda v: bool(_available_results(v)), timeout=30.0
+    )
+    viewport.settings.set_id = first_set
+    anchor = AnnotationAnchor(
+        target=AnnotationTarget(AnnotationTargetKind.node, 10, (sol.bodies[0].id,))
+    )
+
+    dynamic = viewport.annotations.add(anchor, result_reference=AnnotationResultReference())
+    locked = viewport.annotations.add(
+        anchor,
+        result_reference=AnnotationResultReference(name="displacement", component=""),
+        set_ids=[first_set],
+    )
+
+    def both(condition: Callable[[tuple, tuple], bool]) -> Viewport:
+        return _wait_for_metadata(
+            rx,
+            workspace.id,
+            viewport.id,
+            lambda v: condition(_status_and_value(v, dynamic.id), _status_and_value(v, locked.id)),
+            timeout=30.0,
+        )
+
+    viewport = both(lambda d, lo: d[0] == "resolved" and lo[0] == "resolved")
+    first_value = _status_and_value(viewport, dynamic.id)[1]
+    assert _status_and_value(viewport, locked.id) == ("resolved", first_value)
+
+    # Another set: the dynamic annotation follows it, the locked one is hidden
+    viewport.settings.set_id = last_set
+    viewport = both(lambda d, lo: d[1] != first_value and lo[0] == "inactiveSet")
+    status, last_value = _status_and_value(viewport, dynamic.id)
+    assert status == "resolved"
+    assert last_value != first_value
+    assert _status_and_value(viewport, locked.id)[0] == "inactiveSet"
+
+    # Unlocking the set shows the locked annotation again, on the active set.
+    # The annotation was read before the set changed: editing it must not
+    # restore the set it was read with.
+    locked.set_ids = None
+    viewport = both(lambda d, lo: lo[0] == "resolved")
+    assert _status_and_value(viewport, locked.id) == ("resolved", last_value)
+    assert viewport.settings.set_id == last_set
+
+    # Locking the component: shown only while the viewport displays it
+    locked.result_reference = AnnotationResultReference(name="displacement", component="X")
+    viewport = both(lambda d, lo: lo[0] == "inactiveResult")
+    assert _status_and_value(viewport, dynamic.id)[0] == "resolved"
+    viewport.settings.component_name = "X"
+    viewport = both(lambda d, lo: lo[0] == "resolved")
+    assert _status_and_value(viewport, locked.id)[0] == "resolved"

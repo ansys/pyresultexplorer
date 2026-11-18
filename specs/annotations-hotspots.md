@@ -118,18 +118,47 @@ Shared attributes of `ViewportAnnotation` and `HotSpot`:
 
 | Attribute | Editable | Notes |
 | --- | --- | --- |
-| `id`, `set_ids` | no | |
-| `anchor` | no | frozen `AnnotationAnchor` (`position`, `target`, `displacement`) |
-| `result_reference` | no | frozen `AnnotationResultReference` (`name`, `component`, `value`) |
+| `id` | no | |
+| `set_ids` | user annotations | sets the annotation is locked to, or `None` to follow the viewport (dynamic) |
+| `anchor` | no | frozen `AnnotationAnchor`: a `target` mesh entity, a `position`, or both. Use `position` for an annotation without a target, or whose target is in the interior of the mesh rather than on the skin; `displacement` is then the displacement at that position |
+| `result_reference` | user annotations | frozen `AnnotationResultReference` (`name`, `component`, `value`), or `None` for mesh properties only. An unset `name` or `component` follows the viewport (dynamic), a set one locks the annotation to it; `""` is the magnitude |
 | `note` | yes | |
 | `visibility` | yes | |
 | `placement` | yes | `AnnotationPlacement.follow_scene` or `screen_pinned` |
 | `card_screen_location` | yes | `(x, y)` of a pinned card, as fractions of the viewport from `(0, 0)` top left to `(1, 1)` bottom right |
 | `property_visibility` | yes | `AnnotationPropertyVisibility`, 8 flags |
-| `status` | no | `AnnotationStatus` (`resolved`, `pending`, `inactiveSet`, ...), or `None` until resolved |
+| `status` | no | string: `"resolved"`, or why it isn't shown (`"pending"`, `"inactiveSet"`, ...), or `None` until resolved |
 | `body_hidden` | no | all bodies of the anchor are hidden |
 | `mesh_location`, `deformed_location`, `scene_location` | no | `(x, y, z)` or `None` |
 | `result` | no | `AnnotationResult` (`name`, `component`, `value`, `unit`) or `None` |
+
+### Dynamic and locked plot annotations
+
+The web UI's **Dynamic** and **Locked** modes are stored in the definition,
+and each of the three bindings can be locked separately:
+
+| UI binding | Field | Dynamic | Locked |
+| --- | --- | --- | --- |
+| Time Frequency | `set_ids` | `None` | `[set_id, ...]` |
+| Result | `result_reference.name` | `None` | result name, such as `"displacement"` |
+| Component | `result_reference.component` | `None` | component, such as `"X"`, or `""` for the magnitude |
+
+A dynamic annotation shows the value of the set, result and component
+displayed in the viewport. A locked one is shown only while the viewport
+displays them; otherwise its `status` is `"inactiveSet"` or
+`"inactiveResult"`.
+
+```python
+dynamic = viewport.annotations.add(anchor, result_reference=AnnotationResultReference())
+locked = viewport.annotations.add(
+    anchor,
+    result_reference=AnnotationResultReference(name="displacement", component="X"),
+    set_ids=[1],
+)
+locked.set_ids = None  # follow the displayed set again
+```
+
+Hot spots come with their set and result, which stay read-only.
 
 `HotSpot` adds `is_edited` and `reset()`. A hot spot is edited through a copy
 with the same `id` and `source == "graphics"` in the `annotations` setting,
@@ -138,12 +167,16 @@ only, not these copies.
 
 Design rules:
 
-- **Live lookup.** Items hold an ID, not a copy of the definition. Each read
-  and write looks the definition up in the viewport's current settings, so
-  two items, or an item and a direct settings edit, never overwrite each
-  other. Reading a removed user annotation raises `LookupError`.
-- **Batching.** Inside `viewport.update_settings()`, edits go to the batched
-  settings and are applied with them in a single call.
+- **Live lookup.** Items hold an ID, not a copy of the definition. Reads
+  look the definition up in the viewport's last read settings. Edits first
+  read the current viewport state (an `UpdateViewport` without changes),
+  then send only the `annotations` setting, so they never overwrite edits
+  made since, to annotations or to other settings such as the displayed
+  set. Reading a removed user annotation raises `LookupError`.
+- **Batching.** `viewport.update_settings()` starts from the current
+  viewport state. Inside it, edits go to the batched settings and are
+  applied with them in a single call. Open batches are tracked by viewport
+  ID, so items read from any `Viewport` object of the viewport join them.
 - **Freshness.** Presentation fields of hot spots read the settings, so edits
   are visible immediately. Resolution and data fields reflect the metadata
   when the viewport was last read; the web UI publishes it after rendering.

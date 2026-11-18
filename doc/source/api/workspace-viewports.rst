@@ -49,4 +49,3 @@ Annotations and hot spots
    AnnotationResult
    AnnotationPropertyVisibility
    AnnotationPlacement
-   AnnotationStatus

@@ -25,7 +25,9 @@ This example shows how to add annotations to 3D viewports with
 them in the scene:
 
 - **Mesh annotations** anchored to a node, showing its location.
-- **Plot annotations** showing the result value at the node.
+- **Plot annotations** showing the result value at the node, either
+  dynamic (following the displayed result) or locked to a result,
+  component, or set.
 - **Annotation edits** such as the note, the card placement, and the
   properties shown on the card.
 
@@ -71,12 +73,12 @@ workspace = rx.create_workspace(name="Annotations Example Workspace")
 
 
 def wait_for_annotations(viewport: Viewport, count: int, timeout: float = 30.0) -> Viewport:
-    """Return the viewport once ``count`` annotations are resolved."""
+    """Return the viewport once exactly ``count`` annotations are resolved."""
     deadline = time.monotonic() + timeout
     while True:
         viewport = next(v for v in rx.get_workspace(workspace.id).viewports if v.id == viewport.id)
         resolved = sum(a.status == "resolved" for a in viewport.annotations)
-        if resolved >= count or time.monotonic() > deadline:
+        if resolved == count or time.monotonic() > deadline:
             return viewport
         time.sleep(1)
 
@@ -129,15 +131,16 @@ plot_viewport = workspace.create_viewport(
 ).set_view(plot_view, wait=True)
 
 # %%
-# A result reference without a value makes Result Explorer look up the
-# value of the displayed result at the node.
-result_name = str(plot_viewport.settings.result)
+# An empty result reference makes Result Explorer look up the value of the
+# displayed result at the node. The annotation is dynamic: it follows the
+# result, the component, and the set displayed in the viewport.
 plot_annotation = plot_viewport.annotations.add(
     AnnotationAnchor(target=node),
     note="Monitored node",
-    result_reference=AnnotationResultReference(name=result_name),
+    result_reference=AnnotationResultReference(),
 )
 plot_annotation.property_visibility.result_name = True
+plot_annotation.property_visibility.result_component = True
 
 plot_viewport = wait_for_annotations(plot_viewport, count=1)
 plot_annotation = plot_viewport.annotations[plot_annotation.id]
@@ -148,11 +151,51 @@ plot_viewport.save_snapshot(
 )
 
 # %%
+# Lock annotations
+# ----------------
+# A locked annotation shows a given result, component, or set, and is
+# shown only while the viewport displays them. Lock a second annotation to
+# the X component of the displacement: it stays hidden while the viewport
+# displays the magnitude. The component ``""`` stands for the magnitude, and
+# ``set_ids`` locks the sets in the same way.
+result_name = str(plot_viewport.settings.result)
+x_annotation = plot_viewport.annotations.add(
+    AnnotationAnchor(target=node),
+    note="Monitored node, X",
+    result_reference=AnnotationResultReference(name=result_name, component="X"),
+    set_ids=[int(plot_viewport.settings.set_id or 1)],
+)
+x_annotation.property_visibility.result_component = True
+print(f"Locked to {x_annotation.result_reference}, sets {x_annotation.set_ids}")
+
+# %%
+# Display the X component: the dynamic annotation now shows the X value,
+# and the locked annotation is shown too.
+plot_viewport.settings.component_name = "X"
+plot_viewport = wait_for_annotations(plot_viewport, count=2)
+for annotation in plot_viewport.annotations:
+    print(f"{annotation.note!r}: {annotation.status}, {annotation.result}")
+
+# %%
+# Display the magnitude again: the locked annotation is hidden, with the
+# reason in its status.
+plot_viewport.settings.component_name = "Magnitude"
+plot_viewport = wait_for_annotations(plot_viewport, count=1)
+for annotation in plot_viewport.annotations:
+    print(f"{annotation.note!r}: {annotation.status}")
+
+# %%
+# Setting the reference fields and the sets to None makes an annotation
+# dynamic again.
+x_annotation.result_reference = AnnotationResultReference()
+x_annotation.set_ids = None
+
+# %%
 # Edit annotations
 # ----------------
-# The anchor and the result reference are fixed once the annotation is
-# created. The note, the visibility, the placement, and the card properties
-# are editable. Batch the edits to apply them in a single call.
+# The anchor is fixed once the annotation is created. The note, the
+# visibility, the placement, and the card properties are editable. Batch
+# the edits to apply them in a single call.
 with plot_viewport.update_settings():
     plot_annotation.note = "Monitored node, pinned"
     plot_annotation.placement = AnnotationPlacement.screen_pinned

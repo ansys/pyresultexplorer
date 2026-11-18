@@ -1378,6 +1378,10 @@ _SETTINGS_TYPES: dict[models.ViewType.ValueType, type[ViewportSettings]] = {
 
 _THREE_D_VIEW_TYPES = {models.ViewType.VIEW_TYPE_PLOT, models.ViewType.VIEW_TYPE_MESH}
 
+# Open ``update_settings()`` batches by viewport ID, so that annotations and
+# hot spots read from any ``Viewport`` object of the viewport join them.
+_ACTIVE_BATCHES: dict[str, ViewportSettings] = {}
+
 # ---------------------------------------------------------------------------
 # Viewport entity
 # ---------------------------------------------------------------------------
@@ -1468,34 +1472,52 @@ class Viewport[TSettings: ViewportSettings](BaseEntity[models.Viewport]):
     def update_settings(self) -> Generator[TSettings, None, None]:
         """Batch settings updates in a single server call.
 
-        Edits made through ``viewport.annotations`` and
-        ``viewport.hot_spots`` inside the block are part of the batch.
+        The batch starts from the current viewport state. Edits made
+        through ``annotations`` and ``hot_spots`` inside the block are part
+        of the batch, including items read from another ``Viewport``
+        object of the same viewport.
         """
+        self._refresh()
         opts = self.settings
         opts._batch_mode = True
-        self._batch_settings = opts
+        _ACTIVE_BATCHES[self.id] = opts
         try:
             yield opts
         finally:
-            self._batch_settings = None
+            _ACTIVE_BATCHES.pop(self.id, None)
             opts._batch_mode = False
             opts._apply()
-
-    _batch_settings: ViewportSettings | None = None
 
     def _annotation_store(self) -> AnnotationStore:
         """Return the store giving the current annotation definitions."""
 
-        def store() -> tuple[list[dict[str, Any]], Callable[[], None]]:
-            settings = self._batch_settings
-            if not isinstance(settings, ThreeDViewportSettings):
-                settings = cast(
-                    ThreeDViewportSettings,
-                    self._build_settings(ThreeDViewportSettings, self._pb.settings),
+        def store(edit: bool) -> tuple[list[dict[str, Any]], Callable[[], None]]:
+            settings = _ACTIVE_BATCHES.get(self.id)
+            if isinstance(settings, ThreeDViewportSettings):
+                return settings._annotation_items(), settings._apply
+            if edit:
+                self._refresh()
+            items = _settings_to_dict(self._pb.settings).get("annotations")
+            if not isinstance(items, list):
+                items = []
+
+            def apply() -> None:
+                # Only the annotations, so other settings aren't overwritten
+                req = models.UpdateViewportRequest(
+                    viewport_id=self.id,
+                    settings=_dict_to_settings({"annotations": items}),
+                    wait=True,
                 )
-            return settings._annotation_items(), settings._apply
+                self._pb = self._client._workspace_stub.UpdateViewport(req)
+
+            return items, apply
 
         return store
+
+    def _refresh(self) -> None:
+        """Read the current viewport state; an update without changes reads it."""
+        req = models.UpdateViewportRequest(viewport_id=self.id)
+        self._pb = self._client._workspace_stub.UpdateViewport(req)
 
     def _resolved_annotation(self, annotation_id: str) -> dict[str, Any] | None:
         """Return the resolution of an annotation in the current metadata."""
