@@ -47,8 +47,8 @@ from ansys.result_explorer.core.models import GraphicsPrecision
 # Load and display a result
 # -------------------------
 # Wait for all four views to load before exporting their cached data.
-# Switch to BrowserType.SYSTEM_DEFAULT to inspect the UI while debugging.
-web_config = WebLaunchConfig(browser_type=BrowserType.SYSTEM_DEFAULT)
+# Switch to BrowserType.SYSTEM_DEFAULT to inspect the UI while running.
+web_config = WebLaunchConfig(browser_type=BrowserType.PLAYWRIGHT_CHROMIUM_HEADLESS)
 rx = launch_result_explorer(web_config=web_config)
 solution = rx.create_solution(
     name="Cached Session Solution",
