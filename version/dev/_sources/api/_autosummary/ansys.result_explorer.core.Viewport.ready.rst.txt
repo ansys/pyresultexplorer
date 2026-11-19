@@ -1,0 +1,6 @@
+ready
+=====
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Viewport.ready

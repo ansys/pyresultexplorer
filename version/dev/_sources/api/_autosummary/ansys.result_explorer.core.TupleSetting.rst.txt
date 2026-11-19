@@ -1,0 +1,30 @@
+﻿TupleSetting
+============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: TupleSetting
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      TupleSetting.options
+      TupleSetting.value
+   
+   

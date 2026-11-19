@@ -1,0 +1,6 @@
+show\_mesh\_edges
+=================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ThreeDViewportSettings.show_mesh_edges

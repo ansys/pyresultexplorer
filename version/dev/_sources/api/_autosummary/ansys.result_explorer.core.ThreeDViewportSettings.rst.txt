@@ -1,0 +1,40 @@
+﻿ThreeDViewportSettings
+======================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: ThreeDViewportSettings
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ThreeDViewportSettings.camera_position
+      ThreeDViewportSettings.expanded_groups
+      ThreeDViewportSettings.explode
+      ThreeDViewportSettings.explode_direction
+      ThreeDViewportSettings.explode_scale_factor
+      ThreeDViewportSettings.left_click_modes
+      ThreeDViewportSettings.result_context
+      ThreeDViewportSettings.show_mesh_edges
+      ThreeDViewportSettings.transparency_level
+      ThreeDViewportSettings.transparency_style
+      ThreeDViewportSettings.transparent_bodies
+      ThreeDViewportSettings.visible_bodies
+   
+   

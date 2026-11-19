@@ -1,0 +1,23 @@
+﻿ListSetting
+===========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: ListSetting
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ListSetting.options
+      ListSetting.value
+   
+   

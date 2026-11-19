@@ -1,0 +1,6 @@
+value
+=====
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: FloatSetting.value

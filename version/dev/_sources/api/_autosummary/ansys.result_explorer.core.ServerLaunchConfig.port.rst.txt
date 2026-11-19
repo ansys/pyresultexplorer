@@ -1,0 +1,6 @@
+port
+====
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ServerLaunchConfig.port

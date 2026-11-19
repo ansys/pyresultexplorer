@@ -1,0 +1,6 @@
+beam\_bending\_moment\_y
+========================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultFieldName.beam_bending_moment_y

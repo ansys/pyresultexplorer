@@ -1,0 +1,6 @@
+import\_from\_template
+======================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Workspace.import_from_template

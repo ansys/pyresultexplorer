@@ -1,0 +1,6 @@
+show\_table
+===========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ChartDisplayOptions.show_table

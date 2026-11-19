@@ -1,0 +1,35 @@
+﻿ServerLaunchConfig
+==================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: ServerLaunchConfig
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ServerLaunchConfig.auth
+      ServerLaunchConfig.grpc_port
+      ServerLaunchConfig.log_level
+      ServerLaunchConfig.num_threads
+      ServerLaunchConfig.port
+      ServerLaunchConfig.ssl
+      ServerLaunchConfig.token
+   
+   

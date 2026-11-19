@@ -1,0 +1,37 @@
+﻿PlotDisplayOptions
+==================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: PlotDisplayOptions
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      PlotDisplayOptions.camera_position
+      PlotDisplayOptions.expanded_groups
+      PlotDisplayOptions.explode
+      PlotDisplayOptions.explode_direction
+      PlotDisplayOptions.explode_scale_factor
+      PlotDisplayOptions.result_options
+      PlotDisplayOptions.show_mesh_edges
+      PlotDisplayOptions.show_min_max_labels
+      PlotDisplayOptions.visible_bodies
+   
+   

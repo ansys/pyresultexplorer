@@ -1,0 +1,6 @@
+creation\_time
+==============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ChartDefinition.creation_time

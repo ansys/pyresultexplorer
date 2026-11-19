@@ -1,0 +1,6 @@
+result
+======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: PlotViewportSettings.result

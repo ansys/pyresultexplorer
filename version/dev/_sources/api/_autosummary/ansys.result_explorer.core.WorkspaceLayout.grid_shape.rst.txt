@@ -1,0 +1,6 @@
+grid\_shape
+===========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: WorkspaceLayout.grid_shape

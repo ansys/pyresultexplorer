@@ -1,0 +1,6 @@
+read\_only
+==========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.read_only

@@ -1,0 +1,6 @@
+nodal\_plastic\_strain
+======================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultType.nodal_plastic_strain

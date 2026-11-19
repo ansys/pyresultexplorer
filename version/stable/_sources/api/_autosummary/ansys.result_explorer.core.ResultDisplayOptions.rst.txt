@@ -1,0 +1,22 @@
+﻿ResultDisplayOptions
+====================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: ResultDisplayOptions
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   
