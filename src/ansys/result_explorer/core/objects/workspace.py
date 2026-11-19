@@ -19,7 +19,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, overload
 
 from .. import models
 from .base import NamedBaseEntity
@@ -28,7 +28,13 @@ from .viewport import Viewport
 
 if TYPE_CHECKING:
     from ..client import Client
-    from .solution import View
+    from .solution import ChartView, MeshView, PlotView, View
+    from .viewport import (
+        ChartViewportSettings,
+        MeshViewportSettings,
+        PlotViewportSettings,
+        ViewportSettings,
+    )
 
 RX_WORKSPACE_TEMPLATE_EXTENSION = ".rxwt"
 
@@ -177,6 +183,14 @@ class Workspace(NamedBaseEntity[models.Workspace]):
         pb_vp = self._client._workspace_stub.CreateViewport(req)
         return Viewport(pb_vp, self._client)
 
+    @overload
+    def assign_view(self, view: PlotView, wait: bool = ...) -> Viewport[PlotViewportSettings]: ...
+    @overload
+    def assign_view(self, view: ChartView, wait: bool = ...) -> Viewport[ChartViewportSettings]: ...
+    @overload
+    def assign_view(self, view: MeshView, wait: bool = ...) -> Viewport[MeshViewportSettings]: ...
+    @overload
+    def assign_view(self, view: View, wait: bool = ...) -> Viewport[ViewportSettings]: ...
     def assign_view(self, view: View, wait: bool = True) -> Viewport:
         """Assign a view to the first viewport in this workspace."""
         first_viewport = self.viewports[0]
