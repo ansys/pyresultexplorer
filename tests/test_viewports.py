@@ -977,6 +977,7 @@ def test_camera_position_with_zoom():
     assert cam.with_translation(10, 20, 30).translation == (10, 20, 30)
 
 
+@pytest.mark.images
 def test_visible_bodies_options(
     rx,
     multiple_connections_solution,
@@ -1016,6 +1017,57 @@ def test_visible_bodies_options(
     # image comparison
     snapshot_data = viewport.take_snapshot(settings=snapshot_settings)
     assert snapshot_data == snapshot(name="SOLID186_bodies")
+
+    # Cleanup
+    rx.delete_workspace(workspace)
+
+
+@pytest.mark.images
+def test_result_context_option(
+    rx, multiple_connections_solution, snapshot, snapshot_settings_with_legend
+):
+    """Test result context display option."""
+
+    sol = multiple_connections_solution
+
+    plot_view = next((v for v in sol.plot_views if "Displacement" in v.name), None)
+    assert plot_view is not None
+
+    workspace = rx.create_workspace("Test Result Context")
+    viewport = workspace.assign_view(view=plot_view, wait=True)
+
+    _ = viewport.take_snapshot(settings=snapshot_settings_with_legend)
+
+    # Show a single body so its displacement range differs from the full model
+    body = next((b for b in sol.bodies if b.name == "Body 4"), None)
+    assert body is not None
+
+    opts = viewport.settings
+    assert isinstance(opts, PlotViewportSettings)
+    opts.visible_bodies = [body.id]
+    assert viewport.settings.visible_bodies == [body.id]
+
+    full_model_max = pytest.approx(4.283e-5, rel=1e-3)
+    visible_body_max = pytest.approx(1.625e-5, rel=1e-3)
+    expected_ranges: list[tuple[Literal["all", "visible_bodies", "opaque_bodies"], object]] = [
+        ("all", full_model_max),
+        ("visible_bodies", visible_body_max),
+        ("opaque_bodies", visible_body_max),
+    ]
+    for context, expected_max in expected_ranges:
+        opts.result_context = context
+        settings = viewport.settings
+        assert isinstance(settings, PlotViewportSettings)
+        assert settings.result_context == context
+
+        legend_range = settings.legend_range
+        assert legend_range is not None
+        assert legend_range[0] == 0.0
+        assert legend_range[1] == expected_max
+
+        # image comparison
+        snapshot_data = viewport.take_snapshot(settings=snapshot_settings_with_legend)
+        assert snapshot_data == snapshot(name=context)
 
     # Cleanup
     rx.delete_workspace(workspace)

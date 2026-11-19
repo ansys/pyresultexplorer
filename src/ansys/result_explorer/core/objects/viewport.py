@@ -825,6 +825,10 @@ class ThreeDViewportSettings(ViewportSettings):
     ``transparent-grey``, or ``transparent-body-color``."""
     transparency_level = PbProperty[FloatSetting, float]("transparencyLevel")
     """Transparency level of transparent bodies."""
+    result_context = PbProperty[StrSetting, Literal["all", "visible_bodies", "opaque_bodies"]](
+        "resultContext"
+    )
+    """Bodies used to compute the legend range."""
 
     @property
     def camera_position(self) -> CameraPosition | None:
