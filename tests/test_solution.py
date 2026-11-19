@@ -205,6 +205,7 @@ def test_solution_string_representation(cp_transient_solution: Solution):
     assert "Mesh Information:" in str_repr
     assert "Results Information:" in str_repr
     assert "Status:" in str_repr
+    assert "Read-only:" in str_repr
     assert "Ready" in str_repr
     assert "Available Plot Results" in str_repr
     assert "Solver Text Outputs" in str_repr
@@ -380,6 +381,7 @@ def test_solution_read_only_from_extended_solution(read_only: bool):
     assert sol.read_only is read_only
     assert sol.id == "sol"
     assert sol.name == "Solution sol"
+    assert f"  {'Read-only:':<25}{'Yes' if read_only else 'No'}" in str(sol)
 
 
 def test_solution_read_only_defaults_to_false():
