@@ -18,7 +18,7 @@
 .. _export_cached_session_example:
 
 Export cached view data and reopen a read-only session
-=====================================================
+======================================================
 
 Export a session with cached view data, ZIP compression, and reduced
 graphics precision. Display a plot, a log, a chart, and convergence
