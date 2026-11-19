@@ -871,7 +871,7 @@ class Client:
                 yield models.OpenSessionRequest(
                     options=models.SessionImportOptions(read_only=read_only)
                 )
-                while data := session_file.read(256 * 1024):
+                while data := session_file.read(512 * 1024):
                     yield models.OpenSessionRequest(data=data)
 
             try:

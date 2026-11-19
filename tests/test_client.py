@@ -158,7 +158,7 @@ def test_open_session_stream(tmp_path: Path, data: bytes, read_only: bool | None
         received = bytearray()
         for request in requests:
             assert request.WhichOneof("payload") == "data"
-            assert len(request.data) <= 256 * 1024
+            assert len(request.data) <= 512 * 1024
             received.extend(request.data)
         assert bytes(received) == data
         return models.Empty()
