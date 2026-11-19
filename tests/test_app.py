@@ -17,17 +17,23 @@
 import json
 import logging
 import time
-from dataclasses import replace
+from dataclasses import asdict, replace
 from pathlib import Path
 from zipfile import ZipFile
 
 import pytest
 
 from ansys.result_explorer.core import (
+    ChartDefinition,
+    ChartResult,
     Client,
     Component,
     Field,
+    Filter,
+    IdsScoping,
     Location,
+    NamedSelectionCreate,
+    NamedSelectionType,
     PlotDefinition,
     ResultExplorerError,
     ResultFieldName,
@@ -248,10 +254,20 @@ def test_open_session_read_only(rx: Client, rst_multiple_connections: str, tmp_p
     )
     assert solution.read_only is False
 
+    selection_definition = NamedSelectionCreate(
+        name="Element Selection",
+        type=NamedSelectionType.ELEMENT,
+        solver_named_selections=[],
+        bodies=[],
+        node_ids=[],
+        element_ids=[IdsScoping(values=[1, 2, 3])],
+    )
+    selection = solution.create_named_selection(selection_definition)
     definition = PlotDefinition(
         result_type=ResultType.displacement,
         location=Location.nodal,
         name="Disp",
+        named_selection_id=selection.id,
         fields=[
             Field(
                 ResultFieldName.displacement,
@@ -260,8 +276,23 @@ def test_open_session_read_only(rx: Client, rst_multiple_connections: str, tmp_p
         ],
     )
     plot = solution.create_plot(definition)
-    workspace = rx.create_workspace("Test Workspace")
+    chart_definition = ChartDefinition(
+        name="Displacement Chart",
+        all_sets=True,
+        results=[
+            ChartResult(
+                result_type=ResultType.displacement,
+                name="Displacement",
+                location="Nodal",
+                fields=definition.fields,
+                filters=[Filter.max],
+            )
+        ],
+    )
+    chart = solution.create_chart(chart_definition)
+    workspace = rx.create_workspace("Test Workspace", rows=1, cols=2)
     workspace.assign_view(view=plot, wait=True)
+    workspace.viewports[1].set_view(chart, wait=True)
 
     session_path = tmp_path / "read_only.rxs"
     rx.save_session(session_path, workspace_ids=[workspace.id])
@@ -281,6 +312,12 @@ def test_open_session_read_only(rx: Client, rst_multiple_connections: str, tmp_p
     restored_workspace = next(w for w in rx.list_workspaces() if w.name == workspace.name)
     original_plots = restored_solution.plots
     restored_plot = next(p for p in original_plots if p.name == definition.name)
+    original_charts = restored_solution.charts
+    restored_chart = next(c for c in original_charts if c.name == chart_definition.name)
+    original_selections = restored_solution.named_selections
+    restored_selection = next(
+        ns for ns in original_selections if ns.name == selection_definition.name
+    )
 
     with pytest.raises(ResultExplorerError, match=r"read-only"):
         restored_solution.create_plot(replace(definition, name="New Displacement"))
@@ -288,7 +325,28 @@ def test_open_session_read_only(rx: Client, rst_multiple_connections: str, tmp_p
     with pytest.raises(ResultExplorerError, match=r"read-only"):
         restored_solution.update_plot(replace(restored_plot, name="Renamed Displacement"))
 
-    assert rx.get_solution(restored_solution.id).plots == original_plots
+    with pytest.raises(ResultExplorerError, match=r"read-only"):
+        restored_solution.create_chart(replace(chart_definition, name="New Chart"))
+
+    with pytest.raises(ResultExplorerError, match=r"read-only"):
+        restored_solution.update_chart(replace(restored_chart, name="Renamed Chart"))
+
+    with pytest.raises(ResultExplorerError, match=r"read-only"):
+        restored_solution.create_named_selection(
+            replace(selection_definition, name="New Selection")
+        )
+
+    with pytest.raises(ResultExplorerError, match=r"read-only"):
+        restored_solution.update_named_selection(
+            replace(restored_selection, name="Renamed Selection")
+        )
+
+    unchanged_solution = rx.get_solution(restored_solution.id)
+    assert unchanged_solution.plots == original_plots
+    assert [asdict(c) for c in unchanged_solution.charts] == [asdict(c) for c in original_charts]
+    assert [asdict(ns) for ns in unchanged_solution.named_selections] == [
+        asdict(ns) for ns in original_selections
+    ]
 
     rx.delete_workspace(restored_workspace)
     rx.delete_solution(restored_solution)
