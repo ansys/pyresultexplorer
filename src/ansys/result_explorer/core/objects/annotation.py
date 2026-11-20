@@ -306,6 +306,22 @@ class Annotation:
         self._set("cardScreenLocation", None if value is None else [value[0], value[1]])
 
     @property
+    def card_offset(self) -> tuple[float, float] | None:
+        """Pixel gaps ``(left_gap, down_gap)`` of a scene-following card.
+
+        The card's left edge is the projected anchor's X coordinate minus
+        the card width and ``left_gap``. Its top edge is the projected
+        anchor's Y coordinate plus ``down_gap``. ``None`` uses the web UI
+        default. Setting this does not pin the card.
+        """
+        offset = self._data.get("cardOffset")
+        return None if offset is None else (float(offset[0]), float(offset[1]))
+
+    @card_offset.setter
+    def card_offset(self, value: tuple[float, float] | None) -> None:
+        self._set("cardOffset", None if value is None else [value[0], value[1]])
+
+    @property
     def property_visibility(self) -> AnnotationPropertyVisibility:
         """Visibility of each property on the card."""
         return AnnotationPropertyVisibility(
@@ -475,6 +491,20 @@ class _LiveAnnotation(_SceneResolution):
         self._edit(lambda a: setattr(a, "card_screen_location", value))
 
     @property
+    def card_offset(self) -> tuple[float, float] | None:
+        """Pixel gaps ``(left_gap, down_gap)`` of a scene-following card.
+
+        See ``Annotation.card_offset`` for the positioning formula.
+        None uses the web UI default of ``(24, 24)``. Setting this does
+        not pin the card.
+        """
+        return self._current().card_offset
+
+    @card_offset.setter
+    def card_offset(self, value: tuple[float, float] | None) -> None:
+        self._edit(lambda a: setattr(a, "card_offset", value))
+
+    @property
     def property_visibility(self) -> AnnotationPropertyVisibility:
         """Visibility of each property on the card."""
         data = dict(self._current()._data.get("propertyVisibility", {}))
@@ -493,9 +523,10 @@ class ViewportAnnotation(_LiveAnnotation):
     """User annotation of a 3D viewport.
 
     The anchor is set when the annotation is added. The note, visibility,
-    placement, card location and property visibility are editable, as are
-    the sets and result reference that make a plot annotation dynamic or
-    locked; each edit applies to the viewport. The resolution in the scene
+    placement, card location, card offset and property visibility are
+    editable, as are the sets and result reference that make a plot
+    annotation dynamic or locked; each edit applies to the viewport.
+    The resolution in the scene
     (status, locations, result) is published by the web UI once the scene
     is rendered, and is unset until then.
 
@@ -554,9 +585,10 @@ class HotSpot(_LiveAnnotation):
     """Hot spot of a plot viewport.
 
     The anchor, sets, result reference and resolved result come from the
-    data and are read-only. The note, visibility, placement, card location
-    and property visibility are editable: the first edit stores an edited
-    copy in the viewport settings, and ``reset()`` removes it.
+    data and are read-only. The note, visibility, placement, card location,
+    card offset and property visibility are editable: the first edit
+    stores an edited copy in the viewport settings, and ``reset()``
+    removes it.
     """
 
     def __init__(self, resolved: ResolvedAnnotation, store: AnnotationStore) -> None:

@@ -127,6 +127,8 @@ def test_resolved_hot_spot_is_read_only():
         hot_spot.note = "edited"
     with pytest.raises(AttributeError, match="read-only"):
         hot_spot.property_visibility.result_name = True
+    with pytest.raises(AttributeError, match="read-only"):
+        hot_spot.card_offset = (12.0, 32.0)
 
     mesh_metadata = ThreeDViewportMetadata(struct, NO_CLIENT)
     assert len(mesh_metadata.resolved_annotations) == 1
@@ -220,6 +222,33 @@ def test_viewport_annotations():
     assert [a["id"] for a in store.saved()] == ["max:1"]
     with pytest.raises(LookupError, match="removed"):
         _ = annotation.note
+
+
+@pytest.mark.parametrize("hot_spot", [False, True])
+def test_card_offset_round_trip(hot_spot):
+    store = _OfflineStore({})
+    if hot_spot:
+        annotation = HotSpot(ResolvedAnnotation(HOT_SPOT), store)
+    else:
+        annotations = ViewportAnnotations(store, lambda _: None)
+        annotation = annotations.add(AnnotationAnchor(position=(0.0, 0.0, 0.1)), id="a")
+
+    assert annotation.card_offset is None
+    applies = store.applies
+    annotation.card_offset = (-12.0, 32.5)
+
+    assert store.applies == applies + 1
+    assert annotation.placement == AnnotationPlacement.follow_scene
+    assert annotation.card_offset == (-12.0, 32.5)
+    (stored,) = store.saved()
+    assert stored["cardOffset"] == [-12.0, 32.5]
+    assert store.opts.annotations[0].card_offset == (-12.0, 32.5)
+    assert ResolvedAnnotation({"definition": stored}).card_offset == (-12.0, 32.5)
+
+    annotation.card_offset = None
+    assert store.applies == applies + 2
+    assert annotation.card_offset is None
+    assert "cardOffset" not in store.saved()[0]
 
 
 def test_dynamic_and_locked_annotations():
