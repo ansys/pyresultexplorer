@@ -12,6 +12,7 @@ Workspace and viewports
    Viewport
    CameraPosition
    ViewportMetadata
+   ThreeDViewportMetadata
    PlotViewportMetadata
    ViewportSettings
    ThreeDViewportSettings
@@ -29,3 +30,22 @@ Workspace and viewports
    ListSetting
    TupleSetting
    OpaqueSetting
+
+Annotations and hot spots
+=========================
+
+.. autosummary::
+   :toctree: _autosummary
+
+   ViewportAnnotations
+   ViewportAnnotation
+   HotSpot
+   Annotation
+   ResolvedAnnotation
+   AnnotationAnchor
+   AnnotationTarget
+   AnnotationTargetKind
+   AnnotationResultReference
+   AnnotationResult
+   AnnotationPropertyVisibility
+   AnnotationPlacement

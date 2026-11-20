@@ -16,6 +16,20 @@
 
 """Pythonic wrapper objects for gRPC models."""
 
+from .annotation import (
+    Annotation,
+    AnnotationAnchor,
+    AnnotationPlacement,
+    AnnotationPropertyVisibility,
+    AnnotationResult,
+    AnnotationResultReference,
+    AnnotationTarget,
+    AnnotationTargetKind,
+    HotSpot,
+    ResolvedAnnotation,
+    ViewportAnnotation,
+    ViewportAnnotations,
+)
 from .base import BaseEntity, NamedBaseEntity
 from .camera_position import CameraPosition
 from .chart_definition import ChartDefinition, ChartResult, Filter
@@ -31,6 +45,8 @@ from .named_selection import (
 from .plot_definition import (
     Component,
     Field,
+    HotSpotDefinition,
+    HotSpotKind,
     Location,
     PlotDefinition,
     ResultFieldName,
@@ -53,6 +69,7 @@ from .viewport import (
     PlotViewportMetadata,
     PlotViewportSettings,
     StrSetting,
+    ThreeDViewportMetadata,
     ThreeDViewportSettings,
     TupleSetting,
     Viewport,
@@ -62,6 +79,14 @@ from .viewport import (
 from .workspace import Workspace
 
 __all__ = [
+    "Annotation",
+    "AnnotationAnchor",
+    "AnnotationPlacement",
+    "AnnotationPropertyVisibility",
+    "AnnotationResult",
+    "AnnotationResultReference",
+    "AnnotationTarget",
+    "AnnotationTargetKind",
     "BaseChartViewportSettings",
     "BaseEntity",
     "BoolSetting",
@@ -74,8 +99,11 @@ __all__ = [
     "ContactTrackersViewportSettings",
     "ConvergenceTrackersViewportSettings",
     "Field",
+    "HotSpot",
     "Filter",
     "FloatSetting",
+    "HotSpotDefinition",
+    "HotSpotKind",
     "IdsScoping",
     "IntSetting",
     "ListSetting",
@@ -94,15 +122,19 @@ __all__ = [
     "PlotViewportSettings",
     "PropertyScoping",
     "Range",
+    "ResolvedAnnotation",
     "ResultFieldName",
     "ResultType",
     "ShellPosition",
     "Solution",
     "StrSetting",
+    "ThreeDViewportMetadata",
     "ThreeDViewportSettings",
     "TupleSetting",
     "View",
     "Viewport",
+    "ViewportAnnotation",
+    "ViewportAnnotations",
     "ViewportMetadata",
     "ViewportPlacement",
     "ViewportSettings",

@@ -218,7 +218,7 @@ def is_docker(request):
 
 
 INIT_SCRIPT = """
-let config = {'enableScripting':true};
+let config = {'enableScripting':true, 'enableAnnotations':true};
 window.localStorage.setItem('config', JSON.stringify(config));
 """
 

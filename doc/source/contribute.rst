@@ -87,7 +87,7 @@ You can specify additional options to control the test execution, for example:
 Documentation
 =============
 
-To build the documentation locally, navigate to the ``docs`` directory and run this command:
+To build the documentation locally, navigate to the ``doc`` directory and run this command:
 
 .. code:: bash
 
