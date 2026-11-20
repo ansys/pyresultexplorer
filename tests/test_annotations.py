@@ -545,3 +545,90 @@ def test_dynamic_and_locked_plot_annotations(rx, cp_transient_solution):
     viewport.settings.component_name = "X"
     viewport = both(lambda d, lo: lo[0] == "resolved")
     assert _status_and_value(viewport, locked.id)[0] == "resolved"
+
+
+def test_element_annotations(rx, cp_transient_solution):
+    sol = cp_transient_solution
+    body = next((b for b in sol.bodies if b.name == "Solid2"), None)
+    assert body is not None
+
+    workspace = rx.create_workspace("Elemental annotations")
+
+    # verify that on a mesh view we can create an elemental annotation
+    # just by element ID
+    mesh_view = sol.mesh_view
+    viewport = workspace.assign_view(view=mesh_view, wait=True)
+    annotation = viewport.annotations.add(
+        anchor=AnnotationAnchor(
+            target=AnnotationTarget(AnnotationTargetKind.element, 8, (body.id,))
+        )
+    )
+    viewport = _wait_for_metadata(
+        rx, workspace.id, viewport.id, lambda v: v.annotations[annotation.id].status is not None
+    )
+    annotation = viewport.annotations[annotation.id]
+    assert annotation.status == "resolved"
+    assert annotation.mesh_location is not None
+
+    # open a stress view
+    stress_view = next((v for v in sol.plot_views if "Stress" in v.name), None)
+    assert stress_view is not None
+
+    # modify stress view to use elemental averaging and make sure it uses skin processing
+    definition = stress_view.definition
+    definition.location = "Elemental"
+    definition.on_skin = True
+    stress_view = sol.update_plot(definition)
+
+    viewport = workspace.assign_view(view=stress_view, wait=True)
+
+    # verify the annotation is not resolved
+    annotation = viewport.annotations.add(
+        anchor=AnnotationAnchor(
+            target=AnnotationTarget(AnnotationTargetKind.element, 8, (body.id,))
+        ),
+        result_reference=AnnotationResultReference(),
+    )
+    viewport = _wait_for_metadata(
+        rx, workspace.id, viewport.id, lambda v: v.annotations[annotation.id].status is not None
+    )
+    annotation = viewport.annotations[annotation.id]
+    assert annotation.status == "ambiguousTarget"
+
+    # add face node IDs and verify the annotation becomes resolved
+    annotation = viewport.annotations.add(
+        anchor=AnnotationAnchor(
+            target=AnnotationTarget(
+                AnnotationTargetKind.element,
+                8,
+                (body.id,),
+                face_node_ids=(
+                    8,
+                    9,
+                    18,
+                    17,
+                ),
+            )
+        ),
+        result_reference=AnnotationResultReference(),
+    )
+    viewport = _wait_for_metadata(
+        rx, workspace.id, viewport.id, lambda v: v.annotations[annotation.id].status is not None
+    )
+    annotation = viewport.annotations[annotation.id]
+    assert annotation.status == "resolved"
+
+    # use wrong face node IDs and verify the annotation becomes unresolved
+    annotation = viewport.annotations.add(
+        anchor=AnnotationAnchor(
+            target=AnnotationTarget(
+                AnnotationTargetKind.element, 8, (body.id,), face_node_ids=(1, 2, 3, 4)
+            )
+        ),
+        result_reference=AnnotationResultReference(),
+    )
+    viewport = _wait_for_metadata(
+        rx, workspace.id, viewport.id, lambda v: v.annotations[annotation.id].status is not None
+    )
+    annotation = viewport.annotations[annotation.id]
+    assert annotation.status == "unavailableTarget"

@@ -57,6 +57,7 @@ class AnnotationTarget:
     kind: AnnotationTargetKind
     id: int
     body_ids: tuple[str, ...] = ()
+    face_node_ids: tuple[int, ...] | None = None
 
 
 @dataclass(frozen=True)
@@ -81,6 +82,7 @@ class AnnotationAnchor:
                 kind=AnnotationTargetKind(target["kind"]),
                 id=int(target["id"]),
                 body_ids=tuple(str(b) for b in target.get("bodyIds", [])),
+                face_node_ids=tuple(target.get("faceNodeIds", None)),
             )
             if target is not None
             else None,
@@ -97,6 +99,8 @@ class AnnotationAnchor:
                 "bodyIds": list(self.target.body_ids),
                 "id": self.target.id,
             }
+            if self.target.face_node_ids is not None:
+                data["target"]["faceNodeIds"] = list(self.target.face_node_ids)
         if self.displacement is not None:
             data["displacement"] = list(self.displacement)
         return data
