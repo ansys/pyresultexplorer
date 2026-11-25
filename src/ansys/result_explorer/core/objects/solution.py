@@ -568,6 +568,7 @@ class Solution(NamedBaseEntity[models.Solution]):
             "Status:",
             f"  {'Ready:':<25}{'Yes' if self.ready else 'No'}",
             f"  {'Live:':<25}{'Yes' if self.live else 'No'}",
+            f"  {'Read-only:':<25}{'Yes' if self.read_only else 'No'}",
         ]
 
         if self.files:
