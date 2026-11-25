@@ -19,7 +19,6 @@ import logging
 import pytest
 
 from ansys.result_explorer.core import Client, PlotViewportMetadata, models
-from ansys.result_explorer.core.exceptions import ResultExplorerError
 from ansys.result_explorer.core.objects import Solution
 from ansys.result_explorer.core.objects.named_selection import (
     IdsScoping,
@@ -193,8 +192,8 @@ def test_new_plot_added_to_views(multiple_connections_solution: Solution):
     assert view.name == "Renamed plot"
 
 
-def test_new_plot_no_components(rx: Client, cp_transient_solution: Solution):
-    """Cover known issue with "total" fields that have no components."""
+def test_new_plot_total_field_without_components(rx: Client, cp_transient_solution: Solution):
+    """Create a plot with a total field that has no components."""
 
     sol = cp_transient_solution
 
@@ -208,20 +207,8 @@ def test_new_plot_no_components(rx: Client, cp_transient_solution: Solution):
         fields=[Field(ResultFieldName.total_displacement, components=None)],
     )
 
-    with pytest.raises(ResultExplorerError, match="known issue"):
-        _ = sol.create_plot(plot_def)
-
-    # once the issue will be fixed, we can uncomment the following lines
-    # # assign view to a workspace and make sure it renders without error
-    # workspace = rx.create_workspace("New plot workspace")
-    # viewport = workspace.assign_view(view=view, wait=True)
-
-    # meta = viewport.metadata
-    # assert isinstance(meta, PlotViewportMetadata)
-    # assert meta.active_result.max == pytest.approx(1.187e-4, rel=1e-3)
-    # assert meta.active_result.min == 0.0
-
-    # rx.delete_workspace(workspace)
+    plot_view = sol.create_plot(plot_def)
+    assert plot_view.definition.fields == [Field(ResultFieldName.total_displacement)]
 
 
 def test_plot_using_python_plot_definition(multiple_connections_solution: Solution):

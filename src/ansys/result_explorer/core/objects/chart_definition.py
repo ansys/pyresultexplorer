@@ -20,7 +20,6 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 
 from ansys.result_explorer.core import models
-from ansys.result_explorer.core.exceptions import ResultExplorerError
 
 from .plot_definition import (
     Field,
@@ -100,11 +99,6 @@ def chart_result_to_proto(chart_result: ChartResult) -> models.ChartResult:
         for f in chart_result.fields:
             proto_field = proto_cr.fields.add()
             proto_field.name = f.name.value
-            if f.name.name.startswith("total_"):
-                raise ResultExplorerError(
-                    "PyResultExplorer is affected by a known issue when "
-                    "creating or modifying charts with total result fields."
-                )
             if f.components is not None:
                 proto_field.components.extend([c.value for c in f.components])
     if chart_result.location is not None:
