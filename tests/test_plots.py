@@ -210,6 +210,19 @@ def test_new_plot_total_field_without_components(rx: Client, cp_transient_soluti
     plot_view = sol.create_plot(plot_def)
     assert plot_view.definition.fields == [Field(ResultFieldName.total_displacement)]
 
+    workspace = rx.create_workspace("New plot workspace")
+    try:
+        viewport = workspace.assign_view(view=plot_view, wait=True)
+        meta = viewport.metadata
+        assert isinstance(meta, PlotViewportMetadata)
+        assert meta.active_result is not None
+        assert meta.active_result.max is not None
+        assert meta.active_result.max.value == pytest.approx(1.187e-4, rel=1e-3)
+        assert meta.active_result.min is not None
+        assert meta.active_result.min.value == 0.0
+    finally:
+        rx.delete_workspace(workspace)
+
 
 def test_plot_using_python_plot_definition(multiple_connections_solution: Solution):
     """Create, update and delete a plot using the native Python PlotDefinition."""
