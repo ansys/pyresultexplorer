@@ -1,0 +1,30 @@
+﻿BoolSetting
+===========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: BoolSetting
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      BoolSetting.options
+      BoolSetting.value
+   
+   

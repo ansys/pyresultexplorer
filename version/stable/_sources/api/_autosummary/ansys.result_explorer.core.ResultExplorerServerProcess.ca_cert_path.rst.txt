@@ -1,0 +1,6 @@
+ca\_cert\_path
+==============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: ResultExplorerServerProcess.ca_cert_path

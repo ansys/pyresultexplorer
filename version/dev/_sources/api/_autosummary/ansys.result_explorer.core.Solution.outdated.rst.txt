@@ -1,0 +1,6 @@
+outdated
+========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.outdated

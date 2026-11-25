@@ -1,0 +1,6 @@
+selected\_tracker\_name
+=======================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ConvergenceTrackersViewportSettings.selected_tracker_name

@@ -1,0 +1,30 @@
+﻿StrSetting
+==========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: StrSetting
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      StrSetting.options
+      StrSetting.value
+   
+   

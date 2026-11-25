@@ -1,0 +1,6 @@
+delete\_result\_provider
+========================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Client.delete_result_provider

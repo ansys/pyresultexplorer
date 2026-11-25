@@ -1,0 +1,30 @@
+﻿IntSetting
+==========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: IntSetting
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      IntSetting.options
+      IntSetting.value
+   
+   

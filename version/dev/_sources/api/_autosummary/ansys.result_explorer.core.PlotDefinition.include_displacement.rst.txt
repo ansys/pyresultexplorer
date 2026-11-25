@@ -1,0 +1,6 @@
+include\_displacement
+=====================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: PlotDefinition.include_displacement

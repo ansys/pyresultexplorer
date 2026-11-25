@@ -1,0 +1,6 @@
+thermal\_strain
+===============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultFieldName.thermal_strain

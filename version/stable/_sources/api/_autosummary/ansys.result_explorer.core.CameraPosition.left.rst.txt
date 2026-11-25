@@ -1,0 +1,6 @@
+left
+====
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: CameraPosition.left

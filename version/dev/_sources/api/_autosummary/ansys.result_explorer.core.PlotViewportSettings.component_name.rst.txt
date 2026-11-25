@@ -1,0 +1,6 @@
+component\_name
+===============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: PlotViewportSettings.component_name

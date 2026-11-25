@@ -1,0 +1,6 @@
+n\_nodes
+========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.n_nodes

@@ -1,0 +1,6 @@
+script
+======
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ChartDefinition.script

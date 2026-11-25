@@ -1,0 +1,30 @@
+﻿FloatSetting
+============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: FloatSetting
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      FloatSetting.options
+      FloatSetting.value
+   
+   

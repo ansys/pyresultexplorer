@@ -1,0 +1,6 @@
+user\_defined
+=============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ResultType.user_defined

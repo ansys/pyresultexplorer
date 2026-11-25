@@ -1,0 +1,41 @@
+﻿ResultExplorerServerProcess
+===========================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: ResultExplorerServerProcess
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      ResultExplorerServerProcess.start
+      
+      
+      ResultExplorerServerProcess.stop
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ResultExplorerServerProcess.ca_cert_path
+      ResultExplorerServerProcess.gateway_grpc_port
+      ResultExplorerServerProcess.gateway_http_port
+      ResultExplorerServerProcess.grpc_port
+      ResultExplorerServerProcess.is_running
+      ResultExplorerServerProcess.port
+      ResultExplorerServerProcess.url
+   
+   

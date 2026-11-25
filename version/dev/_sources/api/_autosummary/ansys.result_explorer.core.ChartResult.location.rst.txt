@@ -1,0 +1,6 @@
+location
+========
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: ChartResult.location

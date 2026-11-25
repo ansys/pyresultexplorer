@@ -1,0 +1,6 @@
+app\_settings
+=============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. automethod:: Client.app_settings

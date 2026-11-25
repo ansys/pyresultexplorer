@@ -1,0 +1,6 @@
+transparent\_bodies
+===================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: MeshViewportSettings.transparent_bodies

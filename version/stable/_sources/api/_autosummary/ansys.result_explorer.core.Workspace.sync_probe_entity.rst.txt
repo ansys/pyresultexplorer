@@ -1,0 +1,6 @@
+sync\_probe\_entity
+===================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Workspace.sync_probe_entity

@@ -1,0 +1,6 @@
+transparency\_style
+===================
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoattribute:: MeshViewportSettings.transparency_style

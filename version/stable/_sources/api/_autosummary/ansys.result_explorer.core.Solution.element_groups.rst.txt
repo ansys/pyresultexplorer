@@ -1,0 +1,6 @@
+element\_groups
+===============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoproperty:: Solution.element_groups

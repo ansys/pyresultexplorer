@@ -1,0 +1,30 @@
+﻿OpaqueSetting
+=============
+
+.. currentmodule:: ansys.result_explorer.core
+
+.. autoclass:: OpaqueSetting
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      OpaqueSetting.options
+      OpaqueSetting.value
+   
+   
