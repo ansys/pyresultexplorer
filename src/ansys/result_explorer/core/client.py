@@ -24,7 +24,7 @@ from collections.abc import Iterator
 from functools import wraps
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 from urllib.parse import urlsplit
 
 import grpc
@@ -44,6 +44,7 @@ from .objects import Solution, Viewport, Workspace
 if TYPE_CHECKING:
     from .launch import ResultExplorerInstance, ResultExplorerWebSession
 
+_READ_BYTES_SIZE: Final[int] = 512 * 1024  # 512 Kb
 DEFAULT_RESULT_PROVIDER = "Local"
 RX_SESSION_EXTENSION = ".rxs"
 
@@ -871,7 +872,7 @@ class Client:
                 yield models.OpenSessionRequest(
                     options=models.SessionImportOptions(read_only=read_only)
                 )
-                while data := session_file.read(512 * 1024):
+                while data := session_file.read(_READ_BYTES_SIZE):
                     yield models.OpenSessionRequest(data=data)
 
             try:
