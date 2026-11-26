@@ -58,6 +58,7 @@ class AnnotationTarget:
     id: int
     body_ids: tuple[str, ...] = ()
     face_node_ids: tuple[int, ...] | None = None
+    """Node IDs identifying a face of the element, or None if unspecified."""
 
 
 @dataclass(frozen=True)
@@ -76,13 +77,18 @@ class AnnotationAnchor:
     @classmethod
     def _from_dict(cls, data: dict[str, Any]) -> AnnotationAnchor:
         target = data.get("target")
+        face_node_ids = target.get("faceNodeIds") if target is not None else None
         return cls(
             position=_vector3(data.get("position")),
             target=AnnotationTarget(
                 kind=AnnotationTargetKind(target["kind"]),
                 id=int(target["id"]),
                 body_ids=tuple(str(b) for b in target.get("bodyIds", [])),
-                face_node_ids=tuple(target.get("faceNodeIds", None)),
+                face_node_ids=(
+                    tuple(int(node_id) for node_id in face_node_ids)
+                    if face_node_ids is not None
+                    else None
+                ),
             )
             if target is not None
             else None,

@@ -135,6 +135,22 @@ def test_resolved_hot_spot_is_read_only():
     assert not hasattr(mesh_metadata, "hot_spots")
 
 
+@pytest.mark.parametrize(
+    ("face_node_ids", "expected"), [(None, None), ([], ()), ([8.0, 9.0, 18.0], (8, 9, 18))]
+)
+def test_annotation_anchor_decodes_face_node_ids(
+    face_node_ids: list[float] | None, expected: tuple[int, ...] | None
+) -> None:
+    anchor = AnnotationAnchor._from_dict(
+        {"target": {"kind": "element", "id": 8.0, "faceNodeIds": face_node_ids}}
+    )
+
+    assert anchor.target is not None
+    assert anchor.target.face_node_ids == expected
+    if anchor.target.face_node_ids is not None:
+        assert all(isinstance(node_id, int) for node_id in anchor.target.face_node_ids)
+
+
 class _OfflineStore:
     """Annotation store over offline plot settings, counting the applies."""
 
