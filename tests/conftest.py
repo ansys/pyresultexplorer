@@ -25,6 +25,8 @@ to the pytest command, e.g.:
 
 import logging
 import os
+import subprocess
+import sys
 from collections.abc import Generator
 from pathlib import Path
 
@@ -134,18 +136,18 @@ def snapshot(snapshot):
 
 
 # To debug in VS Code, you may need to disable this fixture.
-# @pytest.fixture(scope="session", autouse=True)
-# def install_browser():
-#     """Ensure Playwright browsers are installed for the test session."""
-#     log.info("Installing Playwright browsers...")
-#     r = subprocess.run(
-#         [sys.executable, "-m", "playwright", "install", "chromium"],
-#         check=True,
-#         capture_output=True,
-#         text=True,
-#     )
-#     log.info(r.stdout)
-#     log.info(r.stderr)
+@pytest.fixture(scope="session", autouse=True)
+def install_browser():
+    """Ensure Playwright browsers are installed for the test session."""
+    log.info("Installing Playwright browsers...")
+    r = subprocess.run(
+        [sys.executable, "-m", "playwright", "install", "chromium"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    log.info(r.stdout)
+    log.info(r.stderr)
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -216,7 +218,7 @@ def is_docker(request):
 
 
 INIT_SCRIPT = """
-let config = {'enableScripting':true, 'enableAnnotations':true};
+let config = {'enableScripting':true};
 window.localStorage.setItem('config', JSON.stringify(config));
 """
 
