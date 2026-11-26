@@ -31,6 +31,13 @@ from google.protobuf import struct_pb2
 from google.protobuf.json_format import MessageToDict, ParseDict
 
 from .. import models
+from .annotation import (
+    Annotation,
+    AnnotationStore,
+    HotSpot,
+    ResolvedAnnotation,
+    ViewportAnnotations,
+)
 from .base import BaseEntity
 from .camera_position import CameraPosition
 from .named_selection import NamedSelection
@@ -49,6 +56,7 @@ type _PyValue = str | float | bool | dict[str, Any] | list[str] | list[float] | 
 
 _BOOL_SETTING_KEYS = {
     "explodeActive",
+    "hotSpotsByEntity",
     "legendUseGlobalMinMax",
     "showLegend",
     "showMesh",
@@ -61,6 +69,7 @@ _LIST_SETTING_KEYS = {
     "activeCharts",
     "activeSeriesIndices",
     "activeSeries",
+    "annotations",
     "chartNames",
     "expandedGroups",
     "selectedBodies",
@@ -71,6 +80,8 @@ _LIST_SETTING_KEYS = {
 _NUMBER_SETTING_KEYS = {
     "deformationScale",
     "explodeScale",
+    "hotSpotsMaxNumber",
+    "hotSpotsSeparationDistance",
     "legendMax",
     "legendMin",
     "selectedXAxisIndex",
@@ -635,8 +646,28 @@ class ResultMetadata:
         return self.__str__()
 
 
-class PlotViewportMetadata(ViewportMetadata):
+class ThreeDViewportMetadata(ViewportMetadata):
+    """Read-only metadata of 3D viewports."""
+
+    @property
+    def resolved_annotations(self) -> list[ResolvedAnnotation]:
+        """Annotations shown in the scene, resolved against the displayed data.
+
+        The web UI publishes them once the viewport is rendered.
+        """
+        return [ResolvedAnnotation(a) for a in self._pb_obj.get("resolvedAnnotations") or []]
+
+
+class PlotViewportMetadata(ThreeDViewportMetadata):
     """Read-only metadata specific to plot viewports."""
+
+    @property
+    def hot_spots(self) -> list[ResolvedAnnotation]:
+        """Hot spots shown in the scene, read-only.
+
+        Use ``viewport.hot_spots`` to edit their presentation.
+        """
+        return [a for a in self.resolved_annotations if a.is_hot_spot]
 
     @property
     def results(self) -> list[ResultMetadata]:
@@ -854,6 +885,21 @@ class ThreeDViewportSettings(ViewportSettings):
         """
         return self._setting_options.get("leftClickMode", [])
 
+    @property
+    def annotations(self) -> list[Annotation]:
+        """Annotation definitions stored in this viewport, read-only.
+
+        User annotations and edited copies of hot spots. Use
+        ``viewport.annotations`` and ``viewport.hot_spots`` to edit them.
+        """
+        return [Annotation(data) for data in self._annotation_items()]
+
+    def _annotation_items(self) -> list[dict[str, Any]]:
+        items = self._pb_obj.get("annotations")
+        if not isinstance(items, list):
+            items = self._pb_obj["annotations"] = []
+        return items
+
     @classmethod
     def _from_pb(
         cls,
@@ -1034,6 +1080,62 @@ class PlotViewportSettings(ThreeDViewportSettings):
         TODO: no writable color-map setting exists yet.
         """
         return self._setting_options.get("legendColorMap", [])
+
+    @property
+    def hot_spots_max_number(self) -> IntSetting | None:
+        """Maximum number of hot spots shown per set, or None for all."""
+        value = _value_or_none(self._pb_obj, "hotSpotsMaxNumber", int)
+        return _wrap_setting_value(value, self._options_for("hotSpotsMaxNumber"))
+
+    @hot_spots_max_number.setter
+    def hot_spots_max_number(self, value: int | None) -> None:
+        self._set_setting("hotSpotsMaxNumber", value)
+
+    @property
+    def hot_spots_by_entity(self) -> BoolSetting | None:
+        """Whether the maximum number of hot spots applies to each body."""
+        value = _value_or_none(self._pb_obj, "hotSpotsByEntity", bool)
+        return _wrap_setting_value(value, self._options_for("hotSpotsByEntity"))
+
+    @hot_spots_by_entity.setter
+    def hot_spots_by_entity(self, value: bool | None) -> None:
+        self._set_setting("hotSpotsByEntity", value)
+
+    @property
+    def hot_spots_separation_distance(self) -> FloatSetting | None:
+        """Minimum distance between two hot spots, or None for no minimum."""
+        value = _value_or_none(self._pb_obj, "hotSpotsSeparationDistance", float)
+        return _wrap_setting_value(value, self._options_for("hotSpotsSeparationDistance"))
+
+    @hot_spots_separation_distance.setter
+    def hot_spots_separation_distance(self, value: float | None) -> None:
+        self._set_setting("hotSpotsSeparationDistance", value)
+
+    @property
+    def hot_spots_threshold_range(self) -> TupleSetting[float | None] | None:
+        """Value range of the hot spots as ``(low, high)``; None bounds are open."""
+        raw = self._pb_obj.get("hotSpotsThresholdRange")
+        value = None
+        if isinstance(raw, dict) and (raw.get("low") is not None or raw.get("high") is not None):
+            value = (raw.get("low"), raw.get("high"))
+        return _wrap_setting_value(value, self._options_for("hotSpotsThresholdRange"))
+
+    @hot_spots_threshold_range.setter
+    def hot_spots_threshold_range(self, value: tuple[float | None, float | None] | None) -> None:
+        value = _unwrap_setting_value(value)
+        if value is None or value == (None, None):
+            self._set_setting("hotSpotsThresholdRange", None)
+            return
+        low, high = value
+        bounds = {"low": low, "high": high}
+        self._set_setting(
+            "hotSpotsThresholdRange", {k: v for k, v in bounds.items() if v is not None}
+        )
+
+    def _set_setting(self, key: str, value: object) -> None:
+        """Set a setting, or clear it when None, and apply."""
+        self._pb_obj[key] = _unwrap_setting_value(value)
+        self._apply()
 
     @classmethod
     def _from_pb(
@@ -1278,6 +1380,12 @@ _SETTINGS_TYPES: dict[models.ViewType.ValueType, type[ViewportSettings]] = {
     models.ViewType.VIEW_TYPE_LOGS: LogsViewportSettings,
 }
 
+_THREE_D_VIEW_TYPES = {models.ViewType.VIEW_TYPE_PLOT, models.ViewType.VIEW_TYPE_MESH}
+
+# Open ``update_settings()`` batches by viewport ID, so that annotations and
+# hot spots read from any ``Viewport`` object of the viewport join them.
+_ACTIVE_BATCHES: dict[str, ViewportSettings] = {}
+
 # ---------------------------------------------------------------------------
 # Viewport entity
 # ---------------------------------------------------------------------------
@@ -1331,6 +1439,11 @@ class Viewport[TSettings: ViewportSettings](BaseEntity[models.Viewport]):
                 pb_obj, self._client, self.solution_id, settings, setting_options
             )
 
+        if view.type == models.ViewType.VIEW_TYPE_MESH:
+            return ThreeDViewportMetadata(
+                pb_obj, self._client, self.solution_id, settings, setting_options
+            )
+
         return ViewportMetadata(pb_obj, self._client, self.solution_id, settings, setting_options)
 
     @property
@@ -1361,14 +1474,101 @@ class Viewport[TSettings: ViewportSettings](BaseEntity[models.Viewport]):
 
     @contextmanager
     def update_settings(self) -> Generator[TSettings, None, None]:
-        """Batch settings updates in a single server call."""
+        """Batch settings updates in a single server call.
+
+        The batch starts from the current viewport state. Edits made
+        through ``annotations`` and ``hot_spots`` inside the block are part
+        of the batch, including items read from another ``Viewport``
+        object of the same viewport.
+        """
+        self._refresh()
         opts = self.settings
         opts._batch_mode = True
+        _ACTIVE_BATCHES[self.id] = opts
         try:
             yield opts
         finally:
+            _ACTIVE_BATCHES.pop(self.id, None)
             opts._batch_mode = False
             opts._apply()
+
+    def _annotation_store(self) -> AnnotationStore:
+        """Return the store giving the current annotation definitions."""
+
+        def store(edit: bool) -> tuple[list[dict[str, Any]], Callable[[], None]]:
+            settings = _ACTIVE_BATCHES.get(self.id)
+            if isinstance(settings, ThreeDViewportSettings):
+                return settings._annotation_items(), settings._apply
+            if edit:
+                self._refresh()
+            items = _settings_to_dict(self._pb.settings).get("annotations")
+            if not isinstance(items, list):
+                items = []
+
+            def apply() -> None:
+                # Only the annotations, so other settings aren't overwritten
+                req = models.UpdateViewportRequest(
+                    viewport_id=self.id,
+                    settings=_dict_to_settings({"annotations": items}),
+                    wait=True,
+                )
+                self._pb = self._client._workspace_stub.UpdateViewport(req)
+
+            return items, apply
+
+        return store
+
+    def _refresh(self) -> None:
+        """Read the current viewport state; an update without changes reads it."""
+        req = models.UpdateViewportRequest(viewport_id=self.id)
+        self._pb = self._client._workspace_stub.UpdateViewport(req)
+
+    def _resolved_annotation(self, annotation_id: str) -> dict[str, Any] | None:
+        """Return the resolution of an annotation in the current metadata."""
+        resolved = MessageToDict(self._pb.metadata).get("resolvedAnnotations") or []
+        return next(
+            (r for r in resolved if r.get("definition", {}).get("id") == annotation_id), None
+        )
+
+    @property
+    def annotations(self) -> ViewportAnnotations:
+        """User annotations of this 3D viewport.
+
+        Editable: adding, editing or removing an annotation applies to the
+        viewport. The resolution in the scene (status, locations, result)
+        reflects the metadata when the viewport was last read.
+
+        Raises
+        ------
+        TypeError
+            If the viewport doesn't show a plot or the mesh.
+
+        """
+        view = self._resolve_view()
+        if view is None or view.type not in _THREE_D_VIEW_TYPES:
+            raise TypeError("Annotations are only available on plot and mesh viewports.")
+        return ViewportAnnotations(self._annotation_store(), self._resolved_annotation)
+
+    @property
+    def hot_spots(self) -> list[HotSpot]:
+        """Hot spots of this plot viewport.
+
+        The location and result values are read-only and reflect the
+        metadata when the viewport was last read. The presentation (note,
+        visibility, placement, card location and property visibility) is
+        editable; each edit applies to the viewport.
+
+        Raises
+        ------
+        TypeError
+            If the viewport doesn't show a plot.
+
+        """
+        metadata = self.metadata
+        if not isinstance(metadata, PlotViewportMetadata):
+            raise TypeError("Hot spots are only available on plot viewports.")
+        store = self._annotation_store()
+        return [HotSpot(resolved, store) for resolved in metadata.hot_spots]
 
     @property
     def size(self) -> float:

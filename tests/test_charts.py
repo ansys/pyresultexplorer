@@ -15,10 +15,11 @@
 # limitations under the License.
 
 import logging
+import time
 
 import pytest
 
-from ansys.result_explorer.core import models
+from ansys.result_explorer.core import ChartViewportSettings, models
 from ansys.result_explorer.core.objects import Solution
 from ansys.result_explorer.core.objects.chart_definition import (
     ChartDefinition,
@@ -441,3 +442,52 @@ class TestChartDefinitionConversion:
         assert py_def.name == "classmethod chart"
         assert py_def.supports_monitoring is False
         assert py_def.all_sets is True
+
+
+def _chart_series(rx, workspace_id: str, viewport_id: str) -> list[str]:
+    viewport = next(v for v in rx.get_workspace(workspace_id).viewports if v.id == viewport_id)
+    settings = viewport.settings
+    assert isinstance(settings, ChartViewportSettings)
+    return settings.series_names
+
+
+def _wait_for_series(rx, workspace_id: str, viewport_id: str, condition) -> list[str]:
+    deadline = time.monotonic() + 20.0
+    while True:
+        series = _chart_series(rx, workspace_id, viewport_id)
+        if condition(series) or time.monotonic() > deadline:
+            return series
+        time.sleep(1)
+
+
+def test_chart_update_refreshes_open_viewport(rx, multiple_connections_solution: Solution):
+    sol = multiple_connections_solution
+    chart = sol.create_chart(
+        ChartDefinition(
+            name="Stress extremes",
+            all_sets=True,
+            results=[
+                ChartResult(
+                    result_type=ResultType.stress,
+                    name="Stress",
+                    location="Nodal",
+                    fields=[Field(ResultFieldName.equivalent_von_mises_stress)],
+                    filters=[Filter.max],
+                )
+            ],
+        )
+    )
+    workspace = rx.create_workspace("Chart refresh")
+    viewport = workspace.assign_view(view=chart, wait=True)
+    initial = _wait_for_series(rx, workspace.id, viewport.id, bool)
+    assert initial
+
+    definition = chart.definition
+    assert definition.results is not None
+    definition.results[0].filters = [Filter.min]
+    chart = sol.update_chart(definition)
+    assert chart.definition.results is not None
+    assert chart.definition.results[0].filters == [Filter.min]
+
+    updated = _wait_for_series(rx, workspace.id, viewport.id, lambda s: bool(s) and s != initial)
+    assert updated != initial

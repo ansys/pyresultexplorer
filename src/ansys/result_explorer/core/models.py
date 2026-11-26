@@ -66,6 +66,8 @@ from ansys.api.result_explorer.v0.server_models_pb2 import (
     File,
     Filter,
     FSItem,
+    HotSpotDefinition,
+    HotSpotKind,
     HpsFile,
     HpsFiles,
     HpsFSItem,

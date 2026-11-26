@@ -181,6 +181,51 @@ class ShellPosition(StrEnum):
     average = "average"
 
 
+class HotSpotKind(StrEnum):
+    """Kind of extreme detected as hot spots."""
+
+    maximum = "maximum"
+    minimum = "minimum"
+
+
+@dataclass
+class HotSpotDefinition:
+    """Hot spot detection settings of a plot.
+
+    Unset criteria don't constrain the detection.
+    """
+
+    kind: HotSpotKind = HotSpotKind.maximum
+    num_hotspots: Int32 | None = None
+    separation_distance: float | None = None
+    threshold_low: float | None = None
+    threshold_high: float | None = None
+
+    def _to_proto(self, proto: models.HotSpotDefinition) -> None:
+        proto.kind = getattr(models.HotSpotKind, f"HOT_SPOT_KIND_{self.kind.name.upper()}")
+        if self.num_hotspots is not None:
+            proto.num_hotspots = self.num_hotspots
+        if self.separation_distance is not None:
+            proto.separation_distance = self.separation_distance
+        if self.threshold_low is not None:
+            proto.threshold_low = self.threshold_low
+        if self.threshold_high is not None:
+            proto.threshold_high = self.threshold_high
+
+    @classmethod
+    def _from_proto(cls, proto: models.HotSpotDefinition) -> "HotSpotDefinition":
+        kind_name = models.HotSpotKind.Name(proto.kind)
+        return cls(
+            kind=HotSpotKind(kind_name.removeprefix("HOT_SPOT_KIND_").lower()),
+            num_hotspots=proto.num_hotspots if proto.HasField("num_hotspots") else None,
+            separation_distance=(
+                proto.separation_distance if proto.HasField("separation_distance") else None
+            ),
+            threshold_low=proto.threshold_low if proto.HasField("threshold_low") else None,
+            threshold_high=proto.threshold_high if proto.HasField("threshold_high") else None,
+        )
+
+
 @dataclass
 class PlotDefinition:
     """Definition of a plot in Result Explorer."""
@@ -202,6 +247,7 @@ class PlotDefinition:
     custom_options: dict[str, Int32 | float | str | bool] | None = field(default_factory=dict)
     include_displacement: bool | None = False
     shell_position: ShellPosition | None = ShellPosition.top
+    hot_spot_definition: HotSpotDefinition | None = None
     id: str | None = None
     creation_time: str | None = None
     supports_monitoring: bool | None = None
@@ -278,6 +324,8 @@ def plot_definition_to_proto[ProtoPlot: (models.PlotDefinition, models.PlotDefin
             models.ShellPosition,
             f"SHELL_POSITION_{plot_definition.shell_position.name.upper()}",
         )
+    if plot_definition.hot_spot_definition is not None:
+        plot_definition.hot_spot_definition._to_proto(proto_plot.hot_spot_definition)
 
     return proto_plot
 
@@ -299,6 +347,11 @@ def proto_to_plot_definition(
     custom_options = {k: _custom_option_value(v) for k, v in proto_plot.custom_options.items()}
 
     mesh_scoping = proto_plot.mesh_scoping if proto_plot.HasField("mesh_scoping") else None
+    hot_spot_definition = (
+        HotSpotDefinition._from_proto(proto_plot.hot_spot_definition)
+        if proto_plot.HasField("hot_spot_definition")
+        else None
+    )
 
     return PlotDefinition(
         result_type=result_type,
@@ -317,6 +370,7 @@ def proto_to_plot_definition(
         custom_options=custom_options or None,
         include_displacement=proto_plot.include_displacement,
         shell_position=shell_position,
+        hot_spot_definition=hot_spot_definition,
         id=proto_plot.id or None,
         creation_time=getattr(proto_plot, "creation_time", None) or None,
         supports_monitoring=getattr(proto_plot, "supports_monitoring", None),

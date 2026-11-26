@@ -15,6 +15,8 @@ Solution and views
    Filter
    ShellPosition
    Component
+   HotSpotKind
+   HotSpotDefinition
    PlotDefinition
    ChartResult
    ChartDefinition
