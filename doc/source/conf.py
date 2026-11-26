@@ -111,6 +111,14 @@ numpydoc_validation_checks = {
     # type, unless multiple values are being returned"
 }
 
+# These fields have inline docstrings, but numpydoc validates their None
+# defaults instead. None has no runtime docstring on Python 3.12.
+numpydoc_validation_exclude = {
+    r"^ansys\.result_explorer\.core\.AnnotationAnchor\.(displacement|position|target)$",
+    r"^ansys\.result_explorer\.core\.AnnotationResultReference\.(component|name|value)$",
+    r"^ansys\.result_explorer\.core\.AnnotationTarget\.face_node_ids$",
+}
+
 if SKIP_GALLERY:
     # Generate the gallery without executing the code. The gallery will not
     # contain the output of the code cells.
