@@ -20,7 +20,6 @@ import time
 import pytest
 
 from ansys.result_explorer.core import ChartViewportSettings, models
-from ansys.result_explorer.core.exceptions import ResultExplorerError
 from ansys.result_explorer.core.objects import Solution
 from ansys.result_explorer.core.objects.chart_definition import (
     ChartDefinition,
@@ -184,8 +183,8 @@ def test_new_chart_added_to_views(multiple_connections_solution: Solution):
     assert view.name == "Renamed chart"
 
 
-def test_chart_no_components(rx, cp_transient_solution: Solution):
-    """Cover known issue with "total" fields that have no components."""
+def test_chart_total_field_without_components(rx, cp_transient_solution: Solution):
+    """Create a chart with a total field that has no components."""
 
     sol = cp_transient_solution
 
@@ -211,8 +210,9 @@ def test_chart_no_components(rx, cp_transient_solution: Solution):
         ],
     )
 
-    with pytest.raises(ResultExplorerError, match="known issue"):
-        _ = sol.create_chart(chart_def)
+    chart_view = sol.create_chart(chart_def)
+    assert chart_view.definition.results is not None
+    assert chart_view.definition.results[0].fields == [Field(ResultFieldName.total_displacement)]
 
 
 class TestChartDefinitionConversion:

@@ -26,7 +26,6 @@ from hypothesis import given
 from hypothesis import strategies as st
 
 from ansys.result_explorer.core import models
-from ansys.result_explorer.core.exceptions import ResultExplorerError
 from ansys.result_explorer.core.objects.named_selection import (
     NamedSelection,
     NamedSelectionCreate,
@@ -195,8 +194,4 @@ def test_plot_field_enum_conversion[T: (models.PlotDefinition, models.PlotDefini
     assert field.name is name
     assert field.components == (components or None)
     assert all(isinstance(item, Component) for item in field.components or [])
-    if name.name.startswith("total_"):
-        with pytest.raises(ResultExplorerError, match="total result fields"):
-            converted.to_proto(proto_type)
-    else:
-        assert converted.to_proto(proto_type).fields == proto.fields
+    assert converted.to_proto(proto_type).fields == proto.fields
