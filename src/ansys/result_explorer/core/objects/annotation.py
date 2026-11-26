@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import copy
 import uuid
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterator, Sequence
 from dataclasses import dataclass
 from enum import StrEnum
 from typing import Any
@@ -52,13 +52,28 @@ class AnnotationPlacement(StrEnum):
 
 @dataclass(frozen=True)
 class AnnotationTarget:
-    """Mesh entity an annotation is anchored to."""
+    """Mesh entity an annotation is anchored to.
+
+    ``body_ids`` and ``face_node_ids`` accept any sequence and are stored
+    as tuples, so targets stay immutable and hashable.
+    """
 
     kind: AnnotationTargetKind
     id: int
-    body_ids: tuple[str, ...] = ()
-    face_node_ids: tuple[int, ...] | None = None
+    body_ids: Sequence[str] = ()
+    """IDs of the bodies to look the entity up in."""
+    face_node_ids: Sequence[int] | None = None
     """Node IDs identifying a face of the element, or None if unspecified."""
+
+    def __post_init__(self) -> None:
+        """Store the ID sequences as tuples."""
+        # Lists are converted so the target stays immutable and hashable.
+        # A frozen dataclass blocks normal assignment, so object.__setattr__
+        # is the documented way to set fields during initialization.
+        object.__setattr__(self, "body_ids", _as_tuple(self.body_ids, "body_ids", str))
+        if self.face_node_ids is not None:
+            face_node_ids = _as_tuple(self.face_node_ids, "face_node_ids", int)
+            object.__setattr__(self, "face_node_ids", face_node_ids)
 
 
 @dataclass(frozen=True)
@@ -83,12 +98,8 @@ class AnnotationAnchor:
             target=AnnotationTarget(
                 kind=AnnotationTargetKind(target["kind"]),
                 id=int(target["id"]),
-                body_ids=tuple(str(b) for b in target.get("bodyIds", [])),
-                face_node_ids=(
-                    tuple(int(node_id) for node_id in face_node_ids)
-                    if face_node_ids is not None
-                    else None
-                ),
+                body_ids=target.get("bodyIds", []),
+                face_node_ids=face_node_ids,
             )
             if target is not None
             else None,
@@ -577,7 +588,7 @@ class ViewportAnnotation(_LiveAnnotation):
         return self._current().set_ids
 
     @set_ids.setter
-    def set_ids(self, value: list[int] | tuple[int, ...] | None) -> None:
+    def set_ids(self, value: Sequence[int] | None) -> None:
         set_ids = _set_ids_value(value)
         self._edit(lambda a: a._set("setIds", set_ids))
 
@@ -687,7 +698,7 @@ class ViewportAnnotations:
         anchor: AnnotationAnchor,
         note: str = "",
         result_reference: AnnotationResultReference | None = None,
-        set_ids: list[int] | None = None,
+        set_ids: Sequence[int] | None = None,
         placement: AnnotationPlacement = AnnotationPlacement.follow_scene,
         visibility: bool = True,
         id: str | None = None,
@@ -705,7 +716,7 @@ class ViewportAnnotations:
             ``AnnotationResultReference()`` follows the result and
             component displayed in the viewport; a ``name`` or
             ``component`` locks the annotation to them.
-        set_ids : list[int], optional
+        set_ids : Sequence[int], optional
             Result sets to lock the annotation to. By default, it follows
             the set displayed in the viewport.
         placement : AnnotationPlacement, default: follow_scene
@@ -761,12 +772,24 @@ class ViewportAnnotations:
         return f"ViewportAnnotations({list(self)!r})"
 
 
-def _set_ids_value(value: list[int] | tuple[int, ...] | None) -> list[int] | None:
+def _as_tuple[T](value: Sequence[object], name: str, convert: Callable[[Any], T]) -> tuple[T, ...]:
+    """Convert a sequence of IDs to a tuple, rejecting a bare string.
+
+    A string is a sequence of characters, so ``("10")`` (without the
+    trailing comma) would otherwise become the IDs ``"1"`` and ``"0"``.
+    """
+    if isinstance(value, str | bytes):
+        raise TypeError(f"{name} must be a sequence of IDs, not a string: {value!r}.")
+    return tuple(convert(item) for item in value)
+
+
+def _set_ids_value(value: Sequence[int] | None) -> list[int] | None:
     if value is None:
         return None
-    if not value:
+    set_ids = _as_tuple(value, "set_ids", int)
+    if not set_ids:
         raise ValueError("set_ids must list at least one set, or be None to follow the viewport.")
-    return [int(set_id) for set_id in value]
+    return list(set_ids)
 
 
 def _vector3(value: list[float] | None) -> Vector3 | None:

@@ -300,6 +300,27 @@ def test_dynamic_and_locked_annotations():
         annotations.add(anchor, set_ids=[])
 
 
+def test_variable_length_ids_accept_any_sequence():
+    from_list = AnnotationTarget(AnnotationTargetKind.element, 7, ["9", "10"], [1, 2, 3])
+    from_tuple = AnnotationTarget(AnnotationTargetKind.element, 7, ("9", "10"), (1, 2, 3))
+    assert from_list == from_tuple
+    assert from_list.body_ids == ("9", "10")
+    assert from_list.face_node_ids == (1, 2, 3)
+    assert hash(from_list) == hash(from_tuple)
+
+    with pytest.raises(TypeError, match="not a string"):
+        AnnotationTarget(AnnotationTargetKind.node, 21, "10")
+    with pytest.raises(TypeError, match="not a string"):
+        AnnotationTarget(AnnotationTargetKind.element, 7, ["9"], "123")  # type: ignore[arg-type]
+
+    annotations = ViewportAnnotations(_OfflineStore({}), lambda _: None)
+    annotation = annotations.add(AnnotationAnchor(target=from_list), set_ids=range(1, 3))
+    assert annotation.set_ids == (1, 2)
+    assert annotation.anchor.target == from_tuple
+    with pytest.raises(TypeError, match="not a string"):
+        annotation.set_ids = "12"  # type: ignore[assignment]
+
+
 def test_hot_spot_display_options():
     opts = _offline_settings({"hotSpotsMaxNumber": 5, "hotSpotsThresholdRange": {"low": 1.0}})
 
